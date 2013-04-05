@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ApplicationConfig>
+	<Hibernate>
+		<ConfigFile>WEB-INF/hibernate.cfg.xml</ConfigFile>
+	</Hibernate>
+	<Security>
+		<SecretKey Method="AES">10b1dfbe84b7be9831e69abf64192e0f</SecretKey>
+	</Security>
+</ApplicationConfig>

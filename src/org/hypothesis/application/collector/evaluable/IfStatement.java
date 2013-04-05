@@ -1,0 +1,63 @@
+/**
+ * 
+ */
+package org.hypothesis.application.collector.evaluable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hypothesis.application.collector.slide.HasVariables;
+import org.hypothesis.application.collector.slide.VariableMap;
+
+/**
+ * @author Kamil Morong - Hypothesis
+ * 
+ */
+public class IfStatement implements Evaluable {
+
+	private HasVariables variables;
+	private Expression expression;
+	private List<Evaluable> trueBlock = new ArrayList<Evaluable>();
+	private List<Evaluable> falseBlock = new ArrayList<Evaluable>();
+
+	public IfStatement(HasVariables variables, Expression expression) {
+		this.variables = variables;
+		this.expression = expression;
+	}
+
+	public void addFalseEvaluable(Evaluable evaluable) {
+		falseBlock.add(evaluable);
+	}
+
+	public void addTrueEvaluable(Evaluable evaluable) {
+		trueBlock.add(evaluable);
+	}
+
+	public void evaluate() {
+		if (expression != null && variables != null) {
+			Boolean result = expression.getBoolean();
+			if (result != null) {
+				List<Evaluable> evaluables = result ? trueBlock : falseBlock;
+
+				for (Evaluable evaluable : evaluables) {
+					evaluable.setVariables(variables.getVariables());
+					evaluable.evaluate();
+					evaluable.updateVariables(variables.getVariables());
+				}
+			}
+		}
+	}
+
+	public void setVariables(VariableMap variables) {
+		if (expression != null) {
+			expression.setVariables(variables);
+		}
+	}
+
+	public void updateVariables(VariableMap variables) {
+		if (expression != null) {
+			expression.updateVariables(variables);
+		}
+	}
+
+}
