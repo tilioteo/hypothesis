@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.hypothesis.core;
+package org.hypothesis.common.constants;
 
 /**
  * @author Kamil Morong - Hypothesis

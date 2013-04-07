@@ -6,7 +6,7 @@ package org.hypothesis.persistence.hibernate;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
-import org.hypothesis.core.FieldConstants;
+import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.entity.Role;
 
 /**

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.hypothesis.core;
+package org.hypothesis.persistence;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
+import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.entity.Group;
 import org.hypothesis.entity.GroupPermition;
 import org.hypothesis.entity.Pack;

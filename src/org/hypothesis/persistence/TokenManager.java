@@ -1,12 +1,13 @@
 /**
  * 
  */
-package org.hypothesis.core;
+package org.hypothesis.persistence;
 
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
+import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.Token;
 import org.hypothesis.entity.User;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.hypothesis.core;
+package org.hypothesis.persistence;
 
 import org.hibernate.HibernateException;
 import org.hypothesis.entity.BranchOutput;

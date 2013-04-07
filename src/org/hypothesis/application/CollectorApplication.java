@@ -10,10 +10,10 @@ import org.hypothesis.application.collector.events.BreakTestEvent;
 import org.hypothesis.application.collector.events.ProcessEventManager;
 import org.hypothesis.application.collector.ui.MainWindow;
 import org.hypothesis.common.application.AbstractBaseApplication;
-import org.hypothesis.core.TokenManager;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.Token;
 import org.hypothesis.entity.User;
+import org.hypothesis.persistence.TokenManager;
 import org.hypothesis.persistence.hibernate.TokenDao;
 
 import com.vaadin.Application;

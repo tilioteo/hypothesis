@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.hypothesis.application.ManagerApplication;
+import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.common.i18n.ApplicationMessages;
 import org.hypothesis.common.i18n.Messages;
-import org.hypothesis.core.FieldConstants;
 import org.hypothesis.entity.GroupPermition;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.UserPermition;

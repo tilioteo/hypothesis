@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.hypothesis.core;
+package org.hypothesis.persistence;
 
 import org.hypothesis.entity.Pack;
 import org.hypothesis.persistence.hibernate.PackDao;

@@ -2,9 +2,9 @@ package org.hypothesis.application.manager.ui;
 
 import org.hibernate.HibernateException;
 import org.hypothesis.application.ManagerApplication;
+import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.common.i18n.ApplicationMessages;
 import org.hypothesis.common.i18n.Messages;
-import org.hypothesis.core.FieldConstants;
 import org.hypothesis.entity.User;
 
 import com.vaadin.data.Validator.InvalidValueException;

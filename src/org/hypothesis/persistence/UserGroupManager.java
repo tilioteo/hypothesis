@@ -1,4 +1,4 @@
-package org.hypothesis.core;
+package org.hypothesis.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.entity.Group;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.Role;

@@ -6,10 +6,10 @@ import org.hypothesis.Globals;
 import org.hypothesis.application.HypothesisApplication;
 import org.hypothesis.common.i18n.ApplicationMessages;
 import org.hypothesis.common.i18n.Messages;
-import org.hypothesis.core.TokenManager;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.Token;
 import org.hypothesis.entity.User;
+import org.hypothesis.persistence.TokenManager;
 import org.hypothesis.persistence.hibernate.TokenDao;
 
 import com.vaadin.terminal.ExternalResource;

@@ -1,13 +1,14 @@
 /**
  * 
  */
-package org.hypothesis.core;
+package org.hypothesis.persistence;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.hibernate.criterion.Restrictions;
+import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.entity.Branch;
 import org.hypothesis.entity.BranchTrek;
 import org.hypothesis.entity.Pack;

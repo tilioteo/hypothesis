@@ -5,14 +5,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hypothesis.application.ManagerApplication;
+import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.common.i18n.ApplicationMessages;
 import org.hypothesis.common.i18n.Messages;
-import org.hypothesis.core.FieldConstants;
-import org.hypothesis.core.UserGroupManager;
 import org.hypothesis.entity.Group;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.Role;
 import org.hypothesis.entity.User;
+import org.hypothesis.persistence.UserGroupManager;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
