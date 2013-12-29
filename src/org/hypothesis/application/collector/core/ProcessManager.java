@@ -78,14 +78,12 @@ public class ProcessManager implements ProcessEventListener {
 
 	private boolean canClose = true;
 
-	@SuppressWarnings("unchecked")
 	public ProcessManager(Application application) {
 		this.application = application;
 
 		eventManager = ProcessEventManager.get(this.application);
 		branchManager = new BranchManager();
 		taskManager = new TaskManager();
-		;
 
 		eventManager.addListener(this, PrepareTestEvent.class,
 				AbstractRunningEvent.class, AfterRenderContentEvent.class,

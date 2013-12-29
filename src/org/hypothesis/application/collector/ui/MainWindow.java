@@ -81,7 +81,6 @@ public class MainWindow extends AbstractMainWindow<CollectorApplication> impleme
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void init() {
 		// TODO change caption
