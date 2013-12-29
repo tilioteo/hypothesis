@@ -8,7 +8,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hypothesis.persistence.GenericDao;
@@ -99,7 +99,7 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 		T entity;
 		if (lock)
 			entity = (T) getSession().load(getPersistentClass(), id,
-					LockMode.UPGRADE);
+					LockOptions.UPGRADE);
 		else
 			entity = (T) getSession().load(getPersistentClass(), id);
 

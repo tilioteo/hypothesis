@@ -7,7 +7,9 @@ import java.io.File;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -15,7 +17,8 @@ import org.hibernate.cfg.AnnotationConfiguration;
  */
 public class Util {
 
-	private static/* final */SessionFactory sessionFactory = null;
+	private static SessionFactory sessionFactory = null;
+	private static ServiceRegistry serviceRegistry = null;
 	private static String CONFIG_FILE_LOCATION = "hibernate.cfg.xml";
 
 	/**
@@ -39,9 +42,11 @@ public class Util {
 			try {
 				// Create the SessionFactory from configFileName
 				File configFile = new File(configFileName);
-
-				sessionFactory = new AnnotationConfiguration().configure(
-						configFile).buildSessionFactory();
+				
+				Configuration configuration = new Configuration().configure(
+						configFile);
+				serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();        
+			    sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 			} catch (Throwable ex) {
 				// Make sure you log the exception, as it might be swallowed
 				System.err.println("Initial SessionFactory creation failed. "

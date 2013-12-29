@@ -20,11 +20,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hypothesis.common.SerializableIdObject;
@@ -245,7 +245,7 @@ public final class Test extends SerializableIdObject {
 	@JoinTable(name = "TBL_TEST_EVENT", joinColumns = @JoinColumn(name = "TEST_ID"), inverseJoinColumns = @JoinColumn(name = "EVENT_ID"))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@IndexColumn(name = "IDX", base = 1)
+	@OrderColumn(name = "IDX")
 	public final List<Event> getEvents() {
 		return events;
 	}
