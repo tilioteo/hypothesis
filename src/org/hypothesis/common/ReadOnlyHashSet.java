@@ -13,6 +13,7 @@ import java.util.HashSet;
 @SuppressWarnings("serial")
 public class ReadOnlyHashSet<E> extends HashSet<E> {
 	
+	@SafeVarargs
 	public ReadOnlyHashSet(E ... elements) {
 		if (elements != null) {
 			for (E element : elements) {

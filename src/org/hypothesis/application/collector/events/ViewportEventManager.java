@@ -31,6 +31,7 @@ public class ViewportEventManager {
 		}
 	}
 
+	@SafeVarargs
 	public final void addListener(ViewportEventListener eventListener,
 			Class<? extends ViewportEvent>... eventClasses) {
 		for (Class<? extends ViewportEvent> eventClass : eventClasses) {

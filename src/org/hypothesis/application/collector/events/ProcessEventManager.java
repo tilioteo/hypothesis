@@ -58,6 +58,7 @@ public class ProcessEventManager {
 		}
 	}
 
+	@SafeVarargs
 	public final void addListener(ProcessEventListener eventListener,
 			Class<? extends AbstractProcessEvent>... eventClasses) {
 		for (Class<? extends AbstractProcessEvent> eventClass : eventClasses) {
