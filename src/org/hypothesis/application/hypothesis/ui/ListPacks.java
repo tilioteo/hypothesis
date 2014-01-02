@@ -17,6 +17,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -99,11 +100,13 @@ public class ListPacks extends VerticalLayout implements ClickListener {
 				if (Globals.USE_HYPOTHESIS_BROWSER) {
 					// open in hypothesis browser
 					// TODO replace with string constants
+					/*
 					urlString = application.getURL().toString()
 							+ "service/launch.jnlp?application_url="
 							+ application.getURL().toString()
 							+ "collector/&token=" + token.getUid();
 					((JnlpButton) source).openRequest(urlString);
+					*/
 
 				} else {
 					// open in new window
@@ -156,11 +159,19 @@ public class ListPacks extends VerticalLayout implements ClickListener {
 		HorizontalLayout buttons = new HorizontalLayout();
 		buttons.setMargin(true);
 		buttons.setSpacing(true);
-		startButton = new JnlpButton(ApplicationMessages.get().getString(
+		
+		JavaApplet applet = new JavaApplet("/service/hypothesis-browser-1.0.1.jar", "org.hypothesis.loader.BrowserApplet");
+		applet.setHeight("300px");
+		applet.setWidth("300px");
+		
+		vl.addComponent(applet);
+		
+		/*startButton = new JnlpButton(ApplicationMessages.get().getString(
 				Messages.TEXT_BUTTON_START));
 		startButton.addStyleName("big default");
 		startButton.addListener(this);
-		buttons.addComponent(startButton);
+		buttons.addComponent(startButton);*/
+		
 		cancelButton = new Button(ApplicationMessages.get().getString(
 				Messages.TEXT_BUTTON_CANCEL));
 		cancelButton.addListener(this);
