@@ -237,8 +237,15 @@ public class JnlpDownloadServlet extends HttpServlet {
 
 		pathRemapper = new PathRemapper();
 		pathRemapper.put("/service/", "/WEB-INF/");
-		pathRemapper.put("/service/hypothesis-browser",
-				"/WEB-INF/lib/hypothesis-browser");
+		pathRemapper.put("/service/hypothesis-browser", "/WEB-INF/lib/hypothesis-browser-1.1.0-signed");
+		pathRemapper.put("/service/swt-win32-x86_64", "/WEB-INF/lib/swt-4.3-win32-win32-x86_64");
+		pathRemapper.put("/service/swt-win32-x86", "/WEB-INF/lib/swt-4.3-win32-win32-x86");
+		pathRemapper.put("/service/swt-linux-x86_64", "/WEB-INF/lib/swt-4.3-gtk-linux-x86_64");
+		pathRemapper.put("/service/swt-linux-x86", "/WEB-INF/lib/swt-4.3-gtk-linux-x86");
+		pathRemapper.put("/service/swt-linux-ppc64", "/WEB-INF/lib/swt-4.3-gtk-linux-ppc64");
+		pathRemapper.put("/service/swt-linux-ppc", "/WEB-INF/lib/swt-4.3-gtk-linux-ppc");
+		pathRemapper.put("/service/swt-macosx-x86_64", "/WEB-INF/lib/swt-4.3-cocoa-macosx-x86_64-signed");
+		pathRemapper.put("/service/swt-macosx", "/WEB-INF/lib/swt-4.3-cocoa-macosx");
 	}
 
 	/**
