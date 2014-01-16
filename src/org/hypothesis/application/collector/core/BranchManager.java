@@ -27,8 +27,6 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	private DefaultPath defaultPath = null;
 
 	private PairList<Slide, Object> slideOutputValues = new PairList<Slide, Object>();
-	// private PairList<Task, Object> taskOutputValues = new
-	// PairList<Task, Object>();
 
 	private String nextKey = null;
 
@@ -43,10 +41,6 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 			this.defaultPath = (DefaultPath) path;
 		}
 	}
-
-	// public void addTaskOutputValues(Task task, Object outputValue) {
-	// taskOutputValues.addObjectPair(task, outputValue);
-	// }
 
 	public void addSlideOutputValue(Slide slide, Object outputValue) {
 		slideOutputValues.addObjectPair(slide, outputValue);
@@ -70,7 +64,6 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 		this.defaultPath = null;
 		this.paths.clear();
 		this.slideOutputValues.clear();
-		// this.taskOutputValues.clear();
 	}
 
 	@Override
@@ -102,13 +95,6 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	public String getNextBranchKey() {
 		return nextKey;
 	}
-
-	/*
-	 * public String getNextBranchKey() { for (Path path : paths) { if
-	 * (path.isValid(slideOutputValues)) return path.getBranchKey(); } if
-	 * (defaultPath != null) return defaultPath.getBranchKey(); else return
-	 * null; }
-	 */
 
 	public String getSerializedData() {
 		// TODO serialize slide outputs
