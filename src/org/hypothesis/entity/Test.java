@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,6 +39,7 @@ import org.hypothesis.common.SerializableIdObject;
  */
 @Entity
 @Table(name = "TBL_TEST")
+@Access(AccessType.PROPERTY)
 public final class Test extends SerializableIdObject {
 	public enum Status {
 		CREATED(1), STARTED(2), FINISHED(3), BROKEN_BY_CLIENT(4), BROKEN_BY_ERROR(
@@ -148,9 +151,153 @@ public final class Test extends SerializableIdObject {
 		setStatus(Status.CREATED);
 	}
 
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "testGenerator")
+	@SequenceGenerator(name = "testGenerator", sequenceName = "hbn_test_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@Column(name = "PRODUCTION", nullable = false)
+	public boolean isProduction() {
+		return production;
+	}
+
+	public void setProduction(boolean production) {
+		this.production = production;
+	}
+
+	@Column(name = "CREATED", nullable = false)
+	public final Date getCreated() {
+		return created;
+	}
+
+	protected void setCreated(Date created) {
+		this.created = created;
+	}
+
+	@Column(name = "STARTED")
+	public final Date getStarted() {
+		return started;
+	}
+
+	public final void setStarted(Date started) {
+		this.started = started;
+	}
+
+	@Column(name = "FINISHED")
+	public final Date getFinished() {
+		return finished;
+	}
+
+	public final void setFinished(Date finished) {
+		this.finished = finished;
+	}
+
+	@Column(name = "BROKEN")
+	public final Date getBroken() {
+		return broken;
+	}
+
+	public final void setBroken(Date broken) {
+		this.broken = broken;
+	}
+
+	@Column(name = "LAST_ACCESS", nullable = false)
+	public final Date getLastAccess() {
+		return lastAccess;
+	}
+
+	public final void setLastAccess(Date lastAccess) {
+		this.lastAccess = lastAccess;
+	}
+
+	@Column(name = "STATUS", nullable = false)
+	public final Status getStatus() {
+		return Status.get(status);
+	}
+
+	public final void setStatus(Status status) {
+		this.status = status.getCode();
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "USER_ID", nullable = false)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final User getUser() {
+		return user;
+	}
+
+	protected void setUser(User user) {
+		this.user = user;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "PACK_ID", nullable = false)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Pack getPack() {
+		return pack;
+	}
+
+	protected void setPack(Pack pack) {
+		this.pack = pack;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "LAST_BRANCH_ID")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Branch getLastBranch() {
+		return lastBranch;
+	}
+
+	public final void setLastBranch(Branch branch) {
+		this.lastBranch = branch;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "LAST_TASK_ID")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Task getLastTask() {
+		return lastTask;
+	}
+
+	public final void setLastTask(Task task) {
+		this.lastTask = task;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "LAST_SLIDE_ID")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Slide getLastSlide() {
+		return lastSlide;
+	}
+
+	public final void setLastSlide(Slide slide) {
+		this.lastSlide = slide;
+	}
+
+	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "TBL_TEST_EVENT", joinColumns = @JoinColumn(name = "TEST_ID"), inverseJoinColumns = @JoinColumn(name = "EVENT_ID"))
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@OrderColumn(name = "IDX")
+	public final List<Event> getEvents() {
+		return events;
+	}
+
+	protected void setEvents(List<Event> list) {
+		this.events = list;
+	}
+
 	public final void addEvent(Event event) {
 		if (event != null)
 			this.events.add(event);
+	}
+
+	public final void removeEvent(Event event) {
+		this.events.remove(event);
 	}
 
 	@Override
@@ -231,89 +378,6 @@ public final class Test extends SerializableIdObject {
 		return true;
 	}
 
-	@Column(name = "BROKEN")
-	public final Date getBroken() {
-		return broken;
-	}
-
-	@Column(name = "CREATED", nullable = false)
-	public final Date getCreated() {
-		return created;
-	}
-
-	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_TEST_EVENT", joinColumns = @JoinColumn(name = "TEST_ID"), inverseJoinColumns = @JoinColumn(name = "EVENT_ID"))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@OrderColumn(name = "IDX")
-	public final List<Event> getEvents() {
-		return events;
-	}
-
-	@Column(name = "FINISHED")
-	public final Date getFinished() {
-		return finished;
-	}
-
-	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "testGenerator")
-	@SequenceGenerator(name = "testGenerator", sequenceName = "hbn_test_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@Column(name = "LAST_ACCESS", nullable = false)
-	public final Date getLastAccess() {
-		return lastAccess;
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "LAST_BRANCH_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Branch getLastBranch() {
-		return lastBranch;
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "LAST_SLIDE_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Slide getLastSlide() {
-		return lastSlide;
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "LAST_TASK_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Task getLastTask() {
-		return lastTask;
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Pack getPack() {
-		return pack;
-	}
-
-	@Column(name = "STARTED")
-	public final Date getStarted() {
-		return started;
-	}
-
-	@Column(name = "STATUS", nullable = false)
-	public final Status getStatus() {
-		return Status.get(status);
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "USER_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final User getUser() {
-		return user;
-	}
-
 	@Override
 	public final int hashCode() {
 		final int prime = 79;
@@ -347,64 +411,4 @@ public final class Test extends SerializableIdObject {
 		return result;
 	}
 
-	@Column(name = "PRODUCTION", nullable = false)
-	public boolean isProduction() {
-		return production;
-	}
-
-	public final void removeEvent(Event event) {
-		this.events.remove(event);
-	}
-
-	public final void setBroken(Date broken) {
-		this.broken = broken;
-	}
-
-	protected void setCreated(Date created) {
-		this.created = created;
-	}
-
-	protected void setEvents(List<Event> list) {
-		this.events = list;
-	}
-
-	public final void setFinished(Date finished) {
-		this.finished = finished;
-	}
-
-	public final void setLastAccess(Date lastAccess) {
-		this.lastAccess = lastAccess;
-	}
-
-	public final void setLastBranch(Branch branch) {
-		this.lastBranch = branch;
-	}
-
-	public final void setLastSlide(Slide slide) {
-		this.lastSlide = slide;
-	}
-
-	public final void setLastTask(Task task) {
-		this.lastTask = task;
-	}
-
-	protected void setPack(Pack pack) {
-		this.pack = pack;
-	}
-
-	public void setProduction(boolean production) {
-		this.production = production;
-	}
-
-	public final void setStarted(Date started) {
-		this.started = started;
-	}
-
-	public final void setStatus(Status status) {
-		this.status = status.getCode();
-	}
-
-	protected void setUser(User user) {
-		this.user = user;
-	}
 }

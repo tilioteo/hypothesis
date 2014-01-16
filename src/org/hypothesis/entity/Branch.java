@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +18,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
@@ -27,6 +28,7 @@ import org.dom4j.Document;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Type;
 import org.hypothesis.application.collector.BranchMap;
 import org.hypothesis.application.collector.xml.BranchXmlConstants;
 import org.hypothesis.common.HasQueue;
@@ -41,6 +43,7 @@ import org.hypothesis.common.xml.Utility;
  */
 @Entity
 @Table(name = "TBL_BRANCH")
+@Access(AccessType.PROPERTY)
 public final class Branch extends SerializableIdObject implements HasQueue<Task> {
 
 	/**
@@ -48,7 +51,7 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 	 */
 	private static final long serialVersionUID = 784492179687812238L;
 
-	private String note;
+ 	private String note;
 
 	/**
 	 * raw xml string for branch
@@ -75,9 +78,107 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 	 */
 	private transient BranchMap branchMap = new BranchMap();
 
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchGenerator")
+	@SequenceGenerator(name = "branchGenerator", sequenceName = "hbn_branch_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@Column(name = "NOTE")
+	public final String getNote() {
+		return note;
+	}
+
+	public final void setNote(String note) {
+		this.note = note;
+	}
+
+	@Column(name = "BRANCH_XML", nullable = false)
+	@Type(type="text")
+	protected String getBranchXml() {
+		return branchXml;
+	}
+
+	protected void setBranchXml(String branchXml) {
+		this.branchXml = branchXml;
+	}
+
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "TBL_BRANCH_TASK", joinColumns = @JoinColumn(name = "BRANCH_ID"), inverseJoinColumns = @JoinColumn(name = "TASK_ID"))
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@OrderColumn(name = "RANK")
+	public final List<Task> getTasks() {
+		return tasks;
+	}
+
+	protected void setTasks(List<Task> list) {
+		this.tasks = list;
+	}
+
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "TBL_BRANCH_BRANCH_TREK", joinColumns = @JoinColumn(name = "BRANCH_ID"), inverseJoinColumns = @JoinColumn(name = "BRANCH_TREK_ID"))
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	protected final Set<BranchTrek> getBranchTreks() {
+		return branchTreks;
+	}
+
+	protected void setBranchTreks(Set<BranchTrek> branchTreks) {
+		this.branchTreks = branchTreks;
+
+		this.branchMap.clear();
+		for (BranchTrek sequence : branchTreks) {
+			branchMap.put(sequence.getKey(), sequence.getBranch());
+		}
+	}
+
+	@Transient
+	public final Document getDocument() {
+		if (document == null) {
+			document = Utility.readString(getBranchXml());
+		}
+		return document;
+	}
+
+	public final void setDocument(Document document) {
+		if (document != getDocument()) {
+			if (isValidDocument(document)) {
+				this.document = document;
+				this.branchXml = Utility.writeString(this.document);
+			} else {
+				this.document = null;
+				this.branchXml = null;
+				// throw new InvalidBranchXmlException();
+			}
+		}
+	}
+
+	@Transient
+	public BranchMap getBranchMap() {
+		return branchMap;
+	}
+
+	@Transient
+	public final List<Task> getQueue() {
+		return tasks;
+	}
+
 	public final void addTask(Task task) {
 		if (task != null)
 			this.tasks.add(task);
+	}
+
+	public final void removeTask(Task task) {
+		this.tasks.remove(task);
+	}
+
+	private boolean isValidDocument(Document doc) {
+		return (doc != null && doc.getRootElement() != null && doc
+				.getRootElement().getName().equals(BranchXmlConstants.BRANCH));
 	}
 
 	@Override
@@ -113,61 +214,6 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 		return true;
 	}
 
-	@Transient
-	public BranchMap getBranchMap() {
-		return branchMap;
-	}
-
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_BRANCH_BRANCH_TREK", joinColumns = @JoinColumn(name = "BRANCH_ID"), inverseJoinColumns = @JoinColumn(name = "BRANCH_TREK_ID"))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	protected final Set<BranchTrek> getBranchTreks() {
-		return branchTreks;
-	}
-
-	@Lob
-	@Column(name = "BRANCH_XML", nullable = false)
-	protected String getBranchXml() {
-		return branchXml;
-	}
-
-	@Transient
-	public final Document getDocument() {
-		if (document == null) {
-			document = Utility.readString(getBranchXml());
-		}
-		return document;
-	}
-
-	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchGenerator")
-	@SequenceGenerator(name = "branchGenerator", sequenceName = "hbn_branch_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@Column(name = "NOTE")
-	public final String getNote() {
-		return note;
-	}
-
-	@Transient
-	public final List<Task> getQueue() {
-		return tasks;
-	}
-
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_BRANCH_TASK", joinColumns = @JoinColumn(name = "BRANCH_ID"), inverseJoinColumns = @JoinColumn(name = "TASK_ID"))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@OrderColumn(name = "RANK")
-	public final List<Task> getTasks() {
-		return tasks;
-	}
-
 	@Override
 	public final int hashCode() {
 		final int prime = 61;
@@ -182,49 +228,6 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 				* result
 				+ ((getBranchTreks() == null) ? 0 : getBranchTreks().hashCode());
 		return result;
-	}
-
-	private boolean isValidDocument(Document doc) {
-		return (doc != null && doc.getRootElement() != null && doc
-				.getRootElement().getName().equals(BranchXmlConstants.BRANCH));
-	}
-
-	public final void removeTask(Task task) {
-		this.tasks.remove(task);
-	}
-
-	protected void setBranchTreks(Set<BranchTrek> branchTreks) {
-		this.branchTreks = branchTreks;
-
-		this.branchMap.clear();
-		for (BranchTrek sequence : branchTreks) {
-			branchMap.put(sequence.getKey(), sequence.getBranch());
-		}
-	}
-
-	protected void setBranchXml(String branchXml) {
-		this.branchXml = branchXml;
-	}
-
-	public final void setDocument(Document document) {
-		if (document != getDocument()) {
-			if (isValidDocument(document)) {
-				this.document = document;
-				this.branchXml = Utility.writeString(this.document);
-			} else {
-				this.document = null;
-				this.branchXml = null;
-				// throw new InvalidBranchXmlException();
-			}
-		}
-	}
-
-	public final void setNote(String note) {
-		this.note = note;
-	}
-
-	protected void setTasks(List<Task> list) {
-		this.tasks = list;
 	}
 
 }

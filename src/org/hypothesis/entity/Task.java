@@ -6,6 +6,8 @@ package org.hypothesis.entity;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,6 +36,7 @@ import org.hypothesis.common.SerializableIdObject;
  */
 @Entity
 @Table(name = "TBL_TASK")
+@Access(AccessType.PROPERTY)
 public final class Task extends SerializableIdObject implements HasQueue<Slide> {
 	/**
 	 * 
@@ -48,9 +51,58 @@ public final class Task extends SerializableIdObject implements HasQueue<Slide> 
 	 */
 	private List<Slide> slides = new LinkedList<Slide>();
 
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "taskGenerator")
+	@SequenceGenerator(name = "taskGenerator", sequenceName = "hbn_task_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@Column(name = "NAME", nullable = false, unique = false)
+	public final String getName() {
+		return name;
+	}
+
+	public final void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "NOTE")
+	public final String getNote() {
+		return note;
+	}
+
+	public final void setNote(String note) {
+		this.note = note;
+	}
+
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "TBL_TASK_SLIDE", joinColumns = @JoinColumn(name = "TASK_ID"), inverseJoinColumns = @JoinColumn(name = "SLIDE_ID"))
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	@OrderColumn(name = "RANK")
+	public final List<Slide> getSlides() {
+		return slides;
+	}
+
+	protected void setSlides(List<Slide> list) {
+		this.slides = list;
+	}
+
+	@Transient
+	public final List<Slide> getQueue() {
+		return slides;
+	}
+
 	public final void addSlide(Slide slide) {
 		if (slide != null)
 			this.slides.add(slide);
+	}
+
+	public final void removeSlide(Slide slide) {
+		this.slides.remove(slide);
 	}
 
 	@Override
@@ -87,39 +139,6 @@ public final class Task extends SerializableIdObject implements HasQueue<Slide> 
 	}
 
 	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "taskGenerator")
-	@SequenceGenerator(name = "taskGenerator", sequenceName = "hbn_task_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@Column(name = "NAME", nullable = false, unique = false)
-	public final String getName() {
-		return name;
-	}
-
-	@Column(name = "NOTE")
-	public final String getNote() {
-		return note;
-	}
-
-	@Transient
-	public final List<Slide> getQueue() {
-		return slides;
-	}
-
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_TASK_SLIDE", joinColumns = @JoinColumn(name = "TASK_ID"), inverseJoinColumns = @JoinColumn(name = "SLIDE_ID"))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@OrderColumn(name = "RANK")
-	public final List<Slide> getSlides() {
-		return slides;
-	}
-
-	@Override
 	public final int hashCode() {
 		final int prime = 43;
 		int result = 1;
@@ -132,22 +151,6 @@ public final class Task extends SerializableIdObject implements HasQueue<Slide> 
 		result = prime * result
 				+ ((getSlides() == null) ? 0 : getSlides().hashCode());
 		return result;
-	}
-
-	public final void removeSlide(Slide slide) {
-		this.slides.remove(slide);
-	}
-
-	public final void setName(String name) {
-		this.name = name;
-	}
-
-	public final void setNote(String note) {
-		this.note = note;
-	}
-
-	protected void setSlides(List<Slide> list) {
-		this.slides = list;
 	}
 
 }

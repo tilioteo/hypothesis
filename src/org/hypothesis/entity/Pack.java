@@ -6,6 +6,8 @@ package org.hypothesis.entity;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,6 +35,7 @@ import org.hypothesis.common.SerializableIdObject;
  */
 @Entity
 @Table(name = "TBL_PACK")
+@Access(AccessType.PROPERTY)
 public final class Pack extends SerializableIdObject implements HasQueue<Branch> {
 
 	/**
@@ -54,8 +57,75 @@ public final class Pack extends SerializableIdObject implements HasQueue<Branch>
 	 */
 	private List<Branch> branches = new LinkedList<Branch>();
 
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "packGenerator")
+	@SequenceGenerator(name = "packGenerator", sequenceName = "hbn_pack_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@Column(name = "NAME", nullable = false, unique = true)
+	public final String getName() {
+		return name;
+	}
+
+	public final void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "DESCRIPTION")
+	public final String getDescription() {
+		return description;
+	}
+
+	public final void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Column(name = "PUBLISHED")
+	public final Boolean getPublished() {
+		return published;
+	}
+
+	public final void setPublished(Boolean published) {
+		this.published = published;
+	}
+
+	@Column(name = "NOTE")
+	public final String getNote() {
+		return note;
+	}
+
+	public final void setNote(String note) {
+		this.note = note;
+	}
+
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "TBL_PACK_BRANCH", joinColumns = @JoinColumn(name = "PACK_ID"), inverseJoinColumns = @JoinColumn(name = "BRANCH_ID"))
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	// @IndexColumn(name="IDX", base = 1)
+	public final List<Branch> getBranches() {
+		return branches;
+	}
+
+	protected void setBranches(List<Branch> list) {
+		this.branches = list;
+	}
+
+	@Transient
+	public final List<Branch> getQueue() {
+		return getBranches();
+	}
+
 	public final void addBranch(Branch b) {
 		this.branches.add(b);
+	}
+
+	public final void removeBranch(Branch b) {
+		this.branches.remove(b);
 	}
 
 	@Override
@@ -101,49 +171,6 @@ public final class Pack extends SerializableIdObject implements HasQueue<Branch>
 		return true;
 	}
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_PACK_BRANCH", joinColumns = @JoinColumn(name = "PACK_ID"), inverseJoinColumns = @JoinColumn(name = "BRANCH_ID"))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	// @IndexColumn(name="IDX", base = 1)
-	public final List<Branch> getBranches() {
-		return branches;
-	}
-
-	@Column(name = "DESCRIPTION")
-	public final String getDescription() {
-		return description;
-	}
-
-	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "packGenerator")
-	@SequenceGenerator(name = "packGenerator", sequenceName = "hbn_pack_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@Column(name = "NAME", nullable = false, unique = true)
-	public final String getName() {
-		return name;
-	}
-
-	@Column(name = "NOTE")
-	public final String getNote() {
-		return note;
-	}
-
-	@Column(name = "PUBLISHED")
-	public final Boolean getPublished() {
-		return published;
-	}
-
-	@Transient
-	public final List<Branch> getQueue() {
-		return getBranches();
-	}
-
 	@Override
 	public final int hashCode() {
 		final int prime = 67;
@@ -162,30 +189,6 @@ public final class Pack extends SerializableIdObject implements HasQueue<Branch>
 		result = prime * result
 				+ ((getBranches() == null) ? 0 : getBranches().hashCode());
 		return result;
-	}
-
-	public final void removeBranch(Branch b) {
-		this.branches.remove(b);
-	}
-
-	protected void setBranches(List<Branch> list) {
-		this.branches = list;
-	}
-
-	public final void setDescription(String description) {
-		this.description = description;
-	}
-
-	public final void setName(String name) {
-		this.name = name;
-	}
-
-	public final void setNote(String note) {
-		this.note = note;
-	}
-
-	public final void setPublished(Boolean published) {
-		this.published = published;
 	}
 
 	@Override

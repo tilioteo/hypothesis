@@ -6,6 +6,8 @@ package org.hypothesis.entity;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +28,7 @@ import org.hypothesis.common.SerializableUidObject;
  */
 @Entity
 @Table(name = "TBL_TOKEN")
+@Access(AccessType.PROPERTY)
 public final class Token extends SerializableUidObject {
 
 	/**
@@ -62,6 +65,52 @@ public final class Token extends SerializableUidObject {
 		this.user = user;
 		this.pack = pack;
 		this.datetime = new Date();
+	}
+
+	@Override
+	@Id
+	@Column(name = "UID")
+	public final String getUid() {
+		return uid;
+	}
+
+	@Column(name = "PRODUCTION", nullable = false)
+	public boolean isProduction() {
+		return production;
+	}
+
+	public void setProduction(boolean production) {
+		this.production = production;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "USER_ID", nullable = false)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final User getUser() {
+		return user;
+	}
+
+	protected void setUser(User user) {
+		this.user = user;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "PACK_ID", nullable = false)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Pack getPack() {
+		return pack;
+	}
+
+	protected void setPack(Pack pack) {
+		this.pack = pack;
+	}
+
+	public final Date getDatetime() {
+		return datetime;
+	}
+
+	protected void setDatetime(Date datetime) {
+		this.datetime = datetime;
 	}
 
 	@Override
@@ -102,31 +151,6 @@ public final class Token extends SerializableUidObject {
 		return true;
 	}
 
-	public final Date getDatetime() {
-		return datetime;
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Pack getPack() {
-		return pack;
-	}
-
-	@Override
-	@Id
-	@Column(name = "UID")
-	public final String getUid() {
-		return uid;
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "USER_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final User getUser() {
-		return user;
-	}
-
 	@Override
 	public final int hashCode() {
 		final int prime = 211;
@@ -143,27 +167,6 @@ public final class Token extends SerializableUidObject {
 		result = prime * result
 				+ ((getUser() == null) ? 0 : getUser().hashCode());
 		return result;
-	}
-
-	@Column(name = "PRODUCTION", nullable = false)
-	public boolean isProduction() {
-		return production;
-	}
-
-	protected void setDatetime(Date datetime) {
-		this.datetime = datetime;
-	}
-
-	protected void setPack(Pack pack) {
-		this.pack = pack;
-	}
-
-	public void setProduction(boolean production) {
-		this.production = production;
-	}
-
-	protected void setUser(User user) {
-		this.user = user;
 	}
 
 }

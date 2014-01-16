@@ -3,6 +3,8 @@
  */
 package org.hypothesis.entity;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,6 +29,7 @@ import org.hypothesis.common.SerializableIdObject;
 @Entity
 @Table(name = "TBL_USER_PERMITION", uniqueConstraints = { @UniqueConstraint(columnNames = {
 		"USER_ID", "PACK_ID" }) })
+@Access(AccessType.PROPERTY)
 public final class UserPermition extends SerializableIdObject {
 
 	/**
@@ -73,6 +76,55 @@ public final class UserPermition extends SerializableIdObject {
 	}
 
 	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userPermitionGenerator")
+	@SequenceGenerator(name = "userPermitionGenerator", sequenceName = "hbn_user_permition_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "USER_ID", nullable = false)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final User getUser() {
+		return user;
+	}
+
+	protected void setUser(User user) {
+		this.user = user;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "PACK_ID", nullable = false)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Pack getPack() {
+		return pack;
+	}
+
+	protected void setPack(Pack pack) {
+		this.pack = pack;
+	}
+
+	@Column(name = "ENABLED", nullable = false)
+	public final Boolean getEnabled() {
+		return enabled;
+	}
+
+	public final void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	@Column(name = "PASS")
+	public final Integer getPass() {
+		return pass;
+	}
+
+	public final void setPass(Integer pass) {
+		this.pass = pass;
+	}
+
+	@Override
 	public final boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -109,39 +161,6 @@ public final class UserPermition extends SerializableIdObject {
 		return true;
 	}
 
-	@Column(name = "ENABLED", nullable = false)
-	public final Boolean getEnabled() {
-		return enabled;
-	}
-
-	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userPermitionGenerator")
-	@SequenceGenerator(name = "userPermitionGenerator", sequenceName = "hbn_user_permition_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Pack getPack() {
-		return pack;
-	}
-
-	@Column(name = "PASS")
-	public final Integer getPass() {
-		return pass;
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "USER_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final User getUser() {
-		return user;
-	}
-
 	@Override
 	public final int hashCode() {
 		final int prime = 199;
@@ -158,22 +177,6 @@ public final class UserPermition extends SerializableIdObject {
 		result = prime * result
 				+ ((getUser() == null) ? 0 : getUser().hashCode());
 		return result;
-	}
-
-	public final void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	protected void setPack(Pack pack) {
-		this.pack = pack;
-	}
-
-	public final void setPass(Integer pass) {
-		this.pass = pass;
-	}
-
-	protected void setUser(User user) {
-		this.user = user;
 	}
 
 }

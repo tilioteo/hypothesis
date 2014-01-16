@@ -6,6 +6,8 @@ package org.hypothesis.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +33,7 @@ import org.hypothesis.common.SerializableIdObject;
  */
 @Entity
 @Table(name = "TBL_GROUP")
+@Access(AccessType.PROPERTY)
 public final class Group extends SerializableIdObject {
 
 	/**
@@ -40,15 +43,73 @@ public final class Group extends SerializableIdObject {
 
 	private String name;
 	private String note;
+	private Long ownerId;
 
 	/**
 	 * set of users which belong to group
 	 */
 	private Set<User> users = new HashSet<User>();
-	private Long ownerId;
+
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groupGenerator")
+	@SequenceGenerator(name = "groupGenerator", sequenceName = "hbn_group_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@Override
+	public final void setId(Long id) {
+		super.setId(id);
+	}
+
+	@Column(name = "NAME", nullable = false, unique = true)
+	public final String getName() {
+		return name;
+	}
+
+	public final void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "NOTE", nullable = true)
+	public final String getNote() {
+		return note;
+	}
+
+	public final void setNote(String note) {
+		this.note = note;
+	}
+
+	@Column(name = "OWNER_ID", nullable = false)
+	public final Long getOwnerId() {
+		return ownerId;
+	}
+
+	public final void setOwnerId(Long ownerId) {
+		this.ownerId = ownerId;
+	}
+
+	@ManyToMany(targetEntity = org.hypothesis.entity.User.class, cascade = {
+			CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "GROUP_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
+	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
+	@LazyCollection(LazyCollectionOption.FALSE)
+	public final Set<User> getUsers() {
+		return users;
+	}
+
+	protected void setUsers(Set<User> set) {
+		this.users = set;
+	}
 
 	public final void addUser(User user) {
 		this.users.add(user);
+	}
+
+	public final void removeUser(User user) {
+		this.users.remove(user);
 	}
 
 	@Override
@@ -83,39 +144,6 @@ public final class Group extends SerializableIdObject {
 	}
 
 	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groupGenerator")
-	@SequenceGenerator(name = "groupGenerator", sequenceName = "hbn_group_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@Column(name = "NAME", nullable = false, unique = true)
-	public final String getName() {
-		return name;
-	}
-
-	@Column(name = "NOTE", nullable = true)
-	public final String getNote() {
-		return note;
-	}
-
-	@Column(name = "OWNER_ID", nullable = false)
-	public final Long getOwnerId() {
-		return ownerId;
-	}
-
-	@ManyToMany(targetEntity = org.hypothesis.entity.User.class, cascade = {
-			CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "GROUP_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
-	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
-	@LazyCollection(LazyCollectionOption.FALSE)
-	public final Set<User> getUsers() {
-		return users;
-	}
-
-	@Override
 	public final int hashCode() {
 		final int prime = 163;
 		int result = 1;
@@ -127,31 +155,6 @@ public final class Group extends SerializableIdObject {
 		// result = prime * result + ((getUsers() == null) ? 0 :
 		// getUsers().hashCode());*/
 		return result;
-	}
-
-	public final void removeUser(User user) {
-		this.users.remove(user);
-	}
-
-	@Override
-	public final void setId(Long id) {
-		super.setId(id);
-	}
-
-	public final void setName(String name) {
-		this.name = name;
-	}
-
-	public final void setNote(String note) {
-		this.note = note;
-	}
-
-	public final void setOwnerId(Long ownerId) {
-		this.ownerId = ownerId;
-	}
-
-	protected void setUsers(Set<User> set) {
-		this.users = set;
 	}
 
 	@Override

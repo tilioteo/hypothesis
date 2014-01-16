@@ -5,6 +5,8 @@ package org.hypothesis.entity;
 
 import java.util.Date;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +21,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 import org.hypothesis.common.SerializableIdObject;
 
 /**
@@ -32,6 +35,7 @@ import org.hypothesis.common.SerializableIdObject;
  */
 @Entity
 @Table(name = "TBL_EVENT")
+@Access(AccessType.PROPERTY)
 public final class Event extends SerializableIdObject {
 
 	/**
@@ -90,6 +94,90 @@ public final class Event extends SerializableIdObject {
 		this.type = type;
 		this.name = name;
 		this.timeStamp = datetime.getTime();
+	}
+
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eventGenerator")
+	@SequenceGenerator(name = "eventGenerator", sequenceName = "hbn_event_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@Column(name = "TIMESTAMP", nullable = false)
+	protected Long getTimeStamp() {
+		return timeStamp;
+	}
+
+	protected void setTimeStamp(Long timeStamp) {
+		this.timeStamp = timeStamp;
+	}
+
+	@Column(name = "TYPE", nullable = false)
+	public final Integer getType() {
+		return type;
+	}
+
+	protected void setType(Integer type) {
+		this.type = type;
+	}
+
+	@Column(name = "NAME")
+	public final String getName() {
+		return name;
+	}
+
+	protected void setName(String name) {
+		this.name = name;
+	}
+
+	@Column(name = "DATA")
+	@Type(type="text")
+	public final String getData() {
+		return data;
+	}
+
+	public final void setData(String data) {
+		this.data = data;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "BRANCH_ID")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Branch getBranch() {
+		return branch;
+	}
+
+	public final void setBranch(Branch branch) {
+		this.branch = branch;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "TASK_ID")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Task getTask() {
+		return task;
+	}
+
+	public final void setTask(Task task) {
+		this.task = task;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "SLIDE_ID")
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Slide getSlide() {
+		return slide;
+	}
+
+	public final void setSlide(Slide slide) {
+		this.slide = slide;
+	}
+
+	@Transient
+	public final Date getDatetime() {
+		return new Date(getTimeStamp());
 	}
 
 	@Override
@@ -152,75 +240,6 @@ public final class Event extends SerializableIdObject {
 		return true;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "BRANCH_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Branch getBranch() {
-		return branch;
-	}
-
-	@Lob
-	@Column(name = "DATA")
-	public final String getData() {
-		return data;
-	}
-
-	@Transient
-	public final Date getDatetime() {
-		return new Date(getTimeStamp());
-	}
-
-	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eventGenerator")
-	@SequenceGenerator(name = "eventGenerator", sequenceName = "hbn_event_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@Column(name = "NAME")
-	public final String getName() {
-		return name;
-	}
-
-	/*
-	 * @Column(name="RESULT") public final Integer getResult() { return result;
-	 * }
-	 * 
-	 * public final void setResult(Integer result) { this.result = result; }
-	 * 
-	 * @Column(name="RESULT_DETAIL") public final String getResultDetail() {
-	 * return resultDetail; }
-	 * 
-	 * public final void setResultDetail(String resultDetail) {
-	 * this.resultDetail = resultDetail; }
-	 */
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "SLIDE_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Slide getSlide() {
-		return slide;
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "TASK_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Task getTask() {
-		return task;
-	}
-
-	@Column(name = "TIMESTAMP", nullable = false)
-	protected Long getTimeStamp() {
-		return timeStamp;
-	}
-
-	@Column(name = "TYPE", nullable = false)
-	public final Integer getType() {
-		return type;
-	}
-
 	@Override
 	public final int hashCode() {
 		final int prime = 101;
@@ -249,31 +268,4 @@ public final class Event extends SerializableIdObject {
 		return result;
 	}
 
-	public final void setBranch(Branch branch) {
-		this.branch = branch;
-	}
-
-	public final void setData(String data) {
-		this.data = data;
-	}
-
-	protected void setName(String name) {
-		this.name = name;
-	}
-
-	public final void setSlide(Slide slide) {
-		this.slide = slide;
-	}
-
-	public final void setTask(Task task) {
-		this.task = task;
-	}
-
-	protected void setTimeStamp(Long timeStamp) {
-		this.timeStamp = timeStamp;
-	}
-
-	protected void setType(Integer type) {
-		this.type = type;
-	}
 }

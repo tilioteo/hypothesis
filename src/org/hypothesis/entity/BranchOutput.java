@@ -3,6 +3,8 @@
  */
 package org.hypothesis.entity;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,12 +12,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 import org.hypothesis.common.SerializableIdObject;
 
 /**
@@ -24,6 +26,7 @@ import org.hypothesis.common.SerializableIdObject;
  */
 @Entity
 @Table(name = "TBL_BRANCH_OUTPUT")
+@Access(AccessType.PROPERTY)
 public final class BranchOutput extends SerializableIdObject {
 
 	/**
@@ -61,19 +64,6 @@ public final class BranchOutput extends SerializableIdObject {
 		this.branch = branch;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "BRANCH_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Branch getBranch() {
-		return branch;
-	}
-
-	@Lob
-	@Column(name = "DATA")
-	public final String getData() {
-		return data;
-	}
-
 	@Override
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchOutputGenerator")
@@ -83,9 +73,15 @@ public final class BranchOutput extends SerializableIdObject {
 		return super.getId();
 	}
 
-	@Column(name = "OUTPUT")
-	public final String getOutput() {
-		return output;
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "BRANCH_ID", nullable = false)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Branch getBranch() {
+		return branch;
+	}
+
+	public final void setBranch(Branch branch) {
+		this.branch = branch;
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
@@ -95,20 +91,27 @@ public final class BranchOutput extends SerializableIdObject {
 		return test;
 	}
 
-	public final void setBranch(Branch branch) {
-		this.branch = branch;
+	public final void setTest(Test test) {
+		this.test = test;
+	}
+
+	@Column(name = "DATA")
+	@Type(type="text")
+	public final String getData() {
+		return data;
 	}
 
 	public final void setData(String data) {
 		this.data = data;
 	}
 
-	public final void setOutput(String output) {
-		this.output = output;
+	@Column(name = "OUTPUT")
+	public final String getOutput() {
+		return output;
 	}
 
-	public final void setTest(Test test) {
-		this.test = test;
+	public final void setOutput(String output) {
+		this.output = output;
 	}
 
 }

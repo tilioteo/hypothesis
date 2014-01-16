@@ -3,6 +3,8 @@
  */
 package org.hypothesis.entity;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +27,7 @@ import org.hypothesis.common.SerializableIdObject;
  */
 @Entity
 @Table(name = "TBL_SLIDE")
+@Access(AccessType.PROPERTY)
 public final class Slide extends SerializableIdObject {
 
 	/**
@@ -47,6 +50,43 @@ public final class Slide extends SerializableIdObject {
 	public Slide(SlideContent content) {
 		this();
 		this.content = content;
+	}
+
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slideGenerator")
+	@SequenceGenerator(name = "slideGenerator", sequenceName = "hbn_slide_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	// TODO: debug only
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	// @ManyToOne(cascade={CascadeType.PERSIST, CascadeType.MERGE})
+	@OneToOne(optional = false, cascade = { CascadeType.PERSIST,
+			CascadeType.MERGE })
+	@JoinColumn(name = "SLIDE_CONTENT_ID", nullable = false, unique = true)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final SlideContent getContent() {
+		return content;
+	}
+
+	protected void setContent(SlideContent content) {
+		this.content = content;
+	}
+
+	@Column(name = "NOTE")
+	public final String getNote() {
+		return note;
+	}
+
+	public final void setNote(String note) {
+		this.note = note;
 	}
 
 	@Override
@@ -82,41 +122,6 @@ public final class Slide extends SerializableIdObject {
 		return true;
 	}
 
-	// @ManyToOne(cascade={CascadeType.PERSIST, CascadeType.MERGE})
-	@OneToOne(optional = false, cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE })
-	@JoinColumn(name = "SLIDE_CONTENT_ID", nullable = false, unique = true)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final SlideContent getContent() {
-		return content;
-	}
-
-	/*
-	 * @ManyToOne(cascade={CascadeType.PERSIST, CascadeType.MERGE})
-	 * 
-	 * @JoinColumn(name="TEMPLATE_ID", nullable = false)
-	 * 
-	 * @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE) public
-	 * SlideTemplate getTemplate() { return template; }
-	 * 
-	 * public void setTemplate(SlideTemplate template) { this.template =
-	 * template; }
-	 */
-
-	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slideGenerator")
-	@SequenceGenerator(name = "slideGenerator", sequenceName = "hbn_slide_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@Column(name = "NOTE")
-	public final String getNote() {
-		return note;
-	}
-
 	@Override
 	public final int hashCode() {
 		final int prime = 29;
@@ -130,20 +135,6 @@ public final class Slide extends SerializableIdObject {
 		// result = prime * result + ((getTemplate() == null) ? 0 :
 		// getTemplate().hashCode());
 		return result;
-	}
-
-	protected void setContent(SlideContent content) {
-		this.content = content;
-	}
-
-	// TODO: debug only
-	@Override
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public final void setNote(String note) {
-		this.note = note;
 	}
 
 }

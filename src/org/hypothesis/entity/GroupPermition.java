@@ -3,6 +3,8 @@
  */
 package org.hypothesis.entity;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +30,7 @@ import org.hypothesis.common.SerializableIdObject;
 @Entity
 @Table(name = "TBL_GROUP_PERMITION", uniqueConstraints = { @UniqueConstraint(columnNames = {
 		"GROUP_ID", "PACK_ID" }) })
+@Access(AccessType.PROPERTY)
 public final class GroupPermition extends SerializableIdObject {
 
 	/**
@@ -45,6 +48,37 @@ public final class GroupPermition extends SerializableIdObject {
 	public GroupPermition(Group group, Pack pack) {
 		this();
 		this.group = group;
+		this.pack = pack;
+	}
+
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groupPermitionGenerator")
+	@SequenceGenerator(name = "groupPermitionGenerator", sequenceName = "hbn_group_permition_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "GROUP_ID", nullable = false)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Group getGroup() {
+		return group;
+	}
+
+	protected void setGroup(Group group) {
+		this.group = group;
+	}
+
+	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = "PACK_ID", nullable = false)
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public final Pack getPack() {
+		return pack;
+	}
+
+	protected void setPack(Pack pack) {
 		this.pack = pack;
 	}
 
@@ -75,29 +109,6 @@ public final class GroupPermition extends SerializableIdObject {
 		return true;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "GROUP_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Group getGroup() {
-		return group;
-	}
-
-	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groupPermitionGenerator")
-	@SequenceGenerator(name = "groupPermitionGenerator", sequenceName = "hbn_group_permition_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Pack getPack() {
-		return pack;
-	}
-
 	@Override
 	public final int hashCode() {
 		final int prime = 181;
@@ -110,14 +121,6 @@ public final class GroupPermition extends SerializableIdObject {
 		result = prime * result
 				+ ((getPack() == null) ? 0 : getPack().hashCode());
 		return result;
-	}
-
-	protected void setGroup(Group group) {
-		this.group = group;
-	}
-
-	protected void setPack(Pack pack) {
-		this.pack = pack;
 	}
 
 }

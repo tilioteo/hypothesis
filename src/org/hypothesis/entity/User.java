@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,6 +35,7 @@ import org.hypothesis.common.SerializableIdObject;
  */
 @Entity
 @Table(name = "TBL_USER")
+@Access(AccessType.PROPERTY)
 public final class User extends SerializableIdObject {
 
 	/**
@@ -70,16 +73,121 @@ public final class User extends SerializableIdObject {
 	 */
 	private Long ownerId;
 
+	/**
+	 * database id is generated
+	 */
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userGenerator")
+	@SequenceGenerator(name = "userGenerator", sequenceName = "hbn_user_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@Column(name = "USERNAME", nullable = false, unique = true)
+	public final String getUsername() {
+		return username;
+	}
+
+	/**
+	 * user name must be unique and not null
+	 * 
+	 * @param username
+	 */
+	public final void setUsername(String username) {
+		this.username = username;
+	}
+
+	@Column(name = "PASSW", nullable = false)
+	public final String getPassword() {
+		return password;
+	}
+
+	/**
+	 * password cannot be null
+	 * 
+	 * @param password
+	 */
+	public final void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Column(name = "ENABLED", nullable = false)
+	public final Boolean getEnabled() {
+		return enabled;
+	}
+
+	public final void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	@Column(name = "EXPIREDATE")
+	public final Date getExpireDate() {
+		return expireDate;
+	}
+
+	public final void setExpireDate(Date expireDate) {
+		this.expireDate = expireDate;
+	}
+
+	@Column(name = "NOTE", nullable = true)
+	public final String getNote() {
+		return note;
+	}
+
+	public final void setNote(String note) {
+		this.note = note;
+	}
+
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "TBL_USER_ROLE", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	public final Set<Role> getRoles() {
+		return roles;
+	}
+
+	protected void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+
+	@ManyToMany(targetEntity = org.hypothesis.entity.Group.class, cascade = {
+			CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "GROUP_ID"))
+	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
+	@LazyCollection(LazyCollectionOption.FALSE)
+	public final Set<Group> getGroups() {
+		return groups;
+	}
+
+	protected void setGroups(Set<Group> groups) {
+		this.groups = groups;
+	}
+
+	@Column(name = "OWNER_ID", nullable = true)
+	public final Long getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(Long ownerId) {
+		this.ownerId = ownerId;
+	}
+
+	public final void addRole(Role role) {
+		this.roles.add(role);
+	}
+
+	public final void removeRole(Role role) {
+		this.roles.remove(role);
+	}
+
 	public final void addGroup(Group group) {
 		this.groups.add(group);
 	}
 
-	/*
-	 * @Override public final void setId(Long id) { super.setId(id); }
-	 */
-
-	public final void addRole(Role role) {
-		this.roles.add(role);
+	public final void removeGroup(Group group) {
+		this.groups.remove(group);
 	}
 
 	@Override
@@ -134,70 +242,6 @@ public final class User extends SerializableIdObject {
 		return true;
 	}
 
-	@Column(name = "ENABLED", nullable = false)
-	public final Boolean getEnabled() {
-		return enabled;
-	}
-
-	@Column(name = "EXPIREDATE")
-	public final Date getExpireDate() {
-		return expireDate;
-	}
-
-	// pri pouziti nize zakomentovana anotace se uzivateli nepridaji skupiny
-	/*
-	 * @ManyToMany( cascade={CascadeType.PERSIST, CascadeType.MERGE}, mappedBy =
-	 * "users", targetEntity = Group.class)
-	 */
-	@ManyToMany(targetEntity = org.hypothesis.entity.Group.class, cascade = {
-			CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "GROUP_ID"))
-	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
-	@LazyCollection(LazyCollectionOption.FALSE)
-	public final Set<Group> getGroups() {
-		return groups;
-	}
-
-	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userGenerator")
-	@SequenceGenerator(name = "userGenerator", sequenceName = "hbn_user_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	/**
-	 * database id is generated
-	 */
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@Column(name = "NOTE", nullable = true)
-	public final String getNote() {
-		return note;
-	}
-
-	@Column(name = "OWNER_ID", nullable = true)
-	public final Long getOwnerId() {
-		return ownerId;
-	}
-
-	@Column(name = "PASSW", nullable = false)
-	public final String getPassword() {
-		return password;
-	}
-
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_USER_ROLE", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	public final Set<Role> getRoles() {
-		return roles;
-	}
-
-	@Column(name = "USERNAME", nullable = false, unique = true)
-	public final String getUsername() {
-		return username;
-	}
-
 	@Override
 	public final int hashCode() {
 		final int prime = 113;
@@ -218,56 +262,6 @@ public final class User extends SerializableIdObject {
 		result = prime * result
 				+ ((getUsername() == null) ? 0 : getUsername().hashCode());
 		return result;
-	}
-
-	public final void removeGroup(Group group) {
-		this.groups.remove(group);
-	}
-
-	public final void removeRole(Role role) {
-		this.roles.remove(role);
-	}
-
-	public final void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public final void setExpireDate(Date expireDate) {
-		this.expireDate = expireDate;
-	}
-
-	protected void setGroups(Set<Group> set) {
-		this.groups = set;
-	}
-
-	public final void setNote(String note) {
-		this.note = note;
-	}
-
-	public final void setOwnerId(Long ownerId) {
-		this.ownerId = ownerId;
-	}
-
-	/**
-	 * password cannot be null
-	 * 
-	 * @param password
-	 */
-	public final void setPassword(String password) {
-		this.password = password;
-	}
-
-	protected void setRoles(Set<Role> set) {
-		this.roles = set;
-	}
-
-	/**
-	 * user name must be unique and not null
-	 * 
-	 * @param username
-	 */
-	public final void setUsername(String username) {
-		this.username = username;
 	}
 
 	@Override

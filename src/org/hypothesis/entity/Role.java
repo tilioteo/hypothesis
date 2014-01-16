@@ -3,6 +3,8 @@
  */
 package org.hypothesis.entity;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,6 +23,7 @@ import org.hypothesis.common.SerializableIdObject;
  */
 @Entity
 @Table(name = "TBL_ROLE")
+@Access(AccessType.PROPERTY)
 public final class Role extends SerializableIdObject {
 
 	/**
@@ -36,6 +39,24 @@ public final class Role extends SerializableIdObject {
 
 	public Role(String name) {
 		this();
+		this.name = name;
+	}
+
+	@Override
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roleGenerator")
+	@SequenceGenerator(name = "roleGenerator", sequenceName = "hbn_role_seq", initialValue = 1, allocationSize = 1)
+	@Column(name = "ID")
+	public final Long getId() {
+		return super.getId();
+	}
+
+	@Column(name = "NAME", nullable = false, unique = true)
+	public final String getName() {
+		return name;
+	}
+
+	public final void setName(String name) {
 		this.name = name;
 	}
 
@@ -63,20 +84,6 @@ public final class Role extends SerializableIdObject {
 	}
 
 	@Override
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roleGenerator")
-	@SequenceGenerator(name = "roleGenerator", sequenceName = "hbn_role_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
-	public final Long getId() {
-		return super.getId();
-	}
-
-	@Column(name = "NAME", nullable = false, unique = true)
-	public final String getName() {
-		return name;
-	}
-
-	@Override
 	public final int hashCode() {
 		final int prime = 139;
 		int result = 1;
@@ -85,10 +92,6 @@ public final class Role extends SerializableIdObject {
 		result = prime * result
 				+ ((getName() == null) ? 0 : getName().hashCode());
 		return result;
-	}
-
-	public final void setName(String name) {
-		this.name = name;
 	}
 
 	@Override
