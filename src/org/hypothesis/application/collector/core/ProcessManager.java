@@ -358,6 +358,10 @@ public class ProcessManager implements ProcessEventListener {
 					"You do not have permition to process."));
 		}
 	}
+	
+	public void breakCurrentTest() {
+		eventManager.fireEvent(new BreakTestEvent(test));
+	}
 
 	private void renderSlide() {
 		if (slideManager.getViewport() != null

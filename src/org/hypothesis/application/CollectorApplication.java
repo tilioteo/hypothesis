@@ -6,8 +6,6 @@ package org.hypothesis.application;
 import java.util.Map;
 
 import org.hypothesis.application.collector.core.ProcessManager;
-import org.hypothesis.application.collector.events.BreakTestEvent;
-import org.hypothesis.application.collector.events.ProcessEventManager;
 import org.hypothesis.application.collector.ui.MainWindow;
 import org.hypothesis.common.application.AbstractBaseApplication;
 import org.hypothesis.entity.Pack;
@@ -169,7 +167,7 @@ public class CollectorApplication extends AbstractBaseApplication {
 	 *            - event containing
 	 */
 	public void windowClose(CloseEvent event) {
-		ProcessEventManager.get(this).fireEvent(new BreakTestEvent());
+		processManager.breakCurrentTest();
 	}
 
 }

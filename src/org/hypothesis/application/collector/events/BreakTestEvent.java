@@ -13,10 +13,6 @@ import org.hypothesis.entity.Test.Status;
 @SuppressWarnings("serial")
 public class BreakTestEvent extends AbstractTestEvent {
 
-	public BreakTestEvent() {
-		this(null);
-	}
-
 	public BreakTestEvent(Test test) {
 		super(test);
 	}
