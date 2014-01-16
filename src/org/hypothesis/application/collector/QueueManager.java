@@ -53,7 +53,11 @@ public class QueueManager<T extends HasQueue<E>, E> {
 	public void setQueueOwner(T queueOwner) {
 		this.queue.clear();
 		if (queueOwner != null) {
-			this.queue.addAll(queueOwner.getQueue());
+			for (E item : queueOwner.getQueue()) {
+				if (item != null) {
+					this.queue.add(item);
+				}
+			}
 		}
 		next();
 	}

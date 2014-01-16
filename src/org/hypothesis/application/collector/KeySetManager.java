@@ -49,7 +49,9 @@ public class KeySetManager<T extends HasQueue<E>, E extends HasId<K>, K> {
 		this.keyset.clear();
 		if (queueOwner != null) {
 			for (E item : queueOwner.getQueue()) {
-				this.keyset.put(item.getId(), item);
+				if (item != null) {
+					this.keyset.put(item.getId(), item);
+				}
 			}
 			if (queueOwner.getQueue().size() > 0)
 				element = queueOwner.getQueue().get(0);
