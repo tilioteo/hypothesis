@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideTemplate UID="719A7938-8EDA-11E1-91B4-31F1BAE59B18">
+	<Viewport>
+		<VerticalLayout Id="ct001">
+			<Properties>
+				<Width Value="100%" />
+				<Height Value="100%" />
+			</Properties>
+			<Components>
+				<HorizontalLayout Id="ct001_ct001">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="15%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct001_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+								<Caption Value="[SLIDE_TITLE]" />
+							</Properties>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct002">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="70%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Image Id="ct001_ct002_ct001">
+							<Properties>
+								<Width Value="80%" />
+							</Properties>
+						</Image>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct003">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="15%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct003_ct001">
+							<Properties>
+								<Border Value="False" />
+								<Width Value="20%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+						<HorizontalLayout Id="ct001_ct003_ct002">
+							<Properties>
+								<Width Value="60%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+							<Components>
+								<Button Id="ct001_ct003_ct002_ct001">
+									<Properties>
+										<Width Value="80%" />
+										<Height Value="80%" />
+										<Caption Value="[BUTTON_1]" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="finishSlide" />
+										</Click>
+									</Handlers>
+								</Button>
+								<Button Id="ct001_ct003_ct002_ct002">
+									<Properties>
+										<Width Value="80%" />
+										<Height Value="80%" />
+										<Caption Value="[BUTTON_2]" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="finishSlide" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+						<Panel Id="ct001_ct003_ct003">
+							<Properties>
+								<Border Value="False" />
+								<Width Value="20%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+			</Components>
+		</VerticalLayout>
+	</Viewport>
+	<Actions>
+		<Action Id="finishSlide">
+			<Command>Finish</Command>
+		</Action>
+	</Actions>
+</SlideTemplate>

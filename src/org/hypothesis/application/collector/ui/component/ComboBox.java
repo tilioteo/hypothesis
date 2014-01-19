@@ -21,7 +21,7 @@ import com.vaadin.ui.Alignment;
  * 
  */
 @SuppressWarnings("serial")
-public class ComboBox extends com.vaadin.ui.ComboBox implements Component,
+public class ComboBox extends com.vaadin.ui.ComboBox implements SlideComponent,
 		XmlDataWriter {
 
 	@SuppressWarnings("unused")

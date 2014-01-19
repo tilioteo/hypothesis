@@ -7,12 +7,13 @@ import org.dom4j.Element;
 import org.hypothesis.application.collector.core.SlideManager;
 
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public interface Component extends com.vaadin.ui.Component {
+public interface SlideComponent extends Component {
 
 	public Alignment getAlignment();
 

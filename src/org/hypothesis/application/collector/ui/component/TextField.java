@@ -17,7 +17,7 @@ import com.vaadin.ui.Alignment;
  * 
  */
 @SuppressWarnings({ "serial", "unchecked" })
-public class TextField extends com.vaadin.ui.TextField implements Component,
+public class TextField extends com.vaadin.ui.TextField implements SlideComponent,
 		XmlDataWriter {
 
 	@SuppressWarnings("unused")

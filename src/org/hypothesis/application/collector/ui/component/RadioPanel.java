@@ -17,7 +17,6 @@ import org.hypothesis.application.collector.events.RadioPanelData;
 import org.hypothesis.application.collector.slide.AbstractBaseAction;
 import org.hypothesis.application.collector.ui.component.RadioButton.LabelPosition;
 import org.hypothesis.application.collector.xml.SlideXmlConstants;
-import org.hypothesis.application.collector.xml.SlideXmlUtility;
 import org.hypothesis.common.StringMap;
 import org.hypothesis.common.Strings;
 
@@ -29,7 +28,7 @@ import com.vaadin.ui.Alignment;
  */
 @SuppressWarnings("serial")
 public class RadioPanel extends MultipleComponentPanel<RadioButton> implements
-		Component {
+		SlideComponent {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
@@ -121,14 +120,11 @@ public class RadioPanel extends MultipleComponentPanel<RadioButton> implements
 
 	protected void setHandler(Element element) {
 		String name = element.getName();
-		String action = SlideXmlUtility.getAction(element);
-		if (Strings.isNullOrEmpty(action)) {
-			AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-					.createAnonymousAction(
-							SlideXmlUtility.getActionElement(element));
-			if (anonymousAction != null)
-				action = anonymousAction.getId();
-		}
+		String action = null;
+		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
+				.createAnonymousAction(element);
+		if (anonymousAction != null)
+			action = anonymousAction.getId();
 
 		if (!Strings.isNullOrEmpty(action)) {
 			if (name.equals(SlideXmlConstants.CLICK)) {

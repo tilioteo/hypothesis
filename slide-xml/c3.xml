@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideContent TemplateUID="3E42107E-8ED9-11E1-B333-CDEFBAE59B18">
+	<Bindings>
+		<Bind>
+			<Panel Id="ct001_ct001_ct001">
+				<Properties>
+					<Caption Value="Klikněte na křížek" />
+				</Properties>
+			</Panel>
+		</Bind>
+		<Bind>
+			<Image Id="ct001_ct002_ct001">
+				<Properties>
+					<Width Value="907" />
+					<Height Value="581" />
+					<Url Value="http://www.imagehosting.cz/images/zacvicnaul.jpg" />
+				</Properties>
+			</Image>
+		</Bind>
+	</Bindings>
+</SlideContent>

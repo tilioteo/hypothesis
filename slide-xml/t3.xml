@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideTemplate UID="3E42107E-8ED9-11E1-B333-CDEFBAE59B18">
+	<Viewport>
+		<VerticalLayout Id="ct001">
+			<Properties>
+				<Width Value="100%" />
+				<Height Value="100%" />
+			</Properties>
+			<Components>
+				<HorizontalLayout Id="ct001_ct001">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="15%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct001_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+								<Caption Value="[SLIDE_TITLE]" />
+							</Properties>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct002">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="70%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Image Id="ct001_ct002_ct001">
+							<Properties>
+								<Width Value="80%" />
+							</Properties>
+							<Handlers>
+								<Click>
+									<Command>Finish</Command>
+								</Click>
+							</Handlers>
+						</Image>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct003">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="15%" />
+						<Alignment Value="mc" />
+					</Properties>
+				</HorizontalLayout>
+			</Components>
+		</VerticalLayout>
+	</Viewport>
+</SlideTemplate>

@@ -21,7 +21,7 @@ import com.vaadin.ui.Alignment;
  */
 @SuppressWarnings("serial")
 public class HorizontalLayout extends com.vaadin.ui.HorizontalLayout implements
-		Component {
+		SlideComponent {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
@@ -38,18 +38,18 @@ public class HorizontalLayout extends com.vaadin.ui.HorizontalLayout implements
 	private void addChilds(Element element) {
 		List<Element> elements = SlideXmlUtility.getContainerComponents(
 				element, SlideXmlConstants.VALID_CONTAINER_ELEMENTS);
-		for (Element element2 : elements) {
+		for (Element childElement : elements) {
 			LayoutComponent layoutComponent = ComponentFactory
-					.createComponentFromElement(element2, slideManager);
+					.createComponentFromElement(childElement, slideManager);
 			if (layoutComponent != null) {
-				Component component = layoutComponent.getComponent();
+				SlideComponent component = layoutComponent.getComponent();
 
 				addComponent(component);
 				setComponentAlignment(component, layoutComponent.getAlignment());
 
 				float ratio = 1.0f;
 				if (component.getWidthUnits() == Sizeable.UNITS_PERCENTAGE) {
-					ratio = component.getWidth();
+					ratio = component.getWidth() / 100;
 					component.setWidth("100%");
 				}
 

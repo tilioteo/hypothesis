@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideContent TemplateUID="CEA5CDEE-8E17-11E1-B624-E688BBE59B18">
+	<Bindings>
+		<Bind>
+			<Panel Id="ct001_ct001_ct001">
+				<Properties>
+					<Caption Value="Prohlédněte si mapu" />
+				</Properties>
+			</Panel>
+		</Bind>
+		<Bind>
+			<Image Id="ct001_ct002_ct001">
+				<Properties>
+					<Width Value="950" />
+					<Height Value="589" />
+					<Url Value="http://www.imagehosting.cz/images/mapaukol7.jpg" />
+				</Properties>
+			</Image>
+		</Bind>
+	</Bindings>
+</SlideContent>

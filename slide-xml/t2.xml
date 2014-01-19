@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideTemplate UID="29D23302-8E1C-11E1-A42C-008EBBE59B18">
+	<Viewport>
+		<VerticalLayout Id="ct001">
+			<Properties>
+				<Width Value="100%" />
+				<Height Value="100%" />
+			</Properties>
+			<Components>
+				<HorizontalLayout Id="ct001_ct001">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="15%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct001_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+								<Caption Value="[SLIDE_TITLE]" />
+							</Properties>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct002">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="70%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<FormPanel Id="ct001_ct002_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<IntegerField Id="field_age">
+									<Properties>
+										<Caption Value="Věk" />
+										<Width Value="30" />
+										<Spin Value="True" />
+									</Properties>
+									<Validators>
+										<Empty Value="False" />
+										<Min Value="15" />
+										<Max Value="100" />
+									</Validators>
+								</IntegerField>
+								<ComboBox Id="field_sex">
+									<Properties>
+										<Caption Value="Pohlaví" />
+										<Width Value="50" />
+									</Properties>
+									<Items>
+										<Item Value="1" Caption="muž" />
+										<Item Value="2" Caption="žena" />
+									</Items>
+									<Validators>
+										<Empty Value="False" />
+									</Validators>
+								</ComboBox>
+								<TextBox Id="field_defect">
+									<Properties>
+										<Caption Value="Oční vada" />
+										<Width Value="200" />
+									</Properties>
+								</TextBox>
+								<ComboBox Id="field_pc">
+									<Properties>
+										<Caption Value="Práce s PC" />
+										<Width Value="50" />
+									</Properties>
+									<Items>
+										<Item Value="1" Caption="zřídka" />
+										<Item Value="2" Caption="málo" />
+										<Item Value="3" Caption="často" />
+										<Item Value="4" Caption="stále" />
+									</Items>
+									<Validators>
+										<Empty Value="False" />
+									</Validators>
+								</ComboBox>
+								<ComboBox Id="field_maps">
+									<Properties>
+										<Caption Value="Práce s mapou" />
+										<Width Value="50" />
+									</Properties>
+									<Items>
+										<Item Value="1" Caption="zřídka" />
+										<Item Value="2" Caption="málo" />
+										<Item Value="3" Caption="často" />
+										<Item Value="4" Caption="stále" />
+									</Items>
+									<Validators>
+										<Empty Value="False" />
+									</Validators>
+								</ComboBox>
+								<ComboBox Id="field_graduate">
+									<Properties>
+										<Caption Value="Ukončené vzdělání" />
+										<Width Value="50" />
+									</Properties>
+									<Items>
+										<Item Value="1" Caption="základní" />
+										<Item Value="2" Caption="vyučen" />
+										<Item Value="3" Caption="středoškolské" />
+										<Item Value="4" Caption="vysokoškolské" />
+										<Item Value="5" Caption="postgraduální" />
+									</Items>
+									<Validators>
+										<Empty Value="False" />
+									</Validators>
+								</ComboBox>
+								<TextBox Id="field_domain">
+									<Properties>
+										<Caption Value="Obor" />
+										<Width Value="200" />
+									</Properties>
+								</TextBox>
+							</Components>
+						</FormPanel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct003">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="15%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct003_ct001">
+							<Properties>
+								<Border Value="False" />
+								<Width Value="20%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+						<Panel Id="ct001_ct003_ct002">
+							<Properties>
+								<Border Value="False" />
+								<Width Value="60%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+						<Panel Id="ct001_ct003_ct003">
+							<Properties>
+								<Border Value="False" />
+								<Width Value="20%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<Button Id="ct001_ct003_ct003_ct001">
+									<Properties>
+										<Width Value="100%" />
+										<Height Value="100%" />
+										<Caption Value="Další&gt;" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Command>Finish</Command>
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+			</Components>
+		</VerticalLayout>
+	</Viewport>
+</SlideTemplate>

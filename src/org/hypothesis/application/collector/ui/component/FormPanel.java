@@ -24,7 +24,7 @@ import com.vaadin.ui.FormLayout;
  * 
  */
 @SuppressWarnings("serial")
-public class FormPanel extends Form implements Component {
+public class FormPanel extends Form implements SlideComponent {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
@@ -41,12 +41,12 @@ public class FormPanel extends Form implements Component {
 
 	private void addChilds(Element element) {
 		List<Element> elements = SlideXmlUtility.getContainerComponents(
-				element, SlideXmlConstants.VALID_CONTAINER_ELEMENTS);
-		for (Element element2 : elements) {
+				element, SlideXmlConstants.VALID_FORM_ELEMENTS);
+		for (Element childElement : elements) {
 			LayoutComponent layoutComponent = ComponentFactory
-					.createComponentFromElement(element2, slideManager);
+					.createComponentFromElement(childElement, slideManager);
 			if (layoutComponent != null) {
-				Component component = layoutComponent.getComponent();
+				SlideComponent component = layoutComponent.getComponent();
 				if (component instanceof AbstractField) {
 					if (!Strings
 							.isNullOrEmpty((String) ((AbstractField) component)

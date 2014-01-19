@@ -22,7 +22,7 @@ import com.vaadin.ui.themes.Reindeer;
  * 
  */
 @SuppressWarnings("serial")
-public class Panel extends com.vaadin.ui.Panel implements Component {
+public class Panel extends com.vaadin.ui.Panel implements SlideComponent {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
@@ -43,7 +43,7 @@ public class Panel extends com.vaadin.ui.Panel implements Component {
 			LayoutComponent layoutComponent = ComponentFactory
 					.createComponentFromElement(element2, slideManager);
 			if (layoutComponent != null) {
-				Component component = layoutComponent.getComponent();
+				SlideComponent component = layoutComponent.getComponent();
 
 				if (elements.size() == 1 && component instanceof Layout) {
 					setContent((Layout) component);

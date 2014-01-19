@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideContent TemplateUID="0269B8D8-8EE6-11E1-A2A0-A0FEBAE59B18">
+	<Bindings>
+		<Bind>
+			<Panel Id="ct001_ct001_ct001">
+				<Properties>
+					<Caption Value="Co si myslíte?" />
+				</Properties>
+			</Panel>
+		</Bind>
+		<Bind>
+			<Panel Id="ct001_ct002_ct001_ct001_ct001">
+				<Properties>
+					<Caption Value="Jaký máte názor na test?" />
+				</Properties>
+			</Panel>
+		</Bind>
+		<Bind>
+			<Panel Id="ct001_ct002_ct001_ct002_ct001">
+				<Properties>
+					<Caption Value="Jaký máte názor na aplikaci?" />
+				</Properties>
+			</Panel>
+		</Bind>
+	</Bindings>
+</SlideContent>

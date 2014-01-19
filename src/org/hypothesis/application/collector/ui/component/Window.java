@@ -255,14 +255,11 @@ public class Window extends com.vaadin.ui.Window implements Component {
 
 	protected void setHandler(Element element) {
 		String name = element.getName();
-		String action = SlideXmlUtility.getAction(element);
-		if (Strings.isNullOrEmpty(action)) {
-			AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-					.createAnonymousAction(
-							SlideXmlUtility.getActionElement(element));
-			if (anonymousAction != null)
-				action = anonymousAction.getId();
-		}
+		String action = null;
+		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
+				.createAnonymousAction(element);
+		if (anonymousAction != null)
+			action = anonymousAction.getId();
 
 		if (!Strings.isNullOrEmpty(action)) {
 			if (name.equals(SlideXmlConstants.INIT)) {

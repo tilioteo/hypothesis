@@ -11,10 +11,10 @@ import com.vaadin.ui.Alignment;
  */
 public class LayoutComponent {
 
-	private Component component;
+	private SlideComponent component;
 	private Alignment alignment;
 
-	public LayoutComponent(Component component, Alignment alignment) {
+	public LayoutComponent(SlideComponent component, Alignment alignment) {
 		this.component = component;
 		this.alignment = alignment;
 	}
@@ -23,7 +23,7 @@ public class LayoutComponent {
 		return alignment;
 	}
 
-	public Component getComponent() {
+	public SlideComponent getComponent() {
 		return component;
 	}
 

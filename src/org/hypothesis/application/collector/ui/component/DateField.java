@@ -20,7 +20,7 @@ import com.vaadin.ui.Alignment;
  * 
  */
 @SuppressWarnings("serial")
-public class DateField extends com.vaadin.ui.DateField implements Component,
+public class DateField extends com.vaadin.ui.DateField implements SlideComponent,
 		XmlDataWriter {
 
 	@SuppressWarnings("unused")

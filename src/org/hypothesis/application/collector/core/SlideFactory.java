@@ -28,7 +28,7 @@ import org.hypothesis.application.collector.slide.Action;
 import org.hypothesis.application.collector.slide.SlideCommand;
 import org.hypothesis.application.collector.slide.Variable;
 import org.hypothesis.application.collector.ui.component.ButtonPanel;
-import org.hypothesis.application.collector.ui.component.Component;
+import org.hypothesis.application.collector.ui.component.SlideComponent;
 import org.hypothesis.application.collector.ui.component.ComponentFactory;
 import org.hypothesis.application.collector.ui.component.RadioButton;
 import org.hypothesis.application.collector.ui.component.RadioPanel;
@@ -178,17 +178,9 @@ public class SlideFactory {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private AbstractBaseAction createAction(Element element, String id) {
-		if (element.getName().equals(SlideXmlConstants.ACTION) && id != null) {
-			Action action = new Action(slideManager, id);
-			List<Element> elements = element.elements();
-			for (Element evaluableElement : elements) {
-				Evaluable evaluable = createEvaluable(evaluableElement);
-				if (evaluable != null)
-					action.add(evaluable);
-			}
-			return action;
+		if (element.getName().equals(SlideXmlConstants.ACTION)) {
+			return createInnerAction(element, id);
 		}
 		return null;
 	}
@@ -208,9 +200,24 @@ public class SlideFactory {
 	public AbstractBaseAction createAnonymousAction(Element element) {
 		if (element != null) {
 			String id = UUID.randomUUID().toString();
-			AbstractBaseAction action = createAction(element, id);
+			AbstractBaseAction action = createInnerAction(element, id);
 			if (action != null)
 				slideManager.getActions().put(id, action);
+			return action;
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private AbstractBaseAction createInnerAction(Element element, String id) {
+		if (element != null && !Strings.isNullOrEmpty(id)) {
+			Action action = new Action(slideManager, id);
+			List<Element> elements = element.elements();
+			for (Element evaluableElement : elements) {
+				Evaluable evaluable = createEvaluable(evaluableElement);
+				if (evaluable != null)
+					action.add(evaluable);
+			}
 			return action;
 		}
 		return null;
@@ -414,7 +421,7 @@ public class SlideFactory {
 					if (reference.getName().equals(SlideXmlConstants.COMPONENT)) {
 						String componentId = SlideXmlUtility.getId(reference);
 						if (!Strings.isNullOrEmpty(componentId)) {
-							Component component = slideManager.getComponents()
+							SlideComponent component = slideManager.getComponents()
 									.get(componentId);
 							variable.setRawValue(component);
 						}

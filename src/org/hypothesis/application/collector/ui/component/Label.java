@@ -15,7 +15,7 @@ import com.vaadin.ui.Alignment;
  * 
  */
 @SuppressWarnings({ "serial", "unchecked" })
-public class Label extends com.vaadin.ui.Label implements Component {
+public class Label extends com.vaadin.ui.Label implements SlideComponent {
 
 	@SuppressWarnings("unused")
 	private SlideManager slideManager;

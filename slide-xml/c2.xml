@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideContent TemplateUID="29D23302-8E1C-11E1-A42C-008EBBE59B18">
+	<Bindings>
+		<Bind>
+			<Panel Id="ct001_ct001_ct001">
+				<Properties>
+					<Caption Value="Zadejte osobní údaje" />
+				</Properties>
+			</Panel>
+		</Bind>
+	</Bindings>
+</SlideContent>

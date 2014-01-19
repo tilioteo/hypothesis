@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideTemplate UID="B80BF9AC-C488-41F7-AB95-52BB7EAB9F50">
+	<Viewport>
+		<VerticalLayout Id="ct001">
+			<Properties>
+				<Width Value="100%" />
+				<Height Value="100%" />
+			</Properties>
+			<Components>
+				<HorizontalLayout Id="ct001_ct001">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="10%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct001_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct002">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="30%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<FormPanel Id="ct001_ct002_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<TextField Id="6">
+									<Properties>
+										<Multiline Value="True" />
+										<Width Value="99%" />
+									</Properties>
+								</TextField>
+							</Components>
+						</FormPanel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct003">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="10%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct003_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct004">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="30%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<FormPanel Id="ct001_ct004_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<TextField Id="11">
+									<Properties>
+										<Multiline Value="True" />
+										<Width Value="50%" />
+									</Properties>
+								</TextField>
+							</Components>
+						</FormPanel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct005">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="20%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<HorizontalLayout Id="ct001_ct005_ct001">
+							<Properties>
+								<Width Value="30%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<Button Id="ct001_ct005_ct001_ct001">
+									<Properties>
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="prictipocitadlo" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+						<HorizontalLayout Id="ct001_ct005_ct002">
+							<Properties>
+								<Width Value="40%" />
+								<Height Value="100%" />
+							</Properties>
+						</HorizontalLayout>
+						<HorizontalLayout Id="ct001_ct005_ct003">
+							<Properties>
+								<Width Value="30%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<Button Id="ct001_ct005_ct003_ct001">
+									<Properties>
+										<Caption Value="Další &gt;" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="finishSlide" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+					</Components>
+				</HorizontalLayout>
+			</Components>
+		</VerticalLayout>
+	</Viewport>
+	<Windows>
+		<Window Id="ct002">
+			<Properties>
+				<Width Value="960" />
+				<Height Value="690" />
+				<SolidMask Value="False" />
+			</Properties>
+			<Components>
+				<HorizontalLayout Id="ct002_ct001">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="100%" />
+						<Alignment Value="mc" />
+						<Spacing Value="10" />
+					</Properties>
+					<Components>
+						<Image Id="ct002_ct001_ct001" />
+					</Components>
+				</HorizontalLayout>
+			</Components>
+		</Window>
+	</Windows>
+	<Variables>
+		<Variable Id="pocitadlo" Type="Integer" Value="0" />
+	</Variables>
+	<Actions>
+		<Action Id="finishSlide">
+			<Command>Finish</Command>
+		</Action>
+		<Action Id="prictipocitadlo">
+			<Expression>pocitadlo=pocitadlo+1</Expression>
+			<If>
+				<Expression>pocitadlo==5</Expression>
+				<True>
+					<Call Action="finishSlide" />
+				</True>
+				<False>
+					<Switch>
+						<Expression>pocitadlo</Expression>
+						<Case Value="1">
+						</Case>
+						<Case Value="2">
+						</Case>
+						<Case Value="3">
+						</Case>
+						<Case Value="4">
+						</Case>
+					</Switch>
+				</False>
+			</If>
+		</Action>
+	</Actions>
+	<Result>
+		<Expression>pocitadlo</Expression>
+	</Result>
+</SlideTemplate>

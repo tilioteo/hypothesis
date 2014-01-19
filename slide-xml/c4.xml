@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideContent TemplateUID="719A7938-8EDA-11E1-91B4-31F1BAE59B18">
+	<Bindings>
+		<Bind>
+			<Panel Id="ct001_ct001_ct001">
+				<Properties>
+					<Caption Value="Viděli jste tento objekt?" />
+				</Properties>
+			</Panel>
+		</Bind>
+		<Bind>
+			<Image Id="ct001_ct002_ct001">
+				<Properties>
+					<Width Value="149" />
+					<Height Value="149" />
+					<Url Value="http://www.imagehosting.cz/images/objekt02.jpg" />
+				</Properties>
+			</Image>
+		</Bind>
+		<Bind>
+			<Button Id="ct001_ct003_ct002_ct001">
+				<Properties>
+					<Caption Value="ANO" />
+				</Properties>
+			</Button>
+		</Bind>
+		<Bind>
+			<Button Id="ct001_ct003_ct002_ct002">
+				<Properties>
+					<Caption Value="NE" />
+				</Properties>
+			</Button>
+		</Bind>
+	</Bindings>
+</SlideContent>

@@ -110,7 +110,9 @@ public class SlideConstants {
 "									<Properties>" +
 "									</Properties>" +
 "									<Handlers>" +
-"										<Click Action=\"prictipocitadlo\" />" +
+"										<Click>" +
+"											<Call Action=\"prictipocitadlo\" />" +
+"										</Click>" +
 "									</Handlers>" +
 "								</Button>" +
 "							</Components>" +
@@ -132,7 +134,9 @@ public class SlideConstants {
 "										<Caption Value=\"Běž na další &gt;\" />" +
 "									</Properties>" +
 "									<Handlers>" +
-"										<Click Action=\"finishSlide\" />" +
+"										<Click>" +
+"											<Call Action=\"finishSlide\" />" +
+"										</Click>" +
 "									</Handlers>" +
 "								</Button>" +
 "							</Components>" +
@@ -282,9 +286,7 @@ public class SlideConstants {
 "							</Properties>" +
 "							<Handlers>" +
 "								<Click>" +
-"									<Action>" +
-"										<Command>Finish</Command>" +
-"									</Action>" +
+"									<Command>Finish</Command>" +
 "								</Click>" +
 "							</Handlers>" +
 "						</Button>" +

@@ -219,7 +219,10 @@ public class SlideXmlConstants {
 
 	public static final StringSet VALID_CONTAINER_ELEMENTS = new StringSet(
 			new String[] { BUTTON, BUTTON_PANEL, FORM_PANEL, HORIZONTAL_LAYOUT,
-					PANEL, RADIO_PANEL, LABEL, TIMERLABEL, VERTICAL_LAYOUT });
+					PANEL, IMAGE, RADIO_PANEL, LABEL, TIMERLABEL, VERTICAL_LAYOUT });
+
+	public static final StringSet VALID_PANEL_ELEMENTS = new StringSet(
+			new String[] { HORIZONTAL_LAYOUT, VERTICAL_LAYOUT });
 
 	public static final StringSet VALID_FORM_ELEMENTS = new StringSet(
 			new String[] { COMBOBOX, DATEFIELD, TEXTFIELD, TEXTAREA });

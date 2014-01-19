@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideTemplate UID="803785BE-8EDD-11E1-87DC-AAF4BAE59B18">
+	<Viewport>
+		<VerticalLayout Id="ct001">
+			<Properties>
+				<Width Value="100%" />
+				<Height Value="100%" />
+			</Properties>
+			<Components>
+				<HorizontalLayout Id="ct001_ct001">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="15%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct001_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+								<Caption Value="[SLIDE_TITLE]" />
+							</Properties>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct002">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="70%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Image Id="ct001_ct002_ct001">
+							<Properties>
+								<Width Value="80%" />
+							</Properties>
+						</Image>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct003">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="15%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<ButtonPanel Id="ct001_ct003_ct001">
+							<Properties>
+								<Width Value="60%" />
+								<Height Value="80%" />
+								<Captions Value="'[B_1]','[B_2]','[B_3]','[B_4]','[B_5]'" />
+							</Properties>
+							<Handlers>
+								<Click>
+									<Command>Finish</Command>
+								</Click>
+							</Handlers>
+						</ButtonPanel>
+					</Components>
+				</HorizontalLayout>
+			</Components>
+		</VerticalLayout>
+	</Viewport>
+</SlideTemplate>

@@ -30,7 +30,7 @@ public class ComponentFactory {
 			SlideManager slideManager) {
 		if (element != null) {
 			String name = element.getName();
-			Component component = null;
+			SlideComponent component = null;
 
 			if (name.equals(SlideXmlConstants.VERTICAL_LAYOUT))
 				component = ComponentFactory
@@ -89,7 +89,7 @@ public class ComponentFactory {
 		return null;
 	}
 
-	private static <T extends AbstractComponent & Component> T createFromElement(
+	private static <T extends AbstractComponent & SlideComponent> T createFromElement(
 			Class<T> clazz, Element element, SlideManager slideManager) {
 
 		T component;
@@ -108,7 +108,7 @@ public class ComponentFactory {
 		return null;
 	}
 
-	private static Component createPluginComponent(Element element,
+	private static SlideComponent createPluginComponent(Element element,
 			SlideManager slideManager) {
 
 		// TODO not implemented yet
@@ -160,14 +160,11 @@ public class ComponentFactory {
 	private static void setViewportHandler(Element element,
 			SlideManager slideManager) {
 		String name = element.getName();
-		String action = SlideXmlUtility.getAction(element);
-		if (Strings.isNullOrEmpty(action)) {
-			AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-					.createAnonymousAction(
-							SlideXmlUtility.getActionElement(element));
-			if (anonymousAction != null)
-				action = anonymousAction.getId();
-		}
+		String action = null;
+		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
+				.createAnonymousAction(element);
+		if (anonymousAction != null)
+			action = anonymousAction.getId();
 
 		if (!Strings.isNullOrEmpty(action)) {
 			if (name.equals(SlideXmlConstants.INIT)) {

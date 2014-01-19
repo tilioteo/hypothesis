@@ -17,7 +17,7 @@ import com.vaadin.ui.Alignment;
  * 
  */
 @SuppressWarnings({ "serial", "unchecked" })
-public class TextArea extends com.vaadin.ui.TextArea implements Component,
+public class TextArea extends com.vaadin.ui.TextArea implements SlideComponent,
 		XmlDataWriter {
 
 	@SuppressWarnings("unused")

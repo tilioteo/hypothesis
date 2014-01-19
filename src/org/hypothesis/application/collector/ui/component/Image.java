@@ -18,7 +18,6 @@ import org.hypothesis.application.collector.events.Command;
 import org.hypothesis.application.collector.events.ImageData;
 import org.hypothesis.application.collector.slide.AbstractBaseAction;
 import org.hypothesis.application.collector.xml.SlideXmlConstants;
-import org.hypothesis.application.collector.xml.SlideXmlUtility;
 import org.hypothesis.common.StringMap;
 import org.hypothesis.common.Strings;
 import org.hypothesis.terminal.gwt.client.ui.VImage;
@@ -41,9 +40,9 @@ import com.vaadin.ui.ClientWidget;
  */
 @SuppressWarnings("serial")
 @ClientWidget(VImage.class)
-public class Image extends AbstractComponent implements Component {
+public class Image extends AbstractComponent implements SlideComponent {
 
-	public class LoadEvent extends Component.Event {
+	public class LoadEvent extends SlideComponent.Event {
 
 		/**
 		 * New instance of load event.
@@ -51,7 +50,7 @@ public class Image extends AbstractComponent implements Component {
 		 * @param source
 		 *            the Source of the event.
 		 */
-		public LoadEvent(Component source) {
+		public LoadEvent(SlideComponent source) {
 			super(source);
 		}
 
@@ -268,14 +267,11 @@ public class Image extends AbstractComponent implements Component {
 
 	protected void setHandler(Element element) {
 		String name = element.getName();
-		String action = SlideXmlUtility.getAction(element);
-		if (Strings.isNullOrEmpty(action)) {
-			AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-					.createAnonymousAction(
-							SlideXmlUtility.getActionElement(element));
-			if (anonymousAction != null)
-				action = anonymousAction.getId();
-		}
+		String action = null;
+		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
+				.createAnonymousAction(element);
+		if (anonymousAction != null)
+			action = anonymousAction.getId();
 
 		if (!Strings.isNullOrEmpty(action)) {
 			if (name.equals(SlideXmlConstants.CLICK)) {

@@ -27,9 +27,9 @@ import com.vaadin.ui.Label;
  */
 @SuppressWarnings({ "serial", "unchecked" })
 @ClientWidget(VTimerLabel.class)
-public class TimerLabel extends Label implements Component {
+public class TimerLabel extends Label implements SlideComponent {
 
-	public class FinishEvent extends Component.Event {
+	public class FinishEvent extends SlideComponent.Event {
 
 		private boolean stopped;
 
@@ -39,7 +39,7 @@ public class TimerLabel extends Label implements Component {
 		 * @param source
 		 *            the Source of the event.
 		 */
-		public FinishEvent(Component source, boolean stopped) {
+		public FinishEvent(SlideComponent source, boolean stopped) {
 			super(source);
 			this.stopped = stopped;
 		}
