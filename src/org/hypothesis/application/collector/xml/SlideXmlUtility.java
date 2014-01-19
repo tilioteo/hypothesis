@@ -6,6 +6,8 @@ package org.hypothesis.application.collector.xml;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -18,6 +20,8 @@ import org.hypothesis.common.xml.Utility;
  * 
  */
 public class SlideXmlUtility {
+
+	private static Log log = LogFactory.getLog(SlideXmlUtility.class);
 
 	public static String getAction(Element element) {
 		return element.attributeValue(SlideXmlConstants.ACTION);
@@ -91,10 +95,14 @@ public class SlideXmlUtility {
 
 			List<Element> elements = new LinkedList<Element>();
 			for (Node child : childs) {
-				if (child instanceof Element
-						&& (validElementNames == null || (validElementNames != null && validElementNames
-								.contains(child.getName()))))
-					elements.add((Element) child);
+				if (child instanceof Element) {
+					if (validElementNames == null || (validElementNames != null && validElementNames
+							.contains(child.getName()))) {
+						elements.add((Element) child);
+					} else if (validElementNames != null) {
+						log.warn(String.format("Xml element '%s' ignored inside of element '%s'", child.getName(), element.getName()));
+					}
+				}
 			}
 
 			return elements;

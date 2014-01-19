@@ -36,22 +36,22 @@ public class ExpressionFactoryTest {
 		int i = 0;
 		i = i+i+i+i+1;
 		
-		//Expression expression = ExpressionFactory.parseString("pocitadlo=pocitadlo+1");
+		Expression expression = ExpressionFactory.parseString("pocitadlo=pocitadlo+1");
 		//Expression expression = ExpressionFactory.parseString("pocitadlo");
 		
-		//expression.setVariableValue("pocitadlo", 1);
-		//int value = expression.getInteger();
-		//assertEquals(1, value, 0);
+		expression.setVariableValue("pocitadlo", 1);
+		int value = expression.getInteger();
+		assertEquals(2, value, 0);
 		
-		Point point = new Point();
-		point.setLocation(1, 2);
+		//Point point = new Point();
+		//point.setLocation(1, 2);
 		
 		//Expression expression = ExpressionFactory.parseString("pocitadlo=obj->getX()");
-		Expression expression = ExpressionFactory.parseString("obj->setLocation(3,4)");
-		expression.setVariableValue("obj", point);
-		Object val = expression.getValue();
+		//Expression expression = ExpressionFactory.parseString("obj->setLocation(3,4)");
+		//expression.setVariableValue("obj", point);
+		//Object val = expression.getValue();
 
-		assertEquals(3.0, point.getX(), 0.0);
+		//assertEquals(3.0, point.getX(), 0.0);
 		//fail("Not yet implemented");
 	}
 
