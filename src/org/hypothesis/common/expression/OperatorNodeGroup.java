@@ -102,10 +102,11 @@ class OperatorNodeGroup extends LinkedList<HasOperatorNode> implements HasOperat
 			OperatorNode operatorNode = new OperatorNode();
 			operatorNode.setLeftNode(node);
 			
-			if (node == null && operatorNode.getOperator() == null)
+			if (node == null && operatorNode.getOperator() == null) {
 				operatorNode.setPosition(-1);
 				operatorNode.setOperator(Operator.PLUS);
 				operatorNode.setUnary(true);
+			}
 		
 			return operatorNode;
 		}
