@@ -92,7 +92,6 @@ public class SlideXmlConstants {
 	public static final String ORIENTATION = "Orientation";
 	public static final String LABEL_POSITION = "LabelPosition";
 
-	public static final String COMMAND = "Command";
 	public static final String FINISH = "Finish";
 	public static final String CLICK = "Click";
 	public static final String LOAD = "Load";

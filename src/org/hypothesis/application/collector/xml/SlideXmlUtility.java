@@ -62,10 +62,6 @@ public class SlideXmlUtility {
 		return getElementSubNodeChilds(element, SlideXmlConstants.CASE, null);
 	}
 
-	public static String getCommand(Element element) {
-		return element.attributeValue(SlideXmlConstants.COMMAND);
-	}
-
 	public static List<Element> getComponentHandlers(Element component) {
 		return getElementSubNodeChilds(component, SlideXmlConstants.HANDLERS,
 				null);

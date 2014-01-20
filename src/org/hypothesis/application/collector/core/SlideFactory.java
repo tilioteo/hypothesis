@@ -25,7 +25,6 @@ import org.hypothesis.application.collector.events.RadioPanelData;
 import org.hypothesis.application.collector.events.RadioPanelEvent;
 import org.hypothesis.application.collector.slide.AbstractBaseAction;
 import org.hypothesis.application.collector.slide.Action;
-import org.hypothesis.application.collector.slide.SlideCommand;
 import org.hypothesis.application.collector.slide.Variable;
 import org.hypothesis.application.collector.ui.component.ButtonPanel;
 import org.hypothesis.application.collector.ui.component.SlideComponent;
@@ -245,8 +244,6 @@ public class SlideFactory {
 				return createSwitchStatement(element);
 			} else if (name.equals(SlideXmlConstants.CALL)) {
 				return createCallAction(element);
-			} else if (name.equals(SlideXmlConstants.COMMAND)) {
-				return createSlideCommand(element);
 			}
 		}
 		return null;
@@ -313,17 +310,6 @@ public class SlideFactory {
 		Expression expression = createExpression(SlideXmlUtility
 				.getExpressionElement(outputElement));
 		slideManager.setOutputExpression(expression);
-	}
-
-	private SlideCommand createSlideCommand(Element element) {
-		if (element != null
-				&& element.getName().equals(SlideXmlConstants.COMMAND)) {
-			String command = element.getTextTrim();
-			if (!Strings.isNullOrEmpty(command)) {
-				return new SlideCommand(slideManager, command);
-			}
-		}
-		return null;
 	}
 
 	public void createSlideControls(SlideManager slideManager) {
@@ -452,6 +438,17 @@ public class SlideFactory {
 					slideManager.getVariables().put(variable);
 			}
 		}
+		// create and add Navigator object variable
+		slideManager.getVariables().put(createNavigatorObject(slideManager));
+		
+	}
+
+	private Variable<Object> createNavigatorObject(SlideManager slideManager) {
+		// TODO invent naming for system objects and mark navigator like a system object
+		Variable<Object> variable = new Variable<Object>("Navigator");
+		Navigator navigator = new Navigator(slideManager);
+		variable.setRawValue(navigator);
+		return variable;
 	}
 
 	private void writeOutputValue(Element element, Object value) {

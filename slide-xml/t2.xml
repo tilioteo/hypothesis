@@ -161,7 +161,7 @@
 									</Properties>
 									<Handlers>
 										<Click>
-											<Command>Finish</Command>
+											<Call Action="nextSlide" />
 										</Click>
 									</Handlers>
 								</Button>
@@ -172,4 +172,9 @@
 			</Components>
 		</VerticalLayout>
 	</Viewport>
+	<Actions>
+		<Action Id="nextSlide">
+			<Expression>Navigator->next()</Expression>
+		</Action>
+	</Actions>
 </SlideTemplate>

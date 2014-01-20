@@ -67,7 +67,7 @@
 									</Properties>
 									<Handlers>
 										<Click>
-											<Call Action="finishSlide" />
+											<Call Action="nextSlide" />
 										</Click>
 									</Handlers>
 								</Button>
@@ -79,7 +79,7 @@
 									</Properties>
 									<Handlers>
 										<Click>
-											<Call Action="finishSlide" />
+											<Call Action="nextSlide" />
 										</Click>
 									</Handlers>
 								</Button>
@@ -98,8 +98,8 @@
 		</VerticalLayout>
 	</Viewport>
 	<Actions>
-		<Action Id="finishSlide">
-			<Command>Finish</Command>
+		<Action Id="nextSlide">
+			<Expression>Navigator->next()</Expression>
 		</Action>
 	</Actions>
 </SlideTemplate>

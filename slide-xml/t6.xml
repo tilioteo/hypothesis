@@ -129,7 +129,7 @@
 									</Properties>
 									<Handlers>
 										<Click>
-											<Call Action="finishSlide" />
+											<Call Action="nextSlide" />
 										</Click>
 									</Handlers>
 								</Button>
@@ -166,15 +166,15 @@
 		<Variable Id="pocitadlo" Type="Integer" Value="0" />
 	</Variables>
 	<Actions>
-		<Action Id="finishSlide">
-			<Command>Finish</Command>
+		<Action Id="nextSlide">
+			<Expression>Navigator->next()</Expression>
 		</Action>
 		<Action Id="prictipocitadlo">
 			<Expression>pocitadlo=pocitadlo+1</Expression>
 			<If>
 				<Expression>pocitadlo==5</Expression>
 				<True>
-					<Call Action="finishSlide" />
+					<Call Action="nextSlide" />
 				</True>
 				<False>
 					<Switch>

@@ -135,7 +135,7 @@ public class SlideConstants {
 "									</Properties>" +
 "									<Handlers>" +
 "										<Click>" +
-"											<Call Action=\"finishSlide\" />" +
+"											<Call Action=\"nextSlide\" />" +
 "										</Click>" +
 "									</Handlers>" +
 "								</Button>" +
@@ -195,15 +195,15 @@ public class SlideConstants {
 "		</Variable>" +
 "	</Variables>" +
 "	<Actions>" +
-"		<Action Id=\"finishSlide\">" +
-"			<Command>Finish</Command>" +
+"		<Action Id=\"nextSlide\">" +
+"			<Expression>Navigator->next()</Expression>" +
 "		</Action>" +
 "		<Action Id=\"prictipocitadlo\">" +
 "			<Expression>pocitadlo=pocitadlo+1</Expression>" +
 "			<If>" +
 "				<Expression>pocitadlo==5</Expression>" +
 "				<True>" +
-"					<Call Action=\"finishSlide\" />" +
+"					<Call Action=\"nextSlide\" />" +
 "				</True>" +
 "			</If>" +
 "		</Action>" +
@@ -286,7 +286,7 @@ public class SlideConstants {
 "							</Properties>" +
 "							<Handlers>" +
 "								<Click>" +
-"									<Command>Finish</Command>" +
+"									<Call Action=\"nextSlide\" />" +
 "								</Click>" +
 "							</Handlers>" +
 "						</Button>" +
@@ -295,6 +295,11 @@ public class SlideConstants {
 "			</Components>" +
 "		</VerticalLayout>" +
 "	</Viewport>" +
+"	<Actions>" +
+"		<Action Id=\"nextSlide\">" +
+"			<Expression>Navigator->next()</Expression>" +
+"		</Action>" +
+"	</Actions>" +
 "</SlideTemplate>";
 
 	public static final String CONTENT_XML1 =
