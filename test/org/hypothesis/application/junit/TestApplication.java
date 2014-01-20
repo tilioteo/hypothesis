@@ -19,12 +19,14 @@ import org.hypothesis.application.collector.events.ErrorNotificationEvent;
 import org.hypothesis.application.collector.events.ErrorTestEvent;
 import org.hypothesis.application.collector.events.FinishBranchEvent;
 import org.hypothesis.application.collector.events.FinishSlideEvent;
+import org.hypothesis.application.collector.events.FinishSlideEvent.Direction;
 import org.hypothesis.application.collector.events.FinishTaskEvent;
 import org.hypothesis.application.collector.events.FinishTestEvent;
 import org.hypothesis.application.collector.events.NextBranchEvent;
 import org.hypothesis.application.collector.events.NextSlideEvent;
 import org.hypothesis.application.collector.events.NextTaskEvent;
 import org.hypothesis.application.collector.events.PrepareTestEvent;
+import org.hypothesis.application.collector.events.PriorSlideEvent;
 import org.hypothesis.application.collector.events.ProcessEventListener;
 import org.hypothesis.application.collector.events.ProcessEventManager;
 import org.hypothesis.application.collector.events.RenderContentEvent;
@@ -59,7 +61,6 @@ public class TestApplication extends Application implements ProcessEventListener
 	
 	private MainWindow mainWindow; //= new MainWindow(null);
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void init() {
 		eventManager = ProcessEventManager.get(this);
@@ -237,7 +238,7 @@ public class TestApplication extends Application implements ProcessEventListener
 			if (slideManager.next() != null) {
 				renderSlide();
 			} else {
-				eventManager.fireEvent(new NextTaskEvent(taskManager.current()));
+				eventManager.fireEvent(new FinishTaskEvent(taskManager.current()));
 			}
 
 		} else if (event instanceof FinishSlideEvent) {
@@ -249,7 +250,8 @@ public class TestApplication extends Application implements ProcessEventListener
 			taskManager.addSlideOutputValue(slideManager.current(), slideOutputValue);
 			branchManager.addSlideOutputValue(slideManager.current(), slideOutputValue);
 			
-			eventManager.fireEvent(new NextSlideEvent(slideManager.current()));
+			eventManager.fireEvent((Direction.NEXT.equals(((FinishSlideEvent)event).getDirection())) ? new NextSlideEvent(
+					slideManager.current()) : new PriorSlideEvent(slideManager.current()));
 			
 		} else if (event instanceof NextTaskEvent) {
 			// process next task
@@ -259,7 +261,7 @@ public class TestApplication extends Application implements ProcessEventListener
 				slideManager.setQueueOwner(taskManager.current());
 				renderSlide();
 			} else {
-				eventManager.fireEvent(new NextBranchEvent(branchManager.current()));
+				eventManager.fireEvent(new FinishBranchEvent(branchManager.current()));
 			}
 			
 		} else if (event instanceof FinishTaskEvent) {
@@ -301,6 +303,7 @@ public class TestApplication extends Application implements ProcessEventListener
 			branchManager.find(((FinishBranchEvent)event).getBranch());
 			
 			// TODO process branch result
+			branchManager.updateNextBranchKey();
 			
 			eventManager.fireEvent(new NextBranchEvent(branchManager.current()));
 

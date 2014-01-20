@@ -240,7 +240,7 @@ public class ProcessManager implements ProcessEventListener {
 		saveSlideOutput();
 
 		eventManager
-				.fireEvent((eventObj.getDirection().equals(Direction.NEXT)) ? new NextSlideEvent(
+				.fireEvent((Direction.NEXT.equals(eventObj.getDirection())) ? new NextSlideEvent(
 						slideManager.current()) : new PriorSlideEvent(
 						slideManager.current()));
 	}
@@ -303,7 +303,7 @@ public class ProcessManager implements ProcessEventListener {
 		if (slideManager.next() != null) {
 			renderSlide();
 		} else {
-			eventManager.fireEvent(new NextTaskEvent(taskManager.current()));
+			eventManager.fireEvent(new FinishTaskEvent(taskManager.current()));
 		}
 	}
 
@@ -330,7 +330,7 @@ public class ProcessManager implements ProcessEventListener {
 			renderSlide();
 		} else {
 			eventManager
-					.fireEvent(new NextBranchEvent(branchManager.current()));
+					.fireEvent(new FinishBranchEvent(branchManager.current()));
 		}
 	}
 

@@ -112,12 +112,16 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
 	public void updateNextBranchKey() {
 		nextKey = null;
+		boolean pathFound = false; 
 
 		for (Path path : paths) {
-			if (path.isValid(slideOutputValues))
+			if (path.isValid(slideOutputValues)) {
 				nextKey = path.getBranchKey();
+				pathFound = true;
+				break;
+			}
 		}
-		if (defaultPath != null)
+		if (!pathFound && defaultPath != null)
 			nextKey = defaultPath.getBranchKey();
 	}
 }
