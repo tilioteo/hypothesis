@@ -11,9 +11,14 @@ import org.hypothesis.entity.Slide;
  */
 @SuppressWarnings("serial")
 public class FinishSlideEvent extends AbstractRunningEvent implements HasName {
-
-	public FinishSlideEvent(Slide slide) {
+	
+	public enum Direction {NEXT, PRIOR};
+	
+	private Direction direction;
+	
+	public FinishSlideEvent(Slide slide, Direction direction) {
 		super(slide);
+		this.direction = direction;
 	}
 
 	public String getName() {
@@ -22,6 +27,10 @@ public class FinishSlideEvent extends AbstractRunningEvent implements HasName {
 
 	public Slide getSlide() {
 		return (Slide) getSource();
+	}
+	
+	public Direction getDirection() {
+		return direction;
 	}
 
 }

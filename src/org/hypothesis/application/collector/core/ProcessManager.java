@@ -21,6 +21,7 @@ import org.hypothesis.application.collector.events.ErrorNotificationEvent;
 import org.hypothesis.application.collector.events.ErrorTestEvent;
 import org.hypothesis.application.collector.events.FinishBranchEvent;
 import org.hypothesis.application.collector.events.FinishSlideEvent;
+import org.hypothesis.application.collector.events.FinishSlideEvent.Direction;
 import org.hypothesis.application.collector.events.FinishTaskEvent;
 import org.hypothesis.application.collector.events.FinishTestEvent;
 import org.hypothesis.application.collector.events.HasStatus;
@@ -28,6 +29,7 @@ import org.hypothesis.application.collector.events.NextBranchEvent;
 import org.hypothesis.application.collector.events.NextSlideEvent;
 import org.hypothesis.application.collector.events.NextTaskEvent;
 import org.hypothesis.application.collector.events.PrepareTestEvent;
+import org.hypothesis.application.collector.events.PriorSlideEvent;
 import org.hypothesis.application.collector.events.ProcessEvent;
 import org.hypothesis.application.collector.events.ProcessEventListener;
 import org.hypothesis.application.collector.events.ProcessEventManager;
@@ -117,6 +119,8 @@ public class ProcessManager implements ProcessEventListener {
 			processContinueTest((ContinueTestEvent) event);
 		} else if (event instanceof NextSlideEvent) {
 			processNextSlide((NextSlideEvent) event);
+		} else if (event instanceof PriorSlideEvent) {
+			processPriorSlide((PriorSlideEvent) event);
 		} else if (event instanceof FinishSlideEvent) {
 			processFinishSlide((FinishSlideEvent) event);
 		} else if (event instanceof NextTaskEvent) {
@@ -235,7 +239,10 @@ public class ProcessManager implements ProcessEventListener {
 
 		saveSlideOutput();
 
-		eventManager.fireEvent(new NextSlideEvent(slideManager.current()));
+		eventManager
+				.fireEvent((eventObj.getDirection().equals(Direction.NEXT)) ? new NextSlideEvent(
+						slideManager.current()) : new PriorSlideEvent(
+						slideManager.current()));
 	}
 
 	private void processFinishTask(FinishTaskEvent eventObj) {
@@ -300,6 +307,19 @@ public class ProcessManager implements ProcessEventListener {
 		}
 	}
 
+	private void processPriorSlide(PriorSlideEvent eventObj) {
+		saveProcessEvent(eventObj);
+
+		slideManager.find(eventObj.getSlide());
+
+		// TODO get prior slide
+		/*if (slideManager.next() != null) {
+			renderSlide();
+		} else {
+			eventManager.fireEvent(new NextTaskEvent(taskManager.current()));
+		}*/
+	}
+
 	private void processNextTask(NextTaskEvent eventObj) {
 		saveProcessEvent(eventObj);
 
@@ -358,7 +378,7 @@ public class ProcessManager implements ProcessEventListener {
 					"You do not have permition to process."));
 		}
 	}
-	
+
 	public void breakCurrentTest() {
 		eventManager.fireEvent(new BreakTestEvent(test));
 	}
