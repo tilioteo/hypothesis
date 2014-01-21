@@ -17,7 +17,7 @@ public class PriorSlideEvent extends AbstractRunningEvent implements HasName {
 	}
 
 	public String getName() {
-		return ProcessEvents.NextSlide;
+		return ProcessEvents.PriorSlide;
 	}
 
 	public Slide getSlide() {
