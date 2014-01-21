@@ -20,6 +20,7 @@ public class ProcessEvents {
 	public static final String StartTest = "START_TEST";
 
 	public static final String NextSlide = "NEXT_SLIDE";
+	public static final String PriorSlide = "PRIOR_SLIDE";
 
 	public static final String FinishSlide = "FINISH_SLIDE";
 
@@ -50,7 +51,7 @@ public class ProcessEvents {
 		registerEvent(NextBranch); // 6
 		registerEvent(FinishBranch); // 7
 		registerEvent(FinishTest); // 8
-		nextId += 1;
+		registerEvent(PriorSlide); // 9
 		registerEvent(BreakTest); // 10
 		registerEvent(ContinueTest); // 11
 		nextId += 8;
