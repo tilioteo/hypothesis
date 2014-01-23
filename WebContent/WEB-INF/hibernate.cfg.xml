@@ -2,58 +2,47 @@
 <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
                                          "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
- <session-factory>
-  <!-- Database connection settings for PostgreSQL -->
-  <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-  <property name="hibernate.connection.url">jdbc:postgresql://localhost/hypothesis</property>
-  <property name="hibernate.connection.username">hypothesis</property>
-  <property name="hibernate.connection.password">hypothesis</property>
-  <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-  <!-- In future use spatial dialect 
-
-        <property name="hibernate.dialect">org.hibernate.spatial.dialect.postgis.PostgisDialect</property>
-        
- JDBC connection pool (use the built-in) -->
-  <property name="hibernate.connection.pool_size">1</property>
-  <!-- Enable Hibernate's automatic session context management 
-  thread is the short name for org.hibernate.context.ThreadLocalSessionContext and let Hibernate bind the session automatically to the thread -->
-  <property name="hibernate.current_session_context_class">thread</property>
-  <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
-  <!-- Disable the second-level cache  -->
-  <property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
-  <property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
-  <!-- this will show us all sql statements -->
-  <property name="hibernate.show_sql">true</property>
-  <!-- Drop and re-create the database schema on startup 
-
-        <property name="hibernate.hbm2ddl.auto">create</property>
-        
- Check the database schema on startup -->
-  <property name="hibernate.hbm2ddl.auto">validate</property>
-  <!--
-        <property name="hibernate.hbm2ddl.auto">update</property>
-        
-
-        -->
-  <mapping class="org.hypothesis.entity.SlideTemplate"/>
-  <mapping class="org.hypothesis.entity.SlideContent"/>
-  <mapping class="org.hypothesis.entity.Slide"/>
-  <mapping class="org.hypothesis.entity.SlideOutput"/>
-  <mapping class="org.hypothesis.entity.Task"/>
-  <mapping class="org.hypothesis.entity.Branch"/>
-  <mapping class="org.hypothesis.entity.BranchOutput"/>
-  <mapping class="org.hypothesis.entity.Pack"/>
-  <mapping class="org.hypothesis.entity.BranchTrek"/>
-  <mapping class="org.hypothesis.entity.Event"/>
-  <mapping class="org.hypothesis.entity.Test"/>
-  <mapping class="org.hypothesis.entity.Token"/>
-  <mapping class="org.hypothesis.entity.User"/>
-  <mapping class="org.hypothesis.entity.Group"/>
-  <mapping class="org.hypothesis.entity.Role"/>
-  <mapping class="org.hypothesis.entity.UserPermition"/>
-  <mapping class="org.hypothesis.entity.GroupPermition"/>
-  <!-- mapping files
-        <mapping resource="de/laliluna/example/Honey.hbm.xml" />
-        -->
- </session-factory>
+	<session-factory>
+		<!-- Database connection settings for PostgreSQL -->
+		<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+		<property name="hibernate.connection.url">jdbc:postgresql://localhost/hypothesis</property>
+		<property name="hibernate.connection.username">hypothesis</property>
+		<property name="hibernate.connection.password">hypothesis</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+		<!-- In future use spatial dialect <property name="hibernate.dialect">org.hibernate.spatial.dialect.postgis.PostgisDialect</property> 
+			JDBC connection pool (use the built-in) -->
+		<property name="hibernate.connection.pool_size">1</property>
+		<!-- Enable Hibernate's automatic session context management thread is 
+			the short name for org.hibernate.context.ThreadLocalSessionContext and let 
+			Hibernate bind the session automatically to the thread -->
+		<property name="hibernate.current_session_context_class">thread</property>
+		<property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+		<!-- Disable the second-level cache -->
+		<property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+		<!-- this will show us all sql statements -->
+		<property name="hibernate.show_sql">true</property>
+		<!-- Drop and re-create the database schema on startup <property name="hibernate.hbm2ddl.auto">create</property> 
+			Check the database schema on startup -->
+		<property name="hibernate.hbm2ddl.auto">validate</property>
+		<!-- <property name="hibernate.hbm2ddl.auto">update</property> -->
+		<!--mapping class="org.hypothesis.entity.SlideTemplate" />
+		<mapping class="org.hypothesis.entity.SlideContent" />
+		<mapping class="org.hypothesis.entity.Slide" />
+		<mapping class="org.hypothesis.entity.SlideOutput" />
+		<mapping class="org.hypothesis.entity.Task" />
+		<mapping class="org.hypothesis.entity.Branch" />
+		<mapping class="org.hypothesis.entity.BranchOutput" />
+		<mapping class="org.hypothesis.entity.Pack" />
+		<mapping class="org.hypothesis.entity.BranchTrek" />
+		<mapping class="org.hypothesis.entity.Event" />
+		<mapping class="org.hypothesis.entity.Test" />
+		<mapping class="org.hypothesis.entity.Token" />
+		<mapping class="org.hypothesis.entity.User" />
+		<mapping class="org.hypothesis.entity.Group" />
+		<mapping class="org.hypothesis.entity.Role" />
+		<mapping class="org.hypothesis.entity.UserPermition" />
+		<mapping class="org.hypothesis.entity.GroupPermition" /-->
+		<!-- mapping files <mapping resource="de/laliluna/example/Honey.hbm.xml" 
+			/> -->
+	</session-factory>
 </hibernate-configuration>
