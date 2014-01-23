@@ -183,6 +183,7 @@ public class ComponentFactory {
 				actionId);
 		slideManager.addViewportEventListener(SlideManager.InitEvent.class,
 				new ViewportEventListener() {
+					@Override
 					public void handleEvent(ViewportEvent event) {
 						action.execute();
 					}
@@ -195,6 +196,7 @@ public class ComponentFactory {
 				actionId);
 		slideManager.addViewportEventListener(SlideManager.ShowEvent.class,
 				new ViewportEventListener() {
+					@Override
 					public void handleEvent(ViewportEvent event) {
 						action.execute();
 					}

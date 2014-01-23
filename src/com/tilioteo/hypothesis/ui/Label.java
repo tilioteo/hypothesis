@@ -17,8 +17,6 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings({ "serial" })
 public class Label extends com.vaadin.ui.Label implements SlideComponent {
 
-	@SuppressWarnings("unused")
-	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
 
 	public Label() {
@@ -27,13 +25,15 @@ public class Label extends com.vaadin.ui.Label implements SlideComponent {
 
 	public Label(SlideManager slideManager) {
 		this();
-		this.slideManager = slideManager;
+		//this.slideManager = slideManager;
 	}
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
@@ -48,8 +48,9 @@ public class Label extends com.vaadin.ui.Label implements SlideComponent {
 
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+		// nop
 	}
 
 }

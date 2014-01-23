@@ -156,6 +156,7 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		this.slideManager = slideManager;
 	}
 
+	@Override
 	public void addXmlChilds(Element element) {
 		List<Element> elements = SlideXmlUtility.getContainerComponents(
 				element, SlideXmlConstants.VALID_WINDOW_ELEMENTS);
@@ -237,10 +238,12 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		fireEvent(new OpenEvent(this));
 	}
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
@@ -258,6 +261,7 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		final Command action = CommandFactory.createActionCommand(slideManager,
 				actionId);
 		addCloseListener(new CloseListener() {
+			@Override
 			public void windowClose(CloseEvent e) {
 				action.execute();
 			}
@@ -325,6 +329,7 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		});
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
 	}

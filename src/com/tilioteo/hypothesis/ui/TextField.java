@@ -20,8 +20,6 @@ import com.vaadin.ui.Alignment;
 public class TextField extends com.vaadin.ui.TextField implements SlideComponent,
 		XmlDataWriter {
 
-	@SuppressWarnings("unused")
-	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
 
 	public TextField() {
@@ -30,13 +28,15 @@ public class TextField extends com.vaadin.ui.TextField implements SlideComponent
 
 	public TextField(SlideManager slideManager) {
 		this();
-		this.slideManager = slideManager;
+		//this.slideManager = slideManager;
 	}
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
@@ -51,10 +51,12 @@ public class TextField extends com.vaadin.ui.TextField implements SlideComponent
 
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+		// nop
 	}
 
+	@Override
 	public void writeDataToElement(Element element) {
 		element.addAttribute(SlideXmlConstants.TYPE,
 				SlideXmlConstants.TEXTFIELD);

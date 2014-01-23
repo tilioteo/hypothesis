@@ -57,10 +57,12 @@ public class ComboBox extends com.vaadin.ui.ComboBox implements SlideComponent,
 		setImmediate(true);
 	}
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
@@ -76,10 +78,12 @@ public class ComboBox extends com.vaadin.ui.ComboBox implements SlideComponent,
 
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
 	}
 
+	@Override
 	public void writeDataToElement(Element element) {
 		element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.COMBOBOX);
 		element.addAttribute(SlideXmlConstants.ID, (String) getData());

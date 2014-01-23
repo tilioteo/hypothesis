@@ -38,10 +38,12 @@ public class Button extends com.vaadin.ui.NativeButton implements
 		this.slideManager = slideManager;
 	}
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
@@ -56,6 +58,7 @@ public class Button extends com.vaadin.ui.NativeButton implements
 				actionId);
 
 		addClickListener(new Button.ClickListener() {
+			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				componentEvent.execute();
 				action.execute();
@@ -97,6 +100,7 @@ public class Button extends com.vaadin.ui.NativeButton implements
 		// TODO in future set dynamic css
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
 	}

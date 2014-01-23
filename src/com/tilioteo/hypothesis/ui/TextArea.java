@@ -20,8 +20,6 @@ import com.vaadin.ui.Alignment;
 public class TextArea extends com.vaadin.ui.TextArea implements SlideComponent,
 		XmlDataWriter {
 
-	@SuppressWarnings("unused")
-	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
 
 	public TextArea() {
@@ -30,13 +28,15 @@ public class TextArea extends com.vaadin.ui.TextArea implements SlideComponent,
 
 	public TextArea(SlideManager slideManager) {
 		this();
-		this.slideManager = slideManager;
+		//this.slideManager = slideManager;
 	}
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
@@ -51,10 +51,12 @@ public class TextArea extends com.vaadin.ui.TextArea implements SlideComponent,
 
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+		// nop
 	}
 
+	@Override
 	public void writeDataToElement(Element element) {
 		element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.TEXTAREA);
 		element.addAttribute(SlideXmlConstants.ID, (String) getData());

@@ -223,10 +223,12 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
                 listener);
     }
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
@@ -242,6 +244,7 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 				actionId);
 
 		addClickListener(new MouseEvents.ClickListener() {
+			@Override
 			public void click(MouseEvents.ClickEvent event) {
 				data.setXY(event.getClientX(), event.getClientY());
 				componentEvent.execute();
@@ -302,6 +305,7 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
 	}

@@ -35,6 +35,7 @@ public class VerticalLayout extends com.vaadin.ui.VerticalLayout implements
 		this.slideManager = slideManager;
 	}
 
+	@Override
 	public void addXmlChilds(Element element) {
 		List<Element> elements = SlideXmlUtility.getContainerComponents(
 				element, SlideXmlConstants.VALID_CONTAINER_ELEMENTS);
@@ -58,10 +59,12 @@ public class VerticalLayout extends com.vaadin.ui.VerticalLayout implements
 		}
 	}
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
@@ -76,6 +79,7 @@ public class VerticalLayout extends com.vaadin.ui.VerticalLayout implements
 				parentAlignment);
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
 	}
