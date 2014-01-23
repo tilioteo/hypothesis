@@ -27,22 +27,25 @@ public class MultipleComponentPanel<C extends AbstractComponent> extends Panel {
 	};
 
 	private List<C> childList = new LinkedList<C>();
-	private boolean initialized = false;
 	private Orientation orientation = Orientation.Horizontal;
 	private String childWidth = null;
 	private String childHeight = null;
 
-	protected void addChildsTo(List<C> list) {
+	protected MultipleComponentPanel() {
+		// nop
 	}
-
+	
+	protected void addChild(C child) {
+		childList.add(child);
+	}
+	
 	public int getChildIndex(C child) {
-		if (initialized) {
-			int index = 0;
-			for (C child2 : childList) {
-				if (child2.equals(child))
-					return index;
-				++index;
-			}
+		int index = 0;
+		for (C child2 : childList) {
+			if (child2.equals(child))
+				return index;
+
+			++index;
 		}
 		return -1;
 	}
@@ -63,21 +66,6 @@ public class MultipleComponentPanel<C extends AbstractComponent> extends Panel {
 		return orientation;
 	}
 
-	private void initialize() {
-		addChildsTo(childList);
-	}
-
-	@Override
-	public void paintContent(PaintTarget target) throws PaintException {
-		if (!initialized)
-			initialize();
-
-		updateContent();
-
-		initialized = true;
-		super.paintContent(target);
-	}
-
 	private void setChildHeight(C child) {
 		if (childHeight != null)
 			child.setHeight(childHeight);
@@ -87,10 +75,12 @@ public class MultipleComponentPanel<C extends AbstractComponent> extends Panel {
 
 	public void setChildsHeight(String height) {
 		this.childHeight = height;
+		updateContent();
 	}
 
 	public void setChildsWidth(String width) {
 		this.childWidth = width;
+		updateContent();
 	}
 
 	private void setChildWidth(C child) {
@@ -102,9 +92,10 @@ public class MultipleComponentPanel<C extends AbstractComponent> extends Panel {
 
 	public void setOrientation(Orientation orientation) {
 		this.orientation = orientation;
+		updateContent();
 	}
 
-	private void updateContent() {
+	protected void updateContent() {
 		Layout layout = (Layout) getContent();
 		AbstractOrderedLayout newLayout = null;
 
@@ -116,7 +107,7 @@ public class MultipleComponentPanel<C extends AbstractComponent> extends Panel {
 			newLayout = new VerticalLayout();
 
 		if (newLayout != null) {
-			removeAllComponents();
+			layout.removeAllComponents();
 			setContent(newLayout);
 			newLayout.setSizeFull();
 		} else {
@@ -127,8 +118,8 @@ public class MultipleComponentPanel<C extends AbstractComponent> extends Panel {
 			setChildWidth(child);
 			setChildHeight(child);
 
-			if (!initialized || newLayout != null) {
-				addComponent(child);
+			if (newLayout != null) {
+				newLayout.addComponent(child);
 				newLayout.setComponentAlignment(child, Alignment.MIDDLE_CENTER);
 			}
 		}

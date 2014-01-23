@@ -51,8 +51,7 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 		this.clickListeners.add(buttonClickListener);
 	}
 
-	@Override
-	protected void addChildsTo(List<Button> list) {
+	protected void addChilds() {
 		int i = 1;
 		for (String caption : captions) {
 			Button button = new Button();
@@ -63,10 +62,12 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 			for (Button.ClickListener listener : clickListeners)
 				button.addClickListener(listener);
 
-			list.add(button);
+			addChild(button);
 		}
+		updateContent();
 	}
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
@@ -75,12 +76,13 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 		return selected;
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
-		// if (element.getName().equals(SlideXmlConstants.BUTTON_PANEL)) {
 
 		setProperties(element);
 		setHandlers(element);
 
+		addChilds();
 	}
 
 	private void setClickHandler(String actionId) {
@@ -91,6 +93,7 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 				actionId);
 
 		addButtonClickListener(new Button.ClickListener() {
+			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				data.setButton((Button) event.getSource());
 				componentEvent.execute();
@@ -136,6 +139,7 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 		this.selected = button;
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
 	}

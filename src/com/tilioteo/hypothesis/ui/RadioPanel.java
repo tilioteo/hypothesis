@@ -50,8 +50,7 @@ public class RadioPanel extends MultipleComponentPanel<RadioButton> implements
 		setSizeUndefined();
 	}
 
-	@Override
-	protected void addChildsTo(List<RadioButton> list) {
+	protected void addChilds() {
 		int i = 1;
 		for (String caption : captions) {
 			RadioButton radioButton = new RadioButton(caption);
@@ -63,15 +62,17 @@ public class RadioPanel extends MultipleComponentPanel<RadioButton> implements
 			for (RadioButton.ClickListener listener : clickListeners)
 				radioButton.addClickListener(listener);
 
-			list.add(radioButton);
+			addChild(radioButton);
 		}
+		updateContent();
 	}
-
+	
 	public void addRadioButtonClickListener(
 			RadioButton.ClickListener radioButtonClickListener) {
 		this.clickListeners.add(radioButtonClickListener);
 	}
 
+	@Override
 	public Alignment getAlignment() {
 		return parentAlignment.getAlignment();
 	}
@@ -96,11 +97,13 @@ public class RadioPanel extends MultipleComponentPanel<RadioButton> implements
 		return selected;
 	}
 
+	@Override
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
 		setHandlers(element);
 
+		addChilds();
 	}
 
 	private void setClickHandler(String actionId) {
@@ -167,12 +170,14 @@ public class RadioPanel extends MultipleComponentPanel<RadioButton> implements
 
 		// set RadioPanel specific properties
 		setLabelPosition(properties);
+		
 	}
 
 	public void setSelected(RadioButton radioButton) {
 		this.selected = radioButton;
 	}
 
+	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
 	}
