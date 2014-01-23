@@ -3,6 +3,9 @@
  */
 package org.hypothesis.common.expression;
 
+import org.hypothesis.annotation.ExpressionScope;
+import org.hypothesis.annotation.ExpressionScope.Scope;
+
 /**
  * @author Kamil Morong - Hypothesis
  *
@@ -40,11 +43,18 @@ public class Attribute extends Variable implements HasReference {
 				java.lang.reflect.Field field;
 				try {
 					field = obj.getClass().getField(getName());
+					if (field.isAnnotationPresent(ExpressionScope.class)) {
+						ExpressionScope scope = field.getAnnotation(ExpressionScope.class);
+						if (Scope.PRIVATE.equals(scope.value())) {
+							throw new Exception(String.format("Field '%s' of class '%s' is eliminated from expression evaluation.", field.getName(), obj.getClass().getName()));
+						}
+					}
+					
 					Object res = field.get(obj);
 					return res;
 				} catch (Exception e) {
 					// TODO: handle exception
-					e.getMessage();
+					System.err.println(e.getMessage());
 				}
 			} /*else
 				throw new NullReferenceException(String.format("Object reference for method %s is null", name));*/
