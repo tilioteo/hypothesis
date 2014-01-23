@@ -38,22 +38,23 @@ public class FormLayout extends com.vaadin.ui.FormLayout implements SlideCompone
 
 	public void addXmlChilds(Element element) {
 		List<Element> elements = SlideXmlUtility.getContainerComponents(
-				element, SlideXmlConstants.VALID_FORM_ELEMENTS);
+				element, SlideXmlConstants.VALID_CONTAINER_ELEMENTS);
 		for (Element childElement : elements) {
 			LayoutComponent layoutComponent = ComponentFactory
 					.createComponentFromElement(childElement, slideManager);
 			if (layoutComponent != null) {
 				Component component = layoutComponent.getComponent();
-				if (component instanceof AbstractField) {
-					if (!Strings
-							.isNullOrEmpty((String) ((AbstractField<?>) component)
-									.getData())) {
-						//addField(((AbstractField<?>) component).getData(), (Field<?>) component);
+				addComponent(component);
+				setComponentAlignment(component, layoutComponent.getAlignment());
+
+				/*if (component instanceof AbstractField) {
+					if (!Strings.isNullOrEmpty((String) ((AbstractField<?>) component).getData())) {
+						addField(((AbstractField<?>) component).getData(), (Field<?>) component);
 					}
 					else {
-						//getLayout().addComponent(component);
+						getLayout().addComponent(component);
 					}
-				}
+				}*/
 			}
 		}
 	}

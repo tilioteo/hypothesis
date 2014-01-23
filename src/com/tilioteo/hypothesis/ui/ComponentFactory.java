@@ -40,6 +40,9 @@ public class ComponentFactory {
 				component = ComponentFactory
 						.<HorizontalLayout> createFromElement(
 								HorizontalLayout.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.FORM_LAYOUT))
+				component = ComponentFactory.<FormLayout> createFromElement(
+						FormLayout.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.PANEL))
 				component = ComponentFactory.<Panel> createFromElement(
 						Panel.class, element, slideManager);
@@ -55,9 +58,6 @@ public class ComponentFactory {
 			else if (name.equals(SlideXmlConstants.RADIO_PANEL))
 				component = ComponentFactory.<RadioPanel> createFromElement(
 						RadioPanel.class, element, slideManager);
-			else if (name.equals(SlideXmlConstants.FORM_PANEL))
-				component = ComponentFactory.<FormLayout> createFromElement(
-						FormLayout.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.TEXTFIELD))
 				component = ComponentFactory.<TextField> createFromElement(
 						TextField.class, element, slideManager);

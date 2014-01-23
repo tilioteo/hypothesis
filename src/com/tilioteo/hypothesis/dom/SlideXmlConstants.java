@@ -34,11 +34,11 @@ public class SlideXmlConstants {
 	public static final String PANEL = "Panel";
 	public static final String VERTICAL_LAYOUT = "VerticalLayout";
 	public static final String HORIZONTAL_LAYOUT = "HorizontalLayout";
+	public static final String FORM_LAYOUT = "FormLayout";
 	public static final String BUTTON = "Button";
 	public static final String IMAGE = "Image";
 	public static final String BUTTON_PANEL = "ButtonPanel";
 	public static final String RADIO_PANEL = "RadioPanel";
-	public static final String FORM_PANEL = "FormPanel";
 	public static final String COMBOBOX = "ComboBox";
 	public static final String DATEFIELD = "DateField";
 	public static final String TEXTFIELD = "TextField";
@@ -149,20 +149,16 @@ public class SlideXmlConstants {
 	public static final StringSet VALID_SLIDE_ROOT_ELEMENTS = new StringSet(
 			new String[] { SLIDE, SLIDE_TEMPLATE });
 
+	public static final StringSet VALID_PANEL_ELEMENTS = new StringSet(
+			new String[] { HORIZONTAL_LAYOUT, VERTICAL_LAYOUT, FORM_LAYOUT });
+
 	public static final StringSet VALID_VIEWPORT_ELEMENTS = new StringSet(
-			new String[] { HORIZONTAL_LAYOUT, PANEL, VERTICAL_LAYOUT });
+			VALID_PANEL_ELEMENTS, new String[] { PANEL });
 
 	public static final StringSet VALID_CONTAINER_ELEMENTS = new StringSet(
-			new String[] { BUTTON, BUTTON_PANEL, FORM_PANEL, HORIZONTAL_LAYOUT,
-					PANEL, IMAGE, RADIO_PANEL, LABEL, TIMERLABEL,
-					VERTICAL_LAYOUT });
-
-	public static final StringSet VALID_PANEL_ELEMENTS = new StringSet(
-			new String[] { HORIZONTAL_LAYOUT, VERTICAL_LAYOUT });
+			VALID_VIEWPORT_ELEMENTS, new String[] { BUTTON, COMBOBOX, BUTTON_PANEL,
+					DATEFIELD, IMAGE, LABEL, RADIO_PANEL, TEXTAREA, TEXTFIELD, TIMERLABEL });
 
 	public static final StringSet VALID_WINDOW_ELEMENTS = VALID_PANEL_ELEMENTS;
-
-	public static final StringSet VALID_FORM_ELEMENTS = new StringSet(
-			new String[] { COMBOBOX, DATEFIELD, TEXTFIELD, TEXTAREA });
 
 }
