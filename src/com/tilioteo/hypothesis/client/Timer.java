@@ -15,7 +15,7 @@ import com.google.gwt.event.shared.HandlerManager;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public abstract class Timer {
+public class Timer {
 	public enum Direction {
 		Up, Down
 	};
@@ -198,10 +198,9 @@ public abstract class Timer {
 		public void run() {
 			if (running) {
 				setElapsed();
-				handlerManager.fireEvent(new UpdateEvent(Timer.this, counter,
-						direction, 0L));
 
 				if (!running) {
+					onStop(counter, direction, false);
 					handlerManager.fireEvent(new StopEvent(Timer.this,
 							counter, direction, false));
 				} else {
@@ -211,6 +210,12 @@ public abstract class Timer {
 			}
 		}
 	};
+	
+	protected void onStart(long time, Direction direction, boolean resumed) {};
+
+	protected void onStop(long time, Direction direction, boolean paused) {};
+
+	protected void onUpdate(long time, Direction direction, long timeSlice) {};
 
 	public long getCounter() {
 		return counter;
@@ -228,6 +233,7 @@ public abstract class Timer {
 		if (running) {
 			running = false;
 			setElapsed();
+			onStop(counter, direction, true);
 			handlerManager.fireEvent(new StopEvent(Timer.this, counter,
 					direction, true));
 		}
@@ -235,6 +241,7 @@ public abstract class Timer {
 	
 	protected void resume(boolean started) {
 		if (!running) {
+			onStart(counter, direction, started);
 			handlerManager.fireEvent(new StartEvent(Timer.this, counter,
 					direction, started));
 			running = true;
@@ -280,6 +287,7 @@ public abstract class Timer {
 		if (running) {
 			running = false;
 			updateCounter(startCounter);
+			onStop(counter, direction, false);
 			handlerManager.fireEvent(new StopEvent(Timer.this, counter,
 					direction, false));
 		}
@@ -301,26 +309,27 @@ public abstract class Timer {
 			// if rest passes into first timer tick interval then fire update event
 			// for this time slice
 			if (rest >= 0 && rest < TIMER_TICK) {
+				onUpdate(counter, direction, timeSlice);
 				handlerManagerMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, direction, timeSlice));
 			}
 		}
 		
 	}
 
-	public void addUpdateHandler(UpdateEventHandler handler, long timeSlice) {
-		HandlerManager handlerManager = handlerManagerMap.get(timeSlice);
+	public void addUpdateEventHandler(long interval, UpdateEventHandler handler) {
+		HandlerManager handlerManager = handlerManagerMap.get(interval);
 		
 		// timeSlice has not registered handler manager
 		// create and register them
 		if (null == handlerManager) {
 			handlerManager = new HandlerManager(this);
-			handlerManagerMap.put(timeSlice, handlerManager);
+			handlerManagerMap.put(interval, handlerManager);
 		}
 		
 		handlerManager.addHandler(UpdateEvent.TYPE, handler);
 	}
 
-	public void removeUpdateHandler(UpdateEventHandler handler) {
+	public void removeUpdateEventHandler(UpdateEventHandler handler) {
 		ArrayList<Long> pruneList = new ArrayList<Long>();
 		
 		for (Long key : handlerManagerMap.keySet()) {
@@ -339,19 +348,19 @@ public abstract class Timer {
 		handlerManager.removeHandler(UpdateEvent.TYPE, handler);
 	}
 
-	public void addStartHandler(StartEventHandler handler) {
+	public void addStartEventHandler(StartEventHandler handler) {
 		handlerManager.addHandler(StartEvent.TYPE, handler);
 	}
 
-	public void removeStartHandler(StartEventHandler handler) {
+	public void removeStartEventHandler(StartEventHandler handler) {
 		handlerManager.removeHandler(StartEvent.TYPE, handler);
 	}
 
-	public void addStopHandler(StopEventHandler handler) {
+	public void addStopEventHandler(StopEventHandler handler) {
 		handlerManager.addHandler(StopEvent.TYPE, handler);
 	}
 
-	public void removeStopHandler(StopEventHandler handler) {
+	public void removeStopEventHandler(StopEventHandler handler) {
 		handlerManager.removeHandler(StopEvent.TYPE, handler);
 	}
 
