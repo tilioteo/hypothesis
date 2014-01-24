@@ -15,27 +15,27 @@ import com.vaadin.ui.UI;
 
 /**
  * @author kamil
- *
+ * 
  */
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 public class MainUI extends UI {
 
 	@WebServlet(value = "/*", asyncSupported = true)
-	@VaadinServletConfiguration(productionMode = false, ui = MainUI.class)
+	@VaadinServletConfiguration(productionMode = false, ui = MainUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
 	public static class Servlet extends HibernateServlet {
 	}
-	
-	private Navigator navigator; 
+
+	private Navigator navigator;
 
 	@Override
 	protected void init(VaadinRequest request) {
 		getPage().setTitle("Hypothesis");
-		
+
 		navigator = new Navigator(this, this);
-		
+
 		navigator.addView("/packs", PacksView.class);
-		
+
 		navigator.navigateTo("/packs");
 	}
 

@@ -20,7 +20,7 @@ import com.vaadin.ui.UI;
 public class ProcessUI extends UI {
 
 	@WebServlet(value = "/process/*", asyncSupported = true)
-	@VaadinServletConfiguration(productionMode = false, ui = ProcessUI.class)
+	@VaadinServletConfiguration(productionMode = false, ui = ProcessUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
 	public static class Servlet extends HibernateServlet {
 	}
 	
