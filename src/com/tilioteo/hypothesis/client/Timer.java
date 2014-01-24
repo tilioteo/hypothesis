@@ -10,16 +10,20 @@ import java.util.HashMap;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.user.client.Timer;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public abstract class Counter {
+public abstract class Timer {
 	public enum Direction {
 		Up, Down
 	};
+	
+	/**
+	 * tick of internal timer
+	 */
+	public static final int TIMER_TICK = 10;
 
 	public interface UpdateEventHandler extends EventHandler {
 		void update(UpdateEvent event);
@@ -33,16 +37,16 @@ public abstract class Counter {
 		private Direction direction;
 		private long timeSlice;
 
-		public UpdateEvent(Counter counter, long time, Direction direction,
+		public UpdateEvent(Timer timer, long time, Direction direction,
 				long timeSlice) {
-			setSource(counter);
+			setSource(timer);
 			this.time = time;
 			this.direction = direction;
 			this.timeSlice = timeSlice;
 		}
 
-		public Counter getCounter() {
-			return (Counter) getSource();
+		public Timer getTimer() {
+			return (Timer) getSource();
 		}
 
 		public long getTime() {
@@ -82,16 +86,16 @@ public abstract class Counter {
 		private Direction direction;
 		boolean resumed;
 
-		public StartEvent(Counter counter, long time, Direction direction,
+		public StartEvent(Timer timer, long time, Direction direction,
 				boolean resumed) {
-			setSource(counter);
+			setSource(timer);
 			this.time = time;
 			this.direction = direction;
 			this.resumed = resumed;
 		}
 
-		public Counter getCounter() {
-			return (Counter) getSource();
+		public Timer getTimer() {
+			return (Timer) getSource();
 		}
 
 		public long getTime() {
@@ -131,16 +135,16 @@ public abstract class Counter {
 		private Direction direction;
 		private boolean paused;
 
-		public StopEvent(Counter counter, long time, Direction direction,
+		public StopEvent(Timer timer, long time, Direction direction,
 				boolean paused) {
-			setSource(counter);
+			setSource(timer);
 			this.time = time;
 			this.direction = direction;
 			this.paused = paused;
 		}
 
-		public Counter getCounter() {
-			return (Counter) getSource();
+		public Timer getTimer() {
+			return (Timer) getSource();
 		}
 
 		public long getTime() {
@@ -182,28 +186,27 @@ public abstract class Counter {
 	
 	/**
 	 * map of handler managers
-	 * for used timeSlice (key) is created its own handler manager
+	 * for registered timeSlice (key) is created its own handler manager
 	 */
 	HashMap<Long, HandlerManager> handlerManagerMap = new HashMap<Long, HandlerManager>();
 	
-	
-
-	private Timer timer = new Timer() {
+	/**
+	 * internal timer runs for 1 period of 10 ms
+	 */
+	private com.google.gwt.user.client.Timer internalTimer = new com.google.gwt.user.client.Timer() {
 		@Override
 		public void run() {
 			if (running) {
 				setElapsed();
-				handlerManager.fireEvent(new UpdateEvent(Counter.this, counter,
+				handlerManager.fireEvent(new UpdateEvent(Timer.this, counter,
 						direction, 0L));
-				// onUpdate(counter);
 
 				if (!running) {
-					handlerManager.fireEvent(new StopEvent(Counter.this,
+					handlerManager.fireEvent(new StopEvent(Timer.this,
 							counter, direction, false));
-					// onEnd(false);
 				} else {
 					startTime = new Date();
-					schedule(10);
+					schedule(TIMER_TICK);
 				}
 			}
 		}
@@ -221,26 +224,27 @@ public abstract class Counter {
 		return running;
 	}
 
-	// public abstract void onEnd(final boolean stopped);
-	// public abstract void onUpdate(final long estimatedTime);
-
 	public void pause() {
 		if (running) {
 			running = false;
 			setElapsed();
-			handlerManager.fireEvent(new StopEvent(Counter.this, counter,
+			handlerManager.fireEvent(new StopEvent(Timer.this, counter,
 					direction, true));
+		}
+	}
+	
+	protected void resume(boolean started) {
+		if (!running) {
+			handlerManager.fireEvent(new StartEvent(Timer.this, counter,
+					direction, started));
+			running = true;
+			startTime = new Date();
+			internalTimer.schedule(TIMER_TICK);
 		}
 	}
 
 	public void resume() {
-		if (!running) {
-			handlerManager.fireEvent(new StartEvent(Counter.this, counter,
-					direction, true));
-			running = true;
-			startTime = new Date();
-			timer.schedule(10);
-		}
+		resume(true);
 	}
 
 	public void setDirection(Direction direction) throws Exception {
@@ -269,16 +273,15 @@ public abstract class Counter {
 			counter = startCounter;
 
 		elapsed = 0;
-		resume();
+		resume(false);
 	}
 
 	public void stop() {
 		if (running) {
 			running = false;
 			updateCounter(startCounter);
-			handlerManager.fireEvent(new StopEvent(Counter.this, counter,
+			handlerManager.fireEvent(new StopEvent(Timer.this, counter,
 					direction, false));
-			// onEnd(true);
 		}
 	}
 
@@ -288,11 +291,27 @@ public abstract class Counter {
 		} else {
 			counter = startCounter - elapsed;
 		}
+		signalTimeSlices(elapsed);
 	}
 	
+	private void signalTimeSlices(long elapsed) {
+		for (Long timeSlice : handlerManagerMap.keySet()) {
+			// modulo for time slices passed in elapsed time
+			long rest = elapsed % timeSlice; 
+			// if rest passes into first timer tick interval then fire update event
+			// for this time slice
+			if (rest >= 0 && rest < TIMER_TICK) {
+				handlerManagerMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, direction, timeSlice));
+			}
+		}
+		
+	}
+
 	public void addUpdateHandler(UpdateEventHandler handler, long timeSlice) {
 		HandlerManager handlerManager = handlerManagerMap.get(timeSlice);
+		
 		// timeSlice has not registered handler manager
+		// create and register them
 		if (null == handlerManager) {
 			handlerManager = new HandlerManager(this);
 			handlerManagerMap.put(timeSlice, handlerManager);
