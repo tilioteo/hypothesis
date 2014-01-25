@@ -23,7 +23,7 @@ import com.vaadin.ui.UI;
  */
 @SuppressWarnings("serial")
 @Theme("hypothesis")
-public class MainUI extends UI {
+public class MainUI extends HUI {
 
 	@WebServlet(value = "/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = MainUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
@@ -46,7 +46,7 @@ public class MainUI extends UI {
 		setContent(verticalLayout);
 		
 		Timer timer = new Timer();
-		verticalLayout.addComponent(timer);
+		addTimer(timer);
 		
 		TimerLabel timerLabel = new TimerLabel();
 		timerLabel.setTimer(timer);
