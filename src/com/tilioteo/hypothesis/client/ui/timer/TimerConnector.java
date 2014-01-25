@@ -45,8 +45,8 @@ public class TimerConnector extends AbstractComponentConnector implements Timer.
 			}
 
 			@Override
-			public boolean isRunning() {
-				return getWidget().isRunning();
+			public void getRunning() {
+				getState().running = getWidget().isRunning();
 			}
 
 		});

@@ -1,5 +1,6 @@
 package com.tilioteo.hypothesis.client.ui;
 
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 import com.tilioteo.hypothesis.client.Timer;
 import com.tilioteo.hypothesis.client.Timer.Direction;
@@ -14,6 +15,7 @@ public class VTimer extends Widget {
 	private Timer timer;
 
 	public VTimer() {
+		setElement(DOM.createDiv());
 		timer = new Timer();
 	}
 	

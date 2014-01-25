@@ -8,6 +8,6 @@ public interface TimerClientRpc extends ClientRpc {
 	public void stop();
 	public void pause();
 	public void resume();
-	public boolean isRunning();
+	public void getRunning();
 	
 }

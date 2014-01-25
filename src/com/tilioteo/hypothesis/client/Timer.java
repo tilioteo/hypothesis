@@ -16,9 +16,7 @@ import com.google.gwt.event.shared.HandlerManager;
  * 
  */
 public class Timer {
-	public enum Direction {
-		Up, Down
-	};
+	public enum Direction { UP, DOWN };
 	
 	/**
 	 * tick of internal timer
@@ -177,7 +175,7 @@ public class Timer {
 	private boolean running = false;
 	private long elapsed = 0;
 	private Date startTime;
-	private Direction direction = Direction.Up;
+	private Direction direction = Direction.UP;
 
 	/**
 	 * handle manager for StartEvent and StopEvent
@@ -274,7 +272,7 @@ public class Timer {
 	public void start(long miliSeconds) {
 		running = false;
 		startCounter = miliSeconds;
-		if (Direction.Up.equals(direction))
+		if (Direction.UP.equals(direction))
 			counter = 0;
 		else
 			counter = startCounter;
@@ -294,7 +292,7 @@ public class Timer {
 	}
 
 	private void updateCounter(long elapsed) {
-		if (Direction.Up.equals(direction)) {
+		if (Direction.UP.equals(direction)) {
 			counter = elapsed;
 		} else {
 			counter = startCounter - elapsed;

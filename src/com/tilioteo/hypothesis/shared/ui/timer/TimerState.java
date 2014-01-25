@@ -8,5 +8,6 @@ public class TimerState extends AbstractComponentState {
 	public enum Direction {UP, DOWN};
 	
 	public Direction direction = Direction.UP;
+	public boolean running = false;
 
 }

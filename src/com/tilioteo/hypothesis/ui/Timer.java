@@ -162,7 +162,8 @@ public class Timer extends AbstractComponent {
 	}
 
 	public boolean isRunning() {
-		return clientRpc.isRunning();
+		clientRpc.getRunning();
+		return getState().running;
 	}
 
 	public Direction getDirection() {

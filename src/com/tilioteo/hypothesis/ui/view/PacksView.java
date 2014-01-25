@@ -4,6 +4,8 @@
 package com.tilioteo.hypothesis.ui.view;
 
 import com.tilioteo.hypothesis.ui.PackPanel;
+import com.tilioteo.hypothesis.ui.Timer;
+import com.tilioteo.hypothesis.ui.TimerLabel;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -20,7 +22,9 @@ public class PacksView extends HypothesisView {
 	
 	public PacksView() {
 		setSizeFull();
-		VerticalLayout verticalLayout = new VerticalLayout();
+		
+		
+		/*VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setSizeFull();
 		addComponent(verticalLayout);
 		
@@ -64,6 +68,7 @@ public class PacksView extends HypothesisView {
 			});
 			packLayout.addComponent(packPanel);
 		}
+		*/
 	}
 
 	@Override
