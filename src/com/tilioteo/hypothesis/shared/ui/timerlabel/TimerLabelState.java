@@ -18,6 +18,6 @@ public class TimerLabelState extends LabelState {
 
 	public String timeFormat = "HH:mm:ss.S";
 	public Connector timer = null;
-	public int refreshInterval = 100;
+	public int updateInterval = 100;
 
 }

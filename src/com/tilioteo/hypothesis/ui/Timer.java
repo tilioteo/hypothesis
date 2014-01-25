@@ -35,7 +35,7 @@ public class Timer extends AbstractComponent {
 		public void update(long time, String direction, long interval) {
 			EventRouter eventRouter = eventRouterMap.get(interval);
 			if (eventRouter != null) {
-				eventRouter.fireEvent(new UpdateEvent(Timer.this, time, Direction.valueOf(direction)));
+				eventRouter.fireEvent(new UpdateEvent(Timer.this, time, Direction.valueOf(direction), interval));
 			}
 		}
 
@@ -134,9 +134,16 @@ public class Timer extends AbstractComponent {
 	public class UpdateEvent extends TimerEvent {
 
 		public static final String EVENT_ID = "update";
+		
+		private long interval;
 
-		public UpdateEvent(Component source, long time, Direction direction) {
+		public UpdateEvent(Component source, long time, Direction direction, long interval) {
 			super(source, time, direction);
+			this.interval = interval;
+		}
+		
+		public long getInterval() {
+			return interval;
 		}
 	}
 

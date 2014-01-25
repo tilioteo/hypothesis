@@ -3,7 +3,6 @@
  */
 package com.tilioteo.hypothesis.client.ui.timerlabel;
 
-import com.tilioteo.hypothesis.client.ui.VTimer;
 import com.tilioteo.hypothesis.client.ui.VTimerLabel;
 import com.tilioteo.hypothesis.shared.ui.timerlabel.TimerLabelState;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -16,7 +15,7 @@ import com.vaadin.shared.ui.Connect;
  */
 @SuppressWarnings("serial")
 @Connect(com.tilioteo.hypothesis.ui.TimerLabel.class)
-public class TimeLabelConnector extends AbstractComponentConnector {
+public class TimerLabelConnector extends AbstractComponentConnector {
 
     @Override
     protected void init() {
@@ -40,6 +39,10 @@ public class TimeLabelConnector extends AbstractComponentConnector {
 		
 		if (stateChangeEvent.hasPropertyChanged("timeFormat")) {
 			getWidget().setTimeFormat(getState().timeFormat);
+		}
+		
+		if (stateChangeEvent.hasPropertyChanged("updateInterval")) {
+			getWidget().setUpdateInterval(getState().updateInterval);
 		}
 		
 		if (stateChangeEvent.hasPropertyChanged("timer")) {

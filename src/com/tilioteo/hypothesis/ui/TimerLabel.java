@@ -18,30 +18,30 @@ import com.vaadin.ui.Label;
  */
 @SuppressWarnings({ "serial" })
 public class TimerLabel extends Label implements SlideComponent {
-	
+
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
-	
+
 	private Timer timer = null;
 
 	public TimerLabel() {
 		super();
 		this.parentAlignment = new ParentAlignment();
 	}
-	
+
 	public TimerLabel(SlideManager slideManager) {
 		this();
 		this.slideManager = slideManager;
 	}
-	
+
 	public String getTimeFormat() {
 		return getState().timeFormat;
 	}
-	
+
 	public void setTimeFormat(String timeFormat) {
 		getState().timeFormat = timeFormat;
 	}
-	
+
 	@Override
 	public TimerLabelState getState() {
 		return (TimerLabelState) super.getState();
@@ -66,35 +66,17 @@ public class TimerLabel extends Label implements SlideComponent {
 				parentAlignment);
 
 		// TimerLabel specific properties
-		
+
 	}
-	
+
 	public Timer getTimer() {
 		return timer;
 	}
-	
+
 	public void setTimer(Timer timer) {
-		//if (this.timer != timer) {
-			//unregisterTimer();
-			
-			this.timer = timer;
-			getState().timer = timer;
-
-			//registerTimer();
-		//}
+		this.timer = timer;
+		getState().timer = timer;
 	}
-
-	/*private void registerTimer() {
-		if (timer != null) {
-			
-		}
-	}
-
-	private void unregisterTimer() {
-		if (timer != null) {
-			
-		}
-	}*/
 
 	@Override
 	public void setSlideManager(SlideManager slideManager) {
