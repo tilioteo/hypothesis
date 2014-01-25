@@ -6,8 +6,11 @@ package com.tilioteo.hypothesis.ui;
 import javax.servlet.annotation.WebServlet;
 
 import com.tilioteo.hypothesis.servlet.HibernateServlet;
+import com.tilioteo.hypothesis.shared.ui.timer.TimerState.Direction;
 import com.tilioteo.hypothesis.ui.Timer.StopEvent;
 import com.tilioteo.hypothesis.ui.Timer.StopListener;
+import com.tilioteo.hypothesis.ui.Timer.UpdateEvent;
+import com.tilioteo.hypothesis.ui.Timer.UpdateListener;
 import com.tilioteo.hypothesis.ui.view.PacksView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -47,8 +50,10 @@ public class MainUI extends HUI {
 		
 		Timer timer = new Timer();
 		addTimer(timer);
+		timer.setDirection(Direction.DOWN);
 		
 		TimerLabel timerLabel = new TimerLabel();
+		//timerLabel.setTimeFormat("kk:mm:ss.S");
 		timerLabel.setTimer(timer);
 		
 		verticalLayout.addComponent(timerLabel);
@@ -59,6 +64,20 @@ public class MainUI extends HUI {
 				Notification.show("Time out!", Type.HUMANIZED_MESSAGE);
 			}
 		});
+		
+		timer.addUpdateListener(2000, new UpdateListener() {
+			@Override
+			public void update(UpdateEvent event) {
+				Notification.show(String.format("%d miliseconds, interval %d ms", event.getTime(), event.getInterval()));
+			}
+		});
+		
+		/*timer.addUpdateListener(5000, new UpdateListener() {
+			@Override
+			public void update(UpdateEvent event) {
+				Notification.show(String.format("%d miliseconds, interval %d ms", event.getTime(), event.getInterval()));
+			}
+		});*/
 		
 		timer.start(30000);
 
