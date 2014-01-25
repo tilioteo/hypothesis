@@ -2,11 +2,15 @@ package com.tilioteo.hypothesis.ui;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.tilioteo.hypothesis.shared.ui.timer.TimerClientRpc;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerServerRpc;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerState;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerState.Direction;
+import com.vaadin.event.EventRouter;
+import com.vaadin.shared.ui.ComponentStateUtil;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Upload.StartedEvent;
@@ -27,9 +31,19 @@ public class Timer extends AbstractComponent {
 			fireEvent(new StopEvent(Timer.this, time, Direction.valueOf(direction), paused));
 		}
 
+		@Override
+		public void update(long time, String direction, long interval) {
+			EventRouter eventRouter = eventRouterMap.get(interval);
+			if (eventRouter != null) {
+				eventRouter.fireEvent(new UpdateEvent(Timer.this, time, Direction.valueOf(direction)));
+			}
+		}
+
 	};
 	
 	private TimerClientRpc clientRpc;
+	
+	private HashMap<Long, EventRouter> eventRouterMap = new HashMap<Long, EventRouter>();
 
 	public abstract class TimerEvent extends Component.Event {
 
@@ -117,31 +131,30 @@ public class Timer extends AbstractComponent {
 
 	}
 
-	// public class UpdateEvent extends TimerEvent {
-	//
-	// public static final String EVENT_ID = "update";
-	//
-	// public UpdateEvent(Component source, long time, Direction direction) {
-	// super(source, time, direction);
-	// }
-	// }
-	//
-	// public interface UpdateListener extends Serializable {
-	//
-	// public static final Method TIMER_UPDATE_METHOD = ReflectTools
-	// .findMethod(UpdateListener.class, "update",
-	// UpdateEvent.class);
-	//
-	// /**
-	// * Called when a {@link Timer} has been updated. A reference to the
-	// * component is given by {@link StartEvent#getComponent()}.
-	// *
-	// * @param event
-	// * An event containing information about the timer.
-	// */
-	// public void update(UpdateEvent event);
-	//
-	// }
+	public class UpdateEvent extends TimerEvent {
+
+		public static final String EVENT_ID = "update";
+
+		public UpdateEvent(Component source, long time, Direction direction) {
+			super(source, time, direction);
+		}
+	}
+
+	public interface UpdateListener extends Serializable {
+
+		public static final Method TIMER_UPDATE_METHOD = ReflectTools
+				.findMethod(UpdateListener.class, "update", UpdateEvent.class);
+
+		/**
+		 * Called when a {@link Timer} has been updated. A reference to the
+		 * component is given by {@link StartEvent#getComponent()}.
+		 * 
+		 * @param event
+		 *            An event containing information about the timer.
+		 */
+		public void update(UpdateEvent event);
+
+	}
 
 	public Timer() {
 		registerRpc(rpc);
@@ -192,13 +205,58 @@ public class Timer extends AbstractComponent {
 		removeListener(StopEvent.EVENT_ID, StopEvent.class, listener);
 	}
 
-	// public void addUpdateListener(UpdateListener listener) {
-	// addListener(UpdateEvent.EVENT_ID, UpdateEvent.class, listener,
-	// UpdateListener.TIMER_UPDATE_METHOD);
-	// }
-	//
-	// public void removeUpdateListener(UpdateListener listener) {
-	// removeListener(UpdateEvent.EVENT_ID, UpdateEvent.class, listener);
-	// }
+	public void addUpdateListener(long interval, UpdateListener listener) {
+        boolean needRepaint = eventRouterMap.isEmpty();
+
+		EventRouter eventRouter = eventRouterMap.get(interval);
+		if (null == eventRouter) {
+			eventRouter = new EventRouter();
+			eventRouterMap.put(interval, eventRouter);
+        	getState().intervals.add(interval);
+		}
+		
+        eventRouter.addListener(UpdateEvent.class, listener, UpdateListener.TIMER_UPDATE_METHOD);
+
+        if (needRepaint) {
+            ComponentStateUtil.addRegisteredEventListener(getState(), UpdateEvent.EVENT_ID);
+        }
+	}
+
+	public void removeUpdateListener(long interval, UpdateListener listener) {
+		EventRouter eventRouter = eventRouterMap.get(interval);
+
+		if (eventRouter != null) {
+            eventRouter.removeListener(UpdateEvent.class, listener);
+            if (!eventRouter.hasListeners(UpdateEvent.class)) {
+            	eventRouterMap.remove(interval);
+            	getState().intervals.remove(interval);
+            	
+                if (eventRouterMap.isEmpty())
+                	ComponentStateUtil.removeRegisteredEventListener(getState(), UpdateEvent.EVENT_ID);
+            }
+        }
+	}
+	
+	public void removeUpdateListener(UpdateListener listener) {
+        boolean needRepaint = !eventRouterMap.isEmpty();
+
+		ArrayList<Long> pruneList = new ArrayList<Long>();
+		
+		for (Long interval : eventRouterMap.keySet()) {
+			EventRouter eventRouter = eventRouterMap.get(interval);
+			eventRouter.removeListener(UpdateEvent.class, listener);
+			
+			if (!eventRouter.hasListeners(UpdateEvent.class))
+				pruneList.add(interval);
+		}
+
+		for (Long interval : pruneList) {
+			eventRouterMap.remove(interval);
+			getState().intervals.remove(interval);
+		}
+		
+		if (needRepaint && eventRouterMap.isEmpty())
+        	ComponentStateUtil.removeRegisteredEventListener(getState(), UpdateEvent.EVENT_ID);
+	}
 
 }

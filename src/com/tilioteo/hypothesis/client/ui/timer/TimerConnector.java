@@ -1,10 +1,13 @@
 package com.tilioteo.hypothesis.client.ui.timer;
 
+import java.util.Set;
+
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 import com.tilioteo.hypothesis.client.Timer;
 import com.tilioteo.hypothesis.client.Timer.StartEvent;
 import com.tilioteo.hypothesis.client.Timer.StopEvent;
+import com.tilioteo.hypothesis.client.Timer.UpdateEvent;
 import com.tilioteo.hypothesis.client.ui.VTimer;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerClientRpc;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerServerRpc;
@@ -14,16 +17,18 @@ import com.vaadin.client.communication.StateChangeEvent.StateChangeHandler;
 
 @SuppressWarnings("serial")
 @Connect(com.tilioteo.hypothesis.ui.Timer.class)
-public class TimerConnector extends AbstractComponentConnector implements Timer.StartEventHandler, Timer.StopEventHandler {
+public class TimerConnector extends AbstractComponentConnector implements
+		Timer.StartEventHandler, Timer.StopEventHandler,
+		Timer.UpdateEventHandler {
 
-    @Override
-    protected void init() {
-        super.init();
-        getWidget().addStartEventHandler(this);
-        getWidget().addStopEventHandler(this);
-        
-        registerRpc(TimerClientRpc.class, new TimerClientRpc() {
-			
+	@Override
+	protected void init() {
+		super.init();
+		getWidget().addStartEventHandler(this);
+		getWidget().addStopEventHandler(this);
+
+		registerRpc(TimerClientRpc.class, new TimerClientRpc() {
+
 			@Override
 			public void start(long time) {
 				getWidget().start(time);
@@ -50,15 +55,15 @@ public class TimerConnector extends AbstractComponentConnector implements Timer.
 			}
 
 		});
-        
-        addStateChangeHandler("direction", new StateChangeHandler() {
+
+		addStateChangeHandler("direction", new StateChangeHandler() {
 			@Override
 			public void onStateChanged(StateChangeEvent stateChangeEvent) {
 				getWidget().setDirection(getState().direction.name());
-				
+
 			}
 		});
-    }
+	}
 
 	@Override
 	public VTimer getWidget() {
@@ -74,20 +79,41 @@ public class TimerConnector extends AbstractComponentConnector implements Timer.
 	public void onStateChanged(StateChangeEvent stateChangeEvent) {
 		super.onStateChanged(stateChangeEvent);
 
-		// TODO do something useful
-		//final String text = getState().text;
-		//getWidget().setText(text);
+		if (stateChangeEvent.hasPropertyChanged("intervals")) {
+			Set<Long> requiredIntervals = getState().intervals;
+			Set<Long> handledIntervals = getWidget().getHandledIntervals();
+
+			// unregister unwanted interval handlers
+			for (Long interval : handledIntervals) {
+				if (!requiredIntervals.contains(interval)) {
+					getWidget().removeUpdateEventHandler(interval, this);
+				}
+			}
+			// register required interval handlers
+			for (Long interval : requiredIntervals) {
+				if (!getWidget().hasUpdateEventHandler(interval, this)) {
+					getWidget().addUpdateEventHandler(interval, this);
+				}
+			}
+		}
 	}
 
 	@Override
 	public void start(StartEvent event) {
-		getRpcProxy(TimerServerRpc.class).start(event.getTime(), event.getDirection().name(), event.isResumed());
+		getRpcProxy(TimerServerRpc.class).start(event.getTime(),
+				event.getDirection().name(), event.isResumed());
 	}
 
 	@Override
 	public void stop(StopEvent event) {
-		getRpcProxy(TimerServerRpc.class).stop(event.getTime(), event.getDirection().name(), event.isPaused());
+		getRpcProxy(TimerServerRpc.class).stop(event.getTime(),
+				event.getDirection().name(), event.isPaused());
+	}
+
+	@Override
+	public void update(UpdateEvent event) {
+		getRpcProxy(TimerServerRpc.class).update(event.getTime(),
+				event.getDirection().name(), event.getInterval());
 	}
 
 }
-

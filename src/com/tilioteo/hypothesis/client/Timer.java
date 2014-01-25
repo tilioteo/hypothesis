@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.client;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -33,14 +34,14 @@ public class Timer {
 
 		private long time;
 		private Direction direction;
-		private long timeSlice;
+		private long interval;
 
 		public UpdateEvent(Timer timer, long time, Direction direction,
-				long timeSlice) {
+				long interval) {
 			setSource(timer);
 			this.time = time;
 			this.direction = direction;
-			this.timeSlice = timeSlice;
+			this.interval = interval;
 		}
 
 		public Timer getTimer() {
@@ -55,8 +56,8 @@ public class Timer {
 			return direction;
 		}
 
-		public long getTimeSlice() {
-			return timeSlice;
+		public long getInterval() {
+			return interval;
 		}
 
 		@Override
@@ -317,8 +318,8 @@ public class Timer {
 	public void addUpdateEventHandler(long interval, UpdateEventHandler handler) {
 		HandlerManager handlerManager = handlerManagerMap.get(interval);
 		
-		// timeSlice has not registered handler manager
-		// create and register them
+		// there is not registered handler manager for interval
+		// create and register it
 		if (null == handlerManager) {
 			handlerManager = new HandlerManager(this);
 			handlerManagerMap.put(interval, handlerManager);
@@ -326,24 +327,44 @@ public class Timer {
 		
 		handlerManager.addHandler(UpdateEvent.TYPE, handler);
 	}
+	
+	/**
+	 * Removes update handler from interval registration.
+	 * 
+	 * @param interval
+	 * @param handler
+	 */
+	public void removeUpdateEventHandler(long interval, UpdateEventHandler handler) {
+		HandlerManager handlerManager = handlerManagerMap.get(interval);
+		if (handlerManager != null) {
+			handlerManager.removeHandler(UpdateEvent.TYPE, handler);
+			
+			// clean handler manager map
+			if (handlerManager.getHandlerCount(UpdateEvent.TYPE) == 0)
+				handlerManagerMap.remove(interval);
+		}
+	}
 
+	/**
+	 * Removes update handler from all interval registrations.
+	 * 
+	 * @param handler
+	 */
 	public void removeUpdateEventHandler(UpdateEventHandler handler) {
 		ArrayList<Long> pruneList = new ArrayList<Long>();
 		
-		for (Long key : handlerManagerMap.keySet()) {
-			HandlerManager handlerManager = handlerManagerMap.get(key);
+		for (Long interval : handlerManagerMap.keySet()) {
+			HandlerManager handlerManager = handlerManagerMap.get(interval);
 			handlerManager.removeHandler(UpdateEvent.TYPE, handler);
 			
 			if (handlerManager.getHandlerCount(UpdateEvent.TYPE) == 0)
-				pruneList.add(key);
+				pruneList.add(interval);
 		}
 		
 		// clean unused handler managers
-		for (Long key : pruneList) {
-			handlerManagerMap.remove(key);
+		for (Long interval : pruneList) {
+			handlerManagerMap.remove(interval);
 		}
-		
-		handlerManager.removeHandler(UpdateEvent.TYPE, handler);
 	}
 
 	public void addStartEventHandler(StartEventHandler handler) {
@@ -362,4 +383,21 @@ public class Timer {
 		handlerManager.removeHandler(StopEvent.TYPE, handler);
 	}
 
+	public boolean hasUpdateEventHandler(long interval, UpdateEventHandler handler) {
+		HandlerManager handlerManager = handlerManagerMap.get(interval);
+		if (handlerManager != null) {
+			int count = handlerManager.getHandlerCount(UpdateEvent.TYPE);
+			if (count > 0) {
+				for (int i = 0; i < count; ++i) {
+					if (handler == handlerManager.getHandler(UpdateEvent.TYPE, i))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public Set<Long> getHandledIntervals() {
+		return handlerManagerMap.keySet();
+	}
 }
