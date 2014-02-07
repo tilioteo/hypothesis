@@ -98,19 +98,10 @@ public class SlideXmlConstants {
 	public static final String Y = "Y";
 
 	// public static final String TEXT = "Text";
-	// public static final String MAP = "Map";
-	// public static final String LAYERS = "Layers";
-	// public static final String LAYER = "Layer";
-	// public static final String CONTROLS = "Controls";
-	// public static final String CONTROL = "Control";
 	// public static final String ICONS = "Icons";
 	// public static final String ICON = "Icon";
 	// public static final String MARKERS = "Markers";
 	// public static final String MARKER = "Marker";
-	// public static final String FEATURES = "Features";
-	// public static final String FEATURE = "Feature";
-	// public static final String ATTRIBUTES = "Attributes";
-	// public static final String ATTRIBUTE = "Attribute";
 	// public static final String PROPERTY = "Property";
 	// public static final String STYLES = "Styles";
 	// public static final String STYLE = "Style";
@@ -127,11 +118,6 @@ public class SlideXmlConstants {
 	// public static final String LONLAT = "LonLat";
 	// public static final String SIZE = "Size";
 	// public static final String OFFSET = "Offset";
-	// public static final String IMAGE_URL = "ImageUrl";
-	// public static final String GEOMETRY_TYPE = "GeometryType";
-	// public static final String GEOMETRY = "Geometry";
-	// public static final String GEOMETRY_DATA = "GeometryData";
-	// public static final String LAYER_NUMBER = "LayerNr";
 	// public static final String POINT_IN_RADIUS = "PointInRadius";
 	// public static final String POINT_IN_AREA = "PointInArea";
 	// public static final String LINE_IN_AREA = "LineInArea";
