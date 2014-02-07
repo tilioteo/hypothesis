@@ -6,7 +6,7 @@ package com.tilioteo.hypothesis.client.ui.image;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
-import com.tilioteo.hypothesis.shared.ui.ImageServerRpc;
+import com.tilioteo.hypothesis.shared.ui.image.ImageServerRpc;
 import com.tilioteo.hypothesis.shared.ui.image.ImageState;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;

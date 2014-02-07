@@ -1,7 +1,9 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.shared.ui;
+package com.tilioteo.hypothesis.shared.ui.image;
+
+import com.tilioteo.hypothesis.shared.ui.LoadRpc;
 
 /**
  * @author kamil

@@ -19,7 +19,7 @@ import com.tilioteo.hypothesis.model.AbstractBaseAction;
 import com.tilioteo.hypothesis.model.Command;
 import com.tilioteo.hypothesis.model.CommandFactory;
 import com.tilioteo.hypothesis.shared.EventId;
-import com.tilioteo.hypothesis.shared.ui.ImageServerRpc;
+import com.tilioteo.hypothesis.shared.ui.image.ImageServerRpc;
 import com.tilioteo.hypothesis.shared.ui.image.ImageState;
 import com.vaadin.event.ConnectorEventListener;
 import com.vaadin.event.MouseEvents;
