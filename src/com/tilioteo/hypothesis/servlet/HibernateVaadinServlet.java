@@ -13,7 +13,7 @@ import com.vaadin.server.VaadinServlet;
  *
  */
 @SuppressWarnings("serial")
-public class HibernateServlet extends VaadinServlet {
+public class HibernateVaadinServlet extends VaadinServlet {
 	
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {

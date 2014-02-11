@@ -3,8 +3,13 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.vaadin.maps.ui.LayerLayout;
 import org.vaadin.maps.ui.control.DrawPathControl;
 import org.vaadin.maps.ui.control.DrawPointControl;
@@ -20,11 +25,14 @@ import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 import org.vaadin.maps.ui.tile.ImageTile;
 import org.vaadin.maps.ui.tile.ImageTile.LoadEvent;
 
-import com.tilioteo.hypothesis.servlet.HibernateServlet;
+import com.tilioteo.hypothesis.context.HypothesisConfig;
+import com.tilioteo.hypothesis.servlet.HibernateVaadinServlet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.WrappedHttpSession;
+import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Notification;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -40,13 +48,25 @@ public class MainUI extends HUI {
 
 	@WebServlet(value = "/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = MainUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
-	public static class Servlet extends HibernateServlet {
+	public static class Servlet extends HibernateVaadinServlet {
 	}
 
 	private Navigator navigator;
+	
+	private HypothesisConfig config;
+	
 
 	@Override
 	protected void init(VaadinRequest request) {
+		
+		/*WrappedSession session = request.getWrappedSession();
+		HttpSession httpSession = ((WrappedHttpSession)session).getHttpSession();
+		ServletContext servletContext = httpSession.getServletContext();
+		ApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+		
+		config = (HypothesisConfig)context.getBean(HypothesisConfig.class);
+		*/
+		//config.getSecretKey();
 		getPage().setTitle("Hypothesis");
 
 		/*navigator = new Navigator(this, this);

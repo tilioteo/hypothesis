@@ -26,9 +26,9 @@ import org.hibernate.StaleObjectStateException;
  */
 @WebFilter(urlPatterns = { "/*" }, dispatcherTypes = { DispatcherType.REQUEST,
 		DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR })
-public class SessionInterceptor implements Filter {
+public class HibernateSessionInterceptor implements Filter {
 
-	private static Log log = LogFactory.getLog(SessionInterceptor.class);
+	private static Log log = LogFactory.getLog(HibernateSessionInterceptor.class);
 
 	@Override
 	public void destroy() {

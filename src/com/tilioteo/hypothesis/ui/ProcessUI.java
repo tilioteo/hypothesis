@@ -5,7 +5,7 @@ package com.tilioteo.hypothesis.ui;
 
 import javax.servlet.annotation.WebServlet;
 
-import com.tilioteo.hypothesis.servlet.HibernateServlet;
+import com.tilioteo.hypothesis.servlet.HibernateVaadinServlet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;
@@ -21,7 +21,7 @@ public class ProcessUI extends UI {
 
 	@WebServlet(value = "/process/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = ProcessUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
-	public static class Servlet extends HibernateServlet {
+	public static class Servlet extends HibernateVaadinServlet {
 	}
 	
 	@Override
