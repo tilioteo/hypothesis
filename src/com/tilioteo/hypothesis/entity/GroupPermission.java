@@ -30,7 +30,7 @@ import org.hibernate.annotations.Cascade;
 @Table(name = "TBL_GROUP_PERMITION", uniqueConstraints = { @UniqueConstraint(columnNames = {
 		"GROUP_ID", "PACK_ID" }) })
 @Access(AccessType.PROPERTY)
-public final class GroupPermition extends SerializableIdObject {
+public final class GroupPermission extends SerializableIdObject {
 
 	/**
 	 * 
@@ -40,11 +40,11 @@ public final class GroupPermition extends SerializableIdObject {
 	private Group group;
 	private Pack pack;
 
-	protected GroupPermition() {
+	protected GroupPermission() {
 		super();
 	}
 
-	public GroupPermition(Group group, Pack pack) {
+	public GroupPermission(Group group, Pack pack) {
 		this();
 		this.group = group;
 		this.pack = pack;
@@ -87,9 +87,9 @@ public final class GroupPermition extends SerializableIdObject {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof GroupPermition))
+		if (!(obj instanceof GroupPermission))
 			return false;
-		GroupPermition other = (GroupPermition) obj;
+		GroupPermission other = (GroupPermission) obj;
 		/*
 		 * if (getId() == null) { if (other.getId() != null) return false; }
 		 * else if (!getId().equals(other.getId())) return false;

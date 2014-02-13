@@ -48,7 +48,7 @@ import com.tilioteo.hypothesis.event.ProcessEventTypes;
 import com.tilioteo.hypothesis.event.RenderContentEvent;
 import com.tilioteo.hypothesis.event.StartTestEvent;
 import com.tilioteo.hypothesis.persistence.OutputManager;
-import com.tilioteo.hypothesis.persistence.PermitionManager;
+import com.tilioteo.hypothesis.persistence.PermissionManager;
 import com.tilioteo.hypothesis.persistence.TestManager;
 import com.vaadin.ui.UI;
 
@@ -69,7 +69,7 @@ public class ProcessManager implements ProcessEventListener {
 
 	private SlideManager slideManager;
 	private TestManager testManager;
-	private PermitionManager permitionManager;
+	private PermissionManager permissionManager;
 	private OutputManager outputManager;
 
 	private boolean canClose = true;
@@ -86,8 +86,8 @@ public class ProcessManager implements ProcessEventListener {
 				AbstractComponentEvent.class);
 
 		slideManager = new SlideManager(processEventManager);
-		permitionManager = PermitionManager.newInstance();
-		testManager = permitionManager.getTestManager();
+		permissionManager = PermissionManager.newInstance();
+		testManager = permissionManager.getTestManager();
 
 		outputManager = OutputManager.newInstance();
 	}
@@ -140,7 +140,7 @@ public class ProcessManager implements ProcessEventListener {
 	}
 
 	private boolean checkUserPack(User user, Pack pack) {
-		Set<Pack> packs = permitionManager.findUserPacks(user, true);
+		Set<Pack> packs = permissionManager.findUserPacks(user, true);
 		for (Pack pack2 : packs) {
 			if (pack2.getId().equals(pack.getId()))
 				return true;

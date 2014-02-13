@@ -29,7 +29,7 @@ import org.hibernate.annotations.Cascade;
 @Table(name = "TBL_USER_PERMITION", uniqueConstraints = { @UniqueConstraint(columnNames = {
 		"USER_ID", "PACK_ID" }) })
 @Access(AccessType.PROPERTY)
-public final class UserPermition extends SerializableIdObject {
+public final class UserPermission extends SerializableIdObject {
 
 	/**
 	 * 
@@ -50,19 +50,19 @@ public final class UserPermition extends SerializableIdObject {
 	 */
 	private Integer pass; // default 1, null - unlimited
 
-	protected UserPermition() {
+	protected UserPermission() {
 		super();
 	}
 
-	public UserPermition(User user, Pack pack) {
+	public UserPermission(User user, Pack pack) {
 		this(user, pack, true);
 	}
 
-	public UserPermition(User user, Pack pack, boolean enabled) {
+	public UserPermission(User user, Pack pack, boolean enabled) {
 		this(user, pack, enabled, 1);
 	}
 
-	public UserPermition(User user, Pack pack, boolean enabled, Integer pass) {
+	public UserPermission(User user, Pack pack, boolean enabled, Integer pass) {
 		this();
 		this.user = user;
 		this.pack = pack;
@@ -70,7 +70,7 @@ public final class UserPermition extends SerializableIdObject {
 		this.pass = pass;
 	}
 
-	public UserPermition(User user, Pack pack, Integer pass) {
+	public UserPermission(User user, Pack pack, Integer pass) {
 		this(user, pack, true, pass);
 	}
 
@@ -129,9 +129,9 @@ public final class UserPermition extends SerializableIdObject {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof UserPermition))
+		if (!(obj instanceof UserPermission))
 			return false;
-		UserPermition other = (UserPermition) obj;
+		UserPermission other = (UserPermission) obj;
 		/*
 		 * if (getId() == null) { if (other.getId() != null) return false; }
 		 * else if (!getId().equals(other.getId())) return false;
