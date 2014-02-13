@@ -92,7 +92,7 @@ public class ComponentUtility {
 		component.setOrientation(orientation);
 	}
 
-	private static void setHeight(Component component, String dimension) {
+	public static void setHeight(Component component, String dimension) {
 		if (component != null)
 			if (dimension != null)
 				component.setHeight(dimension);
@@ -111,12 +111,14 @@ public class ComponentUtility {
 
 	private static void setParentAlignment(StringMap properties,
 			ParentAlignment parentAlignment) {
-		String align = properties.get(SlideXmlConstants.ALIGNMENT);
-		Alignment alignment = stringToAlignment(align);
-		parentAlignment.setAlignment(alignment);
+		if (parentAlignment != null) {
+			String align = properties.get(SlideXmlConstants.ALIGNMENT);
+			Alignment alignment = stringToAlignment(align);
+			parentAlignment.setAlignment(alignment);
+		}
 	}
 
-	private static void setWidth(Component component, String dimension) {
+	public static void setWidth(Component component, String dimension) {
 		if (component != null)
 			if (dimension != null)
 				component.setWidth(dimension);

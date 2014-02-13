@@ -16,6 +16,7 @@ public class RenderContentEvent extends AbstractContentEvent {
 		super(content);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.RenderSlide;
 	}

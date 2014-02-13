@@ -67,7 +67,7 @@ public abstract class DrawFeatureControl<H extends AbstractHandler> extends Abst
 		return null;
 	}
 	
-	private void setLayer(VectorFeatureLayer layer) {
+	protected void setLayer(VectorFeatureLayer layer) {
 		this.layer = layer;
 		getState().layer = layer;
 		provideLayerToHandler();

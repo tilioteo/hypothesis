@@ -132,6 +132,7 @@ public class SlideXmlConstants {
 	// public static final String PREVIOUS_TYPE = "PreviousSwitch";
 	// public static final String PREVIOUS_ID = "PreviousId";
 
+	// TODO replace with DTD schema
 	public static final StringSet VALID_SLIDE_ROOT_ELEMENTS = new StringSet(
 			new String[] { SLIDE, SLIDE_TEMPLATE });
 

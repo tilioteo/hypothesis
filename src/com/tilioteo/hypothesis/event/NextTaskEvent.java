@@ -16,6 +16,7 @@ public class NextTaskEvent extends AbstractRunningEvent {
 		super(task);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.NextTask;
 	}

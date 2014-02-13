@@ -21,6 +21,7 @@ public abstract class AbstractProcessEvent extends EventObject implements
 		this.timestamp = new Date();
 	}
 
+	@Override
 	public Date getTimestamp() {
 		return timestamp;
 	}

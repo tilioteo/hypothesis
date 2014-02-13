@@ -16,6 +16,7 @@ public class PriorSlideEvent extends AbstractRunningEvent {
 		super(slide);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.PriorSlide;
 	}

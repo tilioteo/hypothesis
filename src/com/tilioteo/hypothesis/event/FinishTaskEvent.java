@@ -16,6 +16,7 @@ public class FinishTaskEvent extends AbstractRunningEvent {
 		super(task);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.FinishTask;
 	}

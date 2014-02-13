@@ -5,6 +5,7 @@ package org.vaadin.maps.ui.layer;
 
 import java.net.URL;
 
+import org.vaadin.maps.server.ImageResource;
 import org.vaadin.maps.shared.ui.layer.ImageLayerServerRpc;
 import org.vaadin.maps.shared.ui.layer.ImageLayerState;
 import org.vaadin.maps.ui.tile.ImageTile;
@@ -27,23 +28,28 @@ public class ImageLayer extends AbstractLayer<ImageTile> implements Focusable {
 		}*/
 	};
 	
+	private ImageTile tile = null;
+	
 	public ImageLayer() {
 		registerRpc(rpc);
 		getState().tabIndex = -1;
+		initTile();
+	}
+	
+	private void initTile() {
+		tile = new ImageTile();
+		tile.setSizeFull();
+		setContent(tile);
 	}
 
 	public ImageLayer(URL imageURL) {
 		this();
-		ImageTile tile = new ImageTile(imageURL);
-		tile.setSizeFull();
-		setContent(tile);
+		setTileUrl(imageURL);
 	}
 	
 	public ImageLayer(String imageURL) {
 		this();
-		ImageTile tile = new ImageTile(imageURL);
-		tile.setSizeFull();
-		setContent(new ImageTile(imageURL));
+		setTileUrl(imageURL);
 	}
 
 	@Override
@@ -69,6 +75,14 @@ public class ImageLayer extends AbstractLayer<ImageTile> implements Focusable {
     @Override
     public void focus() {
         super.focus();
+    }
+    
+    public void setTileUrl(URL imageURL) {
+    	tile.setSource(new ImageResource(imageURL));
+    }
+
+    public void setTileUrl(String imageURL) {
+    	tile.setSource(new ImageResource(imageURL));
     }
 
 	/**

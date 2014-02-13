@@ -21,6 +21,7 @@ public class ErrorNotificationEvent extends AbstractNotificationEvent {
 		super(caption, description);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.Null;
 	}

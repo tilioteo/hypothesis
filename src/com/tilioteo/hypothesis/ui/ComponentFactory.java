@@ -89,7 +89,7 @@ public class ComponentFactory {
 		return null;
 	}
 
-	private static <T extends AbstractComponent & SlideComponent> T createFromElement(
+	public static <T extends AbstractComponent & SlideComponent> T createFromElement(
 			Class<T> clazz, Element element, SlideManager slideManager) {
 
 		T component;
@@ -110,6 +110,8 @@ public class ComponentFactory {
 
 	private static SlideComponent createPluginComponent(Element element,
 			SlideManager slideManager) {
+		
+		// get registered plugins
 
 		// TODO not implemented yet
 		return null;

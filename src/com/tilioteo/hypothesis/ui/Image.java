@@ -246,7 +246,7 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 		addClickListener(new MouseEvents.ClickListener() {
 			@Override
 			public void click(MouseEvents.ClickEvent event) {
-				data.setXY(event.getClientX(), event.getClientY());
+				data.setXY(event.getRelativeX(), event.getRelativeY());
 				componentEvent.execute();
 				action.execute();
 			}

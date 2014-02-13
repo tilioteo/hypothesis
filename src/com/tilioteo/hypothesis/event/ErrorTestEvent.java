@@ -25,10 +25,12 @@ public class ErrorTestEvent extends AbstractTestEvent {
 		// TODO add reason
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.TestError;
 	}
 
+	@Override
 	public Status getStatus() {
 		return Status.BROKEN_BY_ERROR;
 	}

@@ -33,6 +33,11 @@ public class ImageTile extends ProxyTile<ImageResource> {
 		}
 	};
 	
+	public ImageTile() {
+		super();
+		registerRpc(rpc);
+	}
+	
 	public ImageTile(URL imageURL) {
 		super(new ImageResource(imageURL));
 		registerRpc(rpc);
@@ -41,6 +46,14 @@ public class ImageTile extends ProxyTile<ImageResource> {
 	public ImageTile(String imageURL) {
 		super(new ImageResource(imageURL));
 		registerRpc(rpc);
+	}
+	
+	public void setImageUrl(URL imageURL) {
+		setSource(new ImageResource(imageURL));
+	}
+
+	public void setImageUrl(String imageURL) {
+		setSource(new ImageResource(imageURL));
 	}
 
 	/**

@@ -21,6 +21,7 @@ public class TrayNotificationEvent extends AbstractNotificationEvent {
 		super(caption, description);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.Null;
 	}

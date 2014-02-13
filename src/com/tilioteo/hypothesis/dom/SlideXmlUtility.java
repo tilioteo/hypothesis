@@ -82,7 +82,7 @@ public class SlideXmlUtility {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<Element> getElementSubNodeChilds(Element element,
+	public static List<Element> getElementSubNodeChilds(Element element,
 			String subNodeName, StringSet validElementNames) {
 		if (element != null && !Strings.isNullOrEmpty(subNodeName)) {
 			List<Node> childs = element.selectNodes(String.format("%s/*",

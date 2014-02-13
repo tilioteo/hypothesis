@@ -19,6 +19,7 @@ public abstract class RadioPanelEvent extends
 			super(data);
 		}
 
+		@Override
 		public String getName() {
 			return ProcessEventTypes.RadioPanelClick;
 		}

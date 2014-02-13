@@ -16,6 +16,7 @@ public class AfterRenderContentEvent extends AbstractContentEvent {
 		super(content);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.AfterRender;
 	}

@@ -17,10 +17,12 @@ public class CloseTestEvent extends AbstractTestEvent {
 		super(test);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.Null;
 	}
 
+	@Override
 	public Status getStatus() {
 		return null;
 	}

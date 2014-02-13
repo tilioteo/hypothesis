@@ -18,6 +18,7 @@ public abstract class ImageEvent extends AbstractComponentEvent<Image> {
 			super(data);
 		}
 
+		@Override
 		public String getName() {
 			return ProcessEventTypes.ImageClick;
 		}
@@ -30,14 +31,15 @@ public abstract class ImageEvent extends AbstractComponentEvent<Image> {
 			super(data);
 		}
 
+		@Override
 		public String getName() {
 			return ProcessEventTypes.ImageLoad;
 		}
 
 	}
 
-	protected ImageEvent(/* ProcessEvent event, */ImageData data) {
-		super(/* event, */data);
+	protected ImageEvent(ImageData data) {
+		super(data);
 	}
 
 }

@@ -18,6 +18,7 @@ public abstract class ButtonEvent extends AbstractComponentEvent<Button> {
 			super(data);
 		}
 
+		@Override
 		public String getName() {
 			return ProcessEventTypes.ButtonClick;
 		}

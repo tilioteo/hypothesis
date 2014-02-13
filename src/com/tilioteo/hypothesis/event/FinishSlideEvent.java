@@ -21,6 +21,7 @@ public class FinishSlideEvent extends AbstractRunningEvent {
 		this.direction = direction;
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.FinishSlide;
 	}

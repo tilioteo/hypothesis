@@ -17,10 +17,12 @@ public class BreakTestEvent extends AbstractTestEvent {
 		super(test);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.BreakTest;
 	}
 
+	@Override
 	public Status getStatus() {
 		return Status.BROKEN_BY_CLIENT;
 	}

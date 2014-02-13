@@ -20,6 +20,7 @@ public class FinishBranchEvent extends AbstractRunningEvent {
 		return (Branch) getSource();
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.FinishBranch;
 	}

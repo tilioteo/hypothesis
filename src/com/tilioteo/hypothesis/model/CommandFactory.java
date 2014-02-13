@@ -50,7 +50,7 @@ public class CommandFactory {
 		return createComponentEventCommand(event);
 	}
 
-	private static Command createComponentEventCommand(
+	public static Command createComponentEventCommand(
 			final AbstractComponentEvent<?> event) {
 		return new Command() {
 			public void execute() {

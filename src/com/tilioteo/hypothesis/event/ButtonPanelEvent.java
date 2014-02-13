@@ -19,6 +19,7 @@ public abstract class ButtonPanelEvent extends
 			super(data);
 		}
 
+		@Override
 		public String getName() {
 			return ProcessEventTypes.ButtonPanelClick;
 		}

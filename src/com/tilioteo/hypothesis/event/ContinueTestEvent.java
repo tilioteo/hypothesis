@@ -17,10 +17,12 @@ public class ContinueTestEvent extends AbstractTestEvent {
 		super(test);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.ContinueTest;
 	}
 
+	@Override
 	public Status getStatus() {
 		return Status.STARTED;
 	}

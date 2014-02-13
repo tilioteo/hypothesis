@@ -20,6 +20,7 @@ public class NextBranchEvent extends AbstractRunningEvent {
 		return (Branch) getSource();
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.NextBranch;
 	}
