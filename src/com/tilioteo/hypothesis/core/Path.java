@@ -4,8 +4,8 @@
 package com.tilioteo.hypothesis.core;
 
 import com.tilioteo.hypothesis.entity.Slide;
-import com.tilioteo.hypothesis.model.AbstractBaseFormula;
-import com.tilioteo.hypothesis.model.DefaultPath;
+import com.tilioteo.hypothesis.processing.AbstractBaseFormula;
+import com.tilioteo.hypothesis.processing.DefaultPath;
 
 /**
  * @author Kamil Morong - Hypothesis

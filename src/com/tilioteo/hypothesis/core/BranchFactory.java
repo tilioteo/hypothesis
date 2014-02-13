@@ -11,12 +11,12 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.dom.BranchXmlConstants;
 import com.tilioteo.hypothesis.dom.BranchXmlUtility;
 import com.tilioteo.hypothesis.evaluable.ExpressionFactory;
-import com.tilioteo.hypothesis.model.AbstractBaseFormula;
-import com.tilioteo.hypothesis.model.AbstractBasePath;
-import com.tilioteo.hypothesis.model.DefaultPath;
-import com.tilioteo.hypothesis.model.Expression;
-import com.tilioteo.hypothesis.model.Nick;
-import com.tilioteo.hypothesis.model.Pattern;
+import com.tilioteo.hypothesis.processing.AbstractBaseFormula;
+import com.tilioteo.hypothesis.processing.AbstractBasePath;
+import com.tilioteo.hypothesis.processing.DefaultPath;
+import com.tilioteo.hypothesis.processing.Expression;
+import com.tilioteo.hypothesis.processing.Nick;
+import com.tilioteo.hypothesis.processing.Pattern;
 
 /**
  * @author Kamil Morong - Hypothesis

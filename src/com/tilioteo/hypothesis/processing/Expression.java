@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.model;
+package com.tilioteo.hypothesis.processing;
 
 import com.tilioteo.hypothesis.evaluable.UnaryExpression;
 

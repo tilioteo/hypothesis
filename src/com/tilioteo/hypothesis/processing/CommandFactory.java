@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.model;
+package com.tilioteo.hypothesis.processing;
 
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;

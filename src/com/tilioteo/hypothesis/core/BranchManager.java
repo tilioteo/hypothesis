@@ -11,8 +11,8 @@ import org.dom4j.Document;
 import com.tilioteo.hypothesis.entity.Branch;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Slide;
-import com.tilioteo.hypothesis.model.AbstractBasePath;
-import com.tilioteo.hypothesis.model.DefaultPath;
+import com.tilioteo.hypothesis.processing.AbstractBasePath;
+import com.tilioteo.hypothesis.processing.DefaultPath;
 
 /**
  * @author Kamil Morong - Hypothesis

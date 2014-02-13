@@ -15,9 +15,9 @@ import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.event.ViewportEvent;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
-import com.tilioteo.hypothesis.model.AbstractBaseAction;
-import com.tilioteo.hypothesis.model.Command;
-import com.tilioteo.hypothesis.model.CommandFactory;
+import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.tilioteo.hypothesis.processing.Command;
+import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.vaadin.ui.AbstractComponent;
 
 /**
