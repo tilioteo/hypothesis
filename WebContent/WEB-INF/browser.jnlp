@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.5+" codebase="$$codebase" href="$$href">
+	<information>
+  		<title>Hypothesis Browser Applet</title>
+  		<vendor>Tilioteo Ltd</vendor>
+  		<!--homepage href="www.hypothesis.cz" /-->
+		<description>Hypothesis client application</description>
+	</information>
+	<update check="background" policy="always"/>
+	<security>
+		<sandbox />
+	</security>
+
+	<resources>
+		<j2se version="1.5+" />
+		<jar href="browser-applet.jar" main="true"/>
+		<extension name="swt" href="swt.jnlp" />
+	</resources>
+
+	<applet-desc
+		name="Hypothesis Browser Applet"
+		main-class="com.tilioteo.hypothesis.browser.BrowserApplet"
+		width="100"
+		height="100">
+		<!--<param name="MAYSCRIPT" value="true"/>-->
+	</applet-desc>
+</jnlp>
