@@ -3,8 +3,8 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 
 import org.dom4j.Document;
 
@@ -19,20 +19,24 @@ import com.tilioteo.hypothesis.entity.Slide;
 import com.tilioteo.hypothesis.entity.SlideOutput;
 import com.tilioteo.hypothesis.entity.Test;
 import com.tilioteo.hypothesis.entity.Test.Status;
+import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;
+import com.tilioteo.hypothesis.event.AbstractNotificationEvent;
 import com.tilioteo.hypothesis.event.AbstractProcessEvent;
 import com.tilioteo.hypothesis.event.AbstractRunningEvent;
 import com.tilioteo.hypothesis.event.AbstractTestEvent;
+import com.tilioteo.hypothesis.event.ActionEvent;
+import com.tilioteo.hypothesis.event.AfterFinishSlideEvent;
 import com.tilioteo.hypothesis.event.AfterRenderContentEvent;
 import com.tilioteo.hypothesis.event.BreakTestEvent;
-import com.tilioteo.hypothesis.event.CloseTestEvent;
 import com.tilioteo.hypothesis.event.ContinueTestEvent;
 import com.tilioteo.hypothesis.event.ErrorNotificationEvent;
 import com.tilioteo.hypothesis.event.ErrorTestEvent;
 import com.tilioteo.hypothesis.event.FinishBranchEvent;
 import com.tilioteo.hypothesis.event.FinishSlideEvent;
 import com.tilioteo.hypothesis.event.FinishSlideEvent.Direction;
+import com.tilioteo.hypothesis.event.AfterPrepareTestEvent;
 import com.tilioteo.hypothesis.event.FinishTaskEvent;
 import com.tilioteo.hypothesis.event.FinishTestEvent;
 import com.tilioteo.hypothesis.event.NextBranchEvent;
@@ -50,15 +54,12 @@ import com.tilioteo.hypothesis.event.StartTestEvent;
 import com.tilioteo.hypothesis.persistence.OutputManager;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
 import com.tilioteo.hypothesis.persistence.TestManager;
-import com.vaadin.ui.UI;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
 public class ProcessManager implements ProcessEventListener {
-
-	private UI ui;
 
 	private Pack pack = null;
 
@@ -71,19 +72,28 @@ public class ProcessManager implements ProcessEventListener {
 	private TestManager testManager;
 	private PermissionManager permissionManager;
 	private OutputManager outputManager;
+	
+	private boolean testProcessing = false;
+	private boolean slideProcessing = false;
+	private boolean autoSlideShow = true;
 
-	private boolean canClose = true;
-
-	public ProcessManager(UI ui) {
-		this.ui = ui;
-
-		processEventManager = ProcessEventManager.get(this.ui);
+	public ProcessManager(ProcessEventListener listener) {
+		processEventManager = new ProcessEventManager();
 		branchManager = new BranchManager();
 		taskManager = new TaskManager();
 
-		processEventManager.addListener(this, PrepareTestEvent.class,
-				AbstractRunningEvent.class, AfterRenderContentEvent.class,
+		processEventManager.addListener(this,
+				PrepareTestEvent.class,
+				AbstractRunningEvent.class,
+				AfterRenderContentEvent.class,
 				AbstractComponentEvent.class);
+		if (listener != null) {
+			processEventManager.addListener(listener,
+					AfterPrepareTestEvent.class,
+					RenderContentEvent.class,
+					AbstractRunningEvent.class,
+					AbstractNotificationEvent.class);
+		}
 
 		slideManager = new SlideManager(processEventManager);
 		permissionManager = PermissionManager.newInstance();
@@ -96,8 +106,7 @@ public class ProcessManager implements ProcessEventListener {
 		if (event != null && event.getName() != null) {
 			ProcessEventType processEvent = ProcessEventTypes.get(event.getName());
 			if (processEvent != null) {
-				return new Event(processEvent.getId(), event.getName(),
-						event.getTimestamp());
+				return new Event(processEvent.getId(), event.getName(),	event.getTimestamp());
 			}
 		}
 		return null;
@@ -128,19 +137,24 @@ public class ProcessManager implements ProcessEventListener {
 			processBreakTest((BreakTestEvent) event);
 		} else if (event instanceof FinishTestEvent) {
 			processFinishTest((FinishTestEvent) event);
-		} else if (event instanceof CloseTestEvent) {
-			processCloseTest((CloseTestEvent) event);
 		} else if (event instanceof AfterRenderContentEvent) {
 			processAfterRender((AfterRenderContentEvent) event);
 		} else if (event instanceof ErrorTestEvent) {
 			processError((ErrorTestEvent) event);
 		} else if (event instanceof AbstractComponentEvent<?>) {
 			processComponentEvent((AbstractComponentEvent<?>) event);
+		}else if (event instanceof ActionEvent) {
+			processActionEvent((ActionEvent) event);
 		}
 	}
 
 	private boolean checkUserPack(User user, Pack pack) {
-		Set<Pack> packs = permissionManager.findUserPacks(user, true);
+		Collection<Pack> packs;
+		if (null != user) {
+			packs = permissionManager.findUserPacks(user, true);
+		} else {
+			packs = permissionManager.getPublishedPacks();
+		}
 		for (Pack pack2 : packs) {
 			if (pack2.getId().equals(pack.getId()))
 				return true;
@@ -148,9 +162,13 @@ public class ProcessManager implements ProcessEventListener {
 		return false;
 	}
 
+	private void processActionEvent(ActionEvent event) {
+		saveActionEvent(event);
+		
+	}
+
 	private void processAfterRender(AfterRenderContentEvent eventObj) {
-		slideManager.fireEvent(new SlideManager.ShowEvent(slideManager
-				.current()));
+		slideManager.fireEvent(new SlideManager.ShowEvent(slideManager.current()));
 
 		saveProcessEvent(eventObj);
 	}
@@ -158,29 +176,8 @@ public class ProcessManager implements ProcessEventListener {
 	private void processBreakTest(BreakTestEvent eventObj) {
 		saveProcessEvent(eventObj);
 
-		// TODO ?
-
-		setCloseRequest();
-	}
-
-	private void processCloseTest(CloseTestEvent eventObj) {
-		// closing application is not allowed before finish test event
-		// processing is done
-		// TODO !!! this is very dangerous code which can cause stack overflow
-		// for event queue
-		// make it better way
-
-		if (this.canClose) {
-			setCloseRequest();
-		} else {
-			// call again after while
-			try {
-				Thread.sleep(250);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-			}
-			processEventManager.fireEvent(new CloseTestEvent(eventObj.getTest()));
-		}
+		this.test = null;
+		testProcessing = false;
 	}
 
 	private void processComponentEvent(AbstractComponentEvent<?> event) {
@@ -191,20 +188,22 @@ public class ProcessManager implements ProcessEventListener {
 	private void processContinueTest(ContinueTestEvent eventObj) {
 		saveProcessEvent(eventObj);
 
-		test = eventObj.getTest();
-		branchManager.find(test.getLastBranch());
-		taskManager.find(test.getLastTask());
-		slideManager.find(test.getLastSlide());
+		this.test = eventObj.getTest();
+		branchManager.find(this.test.getLastBranch());
+		taskManager.find(this.test.getLastTask());
+		slideManager.find(this.test.getLastSlide());
 
 		renderSlide();
 	}
 
 	private void processError(ErrorTestEvent eventObj) {
-		saveProcessEvent(eventObj);
+		if (Test.DUMMY_TEST != eventObj.getTest()) {
+			saveProcessEvent(eventObj);
+		}
 
-		// TODO ?
+		// TODO add some error description
 		processEventManager.fireEvent(new ErrorNotificationEvent(
-				"Something went wrong"));
+				eventObj.getTest(), "Something went wrong"));
 	}
 
 	private void processFinishBranch(FinishBranchEvent eventObj) {
@@ -231,11 +230,14 @@ public class ProcessManager implements ProcessEventListener {
 				slideOutputValue);
 
 		saveSlideOutput();
-
-		processEventManager
-				.fireEvent((Direction.NEXT.equals(eventObj.getDirection())) ? new NextSlideEvent(
-						slideManager.current()) : new PriorSlideEvent(
-						slideManager.current()));
+		
+		slideProcessing = false;
+		
+		if (autoSlideShow) {
+			processSlideFollowing(slideManager.current(), eventObj.getDirection());
+		} else {
+			processEventManager.fireEvent(new AfterFinishSlideEvent(slideManager.current(), eventObj.getDirection()));
+		}
 	}
 
 	private void processFinishTask(FinishTaskEvent eventObj) {
@@ -251,14 +253,10 @@ public class ProcessManager implements ProcessEventListener {
 	}
 
 	private void processFinishTest(FinishTestEvent eventObj) {
-		// canClose has to be false
-
 		saveProcessEvent(eventObj);
-
-		// TODO ?
-
-		// enable closing application
-		this.canClose = true;
+		
+		this.test = null;
+		testProcessing = false;
 	}
 
 	private void processNextBranch(NextBranchEvent eventObj) {
@@ -281,10 +279,10 @@ public class ProcessManager implements ProcessEventListener {
 				slideManager.setListParent(taskManager.current());
 				renderSlide();
 			} else {
-				processEventManager.fireEvent(new FinishTestEvent(test));
+				processEventManager.fireEvent(new FinishTestEvent(this.test));
 			}
 		} else {
-			processEventManager.fireEvent(new ErrorTestEvent(test));
+			processEventManager.fireEvent(new ErrorTestEvent(this.test));
 		}
 	}
 
@@ -327,61 +325,85 @@ public class ProcessManager implements ProcessEventListener {
 	}
 
 	private void processPrepareTest(PrepareTestEvent eventObj) {
-		Test test = testManager.getUnattendTest(eventObj.getUser(),
-				eventObj.getPack(), eventObj.isProduction());
+		Token token = eventObj.getToken();
+		Test test = testManager.getUnattendedTest(token.getUser(),
+				token.getPack(), token.isProduction());
 		if (test != null) {
-			processTest(test);
+			if (eventObj.isStartAllowed()) {
+				processTest(test);
+			} else {
+				processEventManager.fireEvent(new AfterPrepareTestEvent(test));
+			}
 		} else {
 			// TODO set localizable resource
 			processEventManager.fireEvent(new ErrorNotificationEvent(
-					"An error occured when starting test."));
+					Test.DUMMY_TEST, "An error occured when starting test."));
 		}
 	}
 
 	private void processStartTest(StartTestEvent eventObj) {
 		saveProcessEvent(eventObj);
 
+		this.test = eventObj.getTest();
+
 		renderSlide();
 	}
 
-	private void processTest(Test test) {
-		// up there the collector application can be correctly closed after test
-		// finish
-		canClose = false;
-
-		pack = test.getPack();
-		branchManager.setListParent(pack);
-		taskManager.setListParent(branchManager.current());
-		slideManager.setListParent(taskManager.current());
-		if (test.getStatus().equals(Status.CREATED)) {
-			processEventManager.fireEvent(new StartTestEvent(test));
-		} else {
-			processEventManager.fireEvent(new ContinueTestEvent(test));
+	public void processTest(Test test) {
+		if (!testProcessing) {
+			testProcessing = true;
+			
+			pack = test.getPack();
+			branchManager.setListParent(pack);
+			taskManager.setListParent(branchManager.current());
+			slideManager.setListParent(taskManager.current());
+			
+			slideProcessing = true;
+			
+			if (test.getStatus().equals(Status.CREATED)) {
+				processEventManager.fireEvent(new StartTestEvent(test));
+			} else {
+				processEventManager.fireEvent(new ContinueTestEvent(test));
+			}
+		}
+	}
+	
+	public void processSlideFollowing(Slide slide, Direction direction) {
+		if (!slideProcessing) {
+			slideProcessing = true;
+			
+			processEventManager.fireEvent((Direction.NEXT.equals(direction)) ? new NextSlideEvent(slide) : new PriorSlideEvent(slide));
 		}
 	}
 
-	public void processWithPack(Pack pack, User user, boolean production) {
-		if (checkUserPack(user, pack)) {
-			processEventManager
-					.fireEvent(new PrepareTestEvent(pack, user, production));
+	public void processToken(Token token, boolean startAllowed) {
+		if (token != null) {
+
+			if (checkUserPack(token.getUser(), token.getPack())) {
+				processEventManager.fireEvent(new PrepareTestEvent(token, startAllowed));
+			} else {
+				// TODO set localizable resource
+				processEventManager.fireEvent(new ErrorNotificationEvent(
+						Test.DUMMY_TEST, "You do not have permition to process."));
+			}
 		} else {
 			// TODO set localizable resource
 			processEventManager.fireEvent(new ErrorNotificationEvent(
-					"You do not have permition to process."));
+					Test.DUMMY_TEST, "Invalid token."));
 		}
 	}
 
-	public void breakCurrentTest() {
-		processEventManager.fireEvent(new BreakTestEvent(test));
+	private void breakCurrentTest() {
+		processEventManager.fireEvent(new BreakTestEvent(this.test));
 	}
 
 	private void renderSlide() {
 		if (slideManager.getViewport() != null
 				&& slideManager.getViewport().getComponent() != null) {
 			processEventManager.fireEvent(new RenderContentEvent(slideManager
-					.getViewport()));
+					.getViewport(), slideManager.getTimers()));
 		} else {
-			processEventManager.fireEvent(new ErrorTestEvent(test));
+			fireTestError();
 		}
 	}
 
@@ -392,21 +414,34 @@ public class ProcessManager implements ProcessEventListener {
 		branchManager.updateNextBranchKey();
 		String output = branchManager.getNextBranchKey();
 
-		BranchOutput branchOutput = new BranchOutput(test, branch);
+		BranchOutput branchOutput = new BranchOutput(this.test, branch);
 		branchOutput.setData(data);
 		branchOutput.setOutput(output);
 
 		outputManager.addBranchOutput(branchOutput);
 	}
 
+	private void saveActionEvent(ActionEvent actionEvent) {
+		if (this.test != null) {
+			Event event = createEvent(actionEvent);
+			if (event != null) {
+				updateEvent(event);
+				updateEventData(event, actionEvent);
+				this.test.addEvent(event);
+				updateTest(this.test, actionEvent.getTimestamp());
+
+			}
+		}
+	}
+
 	private void saveComponentEvent(AbstractComponentEvent<?> componentEvent) {
-		if (test != null) {
+		if (this.test != null) {
 			Event event = createEvent(componentEvent);
 			if (event != null) {
 				updateEvent(event);
 				updateEventData(event, componentEvent);
-				test.addEvent(event);
-				updateTest(test, componentEvent.getTimestamp());
+				this.test.addEvent(event);
+				updateTest(this.test, componentEvent.getTimestamp());
 
 			}
 		}
@@ -414,21 +449,21 @@ public class ProcessManager implements ProcessEventListener {
 
 	private void saveProcessEvent(AbstractProcessEvent processEvent) {
 		if (processEvent instanceof AbstractTestEvent)
-			test = ((AbstractTestEvent) processEvent).getTest();
+			this.test = ((AbstractTestEvent) processEvent).getTest();
 
-		if (test != null) {
+		if (this.test != null) {
 			Event event = createEvent(processEvent);
 			if (event != null) {
 				updateEvent(event);
-				test.addEvent(event);
+				this.test.addEvent(event);
 
 				Status status = processEvent instanceof HasStatus ? ((HasStatus) processEvent)
 						.getStatus() : null;
 
 				if (status != null)
-					updateTest(test, processEvent.getTimestamp(), status);
+					updateTest(this.test, processEvent.getTimestamp(), status);
 				else
-					updateTest(test, processEvent.getTimestamp());
+					updateTest(this.test, processEvent.getTimestamp());
 			}
 		}
 	}
@@ -438,17 +473,11 @@ public class ProcessManager implements ProcessEventListener {
 		String data = slideManager.getSerializedData();
 		String output = slideManager.getSerializedOutputValue();
 
-		SlideOutput slideOutput = new SlideOutput(test, slide);
+		SlideOutput slideOutput = new SlideOutput(this.test, slide);
 		slideOutput.setData(data);
 		slideOutput.setOutput(output);
 
 		outputManager.addSlideOutput(slideOutput);
-	}
-
-	private void setCloseRequest() {
-		/*if (application instanceof CollectorApplication) {
-			((CollectorApplication) application).shutdown();
-		}*/
 	}
 
 	public void updateEvent(Event event) {
@@ -459,11 +488,16 @@ public class ProcessManager implements ProcessEventListener {
 		}
 	}
 
-	private void updateEventData(Event event,
-			AbstractComponentEvent<?> componentEvent) {
+	private void updateEventData(Event event, ActionEvent actionEvent) {
+		Document doc = SlideXmlFactory.createEventDataXml();
+		SlideFactory.writeActionData(doc, actionEvent);
+		event.setXmlData(XmlUtility.writeString(doc));
+	}
+
+	private void updateEventData(Event event, AbstractComponentEvent<?> componentEvent) {
 		Document doc = SlideXmlFactory.createEventDataXml();
 		SlideFactory.writeComponentData(doc, componentEvent);
-		event.setData(XmlUtility.writeString(doc));
+		event.setXmlData(XmlUtility.writeString(doc));
 	}
 
 	private void updateTest(Test test, Date date) {
@@ -495,5 +529,29 @@ public class ProcessManager implements ProcessEventListener {
 			updateTest(test, date);
 		}
 	}
+	
+	public ProcessEventManager getProcessEventManager() {
+		return processEventManager;
+	}
+	
+	public void fireTestError() {
+		if (this.test != null) {
+			processEventManager.fireEvent(new ErrorTestEvent(this.test));
+		} else {
+			processEventManager.fireEvent(new ErrorTestEvent(Test.DUMMY_TEST));
+		}
+	}
+	
+	public void requestBreakTest() {
+		// test is processing
+		if (this.test != null) {
+			breakCurrentTest();
+		}
+	}
 
+	public void setAutoSlideShow(boolean value) {
+		if (!testProcessing) {
+			this.autoSlideShow = value;
+		}
+	}
 }
