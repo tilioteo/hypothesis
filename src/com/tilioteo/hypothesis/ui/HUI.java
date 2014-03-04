@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 import com.vaadin.ui.Component;
@@ -77,12 +78,21 @@ public abstract class HUI extends UI {
             // Timer timer is not in this UI.
             return false;
         }
-        timer.stop();
+        timer.stop(true);
         timer.setParent(null);
         markAsDirty();
 
         return true;
     }
 
-
+    public void removeAllTimers() {
+    	Iterator<Timer> timerIterator = timers.iterator();
+    	while (timerIterator.hasNext()) {
+    		Timer timer = timerIterator.next();
+    		timer.stop(true);
+    		timer.setParent(null);
+    		timers.remove(timer);
+    	}
+    	markAsDirty();
+    }
 }

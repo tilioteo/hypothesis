@@ -4,7 +4,23 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import org.dom4j.Element;
+
+import com.tilioteo.hypothesis.annotation.ExpressionScope;
+import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
+import com.tilioteo.hypothesis.common.StringMap;
+import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.SlideFactory;
+import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.core.SlideUtility;
+import com.tilioteo.hypothesis.dom.SlideXmlConstants;
+import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.event.TimerData;
+import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.tilioteo.hypothesis.processing.Command;
+import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerClientRpc;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerServerRpc;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerState;
@@ -12,12 +28,13 @@ import com.tilioteo.hypothesis.shared.ui.timer.TimerState.Direction;
 import com.vaadin.event.EventRouter;
 import com.vaadin.shared.ui.ComponentStateUtil;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.util.ReflectTools;
 
 @SuppressWarnings("serial")
-public class Timer extends AbstractComponent {
+public class Timer extends AbstractComponent implements SlideComponent {
 
 	private TimerServerRpc rpc = new TimerServerRpc() {
 
@@ -168,17 +185,23 @@ public class Timer extends AbstractComponent {
 		clientRpc = getRpcProxy(TimerClientRpc.class);
 	}
 
+	@ExpressionScope(Scope.PRIVATE)
 	@Override
 	public TimerState getState() {
 		return (TimerState) super.getState();
 	}
 
+	@ExpressionScope(Scope.PRIVATE)
 	public void start(long time) {
 		clientRpc.start(time);
 	}
 
 	public void stop() {
-		clientRpc.stop();
+		stop(false);
+	}
+	
+	public void stop(boolean silent) {
+		clientRpc.stop(silent);
 	}
 
 	public boolean isRunning() {
@@ -190,6 +213,7 @@ public class Timer extends AbstractComponent {
 		return getState().direction;
 	}
 
+	@ExpressionScope(Scope.PRIVATE)
 	public void setDirection(Direction direction) {
 		getState().direction = direction;
 	}
@@ -264,6 +288,138 @@ public class Timer extends AbstractComponent {
 		
 		if (needRepaint && eventRouterMap.isEmpty())
         	ComponentStateUtil.removeRegisteredEventListener(getState(), UpdateEvent.EVENT_ID);
+	}
+	
+	// SlideComponent
+	private SlideManager slideManager;
+	private long time;
+	
+	public Timer(SlideManager slideManager) {
+		this();
+		this.slideManager = slideManager;
+	}
+	
+	/**
+	 * Not used, returns null
+	 */
+	@Override
+	public Alignment getAlignment() {
+		return null;
+	}
+
+	@Override
+	public void setSlideManager(SlideManager slideManager) {
+		this.slideManager = slideManager;
+	}
+
+	public void start() {
+		if (time > 0) {
+			start(time);
+		}
+	}
+
+	@Override
+	public void loadFromXml(Element element) {
+
+		setProperties(element);
+		setHandlers(element);
+
+	}
+
+	protected void setProperties(Element element) {
+		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		
+		setData(SlideXmlUtility.getId(element));
+		setTime(properties.getInteger(SlideXmlConstants.TIME, 0));
+		setDirection(directionFromString(properties.get(SlideXmlConstants.DIRECTION, "up")));
+	}
+	
+	private Direction directionFromString(String value) {
+		if ("up".equalsIgnoreCase(value)) {
+			return Direction.UP;
+		} else if ("down".equalsIgnoreCase(value)) {
+			return Direction.DOWN;
+		}
+		return null;
+	}
+	
+	protected void setTime(long time) {
+		this.time = time;
+	}
+	
+	private void setHandlers(Element element) {
+		List<Element> handlers = SlideUtility.getHandlerElements(element);
+
+		for (Element handler : handlers) {
+			setHandler(handler);
+		}
+	}
+
+	protected void setHandler(Element element) {
+		String name = element.getName();
+		String action = null;
+		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
+				.createAnonymousAction(element);
+		if (anonymousAction != null)
+			action = anonymousAction.getId();
+
+		if (!Strings.isNullOrEmpty(action)) {
+			if (name.equals(SlideXmlConstants.START)) {
+				setStartHandler(action);
+			} else if (name.equals(SlideXmlConstants.STOP)) {
+				setStopHandler(action);
+			} else if (name.equals(SlideXmlConstants.UPDATE)) {
+				setUpdateHandler(action, SlideUtility.getIntegerValue((element.attributeValue(SlideXmlConstants.INTERVAL))));
+			}
+			// TODO add other event handlers
+		}
+	}
+
+	private void setStartHandler(String actionId) {
+		final TimerData data = new TimerData(this, slideManager);
+		final Command componentEvent = CommandFactory.createTimerStartEventCommand(data);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+
+		addStartListener(new StartListener() {
+			@Override
+			public void start(StartEvent event) {
+				data.setTime(event.getTime());
+				componentEvent.execute();
+				action.execute();
+			}
+		});
+	}
+
+	private void setStopHandler(String actionId) {
+		final TimerData data = new TimerData(this, slideManager);
+		final Command componentEvent = CommandFactory.createTimerStopEventCommand(data);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+
+		addStopListener(new StopListener() {
+			@Override
+			public void stop(StopEvent event) {
+				data.setTime(event.getTime());
+				componentEvent.execute();
+				action.execute();
+			}
+		});
+	}
+
+	private void setUpdateHandler(String actionId, Integer interval) {
+		if (interval != null) {
+			final TimerData data = new TimerData(this, slideManager);
+			final Command componentEvent = CommandFactory.createTimerUpdateEventCommand(data);
+			final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+
+			addUpdateListener(interval, new UpdateListener() {
+				@Override
+				public void update(UpdateEvent event) {
+					data.setTime(event.getTime());
+					componentEvent.execute();
+					action.execute();
+				}
+			});
+		}
 	}
 
 }

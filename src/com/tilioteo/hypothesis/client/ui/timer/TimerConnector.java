@@ -35,8 +35,8 @@ public class TimerConnector extends AbstractComponentConnector implements
 			}
 
 			@Override
-			public void stop() {
-				getWidget().stop();
+			public void stop(boolean silent) {
+				getWidget().stop(silent);
 			}
 
 			@Override

@@ -282,13 +282,15 @@ public class Timer {
 		resume(false);
 	}
 
-	public void stop() {
+	public void stop(boolean silent) {
 		if (running) {
 			running = false;
 			updateCounter(startCounter);
-			onStop(counter, direction, false);
-			handlerManager.fireEvent(new StopEvent(Timer.this, counter,
-					direction, false));
+			if (!silent) {
+				onStop(counter, direction, false);
+				handlerManager.fireEvent(new StopEvent(Timer.this, counter,
+						direction, false));
+			}
 		}
 	}
 

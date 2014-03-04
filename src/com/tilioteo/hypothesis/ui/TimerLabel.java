@@ -8,30 +8,26 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
+import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.shared.ui.timerlabel.TimerLabelState;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Label;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
 @SuppressWarnings({ "serial" })
-public class TimerLabel extends Label implements SlideComponent {
-
-	private SlideManager slideManager;
-	private ParentAlignment parentAlignment;
+public class TimerLabel extends Label {
+	
+	public static final String DEAFAULT_TIME_FORMAT = "HH:mm:ss.S";
 
 	private Timer timer = null;
 
 	public TimerLabel() {
 		super();
-		this.parentAlignment = new ParentAlignment();
 	}
 
 	public TimerLabel(SlideManager slideManager) {
-		this();
-		this.slideManager = slideManager;
+		super(slideManager);
 	}
 
 	public String getTimeFormat() {
@@ -48,25 +44,14 @@ public class TimerLabel extends Label implements SlideComponent {
 	}
 
 	@Override
-	public Alignment getAlignment() {
-		return parentAlignment.getAlignment();
-	}
-
-	@Override
-	public void loadFromXml(Element element) {
-
-		setProperties(element);
-
-	}
-
 	protected void setProperties(Element element) {
+		super.setProperties(element);
+		
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
 
-		ComponentUtility.setCommonProperties(this, element, properties,
-				parentAlignment);
-
 		// TimerLabel specific properties
-
+		setTimeFormat(properties.get(SlideXmlConstants.TIME_FORMAT, DEAFAULT_TIME_FORMAT));
+		setTimer(slideManager.getTimer(properties.get(SlideXmlConstants.TIMER_ID)));
 	}
 
 	public Timer getTimer() {
@@ -76,11 +61,6 @@ public class TimerLabel extends Label implements SlideComponent {
 	public void setTimer(Timer timer) {
 		this.timer = timer;
 		getState().timer = timer;
-	}
-
-	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
 	}
 
 }

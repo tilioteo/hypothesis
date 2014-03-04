@@ -37,7 +37,11 @@ public class VTimer extends Widget {
 	}
 
 	public void stop() {
-		timer.stop();
+		stop(false);
+	}
+
+	public void stop(boolean silent) {
+		timer.stop(silent);
 	}
 
 	public void pause() {
