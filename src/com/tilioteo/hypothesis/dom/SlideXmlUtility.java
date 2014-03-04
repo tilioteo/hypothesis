@@ -82,23 +82,24 @@ public class SlideXmlUtility {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<Element> getElementSubNodeChilds(Element element,
-			String subNodeName, StringSet validElementNames) {
+	public static List<Element> getElementSubNodeChilds(Element element, String subNodeName, StringSet validElementNames) {
 		if (element != null && !Strings.isNullOrEmpty(subNodeName)) {
-			List<Node> childs = element.selectNodes(String.format("%s/*",
-					subNodeName));
+			List<Node> childs = element.selectNodes(String.format("%s/*", subNodeName));
 
 			List<Element> elements = new LinkedList<Element>();
 			for (Node child : childs) {
 				if (child instanceof Element) {
-					if (validElementNames == null
-							|| (validElementNames != null && validElementNames
-									.contains(child.getName()))) {
-						elements.add((Element) child);
+					Element childElement = (Element)child;
+					String childName = childElement.getName();
+					if (!Strings.isNullOrEmpty(childElement.getNamespacePrefix())) {
+						childName = childElement.getQualifiedName();
+					}
+					
+					if (validElementNames == null || (validElementNames != null && validElementNames.contains(childName))) {
+						elements.add(childElement);
 					} else if (validElementNames != null) {
-						log.warn(String
-								.format("Xml element '%s' ignored inside of element '%s'",
-										child.getName(), element.getName()));
+						log.warn(String.format("Xml element '%s' ignored inside of element '%s'",
+										childName, element.getName()));
 					}
 				}
 			}
@@ -308,6 +309,25 @@ public class SlideXmlUtility {
 					SlideXmlConstants.WINDOW));
 
 			return windows;
+		}
+
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<Element> getTimersElements(Element documentRoot) {
+		if (documentRoot != null) {
+			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS
+					.contains(documentRoot.getName())) {
+				return null;
+				// throw new NotValidDocumentRoot(documentRoot);
+			}
+
+			List<Element> timers = documentRoot.selectNodes(String.format(
+					"%s//%s", SlideXmlConstants.TIMERS,
+					SlideXmlConstants.TIMER));
+
+			return timers;
 		}
 
 		return null;

@@ -25,9 +25,7 @@ public class SlideXmlFactory {
 	@SuppressWarnings("unchecked")
 	private static Document buildSlideXml(Document slideTemplate,
 			Document slideContent) {
-		// logger.log(GPTest.LOG_PRIORITY,
-		// String.format("buildSlideXml(...): template UID = %s",
-		// getTemplateUID(slideTemplate)));
+		log.debug(String.format("buildSlideXml(...): template UID = %s", getTemplateUID(slideTemplate)));
 		Document doc = XmlUtility.createDocument();
 		Element root = doc.addElement(SlideXmlConstants.SLIDE);
 
@@ -46,12 +44,12 @@ public class SlideXmlFactory {
 				Element element = (Element) ((Element) node).elements().get(0);
 				if (element != null) {
 					String name = element.getName();
+					String prefix = element.getNamespacePrefix();
+					String uri = element.getNamespaceURI();
+					
 					String id = SlideXmlUtility.getId(element);
-					if (!Strings.isNullOrEmpty(name)
-							&& !Strings.isNullOrEmpty(id)) {
-						Element origElement = XmlUtility
-								.findElementByNameAndValue(root, name,
-										SlideXmlConstants.ID, id);
+					if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(id)) {
+						Element origElement = XmlUtility.findElementByNameAndValue(root, name, prefix, uri, SlideXmlConstants.ID, id);
 						if (origElement != null) {
 							List<Element> bindNodes = element.elements();
 
@@ -81,22 +79,30 @@ public class SlideXmlFactory {
 
 		return doc;
 	}
+	
+	/**
+	 * for logging purpose only
+	 * @return
+	 */
+	private static String getTemplateUID(Document slideTemplate) {
+		return slideTemplate.getRootElement().attributeValue(SlideXmlConstants.UID);
+	}
 
 	public static Document buildSlideXml(Slide slide) {
-		// if (slide != null)
-		// logger.log(GPTest.LOG_PRIORITY,
-		// String.format("SlideXmlFactory.getSlideXml(slide:%d)",
-		// slide.getId()));
-		// else
-		// logger.log(GPTest.LOG_PRIORITY, "SlideXmlFactory.getSlideXml(null)");
+		if (null == slide) {
+			log.warn("getSlideXml(null)");
+			return null;
+		}
+		
+		log.debug(String.format("getSlideXml(slide:%d)", slide.getId()));
 
 		Document slideTemplate = slide.getContent().getTemplateDocument();
 		Document slideContent = slide.getContent().getDocument();
 
-		// if (slideTemplate == null)
-		// logger.log(GPTest.LOG_PRIORITY, "slideTemplate = null");
-		// if (slideContent == null)
-		// logger.log(GPTest.LOG_PRIORITY, "slideContent = null");
+		if (slideTemplate == null)
+			log.warn(String.format("Template document is NULL (slide:%d)", slide.getId()));
+		if (slideContent == null)
+			log.warn(String.format("Content document is NULL (slide:%d)", slide.getId()));
 
 		try {
 			if (slideTemplate != null && slideContent != null) {
@@ -105,7 +111,7 @@ public class SlideXmlFactory {
 				return null;
 			}
 		} catch (Throwable t) {
-			log.error(String.format("SlideXmlFactory.getSlideXml(slide:%d)",
+			log.error(String.format("getSlideXml(slide:%d)",
 					slide != null ? slide.getId() : -1), t);
 			return null;
 		}
@@ -131,7 +137,8 @@ public class SlideXmlFactory {
 
 	private static void mergeBindingNodes(Document doc,
 			Element destinationElement, Element sourceSubElement) {
-		// logger.log(GPTest.LOG_PRIORITY, "mergeBindingNodes(...)");
+		log.debug("mergeBindingNodes(...)");
+		
 		String sourceSubElementName = sourceSubElement.getName();
 
 		Element destinationSubElement = (Element) destinationElement
@@ -147,7 +154,8 @@ public class SlideXmlFactory {
 	@SuppressWarnings("unchecked")
 	private static void mergeElementAttributes(Element destination,
 			Element source) {
-		// logger.log(GPTest.LOG_PRIORITY, "mergeElementAttributes(...)");
+		log.debug("mergeElementAttributes(...)");
+		
 		List<Attribute> sourceAttributes = source.attributes();
 		for (Attribute sourceAttribute : sourceAttributes) {
 			destination.addAttribute(sourceAttribute.getName(),
