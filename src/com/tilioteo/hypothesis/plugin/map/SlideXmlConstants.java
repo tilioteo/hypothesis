@@ -14,7 +14,13 @@ import com.tilioteo.hypothesis.common.StringSet;
 public class SlideXmlConstants {
 	
 	public static final String NAMESPACE = "maps";
-	
+
+	public static final String ID = "Id";
+	public static final String TYPE = "Type";
+	public static final String X = "X";
+	public static final String Y = "Y";
+	public static final String LAYER_ID = "LayerId";
+
 	public static final String MAP = "Map";
 	public static final String LAYERS = "Layers";
 	public static final String IMAGE_LAYER = "ImageLayer";
@@ -25,6 +31,7 @@ public class SlideXmlConstants {
 	public static final String CONTROLS = "Controls";
 	public static final String DRAW_POINT = "DrawPoint";
 	public static final String DRAW_PATH = "DrawPath";
+	
 	//public static final String DRAW_POLYGON = "DrawPolygon";
 	// public static final String ATTRIBUTES = "Attributes";
 	// public static final String ATTRIBUTE = "Attribute";

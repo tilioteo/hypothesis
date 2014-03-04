@@ -38,7 +38,7 @@ public abstract class ImageLayerEvent extends AbstractComponentEvent<ImageLayer>
 
 		@Override
 		public String getName() {
-			return MapEventTypes.ImageLayerLoad;
+			return MapEventTypes.LayerLoad;
 		}
 
 	}
