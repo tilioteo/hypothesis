@@ -3,20 +3,20 @@
  */
 package com.tilioteo.hypothesis.common;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
 @SuppressWarnings("serial")
-public class StringSet extends HashSet<String> {
+public class StringSet extends LinkedHashSet<String> {
 
 	public StringSet() {
 		super();
 	}
-
-	public StringSet(StringSet stringSet, String[] strings) {
+	
+	public StringSet(StringSet stringSet, String... strings) {
 		this();
 
 		if (stringSet != null)
@@ -27,12 +27,12 @@ public class StringSet extends HashSet<String> {
 				add(str);
 	}
 
-	public StringSet(String[] strings) {
+	public StringSet(String... strings) {
 		this(null, strings);
 	}
 
 	public StringSet(StringSet stringSet) {
-		this(stringSet, null);
+		this(stringSet, (String[])null);
 	}
 
 }
