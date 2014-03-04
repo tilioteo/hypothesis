@@ -13,6 +13,8 @@ import com.tilioteo.hypothesis.event.ImageData;
 import com.tilioteo.hypothesis.event.ImageEvent;
 import com.tilioteo.hypothesis.event.RadioPanelData;
 import com.tilioteo.hypothesis.event.RadioPanelEvent;
+import com.tilioteo.hypothesis.event.TimerData;
+import com.tilioteo.hypothesis.event.TimerEvent;
 import com.tilioteo.hypothesis.ui.Button;
 import com.tilioteo.hypothesis.ui.Image;
 
@@ -22,10 +24,8 @@ import com.tilioteo.hypothesis.ui.Image;
  */
 public class CommandFactory {
 
-	public static Command createActionCommand(HasActions actions,
-			String actionId) {
-		final AbstractBaseAction action = actions != null ? actions.getActions()
-				.get(actionId) : null;
+	public static Command createActionCommand(final SlideManager slideManager, String actionId) {
+		final AbstractBaseAction action = slideManager != null ? slideManager.getActions().get(actionId) : null;
 
 		return new Command() {
 			public void execute() {
@@ -54,8 +54,7 @@ public class CommandFactory {
 			final AbstractComponentEvent<?> event) {
 		return new Command() {
 			public void execute() {
-				event.getComponentData().getSlideManager().getEventManager()
-						.fireEvent(event);
+				event.getComponentData().getSlideManager().getEventManager().fireEvent(event);
 			}
 		};
 	}
@@ -76,6 +75,24 @@ public class CommandFactory {
 
 	public static Command createRadioPanelClickEventCommand(RadioPanelData data) {
 		final RadioPanelEvent event = new RadioPanelEvent.Click(data);
+
+		return createComponentEventCommand(event);
+	}
+
+	public static Command createTimerStartEventCommand(TimerData data) {
+		final TimerEvent event = new TimerEvent.Start(data);
+
+		return createComponentEventCommand(event);
+	}
+
+	public static Command createTimerStopEventCommand(TimerData data) {
+		final TimerEvent event = new TimerEvent.Stop(data);
+
+		return createComponentEventCommand(event);
+	}
+
+	public static Command createTimerUpdateEventCommand(TimerData data) {
+		final TimerEvent event = new TimerEvent.Update(data);
 
 		return createComponentEventCommand(event);
 	}

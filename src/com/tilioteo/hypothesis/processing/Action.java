@@ -23,6 +23,8 @@ public class Action extends AbstractBaseAction {
 
 	@Override
 	public void execute() {
+		super.execute();
+		
 		for (Evaluable evaluable : evaluables) {
 			VariableMap variables = null;
 			if (getVariables() != null)
