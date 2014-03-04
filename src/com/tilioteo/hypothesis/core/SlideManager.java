@@ -4,10 +4,12 @@
 package com.tilioteo.hypothesis.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.dom4j.Document;
 
+import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Slide;
@@ -21,11 +23,14 @@ import com.tilioteo.hypothesis.processing.ComponentMap;
 import com.tilioteo.hypothesis.processing.Expression;
 import com.tilioteo.hypothesis.processing.HasActions;
 import com.tilioteo.hypothesis.processing.HasVariables;
+import com.tilioteo.hypothesis.processing.TimerMap;
 import com.tilioteo.hypothesis.processing.Variable;
 import com.tilioteo.hypothesis.processing.VariableMap;
 import com.tilioteo.hypothesis.processing.WindowMap;
 import com.tilioteo.hypothesis.ui.LayoutComponent;
-import com.tilioteo.hypothesis.ui.TimerLabel;
+import com.tilioteo.hypothesis.ui.SlideComponent;
+import com.tilioteo.hypothesis.ui.Timer;
+import com.tilioteo.hypothesis.ui.Window;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -57,18 +62,15 @@ public class SlideManager extends ListManager<Task, Slide> implements
 
 	private VariableMap variables = new VariableMap();
 	private ActionMap actions = new ActionMap();
+	private TimerMap timers = new TimerMap();
 
 	private Expression inputExpression = null;
-
 	private Expression outputExpression = null;
 
 	private Object nextInputValue = null;
 	private ComponentMap components = new ComponentMap();
 
 	private List<Object> fields = new ArrayList<Object>();
-
-	@SuppressWarnings("unused")
-	private List<TimerLabel> timers = new ArrayList<TimerLabel>();
 
 	ViewportEventManager viewportEventManager = new ViewportEventManager();
 
@@ -128,10 +130,6 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		return actions;
 	}
 
-	public final ComponentMap getComponents() {
-		return components;
-	}
-
 	public final ProcessEventManager getEventManager() {
 		return eventManager;
 	}
@@ -165,13 +163,9 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	public final VariableMap getVariables() {
 		return variables;
 	}
-
+	
 	public final LayoutComponent getViewport() {
 		return viewport;
-	}
-
-	public final WindowMap getWindows() {
-		return windows;
 	}
 
 	@Override
@@ -217,4 +211,38 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		this.viewport = component;
 	}
 
+	public final void registerComponent(String id, SlideComponent component) {
+		if (!Strings.isNullOrEmpty(id)) {
+			components.put(id, component);
+		}
+	}
+	
+	public final SlideComponent getComponent(String id) {
+		return components.get(id);
+	}
+	
+	public final void registerTimer(String id, Timer timer) {
+		if (!Strings.isNullOrEmpty(id)) {
+			timers.put(id, timer);
+		}
+	}
+	
+	public final Timer getTimer(String id) {
+		return timers.get(id);
+	}
+	
+	public final Collection<Timer> getTimers() {
+		return timers.values();
+	}
+
+	public final void registerWindow(String id, Window window) {
+		if (!Strings.isNullOrEmpty(id)) {
+			windows.put(id, window);
+		}
+	}
+	
+	public final Window getWindow(String id) {
+		return windows.get(id);
+	}
+	
 }
