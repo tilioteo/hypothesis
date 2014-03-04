@@ -33,8 +33,6 @@ public class VPathHandler extends VPointHandler {
 
 	public static final String LINE_STROKE_COLOR = CURSOR_CIRCLE_FILL_COLOR;
 	
-	
-	
 	/**
 	 * Representation of line start point, 
 	 */

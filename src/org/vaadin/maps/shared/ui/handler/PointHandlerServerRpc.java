@@ -11,6 +11,8 @@ import com.vaadin.shared.communication.ServerRpc;
  */
 public interface PointHandlerServerRpc extends ServerRpc {
 
+	public void click(double x, double y, String buttonName, boolean altKey, boolean ctrlKey, boolean metaKey, boolean shiftKey, boolean doubleClick);
+	
 	public void geometry(String wkb);
 
 }

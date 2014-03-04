@@ -31,6 +31,8 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 	public static final String CURSOR_CIRCLE_FILL_COLOR = "cyan";
 	public static final double CURSOR_CIRCLE_FILL_OPACITY = 0.3;
 	
+	public ClickHandler clickHandlerSlave; 
+	
 	protected VVectorFeatureLayer layer = null;
 	protected VVectorFeatureContainer container = null;
 	
@@ -127,7 +129,7 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 	 * @param y
 	 * @return  new {@link Coordinate} 
 	 */
-	protected Coordinate createWorldCoordinate(int x, int y) {
+	public Coordinate createWorldCoordinate(int x, int y) {
 		// TODO implement
 		return new Coordinate(x, y);
 	}
@@ -143,6 +145,10 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 	public void onClick(ClickEvent event) {
 		if (!active) {
 			return;
+		}
+		
+		if (clickHandlerSlave != null) {
+			clickHandlerSlave.onClick(event);
 		}
 		
 		Point point = new Point(createWorldCoordinate(event.getX(), event.getY()));
