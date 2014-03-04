@@ -5,6 +5,7 @@ package org.vaadin.maps.ui.control;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import org.vaadin.maps.shared.ui.control.DrawFeatureControlState;
 import org.vaadin.maps.ui.CanCancel;
@@ -19,22 +20,34 @@ import org.vaadin.maps.ui.layer.VectorFeatureLayer;
  */
 @SuppressWarnings("serial")
 public abstract class DrawFeatureControl<H extends AbstractHandler> extends AbstractControl implements CanUndoRedo, CanCancel {
-	private final Class<H> genericType;
+	private final Class<H> handlerClass;
 	
 	protected VectorFeatureLayer layer = null;
+	protected H handlerInstance = null;
 	
-	@SuppressWarnings("unchecked")
 	public DrawFeatureControl(VectorFeatureLayer layer) {
 		super();
 		
-		this.genericType = (Class<H>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		this.handlerClass = getGenericHandlerTypeClass();
 		
 		setLayer(layer);
 		initHandler();
 	}
 	
+	@SuppressWarnings("unchecked")
+	private Class<H> getGenericHandlerTypeClass() {
+		Class<?> superClass = this.getClass().getSuperclass();
+		Type genericSuperClass = this.getClass().getGenericSuperclass();
+		while (!(genericSuperClass instanceof ParameterizedType)) {
+			genericSuperClass = superClass.getGenericSuperclass();
+			superClass = superClass.getSuperclass();
+		}
+
+		return (Class<H>) ((ParameterizedType) genericSuperClass).getActualTypeArguments()[0];
+	}
+
 	private void initHandler() {
-		H handlerInstance = createHandler();
+		handlerInstance = createHandler();
 		if (handlerInstance != null) {
 			setHandler(handlerInstance);
 		}
@@ -49,7 +62,7 @@ public abstract class DrawFeatureControl<H extends AbstractHandler> extends Abst
 
 	private H createHandler() {
 		try {
-			return genericType.getDeclaredConstructor(Control.class).newInstance(this);
+			return handlerClass.getDeclaredConstructor(Control.class).newInstance(this);
 			
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -67,7 +80,7 @@ public abstract class DrawFeatureControl<H extends AbstractHandler> extends Abst
 		return null;
 	}
 	
-	protected void setLayer(VectorFeatureLayer layer) {
+	public void setLayer(VectorFeatureLayer layer) {
 		this.layer = layer;
 		getState().layer = layer;
 		provideLayerToHandler();

@@ -70,6 +70,5 @@ public abstract class AbstractControl extends AbstractSingleComponentContainer<H
 	protected void setHandler(Handler handler) {
 		this.handler = handler;
 		setContent(handler);
-		//getState().handler = handler;
 	}
 }
