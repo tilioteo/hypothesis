@@ -3,6 +3,9 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import org.dom4j.Element;
+
+import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.ui.RadioButton;
 import com.tilioteo.hypothesis.ui.RadioPanel;
@@ -12,11 +15,6 @@ import com.tilioteo.hypothesis.ui.RadioPanel;
  * 
  */
 public class RadioPanelData extends AbstractComponentData<RadioPanel> {
-
-	public static RadioPanelData cast(
-			AbstractComponentData<RadioPanel> componentData) {
-		return (RadioPanelData) componentData;
-	}
 
 	private RadioButton radioButton;
 
@@ -30,5 +28,10 @@ public class RadioPanelData extends AbstractComponentData<RadioPanel> {
 
 	public void setRadioButton(RadioButton radioButton) {
 		this.radioButton = radioButton;
+	}
+
+	@Override
+	public void writeDataToElement(Element element) {
+		SlideFactory.writeRadioPanelData(element, this);
 	}
 }

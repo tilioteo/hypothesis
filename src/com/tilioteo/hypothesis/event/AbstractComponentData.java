@@ -4,13 +4,14 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.core.XmlDataWriter;
 import com.vaadin.ui.AbstractComponent;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public abstract class AbstractComponentData<T extends AbstractComponent> {
+public abstract class AbstractComponentData<T extends AbstractComponent> implements XmlDataWriter {
 
 	private SlideManager slideManager;
 	private T sender = null;

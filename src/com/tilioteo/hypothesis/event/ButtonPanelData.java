@@ -3,6 +3,9 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import org.dom4j.Element;
+
+import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.ui.Button;
 import com.tilioteo.hypothesis.ui.ButtonPanel;
@@ -12,11 +15,6 @@ import com.tilioteo.hypothesis.ui.ButtonPanel;
  * 
  */
 public class ButtonPanelData extends AbstractComponentData<ButtonPanel> {
-
-	public static ButtonPanelData cast(
-			AbstractComponentData<ButtonPanel> componentData) {
-		return (ButtonPanelData) componentData;
-	}
 
 	private Button button;
 
@@ -30,5 +28,10 @@ public class ButtonPanelData extends AbstractComponentData<ButtonPanel> {
 
 	public void setButton(Button button) {
 		this.button = button;
+	}
+
+	@Override
+	public void writeDataToElement(Element element) {
+		SlideFactory.writeButtonPanelData(element, this);
 	}
 }

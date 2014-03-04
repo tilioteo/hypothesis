@@ -15,18 +15,18 @@ import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.evaluable.ExpressionFactory;
+import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;
+import com.tilioteo.hypothesis.event.ActionEvent;
 import com.tilioteo.hypothesis.event.ButtonData;
-import com.tilioteo.hypothesis.event.ButtonEvent;
 import com.tilioteo.hypothesis.event.ButtonPanelData;
-import com.tilioteo.hypothesis.event.ButtonPanelEvent;
 import com.tilioteo.hypothesis.event.ImageData;
-import com.tilioteo.hypothesis.event.ImageEvent;
 import com.tilioteo.hypothesis.event.RadioPanelData;
-import com.tilioteo.hypothesis.event.RadioPanelEvent;
+import com.tilioteo.hypothesis.event.TimerData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Action;
 import com.tilioteo.hypothesis.processing.CallAction;
+import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.Evaluable;
 import com.tilioteo.hypothesis.processing.Expression;
 import com.tilioteo.hypothesis.processing.IfStatement;
@@ -55,98 +55,98 @@ public class SlideFactory {
 		return instance;
 	}
 
-	private static void writeButtonData(Element sourceElement,
-			ButtonEvent buttonEvent) {
-		ButtonData buttonData = ButtonData.cast(buttonEvent.getComponentData());
+	public static void writeButtonData(Element sourceElement, ButtonData buttonData) {
 		String id = buttonData.getComponentId();
-		sourceElement.addAttribute(SlideXmlConstants.TYPE,
-				SlideXmlConstants.BUTTON);
-		if (id != null)
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.BUTTON);
+		if (id != null) {
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		}
 		Button sender = buttonData.getSender();
 		sourceElement.addText(sender.getCaption());
 	}
 
-	private static void writeButtonPanelData(Element sourceElement,
-			ButtonPanelEvent buttonPanelEvent) {
-		ButtonPanelData buttonPanelData = ButtonPanelData.cast(buttonPanelEvent
-				.getComponentData());
+	public static void writeButtonPanelData(Element sourceElement, ButtonPanelData buttonPanelData) {
 		String id = buttonPanelData.getComponentId();
-		sourceElement.addAttribute(SlideXmlConstants.TYPE,
-				SlideXmlConstants.BUTTON_PANEL);
-		if (id != null)
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.BUTTON_PANEL);
+		if (id != null) {
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		}
 		ButtonPanel sender = buttonPanelData.getSender();
 		Button button = buttonPanelData.getButton();
 		int index = sender.getChildIndex(button) + 1;
 		if (index > 0) {
-			Element selectedElement = sourceElement
-					.addElement(SlideXmlConstants.SELECTED);
-			selectedElement.addAttribute(SlideXmlConstants.INDEX,
-					String.format("%d", index));
+			Element selectedElement = sourceElement.addElement(SlideXmlConstants.SELECTED);
+			selectedElement.addAttribute(SlideXmlConstants.INDEX, String.format("%d", index));
 			selectedElement.addText(button.getCaption());
 		}
 	}
 
-	public static void writeComponentData(Document doc,
-			AbstractComponentEvent<?> componentEvent) {
+	public static void writeActionData(Document doc, ActionEvent actionEvent) {
+		Element root = doc.getRootElement();
+		Element sourceElement = root.addElement(SlideXmlConstants.SOURCE);
+		writeSourceData(sourceElement, actionEvent);
+	}
+
+	public static void writeComponentData(Document doc, AbstractComponentEvent<?> componentEvent) {
 		Element root = doc.getRootElement();
 		Element sourceElement = root.addElement(SlideXmlConstants.SOURCE);
 		writeSourceData(sourceElement, componentEvent);
 	}
 
-	private static void writeImageData(Element sourceElement,
-			ImageEvent imageEvent) {
-		ImageData imageData = ImageData.cast(imageEvent.getComponentData());
+	public static void writeImageData(Element sourceElement, ImageData imageData) {
 		String id = imageData.getComponentId();
-		sourceElement.addAttribute(SlideXmlConstants.TYPE,
-				SlideXmlConstants.IMAGE);
-		if (id != null)
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.IMAGE);
+		if (id != null) {
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		}
 		if (imageData.hasCoordinate()) {
 			Element subElement = sourceElement.addElement(SlideXmlConstants.X);
 			// use Locale.ROOT for locale neutral formating of decimals
-			subElement.addText(String.format(Locale.ROOT, "%g",
-					imageData.getCoordinate().x));
+			subElement.addText(String.format(Locale.ROOT, "%g", imageData.getCoordinate().x));
 			subElement = sourceElement.addElement(SlideXmlConstants.Y);
-			subElement.addText(String.format(Locale.ROOT, "%g",
-					imageData.getCoordinate().y));
+			subElement.addText(String.format(Locale.ROOT, "%g",	imageData.getCoordinate().y));
 		}
 	}
 
-	private static void writeRadioPanelData(Element sourceElement,
-			RadioPanelEvent radioPanelEvent) {
-		RadioPanelData radioPanelData = RadioPanelData.cast(radioPanelEvent
-				.getComponentData());
-		String id = radioPanelData.getComponentId();
-		sourceElement.addAttribute(SlideXmlConstants.TYPE,
-				SlideXmlConstants.RADIO_PANEL);
-		if (id != null)
+	public static void writeTimerData(Element sourceElement, TimerData timerData) {
+		String id = timerData.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.TIMER);
+		if (id != null) {
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		}
+		Element subElement = sourceElement.addElement(SlideXmlConstants.TIME);
+		// use Locale.ROOT for locale neutral formating of decimals
+		subElement.addText(String.format(Locale.ROOT, "%d", timerData.getTime()));
+	}
+
+	public static void writeRadioPanelData(Element sourceElement, RadioPanelData radioPanelData) {
+		String id = radioPanelData.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.RADIO_PANEL);
+		if (id != null) {
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		}
 		RadioPanel sender = radioPanelData.getSender();
 		RadioButton radioButton = radioPanelData.getRadioButton();
 		int index = sender.getChildIndex(radioButton) + 1;
 		if (index > 0) {
-			Element selectedElement = sourceElement
-					.addElement(SlideXmlConstants.SELECTED);
-			selectedElement.addAttribute(SlideXmlConstants.INDEX,
-					String.format("%d", index));
+			Element selectedElement = sourceElement.addElement(SlideXmlConstants.SELECTED);
+			selectedElement.addAttribute(SlideXmlConstants.INDEX, String.format("%d", index));
 			selectedElement.addText(radioButton.getCaption());
 		}
 	}
 
-	private static void writeSourceData(Element sourceElement,
-			AbstractComponentEvent<?> componentEvent) {
-		if (componentEvent instanceof ButtonEvent)
-			writeButtonData(sourceElement, (ButtonEvent) componentEvent);
-		else if (componentEvent instanceof ButtonPanelEvent)
-			writeButtonPanelData(sourceElement,
-					(ButtonPanelEvent) componentEvent);
-		else if (componentEvent instanceof ImageEvent)
-			writeImageData(sourceElement, (ImageEvent) componentEvent);
-		else if (componentEvent instanceof RadioPanelEvent)
-			writeRadioPanelData(sourceElement, (RadioPanelEvent) componentEvent);
-
+	private static void writeSourceData(Element sourceElement, ActionEvent actionEvent) {
+		AbstractBaseAction action = actionEvent.getAction();
+		String id = action.getId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.ACTION);
+		if (id != null) {
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		}
+	}
+	
+	private static void writeSourceData(Element sourceElement, AbstractComponentEvent<?> componentEvent) {
+		AbstractComponentData<?> componentData = componentEvent.getComponentData();
+		componentData.writeDataToElement(sourceElement);
 	}
 
 	private SlideManager slideManager = null;
@@ -183,14 +183,21 @@ public class SlideFactory {
 		return null;
 	}
 
-	private void createActions(Element rootElement) {
+	private void createActions(Element rootElement, final SlideManager slideManager) {
 		List<Element> actions = SlideXmlUtility.getActionsElements(rootElement);
 		for (Element actionElement : actions) {
 			String id = SlideXmlUtility.getId(actionElement);
 			if (!Strings.isNullOrEmpty(id)) {
-				AbstractBaseAction action = createAction(actionElement);
-				if (action != null)
+				final AbstractBaseAction action = createAction(actionElement);
+				if (action != null) {
+					action.setExecuteCommand(new Command() {
+						@Override
+						public void execute() {
+							slideManager.getEventManager().fireEvent(new ActionEvent(action));
+						}
+					});
 					slideManager.getActions().put(id, action);
+				}
 			}
 		}
 	}
@@ -318,17 +325,17 @@ public class SlideFactory {
 			Document doc = slideManager.getSlideXml();
 
 			if (SlideXmlUtility.isValidSlideXml(doc)) {
-				createActions(doc.getRootElement());
+				Element rootElement = doc.getRootElement(); 
+				createActions(rootElement, slideManager);
+				ComponentFactory.createTimers(rootElement, slideManager);
 
-				createInputValue(doc.getRootElement());
-				createOutputValue(doc.getRootElement());
+				createInputValue(rootElement);
+				createOutputValue(rootElement);
 
-				ComponentFactory.createWindows(doc.getRootElement(),
-						slideManager);
-				ComponentFactory.createViewportComponent(doc.getRootElement(),
-						slideManager);
+				ComponentFactory.createWindows(rootElement,	slideManager);
+				ComponentFactory.createViewportComponent(rootElement, slideManager);
 
-				createVariables(doc.getRootElement(), slideManager);
+				createVariables(rootElement, slideManager);
 			}
 		}
 	}
@@ -400,14 +407,20 @@ public class SlideFactory {
 
 			if (SlideXmlConstants.OBJECT.equalsIgnoreCase(type)) {
 				variable = new Variable<Object>(id);
-				Element reference = SlideXmlUtility
-						.getReferenceSubElement(element);
+				Element reference = SlideXmlUtility.getReferenceSubElement(element);
 				if (reference != null) {
-					if (reference.getName().equals(SlideXmlConstants.COMPONENT)) {
-						String componentId = SlideXmlUtility.getId(reference);
-						if (!Strings.isNullOrEmpty(componentId)) {
-							SlideComponent component = slideManager
-									.getComponents().get(componentId);
+					String referenceId = SlideXmlUtility.getId(reference);
+					if (!Strings.isNullOrEmpty(referenceId)) {
+						SlideComponent component = null;
+						if (reference.getName().equals(SlideXmlConstants.COMPONENT)) {
+							component = slideManager.getComponent(referenceId);
+						} else if (reference.getName().equals(SlideXmlConstants.TIMER)) {
+							component = slideManager.getTimer(referenceId);
+						} else if (reference.getName().equals(SlideXmlConstants.WINDOW)) {
+							component = slideManager.getWindow(referenceId);
+						}
+						
+						if (component != null) {
 							variable.setRawValue(component);
 						}
 					}
