@@ -25,6 +25,8 @@ public class SlideXmlConstants {
 	public static final String VARIABLE = "Variable";
 	public static final String ACTIONS = "Actions";
 	public static final String ACTION = "Action";
+	public static final String TIMERS = "Timers";
+	public static final String TIMER = "Timer";
 	public static final String INPUT_VALUE = "InputValue";
 	public static final String OUTPUT_VALUE = "OutputValue";
 	public static final String COMPONENTS = "Components";
@@ -40,11 +42,11 @@ public class SlideXmlConstants {
 	public static final String BUTTON_PANEL = "ButtonPanel";
 	public static final String RADIO_PANEL = "RadioPanel";
 	public static final String COMBOBOX = "ComboBox";
-	public static final String DATEFIELD = "DateField";
-	public static final String TEXTFIELD = "TextField";
-	public static final String TEXTAREA = "TextArea";
+	public static final String DATE_FIELD = "DateField";
+	public static final String TEXT_FIELD = "TextField";
+	public static final String TEXT_AREA = "TextArea";
 	public static final String LABEL = "Label";
-	public static final String TIMERLABEL = "TimerLabel";
+	public static final String TIMER_LABEL = "TimerLabel";
 	public static final String PROPERTIES = "Properties";
 	public static final String HANDLERS = "Handlers";
 	public static final String REFERENCE = "Reference";
@@ -60,6 +62,8 @@ public class SlideXmlConstants {
 	public static final String BORDER = "Border";
 	public static final String WIDTH = "Width";
 	public static final String HEIGHT = "Height";
+	public static final String CHILD_WIDTH = "ChildWidth";
+	public static final String CHILD_HEIGHT = "ChildHeight";
 	public static final String ALIGNMENT = "Alignment";
 	public static final String SPACING = "Spacing";
 	public static final String URL = "Url";
@@ -73,6 +77,14 @@ public class SlideXmlConstants {
 	public static final String SHOW = "Show";
 	public static final String OPEN = "Open";
 	public static final String CLOSE = "Close";
+	public static final String START = "Start";
+	public static final String STOP = "Stop";
+	public static final String UPDATE = "Update";
+	public static final String TIME_FORMAT = "TimeFormat";
+	public static final String TIMER_ID = "TimerId";
+	public static final String TIME = "Time";
+	public static final String DIRECTION = "Direction";
+	public static final String INTERVAL = "Interval";
 
 	public static final String TYPE = "Type";
 	public static final String ID = "Id";
@@ -129,8 +141,6 @@ public class SlideXmlConstants {
 	// public static final String END_POINT = "EndPoint";
 	// public static final String BEGIN_RADIUS = "BeginRadius";
 	// public static final String END_RADIUS = "EndRadius";
-	// public static final String PREVIOUS_TYPE = "PreviousSwitch";
-	// public static final String PREVIOUS_ID = "PreviousId";
 
 	// TODO replace with DTD schema
 	public static final StringSet VALID_SLIDE_ROOT_ELEMENTS = new StringSet(
@@ -144,7 +154,7 @@ public class SlideXmlConstants {
 
 	public static final StringSet VALID_CONTAINER_ELEMENTS = new StringSet(
 			VALID_VIEWPORT_ELEMENTS, new String[] { BUTTON, COMBOBOX, BUTTON_PANEL,
-					DATEFIELD, IMAGE, LABEL, RADIO_PANEL, TEXTAREA, TEXTFIELD, TIMERLABEL });
+					DATE_FIELD, IMAGE, LABEL, RADIO_PANEL, TEXT_AREA, TEXT_FIELD, TIMER_LABEL });
 
 	public static final StringSet VALID_WINDOW_ELEMENTS = VALID_PANEL_ELEMENTS;
 
