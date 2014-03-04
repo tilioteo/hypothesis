@@ -25,23 +25,23 @@
 			Check the database schema on startup -->
 		<property name="hibernate.hbm2ddl.auto">validate</property>
 		<!-- <property name="hibernate.hbm2ddl.auto">update</property> -->
-		<!--mapping class="org.hypothesis.entity.SlideTemplate" />
-		<mapping class="org.hypothesis.entity.SlideContent" />
-		<mapping class="org.hypothesis.entity.Slide" />
-		<mapping class="org.hypothesis.entity.SlideOutput" />
-		<mapping class="org.hypothesis.entity.Task" />
-		<mapping class="org.hypothesis.entity.Branch" />
-		<mapping class="org.hypothesis.entity.BranchOutput" />
-		<mapping class="org.hypothesis.entity.Pack" />
-		<mapping class="org.hypothesis.entity.BranchTrek" />
-		<mapping class="org.hypothesis.entity.Event" />
-		<mapping class="org.hypothesis.entity.Test" />
-		<mapping class="org.hypothesis.entity.Token" />
-		<mapping class="org.hypothesis.entity.User" />
-		<mapping class="org.hypothesis.entity.Group" />
-		<mapping class="org.hypothesis.entity.Role" />
-		<mapping class="org.hypothesis.entity.UserPermition" />
-		<mapping class="org.hypothesis.entity.GroupPermition" /-->
+		<mapping class="com.tilioteo.hypothesis.entity.SlideTemplate" />
+		<mapping class="com.tilioteo.hypothesis.entity.SlideContent" />
+		<mapping class="com.tilioteo.hypothesis.entity.Slide" />
+		<mapping class="com.tilioteo.hypothesis.entity.SlideOutput" />
+		<mapping class="com.tilioteo.hypothesis.entity.Task" />
+		<mapping class="com.tilioteo.hypothesis.entity.Branch" />
+		<mapping class="com.tilioteo.hypothesis.entity.BranchOutput" />
+		<mapping class="com.tilioteo.hypothesis.entity.Pack" />
+		<mapping class="com.tilioteo.hypothesis.entity.BranchTrek" />
+		<mapping class="com.tilioteo.hypothesis.entity.Event" />
+		<mapping class="com.tilioteo.hypothesis.entity.Test" />
+		<mapping class="com.tilioteo.hypothesis.entity.Token" />
+		<mapping class="com.tilioteo.hypothesis.entity.User" />
+		<mapping class="com.tilioteo.hypothesis.entity.Group" />
+		<mapping class="com.tilioteo.hypothesis.entity.Role" />
+		<mapping class="com.tilioteo.hypothesis.entity.UserPermission" />
+		<mapping class="com.tilioteo.hypothesis.entity.GroupPermission" />
 		<!-- mapping files <mapping resource="de/laliluna/example/Honey.hbm.xml" 
 			/> -->
 	</session-factory>
