@@ -25,6 +25,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * 
  * @author Kamil Morong - Hypothesis
@@ -33,7 +36,7 @@ import org.hibernate.annotations.LazyCollectionOption;
  * 
  */
 @Entity
-@Table(name = "TBL_USER")
+@Table(name = EntityTableConstants.USER_TABLE)
 @Access(AccessType.PROPERTY)
 public final class User extends SerializableIdObject {
 
@@ -77,14 +80,14 @@ public final class User extends SerializableIdObject {
 	 */
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userGenerator")
-	@SequenceGenerator(name = "userGenerator", sequenceName = "hbn_user_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.USER_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.USER_GENERATOR, sequenceName = EntityTableConstants.USER_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "USERNAME", nullable = false, unique = true)
+	@Column(name = EntityFieldConstants.USERNAME, nullable = false, unique = true)
 	public final String getUsername() {
 		return username;
 	}
@@ -98,7 +101,7 @@ public final class User extends SerializableIdObject {
 		this.username = username;
 	}
 
-	@Column(name = "PASSW", nullable = false)
+	@Column(name = EntityFieldConstants.PASSWORD, nullable = false)
 	public final String getPassword() {
 		return password;
 	}
@@ -112,7 +115,7 @@ public final class User extends SerializableIdObject {
 		this.password = password;
 	}
 
-	@Column(name = "ENABLED", nullable = false)
+	@Column(name = EntityFieldConstants.ENABLED, nullable = false)
 	public final Boolean getEnabled() {
 		return enabled;
 	}
@@ -121,7 +124,7 @@ public final class User extends SerializableIdObject {
 		this.enabled = enabled;
 	}
 
-	@Column(name = "EXPIREDATE")
+	@Column(name = EntityFieldConstants.EXPIRE_DATE)
 	public final Date getExpireDate() {
 		return expireDate;
 	}
@@ -130,7 +133,7 @@ public final class User extends SerializableIdObject {
 		this.expireDate = expireDate;
 	}
 
-	@Column(name = "NOTE", nullable = true)
+	@Column(name = EntityFieldConstants.NOTE, nullable = true)
 	public final String getNote() {
 		return note;
 	}
@@ -140,7 +143,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_USER_ROLE", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
+	@JoinTable(name = EntityTableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.ROLE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public final Set<Role> getRoles() {
@@ -153,7 +156,7 @@ public final class User extends SerializableIdObject {
 
 	@ManyToMany(targetEntity = Group.class, cascade = {
 			CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "GROUP_ID"))
+	@JoinTable(name = EntityTableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.GROUP_ID))
 	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public final Set<Group> getGroups() {
@@ -164,7 +167,7 @@ public final class User extends SerializableIdObject {
 		this.groups = groups;
 	}
 
-	@Column(name = "OWNER_ID", nullable = true)
+	@Column(name = EntityFieldConstants.OWNER_ID, nullable = true)
 	public final Long getOwnerId() {
 		return ownerId;
 	}

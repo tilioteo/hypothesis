@@ -14,6 +14,8 @@ import javax.persistence.Transient;
 import org.dom4j.Document;
 import org.hibernate.annotations.Type;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.XmlUtility;
@@ -25,7 +27,7 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
  * 
  */
 @Entity
-@Table(name = "TBL_SLIDE_TEMPLATE")
+@Table(name = EntityTableConstants.SLIDE_TEMPLATE_TABLE)
 @Access(AccessType.PROPERTY)
 public final class SlideTemplate extends SerializableUidObject {
 
@@ -37,7 +39,7 @@ public final class SlideTemplate extends SerializableUidObject {
 	/**
 	 * raw xml string of slide template
 	 */
-	private String templateXml;
+	private String xmlData;
 
 	private String note;
 
@@ -48,22 +50,22 @@ public final class SlideTemplate extends SerializableUidObject {
 
 	@Override
 	@Id
-	@Column(name = "UID")
+	@Column(name = EntityFieldConstants.UID)
 	public final String getUid() {
 		return super.getUid();
 	}
 
-	@Column(name = "TEMPLATE_XML", nullable = false)
+	@Column(name = EntityFieldConstants.XML_DATA, nullable = false)
 	@Type(type="text")
-	protected String getTemplateXml() {
-		return templateXml;
+	protected String getXmlData() {
+		return xmlData;
 	}
 
-	protected void setTemplateXml(String templateXml) {
-		this.templateXml = templateXml;
+	protected void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -79,7 +81,7 @@ public final class SlideTemplate extends SerializableUidObject {
 	@Transient
 	public final Document getDocument() {
 		if (document == null) {
-			document = XmlUtility.readString(getTemplateXml());
+			document = XmlUtility.readString(getXmlData());
 		}
 		return document;
 	}
@@ -120,12 +122,12 @@ public final class SlideTemplate extends SerializableUidObject {
 	 */
 	private void updateTepmlateXmlAndUid() {
 		if (this.document != null) {
-			setTemplateXml(XmlUtility.writeString(this.document));
+			setXmlData(XmlUtility.writeString(this.document));
 			String uid = document.getRootElement().attributeValue(
 					SlideXmlConstants.UID);
 			setUid(Strings.isNullOrEmpty(uid) ? null : uid);
 		} else {
-			setTemplateXml(null);
+			setXmlData(null);
 			setUid(null);
 		}
 	}
@@ -150,10 +152,10 @@ public final class SlideTemplate extends SerializableUidObject {
 				return false;
 		} else if (!getNote().equals(other.getNote()))
 			return false;
-		if (getTemplateXml() == null) {
-			if (other.getTemplateXml() != null)
+		if (getXmlData() == null) {
+			if (other.getXmlData() != null)
 				return false;
-		} else if (!getTemplateXml().equals(other.getTemplateXml()))
+		} else if (!getXmlData().equals(other.getXmlData()))
 			return false;
 		return true;
 	}
@@ -171,7 +173,7 @@ public final class SlideTemplate extends SerializableUidObject {
 				+ ((getNote() == null) ? 0 : getNote().hashCode());
 		result = prime
 				* result
-				+ ((getTemplateXml() == null) ? 0 : getTemplateXml().hashCode());
+				+ ((getXmlData() == null) ? 0 : getXmlData().hashCode());
 		return result;
 	}
 

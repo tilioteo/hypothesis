@@ -30,6 +30,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -37,7 +40,7 @@ import org.hibernate.annotations.LazyCollectionOption;
  * 
  */
 @Entity
-@Table(name = "TBL_TEST")
+@Table(name = EntityTableConstants.TEST_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Test extends SerializableIdObject {
 	public enum Status {
@@ -129,6 +132,8 @@ public final class Test extends SerializableIdObject {
 	 */
 	private List<Event> events = new LinkedList<Event>();
 
+	public static final Test DUMMY_TEST = new Test();
+	
 	protected Test() {
 		super();
 	}
@@ -152,14 +157,14 @@ public final class Test extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "testGenerator")
-	@SequenceGenerator(name = "testGenerator", sequenceName = "hbn_test_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.TEST_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.TEST_GENERATOR, sequenceName = EntityTableConstants.TEST_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "PRODUCTION", nullable = false)
+	@Column(name = EntityFieldConstants.PRODUCTION, nullable = false)
 	public boolean isProduction() {
 		return production;
 	}
@@ -168,7 +173,7 @@ public final class Test extends SerializableIdObject {
 		this.production = production;
 	}
 
-	@Column(name = "CREATED", nullable = false)
+	@Column(name = EntityFieldConstants.CREATED, nullable = false)
 	public final Date getCreated() {
 		return created;
 	}
@@ -177,7 +182,7 @@ public final class Test extends SerializableIdObject {
 		this.created = created;
 	}
 
-	@Column(name = "STARTED")
+	@Column(name = EntityFieldConstants.STARTED)
 	public final Date getStarted() {
 		return started;
 	}
@@ -186,7 +191,7 @@ public final class Test extends SerializableIdObject {
 		this.started = started;
 	}
 
-	@Column(name = "FINISHED")
+	@Column(name = EntityFieldConstants.FINISHED)
 	public final Date getFinished() {
 		return finished;
 	}
@@ -195,7 +200,7 @@ public final class Test extends SerializableIdObject {
 		this.finished = finished;
 	}
 
-	@Column(name = "BROKEN")
+	@Column(name = EntityFieldConstants.BROKEN)
 	public final Date getBroken() {
 		return broken;
 	}
@@ -204,7 +209,7 @@ public final class Test extends SerializableIdObject {
 		this.broken = broken;
 	}
 
-	@Column(name = "LAST_ACCESS", nullable = false)
+	@Column(name = EntityFieldConstants.LAST_ACCESS, nullable = false)
 	public final Date getLastAccess() {
 		return lastAccess;
 	}
@@ -213,7 +218,7 @@ public final class Test extends SerializableIdObject {
 		this.lastAccess = lastAccess;
 	}
 
-	@Column(name = "STATUS", nullable = false)
+	@Column(name = EntityFieldConstants.STATUS, nullable = false)
 	public final Status getStatus() {
 		return Status.get(status);
 	}
@@ -223,7 +228,7 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "USER_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.USER_ID)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final User getUser() {
 		return user;
@@ -234,7 +239,7 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;
@@ -245,7 +250,7 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "LAST_BRANCH_ID")
+	@JoinColumn(name = EntityFieldConstants.LAST_BRANCH_ID)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Branch getLastBranch() {
 		return lastBranch;
@@ -256,7 +261,7 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "LAST_TASK_ID")
+	@JoinColumn(name = EntityFieldConstants.LAST_TASK_ID)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Task getLastTask() {
 		return lastTask;
@@ -267,7 +272,7 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "LAST_SLIDE_ID")
+	@JoinColumn(name = EntityFieldConstants.LAST_SLIDE_ID)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Slide getLastSlide() {
 		return lastSlide;
@@ -278,10 +283,10 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_TEST_EVENT", joinColumns = @JoinColumn(name = "TEST_ID"), inverseJoinColumns = @JoinColumn(name = "EVENT_ID"))
+	@JoinTable(name = EntityTableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.TEST_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.EVENT_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@OrderColumn(name = "IDX")
+	@OrderColumn(name = EntityFieldConstants.RANK)
 	public final List<Event> getEvents() {
 		return events;
 	}

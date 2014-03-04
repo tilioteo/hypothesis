@@ -24,6 +24,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -31,7 +34,7 @@ import org.hibernate.annotations.LazyCollectionOption;
  * 
  */
 @Entity
-@Table(name = "TBL_GROUP")
+@Table(name = EntityTableConstants.GROUP_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Group extends SerializableIdObject {
 
@@ -51,9 +54,9 @@ public final class Group extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groupGenerator")
-	@SequenceGenerator(name = "groupGenerator", sequenceName = "hbn_group_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.GROUP_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.GROUP_GENERATOR, sequenceName = EntityTableConstants.GROUP_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
@@ -63,7 +66,7 @@ public final class Group extends SerializableIdObject {
 		super.setId(id);
 	}
 
-	@Column(name = "NAME", nullable = false, unique = true)
+	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
 	public final String getName() {
 		return name;
 	}
@@ -72,7 +75,7 @@ public final class Group extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = "NOTE", nullable = true)
+	@Column(name = EntityFieldConstants.NOTE, nullable = true)
 	public final String getNote() {
 		return note;
 	}
@@ -81,7 +84,7 @@ public final class Group extends SerializableIdObject {
 		this.note = note;
 	}
 
-	@Column(name = "OWNER_ID", nullable = false)
+	@Column(name = EntityFieldConstants.OWNER_ID, nullable = false)
 	public final Long getOwnerId() {
 		return ownerId;
 	}
@@ -92,7 +95,7 @@ public final class Group extends SerializableIdObject {
 
 	@ManyToMany(targetEntity = User.class, cascade = {
 			CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "GROUP_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
+	@JoinTable(name = EntityTableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.GROUP_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID))
 	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public final Set<User> getUsers() {

@@ -18,6 +18,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -25,7 +28,7 @@ import org.hibernate.annotations.Cascade;
  * 
  */
 @Entity
-@Table(name = "TBL_SLIDE")
+@Table(name = EntityTableConstants.SLIDE_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Slide extends SerializableIdObject {
 
@@ -33,8 +36,6 @@ public final class Slide extends SerializableIdObject {
 	 * 
 	 */
 	private static final long serialVersionUID = -6866522778488675162L;
-
-	// private SlideTemplate template;
 
 	/**
 	 * parent slide content
@@ -53,9 +54,9 @@ public final class Slide extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slideGenerator")
-	@SequenceGenerator(name = "slideGenerator", sequenceName = "hbn_slide_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.SLIDE_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.SLIDE_GENERATOR, sequenceName = EntityTableConstants.SLIDE_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
@@ -69,7 +70,7 @@ public final class Slide extends SerializableIdObject {
 	// @ManyToOne(cascade={CascadeType.PERSIST, CascadeType.MERGE})
 	@OneToOne(optional = false, cascade = { CascadeType.PERSIST,
 			CascadeType.MERGE })
-	@JoinColumn(name = "SLIDE_CONTENT_ID", nullable = false, unique = true)
+	@JoinColumn(name = EntityFieldConstants.SLIDE_CONTENT_ID, nullable = false, unique = true)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final SlideContent getContent() {
 		return content;
@@ -79,7 +80,7 @@ public final class Slide extends SerializableIdObject {
 		this.content = content;
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}

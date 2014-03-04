@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.common.FieldConstants;
+import com.tilioteo.hypothesis.common.EntityConstants;
 import com.tilioteo.hypothesis.dao.BranchTrekDao;
 import com.tilioteo.hypothesis.entity.Branch;
 import com.tilioteo.hypothesis.entity.BranchTrek;
@@ -33,8 +33,8 @@ public class BranchManager {
 			branchTrekDao.beginTransaction();
 			List<BranchTrek> branchTreks = branchTrekDao
 					.findByCriteria(Restrictions.and(
-							Restrictions.eq(FieldConstants.PACK, pack),
-							Restrictions.eq(FieldConstants.BRANCH, branch)));
+							Restrictions.eq(EntityConstants.PACK, pack),
+							Restrictions.eq(EntityConstants.BRANCH, branch)));
 
 			for (BranchTrek branchTrek : branchTreks) {
 				map.put(branchTrek.getKey(), branchTrek);

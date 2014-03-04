@@ -19,12 +19,15 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
 @Entity
-@Table(name = "TBL_BRANCH_OUTPUT")
+@Table(name = EntityTableConstants.BRANCH_OUTPUT_TABLE)
 @Access(AccessType.PROPERTY)
 public final class BranchOutput extends SerializableIdObject {
 
@@ -46,7 +49,7 @@ public final class BranchOutput extends SerializableIdObject {
 	/**
 	 * saved data
 	 */
-	private String data;
+	private String xmlData;
 
 	/**
 	 * output of slide
@@ -65,15 +68,15 @@ public final class BranchOutput extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchOutputGenerator")
-	@SequenceGenerator(name = "branchOutputGenerator", sequenceName = "hbn_branch_output_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_OUTPUT_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.BRANCH_OUTPUT_GENERATOR, sequenceName = EntityTableConstants.BRANCH_OUTPUT_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "BRANCH_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.BRANCH_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Branch getBranch() {
 		return branch;
@@ -84,7 +87,7 @@ public final class BranchOutput extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "TEST_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.TEST_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Test getTest() {
 		return test;
@@ -94,17 +97,17 @@ public final class BranchOutput extends SerializableIdObject {
 		this.test = test;
 	}
 
-	@Column(name = "DATA")
+	@Column(name = EntityFieldConstants.XML_DATA)
 	@Type(type="text")
 	public final String getData() {
-		return data;
+		return xmlData;
 	}
 
 	public final void setData(String data) {
-		this.data = data;
+		this.xmlData = data;
 	}
 
-	@Column(name = "OUTPUT")
+	@Column(name = EntityFieldConstants.OUTPUT)
 	public final String getOutput() {
 		return output;
 	}

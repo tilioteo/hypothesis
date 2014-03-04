@@ -8,10 +8,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.common.FieldConstants;
+import com.tilioteo.hypothesis.common.EntityConstants;
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
 import com.tilioteo.hypothesis.dao.GroupPermissionDao;
 import com.tilioteo.hypothesis.dao.PackDao;
 import com.tilioteo.hypothesis.dao.UserPermissionDao;
@@ -180,7 +183,7 @@ public class PermissionManager {
 			try {
 				groupPermissionDao.beginTransaction();
 				List<GroupPermission> groupsPermissions = groupPermissionDao
-						.findByCriteria(Restrictions.in(FieldConstants.GROUP,
+						.findByCriteria(Restrictions.in(EntityConstants.GROUP,
 								user.getGroups()));
 				groupPermissionDao.commit();
 
@@ -264,7 +267,7 @@ public class PermissionManager {
 			groupPermissionDao.beginTransaction();
 			List<GroupPermission> grpPerms = groupPermissionDao
 					.findByCriteria(Restrictions
-							.eq(FieldConstants.GROUP, group));
+							.eq(EntityConstants.GROUP, group));
 			groupPermissionDao.commit();
 			groupPermissions.addAll(grpPerms);
 		} catch (Throwable e) {
@@ -278,7 +281,7 @@ public class PermissionManager {
 			Set<GroupPermission> groupsPermissions = new HashSet<GroupPermission>();
 			groupPermissionDao.beginTransaction();
 			List<GroupPermission> grpsPerms = groupPermissionDao
-					.findByCriteria(Restrictions.in(FieldConstants.GROUP,
+					.findByCriteria(Restrictions.in(EntityConstants.GROUP,
 							groups));
 			groupPermissionDao.commit();
 			groupsPermissions.addAll(grpsPerms);
@@ -295,7 +298,7 @@ public class PermissionManager {
 			Set<GroupPermission> groupPermissions = new HashSet<GroupPermission>();
 			groupPermissionDao.beginTransaction();
 			List<GroupPermission> grpPerms = groupPermissionDao
-					.findByCriteria(Restrictions.eq(FieldConstants.PACK, pack));
+					.findByCriteria(Restrictions.eq(EntityConstants.PACK, pack));
 			groupPermissionDao.commit();
 			groupPermissions.addAll(grpPerms);
 
@@ -312,8 +315,8 @@ public class PermissionManager {
 			userPermissionDao.beginTransaction();
 			List<UserPermission> usrPerms = userPermissionDao
 					.findByCriteria(Restrictions.and(
-							Restrictions.eq(FieldConstants.PACK, pack),
-							Restrictions.eq(FieldConstants.ENABLED, enabled)));
+							Restrictions.eq(EntityConstants.PACK, pack),
+							Restrictions.eq(EntityFieldConstants.ENABLED, enabled)));
 			userPermissionDao.commit();
 			userPermissions.addAll(usrPerms);
 
@@ -356,7 +359,7 @@ public class PermissionManager {
 		try {
 			userPermissionDao.beginTransaction();
 			List<UserPermission> usrPerms = userPermissionDao
-					.findByCriteria(Restrictions.eq(FieldConstants.USER, user));
+					.findByCriteria(Restrictions.eq(EntityConstants.USER, user));
 			userPermissionDao.commit();
 			userPermissions.addAll(usrPerms);
 		} catch (HibernateException e) {
@@ -372,14 +375,30 @@ public class PermissionManager {
 			userPermissionDao.beginTransaction();
 			List<UserPermission> usrsPerms = userPermissionDao
 					.findByCriteria(Restrictions.and(
-							Restrictions.in(FieldConstants.USER, users),
-							Restrictions.eq(FieldConstants.ENABLED, enabled)));
+							Restrictions.in(EntityConstants.USER, users),
+							Restrictions.eq(EntityFieldConstants.ENABLED, enabled)));
 			userPermissionDao.commit();
 			usersPermissions.addAll(usrsPerms);
 
 			return usersPermissions;
 		} catch (Throwable e) {
 			userPermissionDao.rollback();
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Pack> getPublishedPacks() {
+		try {
+			packDao.beginTransaction();
+			Criteria criteria = packDao.createCriteria();
+			criteria.add(Restrictions.eq(EntityFieldConstants.PUBLISHED, true));
+			criteria.addOrder(Order.asc(EntityFieldConstants.ID));
+			List<Pack> packs = criteria.list();
+			packDao.commit();
+			return packs;
+		} catch (Throwable e) {
+			packDao.rollback();
 		}
 		return null;
 	}

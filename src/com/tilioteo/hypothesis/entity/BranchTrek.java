@@ -20,6 +20,9 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -28,10 +31,11 @@ import org.hibernate.annotations.Index;
  * 
  */
 @Entity
-@Table(name = "TBL_BRANCH_TREK", uniqueConstraints = { @UniqueConstraint(columnNames = {
-		"PACK_ID", "KEY", "BRANCH_ID" }) })
-@org.hibernate.annotations.Table(appliesTo = "TBL_BRANCH_TREK", indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = {
-		"PACK_ID", "BRANCH_ID" }), @Index(name="IX_KEY", columnNames = {"KEY"}) })
+@Table(name = EntityTableConstants.BRANCH_TREK_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
+		EntityFieldConstants.PACK_ID, EntityFieldConstants.KEY, EntityFieldConstants.BRANCH_ID }) })
+@org.hibernate.annotations.Table(appliesTo = EntityTableConstants.BRANCH_TREK_TABLE,
+indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = { EntityFieldConstants.PACK_ID, EntityFieldConstants.BRANCH_ID }),
+		@Index(name="IX_KEY", columnNames = {EntityFieldConstants.KEY}) })
 @Access(AccessType.PROPERTY)
 public final class BranchTrek extends SerializableIdObject {
 	/**
@@ -56,15 +60,15 @@ public final class BranchTrek extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchTrekGenerator")
-	@SequenceGenerator(name = "branchTrekGenerator", sequenceName = "hbn_branch_trek_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_TREK_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.BRANCH_TREK_GENERATOR, sequenceName = EntityTableConstants.BRANCH_TREK_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;
@@ -74,7 +78,7 @@ public final class BranchTrek extends SerializableIdObject {
 		this.pack = pack;
 	}
 
-	@Column(name = "KEY", nullable = false)
+	@Column(name = EntityFieldConstants.KEY, nullable = false)
 	public final String getKey() {
 		return key;
 	}
@@ -84,7 +88,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "BRANCH_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.BRANCH_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Branch getBranch() {
 		return branch;

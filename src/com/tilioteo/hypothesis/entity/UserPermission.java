@@ -19,6 +19,9 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cascade;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -26,8 +29,8 @@ import org.hibernate.annotations.Cascade;
  * 
  */
 @Entity
-@Table(name = "TBL_USER_PERMITION", uniqueConstraints = { @UniqueConstraint(columnNames = {
-		"USER_ID", "PACK_ID" }) })
+@Table(name = EntityTableConstants.USER_PERMISSION_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
+		EntityFieldConstants.USER_ID, EntityFieldConstants.PACK_ID }) })
 @Access(AccessType.PROPERTY)
 public final class UserPermission extends SerializableIdObject {
 
@@ -76,15 +79,15 @@ public final class UserPermission extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userPermitionGenerator")
-	@SequenceGenerator(name = "userPermitionGenerator", sequenceName = "hbn_user_permition_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.USER_PERMISSION_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.USER_PERMISSION_GENERATOR, sequenceName = EntityTableConstants.USER_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "USER_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.USER_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final User getUser() {
 		return user;
@@ -95,7 +98,7 @@ public final class UserPermission extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;
@@ -105,7 +108,7 @@ public final class UserPermission extends SerializableIdObject {
 		this.pack = pack;
 	}
 
-	@Column(name = "ENABLED", nullable = false)
+	@Column(name = EntityFieldConstants.ENABLED, nullable = false)
 	public final Boolean getEnabled() {
 		return enabled;
 	}
@@ -114,7 +117,7 @@ public final class UserPermission extends SerializableIdObject {
 		this.enabled = enabled;
 	}
 
-	@Column(name = "PASS")
+	@Column(name = EntityFieldConstants.PASS)
 	public final Integer getPass() {
 		return pass;
 	}

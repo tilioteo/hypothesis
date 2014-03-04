@@ -8,7 +8,8 @@ import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.common.FieldConstants;
+import com.tilioteo.hypothesis.common.EntityConstants;
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
 import com.tilioteo.hypothesis.dao.TestDao;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Test;
@@ -40,9 +41,9 @@ public class TestManager {
 			 */
 
 			List<Test> tests = testDao.findByCriteria(Restrictions.and(
-					Restrictions.eq(FieldConstants.PACK, pack), Restrictions
-							.and(Restrictions.eq(FieldConstants.USER, user),
-									Restrictions.in(FieldConstants.STATUS,
+					Restrictions.eq(EntityConstants.PACK, pack), Restrictions
+							.and(Restrictions.eq(EntityConstants.USER, user),
+									Restrictions.in(EntityFieldConstants.STATUS,
 											statuses))));
 			testDao.commit();
 			return tests;
@@ -52,20 +53,25 @@ public class TestManager {
 		return null;
 	}
 
-	public Test getUnattendTest(User user, Pack pack, boolean production) {
+	public Test getUnattendedTest(User user, Pack pack, boolean production) {
 		try {
 			testDao.beginTransaction();
-
-			// TODO broken test finding is disabled at this time
-			// continue of testing must be implemented first
-			/*
-			 * List<Test> tests = testDao.findByCriteria(Restrictions.and(
-			 * Restrictions.eq(FieldConstants.PACK, pack), Restrictions.and(
-			 * Restrictions.eq(FieldConstants.USER, user),
-			 * Restrictions.ne(FieldConstants.STATUS, Status.FINISHED))));
-			 */
-			// TODO remove this line after uncommenting code block above
-			List<Test> tests = new ArrayList<Test>();
+			
+			List<Test> tests;
+			
+			// anonymous user cannot continue broken test 
+			if (user != null) {
+				// TODO broken test finding is disabled at this time
+				// continue of testing must be implemented first
+				//tests = testDao.findByCriteria(Restrictions.and(
+				//		Restrictions.eq(FieldConstants.PACK, pack), Restrictions.and(
+				//				Restrictions.eq(FieldConstants.USER, user),
+				//				Restrictions.ne(FieldConstants.STATUS, Status.FINISHED))));
+				// TODO remove this line after uncommenting code block above
+				tests = new ArrayList<Test>();
+			} else {
+				tests = new ArrayList<Test>();
+			}
 
 			Test outputTest = null;
 			if (tests.size() > 0) {

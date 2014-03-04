@@ -13,6 +13,9 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -20,7 +23,7 @@ import javax.persistence.Table;
  * 
  */
 @Entity
-@Table(name = "TBL_ROLE")
+@Table(name = EntityTableConstants.ROLE_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Role extends SerializableIdObject {
 
@@ -42,14 +45,14 @@ public final class Role extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roleGenerator")
-	@SequenceGenerator(name = "roleGenerator", sequenceName = "hbn_role_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.ROLE_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.ROLE_GENERATOR, sequenceName = EntityTableConstants.ROLE_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "NAME", nullable = false, unique = true)
+	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
 	public final String getName() {
 		return name;
 	}

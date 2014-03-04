@@ -26,6 +26,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -33,7 +36,7 @@ import org.hibernate.annotations.LazyCollectionOption;
  * 
  */
 @Entity
-@Table(name = "TBL_TASK")
+@Table(name = EntityTableConstants.TASK_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Task extends SerializableIdObject implements HasList<Slide> {
 	/**
@@ -51,14 +54,14 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "taskGenerator")
-	@SequenceGenerator(name = "taskGenerator", sequenceName = "hbn_task_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.TASK_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.TASK_GENERATOR, sequenceName = EntityTableConstants.TASK_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "NAME", nullable = false, unique = false)
+	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = false)
 	public final String getName() {
 		return name;
 	}
@@ -67,7 +70,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 		this.name = name;
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -77,10 +80,10 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_TASK_SLIDE", joinColumns = @JoinColumn(name = "TASK_ID"), inverseJoinColumns = @JoinColumn(name = "SLIDE_ID"))
+	@JoinTable(name = EntityTableConstants.TASK_SLIDE_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.TASK_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.SLIDE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@OrderColumn(name = "RANK")
+	@OrderColumn(name = EntityFieldConstants.RANK)
 	public final List<Slide> getSlides() {
 		return slides;
 	}

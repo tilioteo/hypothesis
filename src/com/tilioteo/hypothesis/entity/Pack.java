@@ -25,6 +25,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -32,7 +35,7 @@ import org.hibernate.annotations.LazyCollectionOption;
  * 
  */
 @Entity
-@Table(name = "TBL_PACK")
+@Table(name = EntityTableConstants.PACK_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Pack extends SerializableIdObject implements HasList<Branch> {
 
@@ -57,14 +60,14 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "packGenerator")
-	@SequenceGenerator(name = "packGenerator", sequenceName = "hbn_pack_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.PACK_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.PACK_GENERATOR, sequenceName = EntityTableConstants.PACK_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "NAME", nullable = false, unique = true)
+	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
 	public final String getName() {
 		return name;
 	}
@@ -73,7 +76,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		this.name = name;
 	}
 
-	@Column(name = "DESCRIPTION")
+	@Column(name = EntityFieldConstants.DESCRIPTION)
 	public final String getDescription() {
 		return description;
 	}
@@ -82,7 +85,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		this.description = description;
 	}
 
-	@Column(name = "PUBLISHED")
+	@Column(name = EntityFieldConstants.PUBLISHED)
 	public final Boolean getPublished() {
 		return published;
 	}
@@ -91,7 +94,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		this.published = published;
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -101,7 +104,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_PACK_BRANCH", joinColumns = @JoinColumn(name = "PACK_ID"), inverseJoinColumns = @JoinColumn(name = "BRANCH_ID"))
+	@JoinTable(name = EntityTableConstants.PACK_BRANCH_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.PACK_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	// @IndexColumn(name="IDX", base = 1)

@@ -18,6 +18,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -26,7 +29,7 @@ import org.hibernate.annotations.Cascade;
  * 
  */
 @Entity
-@Table(name = "TBL_TOKEN")
+@Table(name = EntityTableConstants.TOKEN_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Token extends SerializableUidObject {
 
@@ -68,12 +71,12 @@ public final class Token extends SerializableUidObject {
 
 	@Override
 	@Id
-	@Column(name = "UID")
+	@Column(name = EntityFieldConstants.UID)
 	public final String getUid() {
 		return uid;
 	}
 
-	@Column(name = "PRODUCTION", nullable = false)
+	@Column(name = EntityFieldConstants.PRODUCTION, nullable = false)
 	public boolean isProduction() {
 		return production;
 	}
@@ -83,7 +86,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "USER_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.USER_ID)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final User getUser() {
 		return user;
@@ -94,7 +97,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;
@@ -104,6 +107,7 @@ public final class Token extends SerializableUidObject {
 		this.pack = pack;
 	}
 
+	@Column(name = EntityFieldConstants.DATETIME)
 	public final Date getDatetime() {
 		return datetime;
 	}

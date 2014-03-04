@@ -19,6 +19,9 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cascade;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -27,8 +30,8 @@ import org.hibernate.annotations.Cascade;
  * 
  */
 @Entity
-@Table(name = "TBL_GROUP_PERMITION", uniqueConstraints = { @UniqueConstraint(columnNames = {
-		"GROUP_ID", "PACK_ID" }) })
+@Table(name = EntityTableConstants.GROUP_PERMISSION_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
+		EntityFieldConstants.GROUP_ID, EntityFieldConstants.PACK_ID }) })
 @Access(AccessType.PROPERTY)
 public final class GroupPermission extends SerializableIdObject {
 
@@ -52,15 +55,15 @@ public final class GroupPermission extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groupPermitionGenerator")
-	@SequenceGenerator(name = "groupPermitionGenerator", sequenceName = "hbn_group_permition_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.GROUP_PERMISSION_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.GROUP_PERMISSION_GENERATOR, sequenceName = EntityTableConstants.GROUP_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "GROUP_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.GROUP_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Group getGroup() {
 		return group;
@@ -71,7 +74,7 @@ public final class GroupPermission extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
+	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;

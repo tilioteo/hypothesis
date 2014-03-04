@@ -21,6 +21,8 @@ import org.dom4j.Document;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
 import com.tilioteo.hypothesis.dom.AbstractSlideXmlException;
 import com.tilioteo.hypothesis.dom.InvalidSlideContentXmlException;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
@@ -34,7 +36,7 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
  * 
  */
 @Entity
-@Table(name = "TBL_SLIDE_CONTENT")
+@Table(name = EntityTableConstants.SLIDE_CONTENT_TABLE)
 @Access(AccessType.PROPERTY)
 public final class SlideContent extends SerializableIdObject {
 
@@ -51,7 +53,7 @@ public final class SlideContent extends SerializableIdObject {
 	/**
 	 * raw xml string of slide content
 	 */
-	private String contentXml;
+	private String xmlData;
 
 	private String note;
 
@@ -71,16 +73,15 @@ public final class SlideContent extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slideContentGenerator")
-	@SequenceGenerator(name = "slideContentGenerator", sequenceName = "hbn_slide_content_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.SLIDE_CONTENT_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.SLIDE_CONTENT_GENERATOR, sequenceName = EntityTableConstants.SLIDE_CONTENT_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE })
-	@JoinColumn(name = "SLIDE_TEMPLATE_UID", nullable = false)
+	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinColumn(name = EntityFieldConstants.SLIDE_TEMPLATE_UID, nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final SlideTemplate getTemplate() {
 		return template;
@@ -90,17 +91,17 @@ public final class SlideContent extends SerializableIdObject {
 		this.template = slideTemplate;
 	}
 
-	@Column(name = "CONTENT_XML", nullable = false)
+	@Column(name = EntityFieldConstants.XML_DATA, nullable = false)
 	@Type(type="text")
-	protected String getContentXml() {
-		return contentXml;
+	protected String getXmlData() {
+		return xmlData;
 	}
 
-	protected void setContentXml(String contentXml) {
-		this.contentXml = contentXml;
+	protected void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -112,7 +113,7 @@ public final class SlideContent extends SerializableIdObject {
 	@Transient
 	public final Document getDocument() {
 		if (document == null) {
-			document = XmlUtility.readString(getContentXml());
+			document = XmlUtility.readString(getXmlData());
 		}
 		return document;
 	}
@@ -122,7 +123,7 @@ public final class SlideContent extends SerializableIdObject {
 		if (document != getDocument()) {
 			if (isValidDocument(document)) {
 				this.document = document;
-				this.contentXml = XmlUtility.writeString(this.document);
+				this.xmlData = XmlUtility.writeString(this.document);
 			} else {
 				/*
 				 * this.document = null; this.contentXml = null;
@@ -184,10 +185,10 @@ public final class SlideContent extends SerializableIdObject {
 		} else if (!getId().equals(other.getId()))
 			return false;
 		// TODO remove when Buffered.SourceException occurs
-		if (getContentXml() == null) {
-			if (other.getContentXml() != null)
+		if (getXmlData() == null) {
+			if (other.getXmlData() != null)
 				return false;
-		} else if (!getContentXml().equals(other.getContentXml()))
+		} else if (!getXmlData().equals(other.getXmlData()))
 			return false;
 		if (getNote() == null) {
 			if (other.getNote() != null)
@@ -204,7 +205,7 @@ public final class SlideContent extends SerializableIdObject {
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
 		// TODO remove when Buffered.SourceException occurs
 		result = prime * result
-				+ ((getContentXml() == null) ? 0 : getContentXml().hashCode());
+				+ ((getXmlData() == null) ? 0 : getXmlData().hashCode());
 		result = prime * result
 				+ ((getNote() == null) ? 0 : getNote().hashCode());
 		return result;

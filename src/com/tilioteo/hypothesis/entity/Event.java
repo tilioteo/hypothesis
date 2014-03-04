@@ -22,6 +22,9 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -32,7 +35,7 @@ import org.hibernate.annotations.Type;
  * 
  */
 @Entity
-@Table(name = "TBL_EVENT")
+@Table(name = EntityTableConstants.EVENT_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Event extends SerializableIdObject {
 
@@ -49,7 +52,7 @@ public final class Event extends SerializableIdObject {
 	/**
 	 * code of event type
 	 */
-	private Integer type;
+	private Long type;
 
 	/**
 	 * human readable name
@@ -59,7 +62,7 @@ public final class Event extends SerializableIdObject {
 	/**
 	 * saved data
 	 */
-	private String data;
+	private String xmlData;
 
 	/**
 	 * event result
@@ -87,7 +90,7 @@ public final class Event extends SerializableIdObject {
 		super();
 	}
 
-	public Event(int type, String name, Date datetime) {
+	public Event(long type, String name, Date datetime) {
 		this();
 		this.type = type;
 		this.name = name;
@@ -96,14 +99,14 @@ public final class Event extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eventGenerator")
-	@SequenceGenerator(name = "eventGenerator", sequenceName = "hbn_event_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.EVENT_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.EVENT_GENERATOR, sequenceName = EntityTableConstants.EVENT_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "TIMESTAMP", nullable = false)
+	@Column(name = EntityFieldConstants.TIMESTAMP, nullable = false)
 	protected Long getTimeStamp() {
 		return timeStamp;
 	}
@@ -112,16 +115,16 @@ public final class Event extends SerializableIdObject {
 		this.timeStamp = timeStamp;
 	}
 
-	@Column(name = "TYPE", nullable = false)
-	public final Integer getType() {
+	@Column(name = EntityFieldConstants.TYPE, nullable = false)
+	public final Long getType() {
 		return type;
 	}
 
-	protected void setType(Integer type) {
+	protected void setType(Long type) {
 		this.type = type;
 	}
 
-	@Column(name = "NAME")
+	@Column(name = EntityFieldConstants.NAME)
 	public final String getName() {
 		return name;
 	}
@@ -130,18 +133,18 @@ public final class Event extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = "DATA")
+	@Column(name = EntityFieldConstants.XML_DATA)
 	@Type(type="text")
-	public final String getData() {
-		return data;
+	public final String getXmlData() {
+		return xmlData;
 	}
 
-	public final void setData(String data) {
-		this.data = data;
+	public final void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "BRANCH_ID")
+	@JoinColumn(name = EntityFieldConstants.BRANCH_ID)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Branch getBranch() {
 		return branch;
@@ -152,7 +155,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "TASK_ID")
+	@JoinColumn(name = EntityFieldConstants.TASK_ID)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Task getTask() {
 		return task;
@@ -163,7 +166,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "SLIDE_ID")
+	@JoinColumn(name = EntityFieldConstants.SLIDE_ID)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Slide getSlide() {
 		return slide;
@@ -198,10 +201,10 @@ public final class Event extends SerializableIdObject {
 				return false;
 		} else if (!getBranch().equals(other.getBranch()))
 			return false;
-		if (getData() == null) {
-			if (other.getData() != null)
+		if (getXmlData() == null) {
+			if (other.getXmlData() != null)
 				return false;
-		} else if (!getData().equals(other.getData()))
+		} else if (!getXmlData().equals(other.getXmlData()))
 			return false;
 		/*
 		 * if (getResult() == null) { if (other.getResult() != null) return
@@ -247,7 +250,7 @@ public final class Event extends SerializableIdObject {
 		result = prime * result
 				+ ((getBranch() == null) ? 0 : getBranch().hashCode());
 		result = prime * result
-				+ ((getData() == null) ? 0 : getData().hashCode());
+				+ ((getXmlData() == null) ? 0 : getXmlData().hashCode());
 		/*
 		 * result = prime * result + ((getResult() == null) ? 0 :
 		 * getResult().hashCode()); result = prime * result +

@@ -30,6 +30,8 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
 import com.tilioteo.hypothesis.dom.BranchXmlConstants;
 import com.tilioteo.hypothesis.dom.XmlUtility;
 
@@ -40,7 +42,7 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
  * 
  */
 @Entity
-@Table(name = "TBL_BRANCH")
+@Table(name = EntityTableConstants.BRANCH_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Branch extends SerializableIdObject implements HasList<Task> {
 
@@ -54,7 +56,7 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	/**
 	 * raw xml string for branch
 	 */
-	private String branchXml;
+	private String xmlData;
 
 	/**
 	 * list of tasks
@@ -78,14 +80,14 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchGenerator")
-	@SequenceGenerator(name = "branchGenerator", sequenceName = "hbn_branch_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.BRANCH_GENERATOR, sequenceName = EntityTableConstants.BRANCH_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -94,21 +96,21 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 		this.note = note;
 	}
 
-	@Column(name = "BRANCH_XML", nullable = false)
+	@Column(name = EntityFieldConstants.XML_DATA, nullable = false)
 	@Type(type="text")
-	protected String getBranchXml() {
-		return branchXml;
+	protected String getXmlData() {
+		return xmlData;
 	}
 
-	protected void setBranchXml(String branchXml) {
-		this.branchXml = branchXml;
+	protected void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_BRANCH_TASK", joinColumns = @JoinColumn(name = "BRANCH_ID"), inverseJoinColumns = @JoinColumn(name = "TASK_ID"))
+	@JoinTable(name = EntityTableConstants.BRANCH_TASK_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.TASK_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@OrderColumn(name = "RANK")
+	@OrderColumn(name = EntityFieldConstants.RANK)
 	public final List<Task> getTasks() {
 		return tasks;
 	}
@@ -118,7 +120,7 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_BRANCH_BRANCH_TREK", joinColumns = @JoinColumn(name = "BRANCH_ID"), inverseJoinColumns = @JoinColumn(name = "BRANCH_TREK_ID"))
+	@JoinTable(name = EntityTableConstants.BRANCH_BRANCH_TREK_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_TREK_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	protected final Set<BranchTrek> getBranchTreks() {
@@ -137,7 +139,7 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	@Transient
 	public final Document getDocument() {
 		if (document == null) {
-			document = XmlUtility.readString(getBranchXml());
+			document = XmlUtility.readString(getXmlData());
 		}
 		return document;
 	}
@@ -146,10 +148,10 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 		if (document != getDocument()) {
 			if (isValidDocument(document)) {
 				this.document = document;
-				this.branchXml = XmlUtility.writeString(this.document);
+				this.xmlData = XmlUtility.writeString(this.document);
 			} else {
 				this.document = null;
-				this.branchXml = null;
+				this.xmlData = null;
 				// throw new InvalidBranchXmlException();
 			}
 		}
