@@ -3,8 +3,11 @@
  */
 package com.tilioteo.hypothesis.plugin.map.event;
 
+import org.dom4j.Element;
+
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
+import com.tilioteo.hypothesis.plugin.map.SlideFactory;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageLayer;
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -13,10 +16,6 @@ import com.vividsolutions.jts.geom.Coordinate;
  *
  */
 public class ImageLayerData extends AbstractComponentData<ImageLayer> {
-
-	public static ImageLayerData cast(AbstractComponentData<ImageLayer> componentData) {
-		return (ImageLayerData) componentData;
-	}
 
 	// using 2D coordinates only
 	private Coordinate coordinate;
@@ -43,5 +42,10 @@ public class ImageLayerData extends AbstractComponentData<ImageLayer> {
 			coordinate.y = y;
 		} else
 			coordinate = new Coordinate(x, y);
+	}
+
+	@Override
+	public void writeDataToElement(Element element) {
+		SlideFactory.writeImageLayerData(element, this);
 	}
 }

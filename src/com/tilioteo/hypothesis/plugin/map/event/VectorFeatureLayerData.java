@@ -3,8 +3,11 @@
  */
 package com.tilioteo.hypothesis.plugin.map.event;
 
+import org.dom4j.Element;
+
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
+import com.tilioteo.hypothesis.plugin.map.SlideFactory;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeatureLayer;
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -13,10 +16,6 @@ import com.vividsolutions.jts.geom.Coordinate;
  *
  */
 public class VectorFeatureLayerData extends AbstractComponentData<VectorFeatureLayer> {
-
-	public static VectorFeatureLayerData cast(AbstractComponentData<VectorFeatureLayer> componentData) {
-		return (VectorFeatureLayerData) componentData;
-	}
 
 	// using 2D coordinates only
 	private Coordinate coordinate;
@@ -43,5 +42,10 @@ public class VectorFeatureLayerData extends AbstractComponentData<VectorFeatureL
 			coordinate.y = y;
 		} else
 			coordinate = new Coordinate(x, y);
+	}
+
+	@Override
+	public void writeDataToElement(Element element) {
+		SlideFactory.writeVectorFeatureLayerData(element, this);
 	}
 }
