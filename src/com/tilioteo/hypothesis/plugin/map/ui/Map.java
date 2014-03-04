@@ -89,8 +89,7 @@ public class Map extends LayerLayout implements SlideComponent {
 	protected void setProperties(Element element) {
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
 		
-		ComponentUtility.setCommonProperties(this, element, properties,
-				parentAlignment);
+		ComponentUtility.setCommonProperties(this, element, properties, parentAlignment);
 
 		// set Map specific properties
 		

@@ -75,8 +75,7 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce().createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -93,8 +92,7 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 	private void setClickHandler(String actionId) {
 		final ImageLayerData data = new ImageLayerData(this, slideManager);
 		final Command componentEvent = MapComponentFactory.createImageLayerClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
 
 		addClickListener(new ClickListener() {
 			@Override
@@ -108,8 +106,7 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 
 	private void setLoadHandler(String actionId) {
 		final Command componentEvent = MapComponentFactory.createImageLayerLoadEventCommand(this, slideManager);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
 		
 		addLoadListener(new LoadListener() {
 			@Override
