@@ -3,8 +3,7 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.entity.Pack;
-import com.tilioteo.hypothesis.entity.User;
+import com.tilioteo.hypothesis.entity.Token;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -13,13 +12,11 @@ import com.tilioteo.hypothesis.entity.User;
 @SuppressWarnings("serial")
 public class PrepareTestEvent extends AbstractProcessEvent {
 
-	private User user;
-	private boolean production;
+	private boolean startAllowed;
 
-	public PrepareTestEvent(Pack pack, User user, boolean production) {
-		super(pack);
-		this.user = user;
-		this.production = production;
+	public PrepareTestEvent(Token token, boolean startAllowed) {
+		super(token);
+		this.startAllowed = startAllowed;
 	}
 
 	@Override
@@ -27,15 +24,11 @@ public class PrepareTestEvent extends AbstractProcessEvent {
 		return ProcessEventTypes.Null;
 	}
 
-	public Pack getPack() {
-		return (Pack) getSource();
+	public Token getToken() {
+		return (Token) getSource();
 	}
 
-	public User getUser() {
-		return user;
-	}
-
-	public boolean isProduction() {
-		return production;
+	public boolean isStartAllowed() {
+		return startAllowed;
 	}
 }

@@ -15,10 +15,6 @@ public class ErrorTestEvent extends AbstractTestEvent {
 
 	// private String reason;
 
-	public ErrorTestEvent() {
-		this(null);
-	}
-
 	public ErrorTestEvent(Test test) {
 		super(test);
 		
