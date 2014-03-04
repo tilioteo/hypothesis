@@ -5,7 +5,6 @@ package com.tilioteo.hypothesis.plugin.map;
 
 import org.dom4j.Element;
 
-import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerEvent;
@@ -15,6 +14,7 @@ import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerEvent;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPointControl;
+import com.tilioteo.hypothesis.plugin.map.ui.Map;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeature;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeatureLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageLayer;
@@ -35,7 +35,10 @@ public class MapComponentFactory {
 			String name = element.getName();
 			SlideComponent component = null;
 
-			if (name.equals(SlideXmlConstants.IMAGE_LAYER))
+			if (name.equals(SlideXmlConstants.MAP))
+				component = ComponentFactory.<Map> createFromElement(
+						Map.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.IMAGE_LAYER))
 				component = ComponentFactory.<ImageLayer> createFromElement(
 						ImageLayer.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.FEATURE_LAYER))
@@ -54,13 +57,10 @@ public class MapComponentFactory {
 				component = ComponentFactory.<VectorFeature> createFromElement(
 						VectorFeature.class, element, slideManager);
 
-			// TODO create other layers
+			// TODO create other components
 
-			String id = com.tilioteo.hypothesis.dom.SlideXmlUtility
-					.getId(element);
-			if (!Strings.isNullOrEmpty(id) && component != null) {
-				slideManager.getComponents().put(id, component);
-			}
+			String id = com.tilioteo.hypothesis.dom.SlideXmlUtility.getId(element);
+			slideManager.registerComponent(id, component);
 
 			return component;
 		}

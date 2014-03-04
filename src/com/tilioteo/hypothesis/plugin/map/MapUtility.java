@@ -4,16 +4,18 @@
 package com.tilioteo.hypothesis.plugin.map;
 
 import org.dom4j.Element;
+import org.vaadin.maps.ui.control.Control;
+import org.vaadin.maps.ui.control.DrawFeatureControl;
 import org.vaadin.maps.ui.feature.VectorFeature;
-import org.vaadin.maps.ui.feature.VectorFeature.ClickEvent;
-import org.vaadin.maps.ui.feature.VectorFeature.ClickListener;
 import org.vaadin.maps.ui.layer.Layer;
+import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
-import com.vaadin.server.Sizeable.Unit;
+import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.ui.SlideComponent;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Notification;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -23,13 +25,33 @@ import com.vividsolutions.jts.io.WKTReader;
  *
  */
 public class MapUtility {
+	
+	public static void setCommonProperties(Component component, Element element, StringMap properties) {
+		// store component id
+		if (component instanceof AbstractComponent)
+			((AbstractComponent) component).setData(com.tilioteo.hypothesis.dom.SlideXmlUtility.getId(element));
+	}
 
 	public static void setLayerProperties(Layer layer, Element element, StringMap properties) {
+		setCommonProperties(layer, element, properties);
+		
+		// TODO
+	}
+
+	public static void setControlProperties(Control control, Element element, StringMap properties) {
+		setCommonProperties(control, element, properties);
 		
 	}
 
-	public static void setControlProperties(Layer layer, Element element, StringMap properties) {
+	public static void setDrawFeatureControlProperties(DrawFeatureControl<?> control, Element element,
+			StringMap properties, SlideManager slideManager) {
 		
+		setControlProperties(control, element, properties);
+		
+		SlideComponent component = slideManager.getComponent(properties.get(SlideXmlConstants.LAYER_ID));
+		if (component != null && component instanceof VectorFeatureLayer) {
+			control.setLayer((VectorFeatureLayer) component);
+		}
 	}
 
 	public static void setFeatureProperties(VectorFeature vectorFeature,
