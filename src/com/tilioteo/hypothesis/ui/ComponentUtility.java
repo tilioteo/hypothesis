@@ -9,7 +9,6 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.ui.MultipleComponentPanel.Orientation;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractOrderedLayout;
@@ -70,8 +69,7 @@ public class ComponentUtility {
 			ParentAlignment parentAlignment) {
 		// store component id
 		if (component instanceof AbstractComponent)
-			((AbstractComponent) component).setData(SlideXmlUtility
-					.getId(element));
+			((AbstractComponent) component).setData(SlideXmlUtility.getId(element));
 
 		setCaption(component, stringMap);
 
@@ -90,14 +88,38 @@ public class ComponentUtility {
 		Orientation orientation = getOrientation(stringMap,
 				Orientation.Horizontal);
 		component.setOrientation(orientation);
+		
+		setChildsSize(component, stringMap);
+	}
+
+	private static void setChildsSize(
+			MultipleComponentPanel<? extends AbstractComponent> component,
+			StringMap stringMap) {
+		setChildsWidth(component, stringMap.getDimension(SlideXmlConstants.CHILD_WIDTH));
+		setChildsHeight(component, stringMap.getDimension(SlideXmlConstants.CHILD_HEIGHT));
+		
+	}
+
+	private static void setChildsWidth(
+			MultipleComponentPanel<? extends AbstractComponent> component,
+			String dimension) {
+		if (component != null) {
+			component.setChildsWidth(dimension);
+		}
+	}
+
+	private static void setChildsHeight(
+			MultipleComponentPanel<? extends AbstractComponent> component,
+			String dimension) {
+		if (component != null) {
+			component.setChildsHeight(dimension);
+		}
 	}
 
 	public static void setHeight(Component component, String dimension) {
-		if (component != null)
-			if (dimension != null)
-				component.setHeight(dimension);
-			else
-				component.setHeight(-1, Unit.PIXELS);
+		if (component != null) {
+			component.setHeight(dimension);
+		}
 	}
 
 	private static void setLayoutSpacing(AbstractOrderedLayout component,
@@ -119,11 +141,9 @@ public class ComponentUtility {
 	}
 
 	public static void setWidth(Component component, String dimension) {
-		if (component != null)
-			if (dimension != null)
-				component.setWidth(dimension);
-			else
-				component.setWidth(-1, Unit.PIXELS);
+		if (component != null) {
+			component.setWidth(dimension);
+		}
 	}
 
 	private static Alignment stringToAlignment(String align) {
