@@ -64,7 +64,7 @@ public class DateField extends com.vaadin.ui.DateField implements SlideComponent
 	@Override
 	public void writeDataToElement(Element element) {
 		element.addAttribute(SlideXmlConstants.TYPE,
-				SlideXmlConstants.DATEFIELD);
+				SlideXmlConstants.DATE_FIELD);
 		element.addAttribute(SlideXmlConstants.ID, (String) getData());
 		Element valueElement = element.addElement(SlideXmlConstants.VALUE);
 		if (getValue() != null) {

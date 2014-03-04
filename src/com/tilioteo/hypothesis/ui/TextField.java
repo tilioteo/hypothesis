@@ -59,7 +59,7 @@ public class TextField extends com.vaadin.ui.TextField implements SlideComponent
 	@Override
 	public void writeDataToElement(Element element) {
 		element.addAttribute(SlideXmlConstants.TYPE,
-				SlideXmlConstants.TEXTFIELD);
+				SlideXmlConstants.TEXT_FIELD);
 		element.addAttribute(SlideXmlConstants.ID, (String) getData());
 		Element valueElement = element.addElement(SlideXmlConstants.VALUE);
 		valueElement.addText((String) getValue());

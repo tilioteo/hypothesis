@@ -58,7 +58,7 @@ public class TextArea extends com.vaadin.ui.TextArea implements SlideComponent,
 
 	@Override
 	public void writeDataToElement(Element element) {
-		element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.TEXTAREA);
+		element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.TEXT_AREA);
 		element.addAttribute(SlideXmlConstants.ID, (String) getData());
 		Element valueElement = element.addElement(SlideXmlConstants.VALUE);
 		valueElement.addText((String) getValue());
