@@ -15,6 +15,8 @@ import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.event.ViewportEvent;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
+import com.tilioteo.hypothesis.extension.PluginManager;
+import com.tilioteo.hypothesis.extension.SlideComponentPlugin;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
@@ -58,19 +60,19 @@ public class ComponentFactory {
 			else if (name.equals(SlideXmlConstants.RADIO_PANEL))
 				component = ComponentFactory.<RadioPanel> createFromElement(
 						RadioPanel.class, element, slideManager);
-			else if (name.equals(SlideXmlConstants.TEXTFIELD))
+			else if (name.equals(SlideXmlConstants.TEXT_FIELD))
 				component = ComponentFactory.<TextField> createFromElement(
 						TextField.class, element, slideManager);
-			else if (name.equals(SlideXmlConstants.TEXTAREA))
+			else if (name.equals(SlideXmlConstants.TEXT_AREA))
 				component = ComponentFactory.<TextArea> createFromElement(
 						TextArea.class, element, slideManager);
-			else if (name.equals(SlideXmlConstants.DATEFIELD))
+			else if (name.equals(SlideXmlConstants.DATE_FIELD))
 				component = ComponentFactory.<DateField> createFromElement(
 						DateField.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.COMBOBOX))
 				component = ComponentFactory.<ComboBox> createFromElement(
 						ComboBox.class, element, slideManager);
-			else if (name.equals(SlideXmlConstants.TIMERLABEL))
+			else if (name.equals(SlideXmlConstants.TIMER_LABEL))
 				component = ComponentFactory.<TimerLabel> createFromElement(
 						TimerLabel.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.LABEL))
@@ -80,9 +82,7 @@ public class ComponentFactory {
 				component = createPluginComponent(element, slideManager);
 
 			String id = SlideXmlUtility.getId(element);
-			if (!Strings.isNullOrEmpty(id) && component != null) {
-				slideManager.getComponents().put(id, component);
-			}
+			slideManager.registerComponent(id, component);
 
 			return new LayoutComponent(component, component.getAlignment());
 		}
@@ -111,50 +111,64 @@ public class ComponentFactory {
 	private static SlideComponent createPluginComponent(Element element,
 			SlideManager slideManager) {
 		
-		// get registered plugins
+		String namespace = element.getNamespacePrefix();
+		if (namespace != null && !"".equals(namespace.trim())) {
+			// find registered plugin
+			SlideComponentPlugin componentPlugin = PluginManager.get().getComponentPlugin(namespace, element.getName());
+			
+			if (componentPlugin != null) {
+				return componentPlugin.createComponentFromElement(element, slideManager);
+			}
+		}
 
-		// TODO not implemented yet
 		return null;
 	}
 
-	private static void createVieportHandlers(Element documentRoot,
+	private static void createViewportHandlers(Element rootElement,
 			SlideManager slideManager) {
-		Element element = SlideXmlUtility.getVieportRootElement(documentRoot);
-		if (element != null) {
-			List<Element> handlers = SlideUtility.getHandlerElements(element);
-
-			for (Element handler : handlers) {
-				setViewportHandler(handler, slideManager);
-			}
+		List<Element> elements = SlideUtility.getHandlerElements(rootElement);
+		for (Element handler : elements) {
+			setViewportHandler(handler, slideManager);
 		}
 	}
 
 	public static void createViewportComponent(Element rootElement,
 			SlideManager slideManager) {
-		Element componentElement = SlideXmlUtility
-				.getViewportInnerComponent(rootElement);
-		LayoutComponent component = createComponentFromElement(
-				componentElement, slideManager);
+		Element componentElement = SlideXmlUtility.getViewportInnerComponent(rootElement);
+		LayoutComponent component = createComponentFromElement(componentElement, slideManager);
 
-		createVieportHandlers(rootElement, slideManager);
+		createViewportHandlers(rootElement, slideManager);
 
 		slideManager.setViewport(component);
 	}
 
 	public static void createWindows(Element rootElement,
 			SlideManager slideManager) {
-		List<Element> elements = SlideXmlUtility
-				.getWindowsElements(rootElement);
+		List<Element> elements = SlideXmlUtility.getWindowsElements(rootElement);
 		for (Element windowElement : elements) {
 			String id = SlideXmlUtility.getId(windowElement);
 			if (!Strings.isNullOrEmpty(id)) {
-				Element element = SlideXmlUtility
-						.getViewportOrWindowRootElement(windowElement);
+				Element element = SlideXmlUtility.getViewportOrWindowRootElement(windowElement);
 
 				Window window = new Window(slideManager);
 				window.loadFromXml(element);
 
-				slideManager.getWindows().put(id, window);
+				slideManager.registerWindow(id, window);
+			}
+		}
+	}
+
+	public static void createTimers(Element rootElement,
+			SlideManager slideManager) {
+		List<Element> elements = SlideXmlUtility.getTimersElements(rootElement);
+		for (Element element : elements) {
+			String id = SlideXmlUtility.getId(element);
+			if (!Strings.isNullOrEmpty(id)) {
+
+				Timer timer = new Timer(slideManager);
+				timer.loadFromXml(element);
+
+				slideManager.registerTimer(id, timer);
 			}
 		}
 	}
@@ -181,8 +195,7 @@ public class ComponentFactory {
 
 	private static void setViewportInitHandler(String actionId,
 			SlideManager slideManager) {
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager, actionId);
 		slideManager.addViewportEventListener(SlideManager.InitEvent.class,
 				new ViewportEventListener() {
 					@Override
@@ -194,8 +207,7 @@ public class ComponentFactory {
 
 	private static void setViewportShowHandler(String actionId,
 			SlideManager slideManager) {
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
 		slideManager.addViewportEventListener(SlideManager.ShowEvent.class,
 				new ViewportEventListener() {
 					@Override
