@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.evaluable;
 
 import com.tilioteo.hypothesis.annotation.ExpressionScope;
+import com.tilioteo.hypothesis.annotation.ExpressionScopePrivate;
 import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
 
 /**
@@ -27,6 +28,8 @@ public class Method extends Primitive implements HasReference {
 			Object obj = reference.getValue();
 
 			if (obj != null) {
+				boolean classPrivateScope = obj.getClass().isAnnotationPresent(ExpressionScopePrivate.class);
+
 				java.lang.reflect.Method method;
 				try {
 					Class<?> argTypes[];
@@ -57,7 +60,7 @@ public class Method extends Primitive implements HasReference {
 					if (method != null) {
 						if (method.isAnnotationPresent(ExpressionScope.class)) {
 							ExpressionScope scope = method.getAnnotation(ExpressionScope.class);
-							if (Scope.PRIVATE.equals(scope.value())) {
+							if (classPrivateScope || Scope.PRIVATE.equals(scope.value())) {
 								throw new Exception(String.format("Method '%s' of class '%s' is eliminated from expression evaluation.", method.getName(), obj.getClass().getName()));
 							}
 						}

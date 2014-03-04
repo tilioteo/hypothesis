@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.evaluable;
 
 import com.tilioteo.hypothesis.annotation.ExpressionScope;
 import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
+import com.tilioteo.hypothesis.annotation.ExpressionScopePrivate;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -40,12 +41,14 @@ public class Attribute extends Variable implements HasReference {
 			Object obj = reference.getValue();
 	
 			if (obj != null) {
+				boolean classPrivateScope = obj.getClass().isAnnotationPresent(ExpressionScopePrivate.class);
+				
 				java.lang.reflect.Field field;
 				try {
 					field = obj.getClass().getField(getName());
 					if (field.isAnnotationPresent(ExpressionScope.class)) {
 						ExpressionScope scope = field.getAnnotation(ExpressionScope.class);
-						if (Scope.PRIVATE.equals(scope.value())) {
+						if (classPrivateScope || Scope.PRIVATE.equals(scope.value())) {
 							throw new Exception(String.format("Field '%s' of class '%s' is eliminated from expression evaluation.", field.getName(), obj.getClass().getName()));
 						}
 					}
