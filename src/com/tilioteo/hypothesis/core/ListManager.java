@@ -53,7 +53,11 @@ public class ListManager<T extends HasList<E>, E> {
 	public void setListParent(T parent) {
 		this.list.clear();
 		if (parent != null) {
-			this.list.addAll(parent.getList());
+			for (E item : parent.getList()) {
+				if (item != null) {
+					this.list.add(item);
+				}
+			}
 		}
 		next();
 	}
