@@ -21,6 +21,8 @@ import org.hibernate.service.ServiceRegistry;
  * 
  */
 public class HibernateUtil {
+	
+	public static final String CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION = "hibernateConfigLocation";
 
 	private static Logger log = Logger.getLogger(HibernateUtil.class);
 
@@ -35,10 +37,10 @@ public class HibernateUtil {
 	public static Session getSession() throws NullPointerException {
 		Session session = getSessionFactory().getCurrentSession();
 		if (session.isOpen()) {
-			log.debug("Using allready opened Hibernate Session.");
+			log.trace("Using allready opened Hibernate Session.");
 			return session;
 		} else {
-			log.debug("Opening new Hibernate Session.");
+			log.trace("Opening new Hibernate Session.");
 			return sessionFactory.openSession();
 		}
 	}
@@ -56,10 +58,10 @@ public class HibernateUtil {
 
 	public static void initSessionFactory(ServletContext servletContext)
 			throws ExceptionInInitializerError {
-		log.debug("Initializing Hibernate SessionFactory...");
+		log.trace("Initializing Hibernate SessionFactory...");
 
 		if (HibernateUtil.servletContext != servletContext) {
-			log.debug("New ServletContext provided.");
+			log.trace("New ServletContext provided.");
 			HibernateUtil.servletContext = servletContext;
 			shutdown();
 		}
@@ -67,7 +69,7 @@ public class HibernateUtil {
 		if (null == sessionFactory) {
 			try {
 				String configFileName = servletContext
-						.getInitParameter("hibernateConfigLocation");
+						.getInitParameter(CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION);
 
 				Configuration configuration = null;
 				if (null == configFileName || configFileName.length() == 0) {
@@ -94,7 +96,7 @@ public class HibernateUtil {
 				throw new ExceptionInInitializerError(ex);
 			}
 		} else {
-			log.debug("Hibernate SessionFactory is already initialized");
+			log.trace("Hibernate SessionFactory is already initialized");
 		}
 	}
 
@@ -102,10 +104,10 @@ public class HibernateUtil {
 		final Session session = getSession();
 
 		if (!session.getTransaction().isActive()) {
-			log.debug("Opening database transaction.");
+			log.trace("Opening database transaction.");
 			session.beginTransaction();
 		} else {
-			log.debug("Session already has an active database transaction.");
+			log.trace("Session already has an active database transaction.");
 		}
 	}
 
@@ -113,10 +115,10 @@ public class HibernateUtil {
 		final Session session = getSession();
 
 		if (session.getTransaction().isActive()) {
-			log.debug("Committing active database transaction.");
+			log.trace("Committing active database transaction.");
 			session.getTransaction().commit();
 		} else {
-			log.debug("Session has no active database transaction to commit.");
+			log.trace("Session has no active database transaction to commit.");
 		}
 	}
 
@@ -124,32 +126,32 @@ public class HibernateUtil {
 		final Session session = getSession();
 
 		if (session.getTransaction().isActive()) {
-			log.debug("Rollbacking active database transaction.");
+			log.trace("Rollbacking active database transaction.");
 			session.getTransaction().rollback();
 		} else {
-			log.debug("Session has no active database transaction to rollback.");
+			log.trace("Session has no active database transaction to rollback.");
 		}
 	}
 
 	public static void closeSession() {
-		log.debug("Closing Hibernate Session.");
+		log.trace("Closing Hibernate Session.");
 		final Session session = getSessionFactory().getCurrentSession();
 
 		commitTransaction();
 
 		if (session.isOpen()) {
-			log.debug("Close opened Hibernate Session.");
+			log.trace("Close opened Hibernate Session.");
 			session.close();
 		}
 	}
 
 	public static void shutdown() {
-		log.debug("Closing Hibernate SessionFactory.");
+		log.trace("Closing Hibernate SessionFactory.");
 		if (sessionFactory != null) {
 			sessionFactory.close();
 			sessionFactory = null;
 		} else {
-			log.debug("Hibernate SessionFactory was not initialized.");
+			log.trace("Hibernate SessionFactory was not initialized.");
 		}
 	}
 }

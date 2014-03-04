@@ -93,6 +93,7 @@ public class HibernateSessionInterceptor implements Filter {
 		log.debug("Initializing SessionFactory in static HibernateUtil singleton");
 
 		try {
+			LogUtil.initLogging(filterConfig.getServletContext());
 			HibernateUtil.initSessionFactory(filterConfig.getServletContext());
 		} catch (ExceptionInInitializerError e) {
 			log.error("Hibernate SessionFactory initialization failed.");

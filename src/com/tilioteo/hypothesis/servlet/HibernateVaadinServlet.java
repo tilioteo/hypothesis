@@ -19,6 +19,7 @@ public class HibernateVaadinServlet extends VaadinServlet {
 	public void init(ServletConfig servletConfig) throws ServletException {
 		super.init(servletConfig);
 		
+		LogUtil.initLogging(servletConfig.getServletContext());
 		HibernateUtil.initSessionFactory(servletConfig.getServletContext());
 	}
 
