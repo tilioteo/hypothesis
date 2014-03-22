@@ -56,6 +56,7 @@ public class ManagerApplication extends AbstractBaseApplication {
 	private Table groupsTable;
 
 	// public List<Pack> allPacks = getPermitionManager().findAllPacks();
+	//
 
 	@Override
 	public void afterAuthentication(User user) {
