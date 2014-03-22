@@ -38,6 +38,10 @@ public class SlideUtility {
 		return SlideXmlUtility.getComponentItems(component);
 	}
 
+	public static List<Element> getValidatorElements(Element field) {
+		return SlideXmlUtility.getFieldValidators(field);
+	}
+
 	public static StringMap getPropertyValueMap(Element component) {
 		StringMap map = new StringMap();
 		List<Element> elements = SlideXmlUtility

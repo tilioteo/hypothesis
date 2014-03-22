@@ -29,6 +29,7 @@ import com.tilioteo.hypothesis.processing.CallAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.Evaluable;
 import com.tilioteo.hypothesis.processing.Expression;
+import com.tilioteo.hypothesis.processing.FieldList;
 import com.tilioteo.hypothesis.processing.IfStatement;
 import com.tilioteo.hypothesis.processing.SwitchStatement;
 import com.tilioteo.hypothesis.processing.Variable;
@@ -38,7 +39,6 @@ import com.tilioteo.hypothesis.ui.ComponentFactory;
 import com.tilioteo.hypothesis.ui.RadioButton;
 import com.tilioteo.hypothesis.ui.RadioPanel;
 import com.tilioteo.hypothesis.ui.SlideComponent;
-import com.vaadin.ui.Field;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -87,9 +87,8 @@ public class SlideFactory {
 		writeSourceData(sourceElement, actionEvent);
 	}
 
-	public static void writeComponentData(Document doc, AbstractComponentEvent<?> componentEvent) {
-		Element root = doc.getRootElement();
-		Element sourceElement = root.addElement(SlideXmlConstants.SOURCE);
+	public static void writeComponentData(Element element, AbstractComponentEvent<?> componentEvent) {
+		Element sourceElement = element.addElement(SlideXmlConstants.SOURCE);
 		writeSourceData(sourceElement, componentEvent);
 	}
 
@@ -155,15 +154,14 @@ public class SlideFactory {
 		super();
 	}
 
-	private void addFieldsToElement(List<Object> fields, Element element) {
+	private void writeFieldsData(Element element, FieldList fields) {
 		Element fieldsElement = element.addElement(SlideXmlConstants.FIELDS);
-		for (Object field : fields) {
-			if (field instanceof Field && field instanceof XmlDataWriter)
-				addFieldToElement((XmlDataWriter) field, fieldsElement);
+		for (Field field : fields) {
+			writeFieldData(fieldsElement, field);
 		}
 	}
 
-	private void addFieldToElement(XmlDataWriter field, Element element) {
+	private void writeFieldData(Element element, Field field) {
 		Element fieldElement = element.addElement(SlideXmlConstants.FIELD);
 		field.writeDataToElement(fieldElement);
 	}
@@ -345,7 +343,7 @@ public class SlideFactory {
 		Element root = doc.getRootElement();
 		// add fields data
 		if (slideManager.getFields().size() > 0) {
-			addFieldsToElement(slideManager.getFields(), root);
+			writeFieldsData(root, slideManager.getFields());
 		}
 		return doc;
 	}

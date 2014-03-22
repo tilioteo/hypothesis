@@ -49,6 +49,7 @@ public class SlideXmlConstants {
 	public static final String TIMER_LABEL = "TimerLabel";
 	public static final String PROPERTIES = "Properties";
 	public static final String HANDLERS = "Handlers";
+	public static final String VALIDATORS = "Validators";
 	public static final String REFERENCE = "Reference";
 	public static final String ITEMS = "Items";
 	public static final String ITEM = "Item";
@@ -85,11 +86,18 @@ public class SlideXmlConstants {
 	public static final String TIME = "Time";
 	public static final String DIRECTION = "Direction";
 	public static final String INTERVAL = "Interval";
+	public static final String MESSAGE = "Message";
+	public static final String EMPTY = "Empty";
+	public static final String NUMBER = "Number";
+	public static final String RANGE = "Range";
+	public static final String MIN = "Min";
+	public static final String MAX = "Max";
 
 	public static final String TYPE = "Type";
 	public static final String ID = "Id";
 	public static final String NAME = "Name";
 	public static final String VALUE = "Value";
+	public static final String FORMAT = "Format";
 
 	public static final String INTEGER = "Integer";
 	public static final String BOOLEAN = "Boolean";

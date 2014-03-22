@@ -3,9 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.dom4j.Document;
 
@@ -21,6 +19,7 @@ import com.tilioteo.hypothesis.event.ViewportEventManager;
 import com.tilioteo.hypothesis.processing.ActionMap;
 import com.tilioteo.hypothesis.processing.ComponentMap;
 import com.tilioteo.hypothesis.processing.Expression;
+import com.tilioteo.hypothesis.processing.FieldList;
 import com.tilioteo.hypothesis.processing.HasActions;
 import com.tilioteo.hypothesis.processing.HasVariables;
 import com.tilioteo.hypothesis.processing.TimerMap;
@@ -70,7 +69,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	private Object nextInputValue = null;
 	private ComponentMap components = new ComponentMap();
 
-	private List<Object> fields = new ArrayList<Object>();
+	private FieldList fields = new FieldList();
 
 	ViewportEventManager viewportEventManager = new ViewportEventManager();
 
@@ -83,6 +82,13 @@ public class SlideManager extends ListManager<Task, Slide> implements
 			Class<? extends ViewportEvent> eventClass,
 			ViewportEventListener listener) {
 		viewportEventManager.addListener(eventClass, listener);
+	}
+	
+	
+
+	@Override
+	public void setListParent(Task parent) {
+		super.setListParent(parent);
 	}
 
 	private void buildSlide() {
@@ -110,6 +116,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		this.fields.clear();
 		this.variables.clear();
 		this.actions.clear();
+		this.timers.clear();
 		this.inputExpression = null;
 		this.outputExpression = null;
 		this.lastSlide = null;
@@ -134,7 +141,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		return eventManager;
 	}
 
-	public final List<Object> getFields() {
+	public final FieldList getFields() {
 		return fields;
 	}
 
@@ -215,6 +222,9 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		if (!Strings.isNullOrEmpty(id)) {
 			components.put(id, component);
 		}
+		if (component instanceof Field) {
+			fields.add((Field) component);
+		}
 	}
 	
 	public final SlideComponent getComponent(String id) {
@@ -243,6 +253,16 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	
 	public final Window getWindow(String id) {
 		return windows.get(id);
+	}
+	
+	public final boolean hasValidFields() {
+		boolean valid = true;
+		
+		for (Field field : fields) {
+			valid = valid && field.isValid();
+		}
+		
+		return valid;
 	}
 	
 }

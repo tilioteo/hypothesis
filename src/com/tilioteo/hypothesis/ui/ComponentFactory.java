@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.dom4j.Element;
@@ -11,6 +13,12 @@ import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
+import com.tilioteo.hypothesis.data.DateRangeValidator;
+import com.tilioteo.hypothesis.data.EmptyValidator;
+import com.tilioteo.hypothesis.data.IntegerValidator;
+import com.tilioteo.hypothesis.data.NumberRangeValidator;
+import com.tilioteo.hypothesis.data.NumberValidator;
+import com.tilioteo.hypothesis.data.Validator;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.event.ViewportEvent;
@@ -215,6 +223,121 @@ public class ComponentFactory {
 						action.execute();
 					}
 				});
+	}
+	
+	public static EmptyValidator createEmptyValidator(Element element) {
+		// TODO add default validator message
+		String message = SlideXmlUtility.getValidatorMessage(element, "");
+		
+		return new EmptyValidator(message);
+	}
+	
+	public static IntegerValidator createIntegerValidator(Element element) {
+		// TODO add default validator message
+		String message = SlideXmlUtility.getValidatorMessage(element, "");
+		
+		return new IntegerValidator(message);
+	}
+	
+	public static NumberValidator createNumberValidator(Element element) {
+		// TODO add default validator message
+		String message = SlideXmlUtility.getValidatorMessage(element, "");
+		
+		return new NumberValidator(message);
+	}
+	
+	public static NumberRangeValidator createNumberRangeValidator(Element element) {
+		// TODO add default validator message
+		String message = SlideXmlUtility.getValidatorMessage(element, "");
+		
+		Double minValue = SlideXmlUtility.getNumberValidatorMinValue(element);
+		Double maxValue = SlideXmlUtility.getNumberValidatorMaxValue(element);
+		
+		if (minValue != null || maxValue != null) {
+			return new NumberRangeValidator(message, minValue, maxValue);
+		}
+		return null;
+	}
+
+	public static DateRangeValidator createDateRangeValidator(Element element) {
+		// TODO add default validator message
+		String message = SlideXmlUtility.getValidatorMessage(element, "");
+		
+		Date minValue = SlideXmlUtility.getDateValidatorMinValue(element, "yyyy-MM-dd");
+		Date maxValue = SlideXmlUtility.getDateValidatorMaxValue(element, "yyyy-MM-dd");
+		
+		if (minValue != null || maxValue != null) {
+			return new DateRangeValidator(message, minValue, maxValue);
+		}
+		return null;
+	}
+	
+	public static List<Validator> createTextFieldValidators(Element element) {
+		List<Element> validatorElements = SlideUtility.getValidatorElements(element);
+		List<Validator> validators = new ArrayList<Validator>();
+		
+		for (Element validatorElement : validatorElements) {
+			Validator validator = null;
+			String name = validatorElement.getName();
+			
+			if (name.equals(SlideXmlConstants.EMPTY)) {
+				validator = createEmptyValidator(validatorElement);
+			} else if (name.equals(SlideXmlConstants.INTEGER)) {
+				validator = createIntegerValidator(validatorElement);
+			} else if (name.equals(SlideXmlConstants.NUMBER)) {
+				validator = createNumberValidator(validatorElement);
+			} else if (name.equals(SlideXmlConstants.RANGE)) {
+				validator = createNumberRangeValidator(validatorElement);
+			}
+			
+			if (validator != null) {
+				validators.add(validator);
+			}
+		}
+		
+		return validators;
+	}
+
+	public static List<Validator> createComboBoxValidators(Element element) {
+		List<Element> validatorElements = SlideUtility.getValidatorElements(element);
+		List<Validator> validators = new ArrayList<Validator>();
+		
+		for (Element validatorElement : validatorElements) {
+			Validator validator = null;
+			String name = validatorElement.getName();
+			
+			if (name.equals(SlideXmlConstants.EMPTY)) {
+				validator = createEmptyValidator(validatorElement);
+			}
+			
+			if (validator != null) {
+				validators.add(validator);
+			}
+		}
+		
+		return validators;
+	}
+
+	public static List<Validator> createDateFieldValidators(Element element) {
+		List<Element> validatorElements = SlideUtility.getValidatorElements(element);
+		List<Validator> validators = new ArrayList<Validator>();
+		
+		for (Element validatorElement : validatorElements) {
+			Validator validator = null;
+			String name = validatorElement.getName();
+			
+			if (name.equals(SlideXmlConstants.EMPTY)) {
+				validator = createEmptyValidator(validatorElement);
+			} else if (name.equals(SlideXmlConstants.RANGE)) {
+				validator = createDateRangeValidator(validatorElement);
+			}
+			
+			if (validator != null) {
+				validators.add(validator);
+			}
+		}
+		
+		return validators;
 	}
 
 }

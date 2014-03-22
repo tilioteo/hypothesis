@@ -11,6 +11,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.Field;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -29,7 +30,7 @@ import com.vaadin.ui.Alignment;
  */
 @SuppressWarnings("serial")
 public class RadioPanel extends MultipleComponentPanel<RadioButton> implements
-		SlideComponent {
+		SlideComponent, Field {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
@@ -180,6 +181,32 @@ public class RadioPanel extends MultipleComponentPanel<RadioButton> implements
 	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
+	}
+
+	@Override
+	public void readDataFromElement(Element element) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void writeDataToElement(Element element) {
+		element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.RADIO_PANEL);
+		element.addAttribute(SlideXmlConstants.ID, (String) getData());
+		Element captionElement = element.addElement(SlideXmlConstants.CAPTION);
+		if (getCaption() != null) {
+			captionElement.addText(getCaption());
+		}
+		Element valueElement = element.addElement(SlideXmlConstants.VALUE);
+		if (selected != null) {
+			valueElement.addAttribute(SlideXmlConstants.ID, String.format("%d", getChildIndex(selected)));
+			valueElement.addText(selected.getCaption());
+		}
+	}
+
+	@Override
+	public boolean isValid() {
+		return true;
 	}
 
 }

@@ -3,6 +3,9 @@
  */
 package com.tilioteo.hypothesis.dom;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -70,6 +73,11 @@ public class SlideXmlUtility {
 		return getElementSubNodeChilds(component, SlideXmlConstants.ITEMS, null);
 	}
 
+	public static List<Element> getFieldValidators(Element field) {
+		return getElementSubNodeChilds(field, SlideXmlConstants.VALIDATORS,
+				null);
+	}
+
 	public static List<Element> getComponentProperties(Element component) {
 		return getElementSubNodeChilds(component, SlideXmlConstants.PROPERTIES,
 				null);
@@ -122,6 +130,30 @@ public class SlideXmlUtility {
 	public static Element getFalseElement(Element element) {
 		if (element != null) {
 			return (Element) element.selectSingleNode(SlideXmlConstants.FALSE);
+		}
+
+		return null;
+	}
+
+	public static Element getMessageElement(Element element) {
+		if (element != null) {
+			return (Element) element.selectSingleNode(SlideXmlConstants.MESSAGE);
+		}
+
+		return null;
+	}
+
+	public static Element getMinElement(Element element) {
+		if (element != null) {
+			return (Element) element.selectSingleNode(SlideXmlConstants.MIN);
+		}
+
+		return null;
+	}
+
+	public static Element getMaxElement(Element element) {
+		if (element != null) {
+			return (Element) element.selectSingleNode(SlideXmlConstants.MAX);
 		}
 
 		return null;
@@ -210,6 +242,86 @@ public class SlideXmlUtility {
 
 	public static String getValue(Element element) {
 		return element.attributeValue(SlideXmlConstants.VALUE);
+	}
+
+	public static String getValidatorMessage(Element element, String defaultMessage) {
+		Element messageElement = getMessageElement(element);
+		if (messageElement != null) {
+			String message = messageElement.getTextTrim();
+			if (Strings.isNullOrEmpty(message)) {
+				return defaultMessage;
+			}
+			return message;
+		}
+		
+		return defaultMessage;
+	}
+	
+	private static Double stringToDouble(String string) {
+		if (!Strings.isNullOrEmpty(string)) {
+			try {
+				Double value = Double.parseDouble(string);
+				return value;
+			} catch (Exception e) {
+			}
+		}
+		return null;
+	}
+
+	public static Double getNumberValidatorMinValue(Element element) {
+		Element subElement = getMinElement(element);
+		if (subElement != null) {
+			return stringToDouble(subElement.attributeValue(SlideXmlConstants.VALUE));
+		}
+		
+		return null;
+	}
+
+	public static Double getNumberValidatorMaxValue(Element element) {
+		Element subElement = getMaxElement(element);
+		if (subElement != null) {
+			return stringToDouble(subElement.attributeValue(SlideXmlConstants.VALUE));
+		}
+		
+		return null;
+	}
+
+	private static Date stringToDate(String string, String format) {
+		if (!Strings.isNullOrEmpty(string) && !Strings.isNullOrEmpty(format)) {
+			try {
+				DateFormat formatter = new SimpleDateFormat(format);
+				Date value = formatter.parse(string);
+				return value;
+			} catch (Exception e) {
+			}
+		}
+		return null;
+	}
+
+	public static Date getDateValidatorMinValue(Element element, String defaultFormat) {
+		Element subElement = getMinElement(element);
+		if (subElement != null) {
+			String format = subElement.attributeValue(SlideXmlConstants.FORMAT);
+			if (Strings.isNullOrEmpty(format)) {
+				format = defaultFormat;
+			}
+			return stringToDate(subElement.attributeValue(SlideXmlConstants.VALUE), format);
+		}
+		
+		return null;
+	}
+
+	public static Date getDateValidatorMaxValue(Element element, String defaultFormat) {
+		Element subElement = getMaxElement(element);
+		if (subElement != null) {
+			String format = subElement.attributeValue(SlideXmlConstants.FORMAT);
+			if (Strings.isNullOrEmpty(format)) {
+				format = defaultFormat;
+			}
+			return stringToDate(subElement.attributeValue(SlideXmlConstants.VALUE), format);
+		}
+		
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
