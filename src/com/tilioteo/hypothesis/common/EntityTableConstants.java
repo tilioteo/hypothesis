@@ -23,6 +23,7 @@ public class EntityTableConstants {
 	public static final String ROLE_TABLE = "tbl_role";
 	public static final String SLIDE_TABLE = "tbl_slide";
 	public static final String SLIDE_OUTPUT_TABLE = "tbl_slide_output";
+	public static final String SLIDE_ORDER_TABLE = "tbl_slide_order";
 	public static final String SLIDE_CONTENT_TABLE = "tbl_slide_content";
 	public static final String SLIDE_TEMPLATE_TABLE = "tbl_slide_template";
 	public static final String TASK_TABLE = "tbl_task";
@@ -56,6 +57,8 @@ public class EntityTableConstants {
 	public static final String SLIDE_CONTENT_SEQUENCE = "hbn_slide_content_seq";
 	public static final String SLIDE_OUTPUT_GENERATOR = "slideOutputGenerator";
 	public static final String SLIDE_OUTPUT_SEQUENCE = "hbn_slide_output_seq";
+	public static final String SLIDE_ORDER_GENERATOR = "slideOrderGenerator";
+	public static final String SLIDE_ORDER_SEQUENCE = "hbn_slide_order_seq";
 	public static final String TASK_GENERATOR = "taskGenerator";
 	public static final String TASK_SEQUENCE = "hbn_task_seq";
 	public static final String TEST_GENERATOR = "testGenerator";

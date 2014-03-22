@@ -28,6 +28,7 @@
 		<mapping class="com.tilioteo.hypothesis.entity.SlideTemplate" />
 		<mapping class="com.tilioteo.hypothesis.entity.SlideContent" />
 		<mapping class="com.tilioteo.hypothesis.entity.Slide" />
+		<mapping class="com.tilioteo.hypothesis.entity.SlideOrder" />
 		<mapping class="com.tilioteo.hypothesis.entity.SlideOutput" />
 		<mapping class="com.tilioteo.hypothesis.entity.Task" />
 		<mapping class="com.tilioteo.hypothesis.entity.Branch" />

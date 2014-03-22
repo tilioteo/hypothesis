@@ -4,6 +4,8 @@
 package com.tilioteo.hypothesis.core;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 import com.tilioteo.hypothesis.entity.HasList;
 
@@ -16,6 +18,8 @@ public class ListManager<T extends HasList<E>, E> {
 	private LinkedList<E> list = new LinkedList<E>();
 
 	private E element = null;
+	
+	private Random randomGenerator;
 
 	public E current() {
 		return element;
@@ -52,6 +56,7 @@ public class ListManager<T extends HasList<E>, E> {
 
 	public void setListParent(T parent) {
 		this.list.clear();
+		randomGenerator = new Random();
 		if (parent != null) {
 			for (E item : parent.getList()) {
 				if (item != null) {
@@ -61,4 +66,38 @@ public class ListManager<T extends HasList<E>, E> {
 		}
 		next();
 	}
+	
+	public List<Integer> createRandomOrder() {
+		LinkedList<Integer> order = new LinkedList<Integer>();
+		
+		while (order.size() < list.size()) {
+			Integer random = randomGenerator.nextInt(list.size());
+			if (!order.contains(random)) {
+				order.add(random);
+			}
+		}
+		/*for (int i = 0; i < list.size(); ++i) {
+			order.add();
+		}*/
+		
+		return order;
+	}
+	
+	public void setOrder(List<Integer> order) {
+		if (order.size() > 0 && list.size() > 0) {
+			LinkedList<E> tempList = new LinkedList<>();
+			
+			int size = Math.min(order.size(), list.size());
+			for (int i = 0; i < size; ++i) {
+				tempList.add(list.get(order.get(i)));
+			}
+			
+			for (int i = size; i < list.size(); ++i) {
+				tempList.add(list.get(i));
+			}
+			
+			this.list = tempList;
+		}
+	}
+	
 }

@@ -10,8 +10,11 @@ import org.hibernate.criterion.Restrictions;
 
 import com.tilioteo.hypothesis.common.EntityConstants;
 import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.dao.SlideOrderDao;
 import com.tilioteo.hypothesis.dao.TestDao;
 import com.tilioteo.hypothesis.entity.Pack;
+import com.tilioteo.hypothesis.entity.SlideOrder;
+import com.tilioteo.hypothesis.entity.Task;
 import com.tilioteo.hypothesis.entity.Test;
 import com.tilioteo.hypothesis.entity.Test.Status;
 import com.tilioteo.hypothesis.entity.User;
@@ -23,13 +26,15 @@ import com.tilioteo.hypothesis.entity.User;
 public class TestManager {
 
 	private TestDao testDao;
+	private SlideOrderDao slideOrderDao;
 
 	public static TestManager newInstance() {
-		return new TestManager(new TestDao());
+		return new TestManager(new TestDao(), new SlideOrderDao());
 	}
 	
-	protected TestManager(TestDao testDao) {
+	protected TestManager(TestDao testDao, SlideOrderDao slideOrderDao) {
 		this.testDao = testDao;
+		this.slideOrderDao = slideOrderDao;
 	}
 
 	public List<Test> findTestsBy(User user, Pack pack, Status... statuses) {
@@ -100,6 +105,41 @@ public class TestManager {
 				testDao.commit();
 			} catch (Throwable e) {
 				testDao.rollback();
+				e.getMessage();
+			}
+		}
+	}
+
+	public SlideOrder findTaskSlideOrder(Test test, Task task) {
+		try {
+			slideOrderDao.beginTransaction();
+			
+			List<SlideOrder> slideOrders = slideOrderDao.findByCriteria(Restrictions.and(
+					Restrictions.eq(EntityConstants.TEST, test),
+					Restrictions.eq(EntityConstants.TASK, task)));
+			slideOrderDao.commit();
+			
+			if (slideOrders.isEmpty() || slideOrders.size() > 1) {
+				return null;
+			} else {
+				SlideOrder slideOrder = slideOrders.get(0);
+				return slideOrder;
+			}
+			
+		} catch (Throwable e) {
+			slideOrderDao.rollback();
+		}
+		return null;
+	}
+
+	public void updateSlideOrder(SlideOrder slideOrder) {
+		if (slideOrder != null) {
+			try {
+				slideOrderDao.beginTransaction();
+				slideOrderDao.makePersistent(slideOrder);
+				slideOrderDao.commit();
+			} catch (Throwable e) {
+				slideOrderDao.rollback();
 				e.getMessage();
 			}
 		}

@@ -46,6 +46,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 
 	private String name;
 	private String note;
+	private boolean randomized;
 
 	/**
 	 * list of slides
@@ -77,6 +78,15 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 
 	public final void setNote(String note) {
 		this.note = note;
+	}
+	
+	@Column(name = EntityFieldConstants.RANDOMIZED)
+	public final boolean isRandomized() {
+		return randomized;
+	}
+	
+	public final void setRandomized(boolean randomized) {
+		this.randomized = randomized;
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })

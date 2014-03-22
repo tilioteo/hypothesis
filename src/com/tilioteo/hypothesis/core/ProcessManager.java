@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.core;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.dom4j.Document;
 
@@ -16,7 +17,9 @@ import com.tilioteo.hypothesis.entity.BranchOutput;
 import com.tilioteo.hypothesis.entity.Event;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Slide;
+import com.tilioteo.hypothesis.entity.SlideOrder;
 import com.tilioteo.hypothesis.entity.SlideOutput;
+import com.tilioteo.hypothesis.entity.Task;
 import com.tilioteo.hypothesis.entity.Test;
 import com.tilioteo.hypothesis.entity.Test.Status;
 import com.tilioteo.hypothesis.entity.Token;
@@ -316,12 +319,33 @@ public class ProcessManager implements ProcessEventListener {
 		taskManager.find(eventObj.getTask());
 
 		if (taskManager.next() != null) {
-			slideManager.setListParent(taskManager.current());
+			setSlideManagerParent(taskManager.current());
 			renderSlide();
 		} else {
-			processEventManager.fireEvent(new FinishBranchEvent(branchManager
-					.current()));
+			processEventManager.fireEvent(new FinishBranchEvent(branchManager.current()));
 		}
+	}
+
+	private void setSlideManagerParent(Task task) {
+		slideManager.setListParent(task);
+		if (task != null && task.isRandomized()) {
+			setTaskSlidesRandomOrder(test, task);
+		}
+	}
+
+	private void setTaskSlidesRandomOrder(Test test, Task task) {
+		List<Integer> order = null;
+		SlideOrder slideOrder = testManager.findTaskSlideOrder(test, task);
+		if (null == slideOrder) {
+			slideOrder = new SlideOrder(test, task);
+			order = slideManager.createRandomOrder();
+			slideOrder.setOrder(order);
+			testManager.updateSlideOrder(slideOrder);
+		} else {
+			order = slideOrder.getOrder();
+		}
+		
+		slideManager.setOrder(order);
 	}
 
 	private void processPrepareTest(PrepareTestEvent eventObj) {
@@ -352,11 +376,12 @@ public class ProcessManager implements ProcessEventListener {
 	public void processTest(Test test) {
 		if (!testProcessing) {
 			testProcessing = true;
+			this.test = test;
 			
 			pack = test.getPack();
 			branchManager.setListParent(pack);
 			taskManager.setListParent(branchManager.current());
-			slideManager.setListParent(taskManager.current());
+			setSlideManagerParent(taskManager.current());
 			
 			slideProcessing = true;
 			
@@ -496,7 +521,7 @@ public class ProcessManager implements ProcessEventListener {
 
 	private void updateEventData(Event event, AbstractComponentEvent<?> componentEvent) {
 		Document doc = SlideXmlFactory.createEventDataXml();
-		SlideFactory.writeComponentData(doc, componentEvent);
+		SlideFactory.writeComponentData(doc.getRootElement(), componentEvent);
 		event.setXmlData(XmlUtility.writeString(doc));
 	}
 

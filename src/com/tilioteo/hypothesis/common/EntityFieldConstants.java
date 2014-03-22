@@ -24,6 +24,7 @@ public class EntityFieldConstants {
 	public static final String ROLE_ID = "role_id";
 	public static final String TIMESTAMP = "timestamp";
 	public static final String DATETIME = "datetime";
+	public static final String RANDOMIZED = "randomized";
 
 	public static final String XML_DATA = "xml_data";
 	public static final String OUTPUT = "output";
