@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.hypothesis.application.collector.xml;
+package org.hypothesis.application.common.xml;
 
 import org.hypothesis.common.StringSet;
 

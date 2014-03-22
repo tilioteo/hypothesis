@@ -20,7 +20,7 @@ import javax.persistence.Transient;
 import org.dom4j.Document;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
-import org.hypothesis.application.collector.xml.SlideXmlConstants;
+import org.hypothesis.application.common.xml.SlideXmlConstants;
 import org.hypothesis.common.SerializableIdObject;
 import org.hypothesis.common.xml.Utility;
 import org.hypothesis.core.AbstractSlideXmlException;

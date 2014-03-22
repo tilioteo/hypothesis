@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.hypothesis.application.collector;
+package org.hypothesis.common;
 
 import java.util.HashMap;
 
