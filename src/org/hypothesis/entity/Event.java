@@ -14,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -61,7 +60,7 @@ public final class Event extends SerializableIdObject {
 	/**
 	 * saved data
 	 */
-	private String data;
+	private String xmlData;
 
 	/**
 	 * event result
@@ -132,14 +131,14 @@ public final class Event extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = "DATA")
+	@Column(name = "XML_DATA")
 	@Type(type="text")
-	public final String getData() {
-		return data;
+	public final String getXmlData() {
+		return xmlData;
 	}
 
-	public final void setData(String data) {
-		this.data = data;
+	public final void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
@@ -200,10 +199,10 @@ public final class Event extends SerializableIdObject {
 				return false;
 		} else if (!getBranch().equals(other.getBranch()))
 			return false;
-		if (getData() == null) {
-			if (other.getData() != null)
+		if (getXmlData() == null) {
+			if (other.getXmlData() != null)
 				return false;
-		} else if (!getData().equals(other.getData()))
+		} else if (!getXmlData().equals(other.getXmlData()))
 			return false;
 		/*
 		 * if (getResult() == null) { if (other.getResult() != null) return
@@ -249,7 +248,7 @@ public final class Event extends SerializableIdObject {
 		result = prime * result
 				+ ((getBranch() == null) ? 0 : getBranch().hashCode());
 		result = prime * result
-				+ ((getData() == null) ? 0 : getData().hashCode());
+				+ ((getXmlData() == null) ? 0 : getXmlData().hashCode());
 		/*
 		 * result = prime * result + ((getResult() == null) ? 0 :
 		 * getResult().hashCode()); result = prime * result +

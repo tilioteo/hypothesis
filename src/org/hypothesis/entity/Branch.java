@@ -56,7 +56,7 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 	/**
 	 * raw xml string for branch
 	 */
-	private String branchXml;
+	private String xmlData;
 
 	/**
 	 * list of tasks
@@ -96,14 +96,14 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 		this.note = note;
 	}
 
-	@Column(name = "BRANCH_XML", nullable = false)
+	@Column(name = "XML_DATA", nullable = false)
 	@Type(type="text")
-	protected String getBranchXml() {
-		return branchXml;
+	protected String getXmlData() {
+		return xmlData;
 	}
 
-	protected void setBranchXml(String branchXml) {
-		this.branchXml = branchXml;
+	protected void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
@@ -139,7 +139,7 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 	@Transient
 	public final Document getDocument() {
 		if (document == null) {
-			document = Utility.readString(getBranchXml());
+			document = Utility.readString(getXmlData());
 		}
 		return document;
 	}
@@ -148,10 +148,10 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 		if (document != getDocument()) {
 			if (isValidDocument(document)) {
 				this.document = document;
-				this.branchXml = Utility.writeString(this.document);
+				this.xmlData = Utility.writeString(this.document);
 			} else {
 				this.document = null;
-				this.branchXml = null;
+				this.xmlData = null;
 				// throw new InvalidBranchXmlException();
 			}
 		}

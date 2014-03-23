@@ -47,7 +47,7 @@ public final class BranchOutput extends SerializableIdObject {
 	/**
 	 * saved data
 	 */
-	private String data;
+	private String xmlData;
 
 	/**
 	 * output of slide
@@ -95,14 +95,14 @@ public final class BranchOutput extends SerializableIdObject {
 		this.test = test;
 	}
 
-	@Column(name = "DATA")
+	@Column(name = "XML_DATA")
 	@Type(type="text")
-	public final String getData() {
-		return data;
+	public final String getXmlData() {
+		return xmlData;
 	}
 
-	public final void setData(String data) {
-		this.data = data;
+	public final void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
 	@Column(name = "OUTPUT")

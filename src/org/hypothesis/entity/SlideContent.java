@@ -51,7 +51,7 @@ public final class SlideContent extends SerializableIdObject {
 	/**
 	 * raw xml string of slide content
 	 */
-	private String contentXml;
+	private String xmlData;
 
 	private String note;
 
@@ -90,14 +90,14 @@ public final class SlideContent extends SerializableIdObject {
 		this.template = slideTemplate;
 	}
 
-	@Column(name = "CONTENT_XML", nullable = false)
+	@Column(name = "XML_DATA", nullable = false)
 	@Type(type="text")
-	protected String getContentXml() {
-		return contentXml;
+	protected String getXmlData() {
+		return xmlData;
 	}
 
-	protected void setContentXml(String contentXml) {
-		this.contentXml = contentXml;
+	protected void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
 	@Column(name = "NOTE")
@@ -112,7 +112,7 @@ public final class SlideContent extends SerializableIdObject {
 	@Transient
 	public final Document getDocument() {
 		if (document == null) {
-			document = Utility.readString(getContentXml());
+			document = Utility.readString(getXmlData());
 		}
 		return document;
 	}
@@ -122,7 +122,7 @@ public final class SlideContent extends SerializableIdObject {
 		if (document != getDocument()) {
 			if (isValidDocument(document)) {
 				this.document = document;
-				this.contentXml = Utility.writeString(this.document);
+				this.xmlData = Utility.writeString(this.document);
 			} else {
 				/*
 				 * this.document = null; this.contentXml = null;
@@ -184,10 +184,10 @@ public final class SlideContent extends SerializableIdObject {
 		} else if (!getId().equals(other.getId()))
 			return false;
 		// TODO remove when Buffered.SourceException occurs
-		if (getContentXml() == null) {
-			if (other.getContentXml() != null)
+		if (getXmlData() == null) {
+			if (other.getXmlData() != null)
 				return false;
-		} else if (!getContentXml().equals(other.getContentXml()))
+		} else if (!getXmlData().equals(other.getXmlData()))
 			return false;
 		if (getNote() == null) {
 			if (other.getNote() != null)
@@ -204,7 +204,7 @@ public final class SlideContent extends SerializableIdObject {
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
 		// TODO remove when Buffered.SourceException occurs
 		result = prime * result
-				+ ((getContentXml() == null) ? 0 : getContentXml().hashCode());
+				+ ((getXmlData() == null) ? 0 : getXmlData().hashCode());
 		result = prime * result
 				+ ((getNote() == null) ? 0 : getNote().hashCode());
 		return result;
