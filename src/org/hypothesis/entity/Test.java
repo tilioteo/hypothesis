@@ -282,7 +282,7 @@ public final class Test extends SerializableIdObject {
 	@JoinTable(name = "TBL_TEST_EVENT", joinColumns = @JoinColumn(name = "TEST_ID"), inverseJoinColumns = @JoinColumn(name = "EVENT_ID"))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	@OrderColumn(name = "IDX")
+	@OrderColumn(name = "RANK")
 	public final List<Event> getEvents() {
 		return events;
 	}

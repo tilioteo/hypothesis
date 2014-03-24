@@ -37,5 +37,6 @@ public class FieldConstants {
 	public static final String BRANCH = "branch";
 	public static final String CHANGE_SUFFIX = "_change";
 	public static final String OWNER_ID = "ownerId";
+	public static final String PUBLISHED = "published";
 
 }

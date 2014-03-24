@@ -50,7 +50,7 @@ public final class Event extends SerializableIdObject {
 	/**
 	 * code of event type
 	 */
-	private Integer type;
+	private Long type;
 
 	/**
 	 * human readable name
@@ -88,7 +88,7 @@ public final class Event extends SerializableIdObject {
 		super();
 	}
 
-	public Event(int type, String name, Date datetime) {
+	public Event(long type, String name, Date datetime) {
 		this();
 		this.type = type;
 		this.name = name;
@@ -114,11 +114,11 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Column(name = "TYPE", nullable = false)
-	public final Integer getType() {
+	public final Long getType() {
 		return type;
 	}
 
-	protected void setType(Integer type) {
+	protected void setType(Long type) {
 		this.type = type;
 	}
 

@@ -87,11 +87,15 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	 */
 	@SuppressWarnings("unchecked")
 	public List<T> findByCriteria(Criterion... criterion) {
-		Criteria crit = getSession().createCriteria(getPersistentClass());
+		Criteria crit = createCriteria();
 		for (Criterion c : criterion) {
 			crit.add(c);
 		}
 		return crit.list();
+	}
+	
+	public Criteria createCriteria() {
+		return getSession().createCriteria(getPersistentClass());
 	}
 
 	@SuppressWarnings("unchecked")

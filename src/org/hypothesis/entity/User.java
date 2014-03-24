@@ -99,7 +99,7 @@ public final class User extends SerializableIdObject {
 		this.username = username;
 	}
 
-	@Column(name = "PASSW", nullable = false)
+	@Column(name = "PASSWORD", nullable = false)
 	public final String getPassword() {
 		return password;
 	}
@@ -122,7 +122,7 @@ public final class User extends SerializableIdObject {
 		this.enabled = enabled;
 	}
 
-	@Column(name = "EXPIREDATE")
+	@Column(name = "EXPIRE_DATE")
 	public final Date getExpireDate() {
 		return expireDate;
 	}
