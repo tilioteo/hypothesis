@@ -51,8 +51,8 @@
   <mapping class="org.hypothesis.entity.User"/>
   <mapping class="org.hypothesis.entity.Group"/>
   <mapping class="org.hypothesis.entity.Role"/>
-  <mapping class="org.hypothesis.entity.UserPermition"/>
-  <mapping class="org.hypothesis.entity.GroupPermition"/>
+  <mapping class="org.hypothesis.entity.UserPermission"/>
+  <mapping class="org.hypothesis.entity.GroupPermission"/>
   <!-- mapping files
         <mapping resource="de/laliluna/example/Honey.hbm.xml" />
         -->

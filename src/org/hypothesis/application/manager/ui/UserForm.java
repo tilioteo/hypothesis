@@ -214,10 +214,10 @@ public class UserForm extends Form {
 			addUnboundField(FieldConstants.EXPIRE_DATE, user.getExpireDate());
 			addUnboundField(FieldConstants.NOTE, user.getNote());
 			addUnboundField(FieldConstants.ENABLED_PACKS, ManagerApplication.getInstance()
-					.getPermitionManager().getUserPacks(user, true, null));
+					.getPermissionManager().getUserPacks(user, true, null));
 			addUnboundField(
 					FieldConstants.DISABLED_PACKS,
-					ManagerApplication.getInstance().getPermitionManager()
+					ManagerApplication.getInstance().getPermissionManager()
 							.getUserPacks(user, false, null));
 		}
 

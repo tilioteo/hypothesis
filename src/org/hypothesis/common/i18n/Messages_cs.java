@@ -112,7 +112,7 @@ public class Messages_cs extends Messages {
 			{ TEXT_TOTAL_PACKS_FMT, "celkem testů: %d" },
 			{ TEXT_NO_GROUPS_SELECTED, "Nejsou vybrány žádné skupiny." },
 
-			{ TEXT_EDIT_PERMITIONS_TITLE, "Změna přístupových práv" },
+			{ TEXT_EDIT_PERMISSIONS_TITLE, "Změna přístupových práv" },
 
 			{ TEXT_EDIT_PERSONAL_DATA_TITLE, "Změna osobních údajů" },
 			{

@@ -109,7 +109,7 @@ public class Messages extends ListResourceBundle {
 	public static final String TEXT_NO_GROUPS_SELECTED = generateId();
 
 	// edit permitions view
-	public static final String TEXT_EDIT_PERMITIONS_TITLE = generateId();
+	public static final String TEXT_EDIT_PERMISSIONS_TITLE = generateId();
 
 	// edit personal data view
 	public static final String TEXT_EDIT_PERSONAL_DATA_TITLE = generateId();

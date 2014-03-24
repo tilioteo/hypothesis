@@ -9,7 +9,7 @@ import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.common.i18n.ApplicationMessages;
 import org.hypothesis.common.i18n.Messages;
 import org.hypothesis.entity.Group;
-import org.hypothesis.entity.GroupPermition;
+import org.hypothesis.entity.GroupPermission;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.User;
 
@@ -49,7 +49,7 @@ public class GroupWindow extends Window {
 		Init();
 	}
 
-	public void CancelButtonClick(Button.ClickEvent event) {
+	public void cancelButtonClick(Button.ClickEvent event) {
 		groupForm.discard();
 		groupForm.setValidationVisible(false);
 		this.close();
@@ -69,8 +69,8 @@ public class GroupWindow extends Window {
 		}
 
 		groupForm = new GroupForm(groups);
-		groupForm.setButtonClickListeners(this, "SaveButtonClick",
-				"CancelButtonClick");
+		groupForm.setButtonClickListeners(this, "saveButtonClick",
+				"cancelButtonClick");
 		this.addComponent(groupForm);
 	}
 
@@ -83,7 +83,7 @@ public class GroupWindow extends Window {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void SaveButtonClick(Button.ClickEvent event) {
+	public void saveButtonClick(Button.ClickEvent event) {
 		try {
 			groupForm.validate();
 		} catch (InvalidValueException e) {
@@ -144,8 +144,8 @@ public class GroupWindow extends Window {
 
 				if (groupForm.getField(FieldConstants.AVAILABLE_PACKS)
 						.isEnabled()) {
-					ManagerApplication.getInstance().getPermitionManager()
-							.deleteGroupPermitions(group);
+					ManagerApplication.getInstance().getPermissionManager()
+							.deleteGroupPermissions(group);
 					Set<Long> availablePackIds = (Set<Long>) groupForm
 							.getField(FieldConstants.AVAILABLE_PACKS)
 							.getValue();
@@ -154,10 +154,10 @@ public class GroupWindow extends Window {
 								.getField(FieldConstants.AVAILABLE_PACKS))
 								.getContainerDataSource()).getItem(
 								availablePackId).getBean();
-						GroupPermition groupPermition = new GroupPermition(
+						GroupPermission groupPermition = new GroupPermission(
 								group, pack);
-						ManagerApplication.getInstance().getPermitionManager()
-								.addGroupPermition(groupPermition);
+						ManagerApplication.getInstance().getPermissionManager()
+								.addGroupPermission(groupPermition);
 					}
 				}
 			}

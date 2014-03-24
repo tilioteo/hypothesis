@@ -8,9 +8,9 @@ import org.hypothesis.application.ManagerApplication;
 import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.common.i18n.ApplicationMessages;
 import org.hypothesis.common.i18n.Messages;
-import org.hypothesis.entity.GroupPermition;
+import org.hypothesis.entity.GroupPermission;
 import org.hypothesis.entity.Pack;
-import org.hypothesis.entity.UserPermition;
+import org.hypothesis.entity.UserPermission;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -26,19 +26,19 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * The class represents permitions management view
+ * The class represents permissions management view
  * 
  * @author David Kabáth - Hypothesis
  * @author Petr Jestřábek - Hypothesis
  * @author Kamil Morong - Hypothesis
  */
-public class EditPermitions extends VerticalLayout implements ClickListener,
+public class EditPermissions extends VerticalLayout implements ClickListener,
 		ValueChangeListener, ColumnGenerator {
 	private static final long serialVersionUID = -7656364809373712179L;
 
 	private final ManagerApplication managerApplication;
-	private Table permitionsTable;
-	private Form permitionForm;
+	private Table permissionsTable;
+	private Form permissionForm;
 	private Button saveButton;
 	private Button deleteButton;
 	public static final Object[] COLUMNS_ORDER = new String[] {
@@ -60,13 +60,13 @@ public class EditPermitions extends VerticalLayout implements ClickListener,
 	 * @param managerApplication
 	 *            - application instance
 	 */
-	public EditPermitions(final ManagerApplication managerApplication) {
+	public EditPermissions(final ManagerApplication managerApplication) {
 		this.managerApplication = managerApplication;
 
 		// heading
 		Label heading = new Label("<h2>"
 				+ ApplicationMessages.get().getString(
-						Messages.TEXT_EDIT_PERMITIONS_TITLE) + "</h2>");
+						Messages.TEXT_EDIT_PERMISSIONS_TITLE) + "</h2>");
 		heading.setContentMode(Label.CONTENT_XHTML);
 		addComponent(heading);
 
@@ -77,21 +77,21 @@ public class EditPermitions extends VerticalLayout implements ClickListener,
 		addComponent(content);
 
 		// table of groups
-		setPermitionsTable();
-		content.addComponent(permitionsTable);
+		setPermissionsTable();
+		content.addComponent(permissionsTable);
 
 		// right part
 		VerticalLayout rightContent = new VerticalLayout();
 		rightContent.setWidth("100%");
 		content.addComponent(rightContent);
 
-		content.setExpandRatio(permitionsTable, 6.0f);
+		content.setExpandRatio(permissionsTable, 6.0f);
 		content.setExpandRatio(rightContent, 4.0f);
 
 		// group form, invisible by default
-		setPermitionForm();
-		permitionForm.setVisible(false);
-		rightContent.addComponent(permitionForm);
+		setPermissionForm();
+		permissionForm.setVisible(false);
+		rightContent.addComponent(permissionForm);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class EditPermitions extends VerticalLayout implements ClickListener,
 	public void buttonClick(ClickEvent event) {
 		final Button source = event.getButton();
 
-		// save selected permition
+		// save selected permission
 		if (source == saveButton) {
 			/*
 			 * try { groupForm.commit();
@@ -113,15 +113,15 @@ public class EditPermitions extends VerticalLayout implements ClickListener,
 			 * 
 			 * try { // add group managerApplication.getUserGroupManager().addGroup(group);
 			 * 
-			 * // add test permitions
-			 * managerApplication.getPermitionManager().deleteGroupPermitions(group);
+			 * // add test permissions
+			 * managerApplication.getPermissionManager().deleteGroupPermissions(group);
 			 * Set<Test> enabledTests = (Set<Test>)
 			 * groupForm.getField(FieldConstants.AVAILABLE_TESTS).getValue();
 			 * for (Test enabledTest : enabledTests) { GroupPermition
-			 * groupPermition = new GroupPermition();
-			 * groupPermition.setGroup(group);
-			 * groupPermition.setTest(enabledTest);
-			 * managerApplication.getPermitionManager().addGroupPermition(groupPermition);
+			 * groupPermission = new GroupPermission();
+			 * groupPermission.setGroup(group);
+			 * groupPermission.setTest(enabledTest);
+			 * managerApplication.getPermissionManager().addGroupPermission(groupPermission);
 			 * }
 			 * 
 			 * groupsTable.sort();
@@ -148,9 +148,9 @@ public class EditPermitions extends VerticalLayout implements ClickListener,
 			/*
 			 * Group group = (Group) groupsTable.getValue();
 			 * 
-			 * try { // TODO: vymazat nejak permitions automaticky pomoci
+			 * try { // TODO: vymazat nejak permissions automaticky pomoci
 			 * kaskady, // aby se nemuselo delit na dve transakce
-			 * managerApplication.getPermitionManager().deleteGroupPermitions(group);
+			 * managerApplication.getPermissionManager().deleteGroupPermissions(group);
 			 * managerApplication.getUserGroupManager().deleteGroup(group);
 			 * groupsTable.removeItem(groupsTable.getValue());
 			 * groupForm.setVisible(false);
@@ -191,7 +191,7 @@ public class EditPermitions extends VerticalLayout implements ClickListener,
 		 * users.size())); } return usersLabel; }
 		 * 
 		 * else if (columnId.equals(FieldConstants.AVAILABLE_TESTS)) { Set<Test>
-		 * tests = managerApplication.getPermitionManager().getGroupTests(group); String
+		 * tests = managerApplication.getPermissionManager().getGroupTests(group); String
 		 * description = new Date().toString(); for (Test test : tests) {
 		 * description += test.getName() + " - " + test.getDescription() +
 		 * "<br />"; } Label testsLabel = new Label();
@@ -208,36 +208,36 @@ public class EditPermitions extends VerticalLayout implements ClickListener,
 	}
 
 	/**
-	 * Set the permition form
+	 * Set the permission form
 	 */
-	public void setPermitionForm() {
-		permitionForm = new Form();
-		permitionForm.setWriteThrough(false);
-		permitionForm.setInvalidCommitted(false);
-		permitionForm.setFormFieldFactory(new PermitionFieldFactory(managerApplication));
+	public void setPermissionForm() {
+		permissionForm = new Form();
+		permissionForm.setWriteThrough(false);
+		permissionForm.setInvalidCommitted(false);
+		permissionForm.setFormFieldFactory(new PermitionFieldFactory(managerApplication));
 
-		((HorizontalLayout) permitionForm.getFooter()).setSpacing(true);
+		((HorizontalLayout) permissionForm.getFooter()).setSpacing(true);
 		saveButton = new Button(ApplicationMessages.get().getString(
 				Messages.TEXT_BUTTON_SAVE));
 		deleteButton = new Button(ApplicationMessages.get().getString(
 				Messages.TEXT_BUTTON_DELETE));
 		saveButton.addListener((ClickListener) this);
 		deleteButton.addListener((ClickListener) this);
-		permitionForm.getFooter().addComponent(saveButton);
-		permitionForm.getFooter().addComponent(deleteButton);
+		permissionForm.getFooter().addComponent(saveButton);
+		permissionForm.getFooter().addComponent(deleteButton);
 	}
 
 	/**
-	 * Set the table of permitions
+	 * Set the table of permissions
 	 */
-	public void setPermitionsTable() {
-		permitionsTable = new Table();
-		permitionsTable.setSelectable(true);
-		permitionsTable.setImmediate(true);
-		permitionsTable.setWidth("100%");
-		permitionsTable.setNullSelectionAllowed(false);
-		permitionsTable.setColumnCollapsingAllowed(true);
-		permitionsTable.addListener(this);
+	public void setPermissionsTable() {
+		permissionsTable = new Table();
+		permissionsTable.setSelectable(true);
+		permissionsTable.setImmediate(true);
+		permissionsTable.setWidth("100%");
+		permissionsTable.setNullSelectionAllowed(false);
+		permissionsTable.setColumnCollapsingAllowed(true);
+		permissionsTable.addListener(this);
 
 		// generated columns
 		/*
@@ -249,42 +249,42 @@ public class EditPermitions extends VerticalLayout implements ClickListener,
 		 * this);
 		 */
 
-		permitionsTable.addContainerProperty(FieldConstants.PACK, String.class,
+		permissionsTable.addContainerProperty(FieldConstants.PACK, String.class,
 				null);
-		permitionsTable.addContainerProperty(FieldConstants.ENABLED_GROUPS,
+		permissionsTable.addContainerProperty(FieldConstants.ENABLED_GROUPS,
 				String.class, null);
-		permitionsTable.addContainerProperty(FieldConstants.ENABLED_USERS,
+		permissionsTable.addContainerProperty(FieldConstants.ENABLED_USERS,
 				String.class, null);
-		permitionsTable.addContainerProperty(FieldConstants.DISABLED_USERS,
+		permissionsTable.addContainerProperty(FieldConstants.DISABLED_USERS,
 				String.class, null);
 
-		List<Pack> packs = managerApplication.getPermitionManager().findAllPacks();
+		List<Pack> packs = managerApplication.getPermissionManager().findAllPacks();
 		for (Pack pack : packs) {
-			Set<GroupPermition> groupPermitions = managerApplication.getPermitionManager()
-					.getPackGroupPermitions(pack);
-			Set<UserPermition> enabledUserPermitions = managerApplication
-					.getPermitionManager().getPackUserPermitions(pack, true);
-			Set<UserPermition> disabledUserPermitions = managerApplication
-					.getPermitionManager().getPackUserPermitions(pack, false);
+			Set<GroupPermission> groupPermitions = managerApplication.getPermissionManager()
+					.getPackGroupPermissions(pack);
+			Set<UserPermission> enabledUserPermitions = managerApplication
+					.getPermissionManager().getPackUserPermissions(pack, true);
+			Set<UserPermission> disabledUserPermitions = managerApplication
+					.getPermissionManager().getPackUserPermissions(pack, false);
 
 			String gpString = "";
-			for (GroupPermition gp : groupPermitions) {
+			for (GroupPermission gp : groupPermitions) {
 				gpString += gp.getGroup().getName() + ", ";
 			}
 
 			String eupString = "";
-			for (UserPermition eup : enabledUserPermitions) {
+			for (UserPermission eup : enabledUserPermitions) {
 				eupString += eup.getUser().getUsername() + ", ";
 			}
 
 			String dupString = "";
-			for (UserPermition dup : disabledUserPermitions) {
+			for (UserPermission dup : disabledUserPermitions) {
 				dupString += dup.getUser().getUsername() + ", ";
 			}
 
 			Object[] item = new Object[] { pack.getName(), gpString, eupString,
 					dupString };
-			permitionsTable.addItem(item, pack);
+			permissionsTable.addItem(item, pack);
 		}
 
 		/*
@@ -305,18 +305,18 @@ public class EditPermitions extends VerticalLayout implements ClickListener,
 		// permitionsTable.setVisibleColumns(COLUMNS_ORDER);
 		// permitionsTable.setColumnHeaders(COLUMN_HEADERS);
 
-		permitionsTable.setSortContainerPropertyId(FieldConstants.PACK);
+		permissionsTable.setSortContainerPropertyId(FieldConstants.PACK);
 	}
 
 	/**
-	 * Called when a row in the table of permitions has been selected
+	 * Called when a row in the table of permissions has been selected
 	 * 
 	 * @param event
 	 *            - an event containing information about the selected value
 	 */
 	public void valueChange(ValueChangeEvent event) {
-		if (event.getProperty() == permitionsTable) {
-			if (permitionsTable.getValue() != null) {
+		if (event.getProperty() == permissionsTable) {
+			if (permissionsTable.getValue() != null) {
 				/*
 				 * Group group = (Group) permitionsTable.getValue();
 				 * 

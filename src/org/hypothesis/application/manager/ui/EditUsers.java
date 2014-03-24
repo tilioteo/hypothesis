@@ -205,8 +205,8 @@ public class EditUsers extends VerticalLayout implements ColumnGenerator,
 		try {
 			for (Long id : ids) {
 				User user = ((BeanItem<User>) usersTable.getItem(id)).getBean();
-				ManagerApplication.getInstance().getPermitionManager()
-						.deleteUserPermitions(user);
+				ManagerApplication.getInstance().getPermissionManager()
+						.deleteUserPermissions(user);
 				ManagerApplication.getInstance().getUserGroupManager().deleteUser(user);
 				if (!user.getGroups().isEmpty()) {
 					for (Group group : user.getGroups()) {
@@ -414,7 +414,7 @@ public class EditUsers extends VerticalLayout implements ColumnGenerator,
 
 		else if (columnId.equals(FieldConstants.AVAILABLE_PACKS)) {
 			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
-			Set<Pack> packs = ManagerApplication.getInstance().getPermitionManager()
+			Set<Pack> packs = ManagerApplication.getInstance().getPermissionManager()
 					.findUserPacks2(user, false);
 			List<String> sortedPacks = new ArrayList<String>();
 			List<String> sortedPackDescs = new ArrayList<String>();

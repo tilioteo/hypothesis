@@ -55,7 +55,7 @@ public class ListPacks extends VerticalLayout {
 		 * addComponent(button); }
 		 */
 
-		Set<Pack> packs = ManagerApplication.getInstance().getPermitionManager()
+		Set<Pack> packs = ManagerApplication.getInstance().getPermissionManager()
 				.findUserPacks2(user, false);
 		List<String> sortedPacks = new ArrayList<String>();
 		for (Pack pack : packs) {

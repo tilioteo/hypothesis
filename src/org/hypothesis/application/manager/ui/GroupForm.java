@@ -138,7 +138,7 @@ public class GroupForm extends Form {
 			addUnboundField(FieldConstants.USERS, group.getUsers());
 			addUnboundField(FieldConstants.NOTE, group.getNote());
 			addUnboundField(FieldConstants.AVAILABLE_PACKS, ManagerApplication
-					.getInstance().getPermitionManager().getGroupPacks(group));
+					.getInstance().getPermissionManager().getGroupPacks(group));
 		}
 
 		// multiupdate

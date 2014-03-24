@@ -36,7 +36,7 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 	private EditPersonalData editPersonalData;
 	private EditGroups editGroups;
 	private EditUsers editUsers;
-	private EditPermitions editPermitions;
+	private EditPermissions editPermitions;
 
 	/**
 	 * Constructor
@@ -90,7 +90,7 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 		return mainLayout;
 	}
 
-	public void HomepageButtonClick(ClickEvent event) {
+	public void homepageButtonClick(ClickEvent event) {
 		if (listPacks == null) {
 			listPacks = new ListPacks();
 		}
@@ -102,25 +102,25 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 		setCaption(ApplicationMessages.get().getString(Messages.TEXT_MANAGER_APP_TITLE));
 	}
 
-	public void LogoutButtonClick(ClickEvent event) {
+	public void logoutButtonClick(ClickEvent event) {
 		this.getApp().closeApplication();
 	}
 
-	public void ManageGroupsButtonClick(ClickEvent event) {
+	public void manageGroupsButtonClick(ClickEvent event) {
 		if (editGroups == null) {
 			editGroups = new EditGroups();
 		}
 		content.setContent(editGroups);
 	}
 
-	public void ManagePermitionsButtonClick(ClickEvent event) {
+	public void managePermitionsButtonClick(ClickEvent event) {
 		if (editPermitions == null) {
-			editPermitions = new EditPermitions(this.getApp());
+			editPermitions = new EditPermissions(this.getApp());
 		}
 		content.setContent(editPermitions);
 	}
 
-	public void ManageUsersButtonClick(ClickEvent event) {
+	public void manageUsersButtonClick(ClickEvent event) {
 		if (editUsers == null) {
 			editUsers = new EditUsers();
 		}
@@ -165,16 +165,16 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 				Messages.TEXT_BUTTON_LOGOUT));
 
 		homepageButton.addListener(ClickEvent.class, this,
-				"HomepageButtonClick");
+				"homepageButtonClick");
 		settingsButton.addListener(ClickEvent.class, this,
-				"SettingsButtonClick");
+				"settingsButtonClick");
 		manageGroupsButton.addListener(ClickEvent.class, this,
-				"ManageGroupsButtonClick");
+				"manageGroupsButtonClick");
 		manageUsersButton.addListener(ClickEvent.class, this,
-				"ManageUsersButtonClick");
+				"manageUsersButtonClick");
 		managePermitionsButton.addListener(ClickEvent.class, this,
-				"ManagePermitionsButtonClick");
-		logoutButton.addListener(ClickEvent.class, this, "LogoutButtonClick");
+				"managePermitionsButtonClick");
+		logoutButton.addListener(ClickEvent.class, this, "logoutButtonClick");
 
 		menu.addComponent(homepageButton);
 		menu.addComponent(settingsButton);
@@ -184,7 +184,7 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 		menu.addComponent(logoutButton);
 	}
 
-	public void SettingsButtonClick(ClickEvent event) {
+	public void settingsButtonClick(ClickEvent event) {
 		if (editPersonalData == null) {
 			editPersonalData = new EditPersonalData();
 		}

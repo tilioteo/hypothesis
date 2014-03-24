@@ -233,12 +233,12 @@ public class UserFieldFactory extends DefaultFieldFactory {
 			Collection<Pack> packs;
 			if (ManagerApplication.getInstance().isCurrentUserInRole(
 					UserGroupManager.ROLE_SUPERUSER)) {
-				packs = ManagerApplication.getInstance().getPermitionManager()
+				packs = ManagerApplication.getInstance().getPermissionManager()
 						.findAllPacks();
 			} else {
 				packs = ManagerApplication
 						.getInstance()
-						.getPermitionManager()
+						.getPermissionManager()
 						.findUserPacks2(ManagerApplication.getInstance().getCurrentUser(),
 								false);
 			}
@@ -264,12 +264,12 @@ public class UserFieldFactory extends DefaultFieldFactory {
 			Collection<Pack> packs;
 			if (ManagerApplication.getInstance().isCurrentUserInRole(
 					UserGroupManager.ROLE_SUPERUSER)) {
-				packs = ManagerApplication.getInstance().getPermitionManager()
+				packs = ManagerApplication.getInstance().getPermissionManager()
 						.findAllPacks();
 			} else {
 				packs = ManagerApplication
 						.getInstance()
-						.getPermitionManager()
+						.getPermissionManager()
 						.findUserPacks2(ManagerApplication.getInstance().getCurrentUser(),
 								false);
 			}

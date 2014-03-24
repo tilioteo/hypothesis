@@ -14,7 +14,7 @@ import org.hypothesis.entity.Group;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.Role;
 import org.hypothesis.entity.User;
-import org.hypothesis.entity.UserPermition;
+import org.hypothesis.entity.UserPermission;
 import org.hypothesis.persistence.UserGroupManager;
 
 import com.vaadin.data.Validator.InvalidValueException;
@@ -55,7 +55,7 @@ public class UserWindow extends Window {
 		Init();
 	}
 
-	public void CancelButtonClick(Button.ClickEvent event) {
+	public void cancelButtonClick(Button.ClickEvent event) {
 		userForm.discard();
 		userForm.setValidationVisible(false);
 		this.close();
@@ -84,8 +84,8 @@ public class UserWindow extends Window {
 		}
 
 		userForm = new UserForm(users);
-		userForm.setButtonClickListeners(this, "SaveButtonClick",
-				"CancelButtonClick");
+		userForm.setButtonClickListeners(this, "saveButtonClick",
+				"cancelButtonClick");
 		this.addComponent(userForm);
 	}
 
@@ -102,7 +102,7 @@ public class UserWindow extends Window {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void SaveButtonClick(Button.ClickEvent event) {
+	public void saveButtonClick(Button.ClickEvent event) {
 		try {
 			userForm.validate();
 		} catch (InvalidValueException e) {
@@ -220,8 +220,8 @@ public class UserWindow extends Window {
 				ManagerApplication.getInstance().getUserGroupManager().addUser(user);
 
 				if (userForm.getField(FieldConstants.ENABLED_PACKS).isEnabled()) {
-					ManagerApplication.getInstance().getPermitionManager()
-							.deleteUserPermitions(user, true);
+					ManagerApplication.getInstance().getPermissionManager()
+							.deleteUserPermissions(user, true);
 					Set<Long> enabledPackIds = (Set<Long>) userForm.getField(
 							FieldConstants.ENABLED_PACKS).getValue();
 					for (Long enabledPackId : enabledPackIds) {
@@ -229,16 +229,16 @@ public class UserWindow extends Window {
 								.getField(FieldConstants.ENABLED_PACKS))
 								.getContainerDataSource()).getItem(
 								enabledPackId).getBean();
-						UserPermition userPermition = new UserPermition(user,
+						UserPermission userPermition = new UserPermission(user,
 								pack);
-						ManagerApplication.getInstance().getPermitionManager()
-								.addUserPermition(userPermition);
+						ManagerApplication.getInstance().getPermissionManager()
+								.addUserPermission(userPermition);
 					}
 				}
 				if (userForm.getField(FieldConstants.DISABLED_PACKS)
 						.isEnabled()) {
-					ManagerApplication.getInstance().getPermitionManager()
-							.deleteUserPermitions(user, false);
+					ManagerApplication.getInstance().getPermissionManager()
+							.deleteUserPermissions(user, false);
 					Set<Long> disabledPackIds = (Set<Long>) userForm.getField(
 							FieldConstants.DISABLED_PACKS).getValue();
 					for (Long disabledPackId : disabledPackIds) {
@@ -246,10 +246,10 @@ public class UserWindow extends Window {
 								.getField(FieldConstants.DISABLED_PACKS))
 								.getContainerDataSource()).getItem(
 								disabledPackId).getBean();
-						UserPermition userPermition = new UserPermition(user,
+						UserPermission userPermition = new UserPermission(user,
 								pack, false);
-						ManagerApplication.getInstance().getPermitionManager()
-								.addUserPermition(userPermition);
+						ManagerApplication.getInstance().getPermissionManager()
+								.addUserPermission(userPermition);
 					}
 				}
 

@@ -15,12 +15,10 @@ import org.hypothesis.common.application.ui.BaseWindow;
 import org.hypothesis.common.i18n.ApplicationMessages;
 import org.hypothesis.common.i18n.Messages;
 import org.hypothesis.entity.User;
-import org.hypothesis.persistence.PermitionManager;
+import org.hypothesis.persistence.PermissionManager;
 import org.hypothesis.persistence.UserGroupManager;
 import org.hypothesis.persistence.hibernate.GroupDao;
-import org.hypothesis.persistence.hibernate.GroupPermitionDao;
 import org.hypothesis.persistence.hibernate.UserDao;
-import org.hypothesis.persistence.hibernate.UserPermitionDao;
 
 import com.vaadin.terminal.ParameterHandler;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
@@ -44,7 +42,7 @@ public abstract class AbstractBaseApplication extends AbstractHibernateApplicati
 
 	private User currentUser = null;
 	private UserGroupManager userGroupManager = null;
-	private PermitionManager permitionManager = null;
+	private PermissionManager permissionManager = null;
 
 	private HttpServletResponse response;
 	private BaseWindow mainWindow = null;
@@ -113,12 +111,12 @@ public abstract class AbstractBaseApplication extends AbstractHibernateApplicati
 	}
 
 	/**
-	 * Returns permitionManager instance
+	 * Returns permissionManager instance
 	 * 
-	 * @return permitionManager
+	 * @return permissionManager
 	 */
-	public final PermitionManager getPermitionManager() {
-		return permitionManager;
+	public final PermissionManager getPermissionManager() {
+		return permissionManager;
 	}
 
 	/**
@@ -150,8 +148,7 @@ public abstract class AbstractBaseApplication extends AbstractHibernateApplicati
 
 		userGroupManager = new UserGroupManager(new UserDao(),
 				new GroupDao());
-		permitionManager = new PermitionManager(new UserPermitionDao(),
-				new GroupPermitionDao());
+		permissionManager = PermissionManager.newInstance();
 	}
 
 	public abstract void loadProtectedResources();

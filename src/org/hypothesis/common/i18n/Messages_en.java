@@ -111,7 +111,7 @@ public class Messages_en extends Messages {
 			{ TEXT_TOTAL_PACKS_FMT, "total tests: %d" },
 			{ TEXT_NO_GROUPS_SELECTED, "There are no groups selected." },
 
-			{ TEXT_EDIT_PERMITIONS_TITLE, "Change permitions" },
+			{ TEXT_EDIT_PERMISSIONS_TITLE, "Change permitions" },
 
 			{ TEXT_EDIT_PERSONAL_DATA_TITLE, "Change personal data" },
 			{ TEXT_EDIT_PERSONAL_DATA_INFO,
