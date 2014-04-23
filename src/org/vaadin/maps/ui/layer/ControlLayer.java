@@ -18,6 +18,8 @@ public class ControlLayer extends AbstractLayer<GeneralControlContainer> {
 	public ControlLayer() {
 		GeneralControlContainer container = new GeneralControlContainer();
 		setContent(container);
+		setWidth("0px");
+		setHeight("0px");
 	}
 	
 	@Override

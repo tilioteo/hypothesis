@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.processing;
 
 import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;
 import com.tilioteo.hypothesis.event.ButtonData;
 import com.tilioteo.hypothesis.event.ButtonEvent;
@@ -15,8 +16,6 @@ import com.tilioteo.hypothesis.event.RadioPanelData;
 import com.tilioteo.hypothesis.event.RadioPanelEvent;
 import com.tilioteo.hypothesis.event.TimerData;
 import com.tilioteo.hypothesis.event.TimerEvent;
-import com.tilioteo.hypothesis.ui.Button;
-import com.tilioteo.hypothesis.ui.Image;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -25,33 +24,24 @@ import com.tilioteo.hypothesis.ui.Image;
 public class CommandFactory {
 
 	public static Command createActionCommand(final SlideManager slideManager, String actionId) {
+		return createActionCommand(slideManager, actionId, null);
+	}
+
+	public static Command createActionCommand(final SlideManager slideManager, String actionId, final AbstractComponentData<?> data) {
 		final AbstractBaseAction action = slideManager != null ? slideManager.getActions().get(actionId) : null;
 
 		return new Command() {
 			public void execute() {
-				if (action != null)
+				if (action != null) {
+					slideManager.addComponentDataVariable(data);
 					action.execute();
+					slideManager.clearComponentDataVariable();
+				}
 			}
 		};
 	}
 
-	public static Command createButtonClickEventCommand(Button component,
-			SlideManager slideManager) {
-		final ButtonEvent event = new ButtonEvent.Click(new ButtonData(
-				component, slideManager));
-
-		return createComponentEventCommand(event);
-	}
-
-	public static Command createButtonPanelClickEventCommand(
-			ButtonPanelData data) {
-		final ButtonPanelEvent event = new ButtonPanelEvent.Click(data);
-
-		return createComponentEventCommand(event);
-	}
-
-	public static Command createComponentEventCommand(
-			final AbstractComponentEvent<?> event) {
+	public static Command createComponentEventCommand(final AbstractComponentEvent<?> event) {
 		return new Command() {
 			public void execute() {
 				event.getComponentData().getSlideManager().getEventManager().fireEvent(event);
@@ -59,40 +49,50 @@ public class CommandFactory {
 		};
 	}
 
-	public static Command createImageClickEventCommand(ImageData data) {
-		final ImageEvent event = new ImageEvent.Click(data);
+	public static Command createButtonClickEventCommand(ButtonData data) {
+		ButtonEvent event = new ButtonEvent.Click(data);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createImageLoadEventCommand(Image component,
-			SlideManager slideManager) {
-		final ImageEvent event = new ImageEvent.Load(new ImageData(
-				component, slideManager));
+	public static Command createButtonPanelClickEventCommand(ButtonPanelData data) {
+		ButtonPanelEvent event = new ButtonPanelEvent.Click(data);
+
+		return createComponentEventCommand(event);
+	}
+
+	public static Command createImageClickEventCommand(ImageData data) {
+		ImageEvent event = new ImageEvent.Click(data);
+
+		return createComponentEventCommand(event);
+	}
+
+	public static Command createImageLoadEventCommand(ImageData data) {
+		ImageEvent event = new ImageEvent.Load(data);
 
 		return createComponentEventCommand(event);
 	}
 
 	public static Command createRadioPanelClickEventCommand(RadioPanelData data) {
-		final RadioPanelEvent event = new RadioPanelEvent.Click(data);
+		RadioPanelEvent event = new RadioPanelEvent.Click(data);
 
 		return createComponentEventCommand(event);
 	}
 
 	public static Command createTimerStartEventCommand(TimerData data) {
-		final TimerEvent event = new TimerEvent.Start(data);
+		TimerEvent event = new TimerEvent.Start(data);
 
 		return createComponentEventCommand(event);
 	}
 
 	public static Command createTimerStopEventCommand(TimerData data) {
-		final TimerEvent event = new TimerEvent.Stop(data);
+		TimerEvent event = new TimerEvent.Stop(data);
 
 		return createComponentEventCommand(event);
 	}
 
 	public static Command createTimerUpdateEventCommand(TimerData data) {
-		final TimerEvent event = new TimerEvent.Update(data);
+		TimerEvent event = new TimerEvent.Update(data);
 
 		return createComponentEventCommand(event);
 	}

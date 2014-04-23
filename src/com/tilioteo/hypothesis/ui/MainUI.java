@@ -3,7 +3,17 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import java.io.IOException;
+import java.util.Map;
+
 import javax.servlet.annotation.WebServlet;
+
+import org.vaadin.maps.ui.LayerLayout;
+import org.vaadin.maps.ui.control.DrawPathControl;
+import org.vaadin.maps.ui.feature.VectorFeature;
+import org.vaadin.maps.ui.layer.ControlLayer;
+import org.vaadin.maps.ui.layer.ImageLayer;
+import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 
 import com.tilioteo.hypothesis.context.HypothesisConfig;
 import com.tilioteo.hypothesis.servlet.HibernateVaadinServlet;
@@ -11,8 +21,14 @@ import com.tilioteo.hypothesis.ui.view.PacksView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.RequestHandler;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinResponse;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * @author kamil
@@ -28,6 +44,7 @@ public class MainUI extends UI {
 	}
 
 	private Navigator navigator;
+	private String pid = null;
 	
 	@Override
 	protected void init(VaadinRequest request) {
@@ -40,29 +57,31 @@ public class MainUI extends UI {
 		config = (HypothesisConfig)context.getBean(HypothesisConfig.class);
 		*/
 		//config.getSecretKey();
+		
+		pid = request.getParameter("pid");
 
 		getPage().setTitle("Hypothesis");
 
 		navigator = new Navigator(this, this);
 		
-		PacksView packsView = new PacksView();
+		PacksView packsView = new PacksView(pid);
 		navigator.addView("/packs", packsView);
 		
 		navigator.navigateTo("/packs");
 		
-/*		VerticalLayout verticalLayout = new VerticalLayout();
+		
+		/*VerticalLayout verticalLayout = new VerticalLayout();
 		verticalLayout.setSizeFull();
 		setContent(verticalLayout);
-*/		
 		
-/*		LayerLayout layerLayout = new LayerLayout();
+		LayerLayout layerLayout = new LayerLayout();
 		verticalLayout.addComponent(layerLayout);
 		
 		ControlLayer controlLayer = new ControlLayer();
 		layerLayout.addComponent(controlLayer);
 		
 		ImageLayer imageLayer = new ImageLayer("http://www.imagehosting.cz/images/mapaukol7.jpg");
-		imageLayer.addClickListener(new ImageTile.ClickListener() {
+*/		/*imageLayer.addClickListener(new ImageTile.ClickListener() {
 			@Override
 			public void click(ImageTile.ClickEvent event) {
 				Notification.show("Image tile clicked");
@@ -73,30 +92,30 @@ public class MainUI extends UI {
 			public void load(LoadEvent event) {
 				Notification.show("Image tile loaded");
 			}
-		});
-		layerLayout.addComponent(imageLayer);
-		
-		VectorFeatureLayer vectorLayer = new VectorFeatureLayer();
+		});*/
+/*		layerLayout.addComponent(imageLayer);
+*/		
+/*		VectorFeatureLayer vectorLayer = new VectorFeatureLayer();
 		vectorLayer.addClickListener(new VectorFeatureContainer.ClickListener() {
 			@Override
 			public void click(VectorFeatureContainer.ClickEvent event) {
 				Notification.show("Vector layer container clicked");
 			}
-		});
-		layerLayout.addComponent(vectorLayer);
-*/
-/*		WKTReader wktReader = new WKTReader();
+		});*/
+/*		layerLayout.addComponent(vectorLayer);
+
+		WKTReader wktReader = new WKTReader();
 		try {
 		 	Geometry geometry = wktReader.read("POLYGON ((50 50,200 50,200 200,50 200,50 50),(100 100,150 100,150 150,100 150,100 100))");
 		 	
 		 	VectorFeature feature = new VectorFeature(geometry);
-		 	feature.addClickListener(new ClickListener() {
+*/		 	/*feature.addClickListener(new ClickListener() {
 				@Override
 				public void click(ClickEvent event) {
 					Notification.show("Feature clicked");
 				}
-			});
-*/		 	
+			});*/
+		 	
 		 	/*feature.addDoubleClickListener(new DoubleClickListener() {
 				@Override
 				public void doubleClick(DoubleClickEvent event) {
@@ -109,8 +128,8 @@ public class MainUI extends UI {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-*/		
-/*		DrawPathControl drawControl = new DrawPathControl(vectorLayer);
+		
+		DrawPathControl drawControl = new DrawPathControl(vectorLayer);
 		//DrawPointControl drawControl = new DrawPointControl(vectorLayer);
 		controlLayer.addComponent(drawControl);
 		drawControl.activate();

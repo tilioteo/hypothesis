@@ -68,4 +68,26 @@ public class Group extends AbstractDrawingContainer implements Positionable {
 	public void setY(int y) {
 		getImpl().setY(getElement(), y, isAttached());
 	}
+	
+	/**
+	 * Returns the opacity of the Group element.
+	 * 
+	 * @return the current opacity
+	 */
+	public double getOpacity() {
+		return getImpl().getOpacity(getElement());
+	}
+
+	/**
+	 * Sets the opacity of the Group element. The initial value 1.0 means
+	 * fully opaque group. On the other hand, value 0.0 means fully transparent
+	 * paint.
+	 * 
+	 * @param opacity
+	 *            the new opacity
+	 */
+	public void setOpacity(double opacity) {
+		getImpl().setOpacity(getElement(), opacity);
+	}
+
 }

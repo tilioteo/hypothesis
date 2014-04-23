@@ -3,7 +3,6 @@
  */
 package org.vaadin.maps.client.ui.control;
 
-import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.shared.ui.Connect;
 
 /**

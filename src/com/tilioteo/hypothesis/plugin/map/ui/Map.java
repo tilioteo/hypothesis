@@ -3,9 +3,11 @@
  */
 package com.tilioteo.hypothesis.plugin.map.ui;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.dom4j.Element;
+import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.ui.LayerLayout;
 import org.vaadin.maps.ui.control.AbstractControl;
 import org.vaadin.maps.ui.layer.ControlLayer;
@@ -15,6 +17,7 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
+import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlUtility;
 import com.tilioteo.hypothesis.ui.ComponentUtility;
@@ -31,6 +34,8 @@ public class Map extends LayerLayout implements SlideComponent {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
+	
+	private HashMap<String, Style> styles = new HashMap<String, Style>();
 	
 	private ControlLayer controlLayer;
 	
@@ -51,8 +56,26 @@ public class Map extends LayerLayout implements SlideComponent {
 	@Override
 	public void loadFromXml(Element element) {
 		setProperties(element);
+		addStyles(element);
 		addLayers(element);
 		addControls(element);
+	}
+
+	private void addStyles(Element element) {
+		List<Element> elements = SlideXmlUtility.getStyles(element);
+		for (Element childElement : elements) {
+			String id = com.tilioteo.hypothesis.dom.SlideXmlUtility.getId(childElement);;
+			if (id != null) {
+				Style style = MapComponentFactory.createStyleFromElement(childElement);
+				addStyle(id, style);
+			}
+		}
+	}
+	
+	private void addStyle(String id, Style style) {
+		if (id != null && style != null) {
+			styles.put(id, style);
+		}
 	}
 
 	private void addLayers(Element element) {
@@ -87,12 +110,16 @@ public class Map extends LayerLayout implements SlideComponent {
 	}
 
 	protected void setProperties(Element element) {
+		MapUtility.setMap(this);
+
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
 		
 		ComponentUtility.setCommonProperties(this, element, properties, parentAlignment);
 
 		// set Map specific properties
-		
 	}
 
+	public Style getStyle(String name) {
+		return styles.get(name);
+	}
 }

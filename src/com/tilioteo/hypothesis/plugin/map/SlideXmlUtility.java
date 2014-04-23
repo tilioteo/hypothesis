@@ -17,6 +17,11 @@ public class SlideXmlUtility {
 
 	//private static Logger log = Logger.getLogger(SlideXmlUtility.class);
 
+	public static List<Element> getStyles(Element element) {
+		return com.tilioteo.hypothesis.dom.SlideXmlUtility.getElementSubNodeChilds(element, SlideXmlConstants.STYLES,
+				new StringSet(SlideXmlConstants.STYLE));
+	}
+
 	public static List<Element> getLayers(Element element, StringSet valids) {
 		return com.tilioteo.hypothesis.dom.SlideXmlUtility.getElementSubNodeChilds(element, SlideXmlConstants.LAYERS,
 				valids);
@@ -40,6 +45,20 @@ public class SlideXmlUtility {
 		return null;
 	}
 
+	public static Element getTextElement(Element element) {
+		if (element != null) {
+			return (Element) element.selectSingleNode(SlideXmlConstants.TEXT);
+		}
 
+		return null;
+	}
+
+	public static Element getOffsetElement(Element element) {
+		if (element != null) {
+			return (Element) element.selectSingleNode(SlideXmlConstants.OFFSET);
+		}
+
+		return null;
+	}
 
 }

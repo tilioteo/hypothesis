@@ -6,12 +6,16 @@ package org.vaadin.maps.client.ui;
 import java.util.HashMap;
 
 import org.vaadin.gwtgraphics.client.shape.Circle;
+import org.vaadin.maps.client.drawing.Utils;
 import org.vaadin.maps.client.geometry.Coordinate;
 import org.vaadin.maps.client.geometry.Geometry;
 import org.vaadin.maps.client.geometry.Point;
+import org.vaadin.maps.shared.ui.Style;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.shared.EventHandler;
@@ -26,27 +30,38 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 
 	public static final String CLASSNAME = "v-pointhandler";
 	
-	public static final int CURSOR_CIRCLE_RADIUS = 5;
-	public static final String CURSOR_CIRCLE_STROKE_COLOR = "blue";
-	public static final String CURSOR_CIRCLE_FILL_COLOR = "cyan";
-	public static final double CURSOR_CIRCLE_FILL_OPACITY = 0.3;
-	
 	public ClickHandler clickHandlerSlave; 
 	
 	protected VVectorFeatureLayer layer = null;
 	protected VVectorFeatureContainer container = null;
 	
+	protected Style cursorStyle = Style.DEFAULT_DRAW_CURSOR;
+	
 	/**
 	 * point of mouse cursor position
 	 * TODO make implementation independent
 	 */
-	private Circle cursorPoint = null;
+	private Circle cursor = null;
 	
 	protected HandlerRegistration clickHandler = null;
 	protected HandlerRegistration mouseMoveHandler = null;
 	
 	private HashMap<GeometryEventHandler, HandlerRegistration> geometryHandlerMap = new HashMap<GeometryEventHandler, HandlerRegistration>();
+
+	public static int[] getMouseEventXY(MouseEvent<?> event) {
+		// Firefox encounters some problems with relative position to SVG element
+		// correct xy position is obtained using the parent DIV element of vector layer 
+		Element relative = event.getRelativeElement();
+		if (relative != null) {
+			Element parent = relative.getParentElement();
+			if (parent != null) {
+				return new int[] { event.getRelativeX(parent), event.getRelativeY(parent) };
+			}
+		}
+		return new int[] { event.getX(), event.getY() };
+	}
 	
+
 	public VPointHandler() {
 		super();
 		setStyleName(CLASSNAME);
@@ -103,24 +118,34 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 		removeHandler(mouseMoveHandler);
 	}
 	
-	private void addCursorPoint() {
-		cursorPoint = new Circle(0, 0, CURSOR_CIRCLE_RADIUS);
-		cursorPoint.setStrokeColor(CURSOR_CIRCLE_STROKE_COLOR);
-		cursorPoint.setFillColor(CURSOR_CIRCLE_FILL_COLOR);
-		cursorPoint.setFillOpacity(CURSOR_CIRCLE_FILL_OPACITY);
-		container.add(cursorPoint);
+	private void addCursor() {
+		//cursor = new Donut(0, 0, 0, 0);
+		cursor = new Circle(0, 0, 0);
+		updateCursorStyle();
+		container.add(cursor);
 	}
 	
-	private void removeCursorPoint() {
-		container.remove(cursorPoint);
-		cursorPoint = null;
+	private void updateCursorStyle() {
+		if (cursor != null && cursorStyle != null) {
+			Utils.updateDrawingStyle(cursor, cursorStyle);
+		}
+	}
+
+	private void removeCursor() {
+		container.remove(cursor);
+		cursor = null;
+	}
+	
+	private void updateCursorPosition(int[] xy) {
+		cursor.setX(xy[0]);
+		cursor.setY(xy[1]);
 	}
 	
 	@Override
 	public void activate() {
 		super.activate();
 		
-		addCursorPoint();
+		addCursor();
 	}
 	
 	/**
@@ -129,18 +154,32 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 	 * @param y
 	 * @return  new {@link Coordinate} 
 	 */
-	public Coordinate createWorldCoordinate(int x, int y) {
+	public Coordinate createWorldCoordinate(int[] xy) {
 		// TODO implement
-		return new Coordinate(x, y);
+		return new Coordinate(xy[0], xy[1]);
 	}
 	
 	@Override
 	public void deactivate() {
-		removeCursorPoint();
+		removeCursor();
 		
 		super.deactivate();
 	}
 	
+	public Style getCursorStyle() {
+		return cursorStyle;
+	}
+
+	public void setCursorStyle(Style style) {
+		if (style != null) {
+			this.cursorStyle = style;
+		} else {
+			this.cursorStyle = Style.DEFAULT_DRAW_CURSOR;
+		}
+		
+		updateCursorStyle();
+	}
+
 	@Override
 	public void onClick(ClickEvent event) {
 		if (!active) {
@@ -151,7 +190,8 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 			clickHandlerSlave.onClick(event);
 		}
 		
-		Point point = new Point(createWorldCoordinate(event.getX(), event.getY()));
+		int[] xy = getMouseEventXY(event);
+		Point point = new Point(createWorldCoordinate(xy));
 		fireEvent(new GeometryEvent(VPointHandler.this, point));
   	}
 
@@ -161,10 +201,11 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 			return;
 		}
 		
+		int[] xy = getMouseEventXY(event);
+
 		// redraw cursor point
 		// TODO make implementation independent
-		cursorPoint.setX(Math.round((float)event.getX()));
-		cursorPoint.setY(Math.round((float)event.getY()));
+		updateCursorPosition(xy);
 	}
 	
 	public interface GeometryEventHandler extends EventHandler {

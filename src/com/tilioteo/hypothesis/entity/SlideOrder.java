@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,7 +19,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -46,7 +44,7 @@ public final class SlideOrder extends SerializableIdObject {
 	/**
 	 * processing test
 	 */
-	private Test test;
+	private SimpleTest test;
 	
 	private Task task;
 	
@@ -56,7 +54,7 @@ public final class SlideOrder extends SerializableIdObject {
 		super();
 	}
 	
-	public SlideOrder(Test test, Task task) {
+	public SlideOrder(SimpleTest test, Task task) {
 		this.test = test;
 		this.task = task;
 	}
@@ -70,20 +68,18 @@ public final class SlideOrder extends SerializableIdObject {
 		return super.getId();
 	}
 	
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.TEST_ID, nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Test getTest() {
+	public final SimpleTest getTest() {
 		return test;
 	}
 
-	public final void setTest(Test test) {
+	public final void setTest(SimpleTest test) {
 		this.test = test;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.TASK_ID, nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Task getTask() {
 		return task;
 	}
@@ -94,11 +90,11 @@ public final class SlideOrder extends SerializableIdObject {
 
 	@Column(name = EntityFieldConstants.XML_DATA)
 	@Type(type="text")
-	protected final String getData() {
+	protected final String getXmlData() {
 		return xmlData;
 	}
 
-	protected final void setData(String data) {
+	protected final void setXmlData(String data) {
 		this.xmlData = data;
 	}
 	
@@ -139,6 +135,70 @@ public final class SlideOrder extends SerializableIdObject {
 		} else {
 			xmlData = null;
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		Long id = getId();
+		SimpleTest test = getTest();
+		Task task = getTask();
+		String xmlData = getXmlData();
+
+		final int prime = 37;
+		int result = 1;
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result + (test != null ? test.hashCode() : 0);
+		result = prime * result + (task != null ? task.hashCode() : 0);
+		result = prime * result + (xmlData != null ? xmlData.hashCode() : 0);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof SlideOrder)) {
+			return false;
+		}
+		SlideOrder other = (SlideOrder) obj;
+		
+		Long id = getId();
+		Long id2 = other.getId();
+		SimpleTest test = getTest();
+		SimpleTest test2 = other.getTest();
+		Task task = getTask();
+		Task task2 = other.getTask();
+		String xmlData = getXmlData();
+		String xmlData2 = other.getXmlData();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
+			return false;
+		}
+
+		if (test != null && !test.equals(test2)) {
+			return false;
+		} else if (test2 != null) {
+			return false;
+		}
+		
+		if (task != null && !task.equals(task2)) {
+			return false;
+		} else if (task2 != null) {
+			return false;
+		}
+		
+		if (xmlData != null && !xmlData.equals(xmlData2)) {
+			return false;
+		} else if (xmlData2 != null) {
+			return false;
+		}
+		
+		return true;
 	}
 
 }

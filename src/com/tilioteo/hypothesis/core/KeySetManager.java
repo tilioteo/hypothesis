@@ -3,7 +3,9 @@
  */
 package com.tilioteo.hypothesis.core;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.tilioteo.hypothesis.entity.HasId;
 import com.tilioteo.hypothesis.entity.HasList;
@@ -14,7 +16,7 @@ import com.tilioteo.hypothesis.entity.HasList;
  */
 public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> {
 
-	private HashMap<K, E> keyset = new HashMap<K, E>();
+	private LinkedHashMap<K, E> keyset = new LinkedHashMap<K, E>();
 
 	private E element = null;
 
@@ -46,15 +48,19 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> {
 	}
 
 	public void setListParent(T parent) {
-		this.keyset.clear();
+		keyset.clear();
 		if (parent != null) {
 			for (E item : parent.getList()) {
-				this.keyset.put(item.getId(), item);
+				if (item != null) {
+					keyset.put(item.getId(), item);
+				}
 			}
-			if (parent.getList().size() > 0)
-				element = parent.getList().get(0);
-			else
+			if (keyset.size() > 0) {
+				List<E> list = new ArrayList<E>(keyset.values());
+				element = list.get(0);
+			} else {
 				element = null;
+			}
 		}
 	}
 }

@@ -8,6 +8,7 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -22,6 +23,7 @@ public class Label extends com.vaadin.ui.Label implements SlideComponent {
 
 	public Label() {
 		this.parentAlignment = new ParentAlignment();
+		setContentMode(ContentMode.HTML);
 	}
 
 	public Label(SlideManager slideManager) {
@@ -52,6 +54,16 @@ public class Label extends com.vaadin.ui.Label implements SlideComponent {
 	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
+	}
+	
+	@Override
+	public String getCaption() {
+		return getValue();
+	}
+	
+	@Override
+	public void setCaption(String caption) {
+		setValue(caption);
 	}
 
 }

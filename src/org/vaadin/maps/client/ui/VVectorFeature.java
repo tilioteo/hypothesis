@@ -6,8 +6,13 @@ package org.vaadin.maps.client.ui;
 import org.vaadin.gwtgraphics.client.AbstractDrawing;
 import org.vaadin.gwtgraphics.client.AbstractDrawingContainer;
 import org.vaadin.gwtgraphics.client.Group;
+import org.vaadin.gwtgraphics.client.shape.Text;
+import org.vaadin.maps.client.drawing.Utils;
+import org.vaadin.maps.client.geometry.Coordinate;
 import org.vaadin.maps.client.geometry.Geometry;
-import org.vaadin.maps.client.geometry.Utils;
+import org.vaadin.maps.shared.ui.Style;
+
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author kamil
@@ -19,6 +24,12 @@ public class VVectorFeature extends AbstractDrawingContainer {
 	
 	private Geometry geometry = null;
 	private AbstractDrawing drawing = null;
+	private String text = null;
+	private Text textShape = null;
+	private Style style = Style.DEFAULT;
+	private Coordinate centroid = null;
+	private Coordinate textOffset = new Coordinate();
+	private boolean hidden = false;
 	
 	public VVectorFeature() {
 		super();
@@ -43,15 +54,118 @@ public class VVectorFeature extends AbstractDrawingContainer {
 		this.geometry = geometry;
 	}
 	
+	public String getText() {
+		return text;
+	}
+	
+	public void setText(String text) {
+		if (text != null) {
+			if (!text.equals(this.text)) {
+				drawText(text);
+			}
+		} else {
+			clearText();
+		}
+	}
+	
+	public Style getStyle() {
+		return style;
+	}
+	
+	public void setStyle(Style style) {
+		this.style = style;
+		updateDrawingStyle();
+		updateTextStyle();
+	}
+	
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		if (this.hidden != hidden) {
+			this.hidden = hidden;
+			
+			VVectorFeatureContainer container = null;
+			Widget parent = getParent();
+			if (parent instanceof VVectorFeatureContainer) {
+				container = (VVectorFeatureContainer) parent;
+			} else {
+				Widget grandParent = parent.getParent();
+				if (grandParent instanceof VVectorFeatureContainer) {
+					container = (VVectorFeatureContainer) grandParent;
+				}
+			}
+			if (container != null) {
+				container.remove(this);
+				container.add(this);
+			}
+		}
+	}
+
+	private void updateDrawingStyle() {
+		if (drawing != null && style != null) {
+			Utils.updateDrawingStyle(drawing, style);
+		}
+	}
+
+	private void updateTextStyle() {
+		if (textShape != null && style != null) {
+			Utils.updateDrawingStyle(textShape, style);
+		}
+	}
+
 	@Override
 	public void clear() {
 		super.clear();
 		drawing = null;
 	}
+	
+	public void clearText() {
+		if (textShape != null) {
+			remove(textShape);
+		}
+		textShape = null;
+		text = null;
+	}
 
 	private void drawGeometry(Geometry geometry) {
 		drawing = Utils.drawGeometry(geometry);
+		updateDrawingStyle();
 		add(drawing);
+	}
+	
+	public void setCentroid(Double x, Double y) {
+		if (x != null && y != null) {
+			centroid = new Coordinate(x, y);
+		} else {
+			centroid = null;
+		}
+		updateTextPosition();
+	}
+
+	public void setTextOffset(double x, double y) {
+		textOffset.setXY(x, y);
+		updateTextPosition();
+	}
+
+	private void updateTextPosition() {
+		if (textShape != null && centroid != null) {
+			textShape.setX(Math.round((float)(centroid.getX() + textOffset.getX())));
+			textShape.setY(Math.round((float)(centroid.getY() + textOffset.getY())));
+		}
+	}
+
+	private void drawText(String text) {
+		if (null == textShape) {
+			textShape = new Text(0, 0, text);
+			updateTextPosition();
+			updateTextStyle();
+			add(textShape);
+		} else {
+			textShape.setText(text);
+		}
+		this.text = text;
 	}
 	
 	public AbstractDrawing getDrawing() {

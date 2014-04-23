@@ -109,9 +109,9 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = EntityTableConstants.BRANCH_TASK_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.TASK_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = EntityFieldConstants.RANK)
-	public final List<Task> getTasks() {
+	public List<Task> getTasks() {
 		return tasks;
 	}
 
@@ -122,18 +122,13 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = EntityTableConstants.BRANCH_BRANCH_TREK_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_TREK_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	protected final Set<BranchTrek> getBranchTreks() {
+	@LazyCollection(LazyCollectionOption.TRUE)
+	protected Set<BranchTrek> getBranchTreks() {
 		return branchTreks;
 	}
 
 	protected void setBranchTreks(Set<BranchTrek> branchTreks) {
 		this.branchTreks = branchTreks;
-
-		this.branchMap.clear();
-		for (BranchTrek sequence : branchTreks) {
-			branchMap.put(sequence.getKey(), sequence.getBranch());
-		}
 	}
 
 	@Transient
@@ -159,21 +154,28 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 
 	@Transient
 	public BranchMap getBranchMap() {
+		branchMap.clear();
+		Set<BranchTrek> branchTreks = getBranchTreks();
+		for (BranchTrek branchTrek : branchTreks) {
+			branchMap.put(branchTrek.getKey(), branchTrek.getBranch());
+		}
+		
 		return branchMap;
 	}
 
 	@Transient
 	public final List<Task> getList() {
-		return tasks;
+		return getTasks();
 	}
 
 	public final void addTask(Task task) {
-		if (task != null)
-			this.tasks.add(task);
+		if (task != null) {
+			getTasks().add(task);
+		}
 	}
 
 	public final void removeTask(Task task) {
-		this.tasks.remove(task);
+		getTasks().remove(task);
 	}
 
 	private boolean isValidDocument(Document doc) {
@@ -183,50 +185,66 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof Branch))
+		}
+		if (!(obj instanceof Branch)) {
 			return false;
+		}
 		Branch other = (Branch) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+		
+		Long id = getId();
+		Long id2 = other.getId();
+		String note = getNote();
+		String note2 = other.getNote();
+		String xmlData = getXmlData();
+		String xmlData2 = other.getXmlData();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getNote() == null) {
-			if (other.getNote() != null)
-				return false;
-		} else if (!getNote().equals(other.getNote()))
+		}
+
+		if (note != null && !note.equals(note2)) {
 			return false;
-		if (getTasks() == null) {
-			if (other.getTasks() != null)
-				return false;
-		} else if (!getTasks().equals(other.getTasks()))
+		} else if (note2 != null) {
 			return false;
-		if (getBranchTreks() == null) {
-			if (other.getBranchTreks() != null)
-				return false;
-		} else if (!getBranchTreks().equals(other.getBranchTreks()))
+		}
+		
+		if (xmlData != null && !xmlData.equals(xmlData2)) {
 			return false;
+		} else if (xmlData2 != null) {
+			return false;
+		}
+		
+		if (!getTasks().equals(other.getTasks())) {
+			return false;
+		}
+		
+		if (!getBranchTreks().equals(other.getBranchTreks())) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 61;
+		Long id = getId();
+		String note = getNote();
+		String xmlData = getXmlData();
+		
+		final int prime = 3;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime * result
-				+ ((getNote() == null) ? 0 : getNote().hashCode());
-		result = prime * result
-				+ ((getTasks() == null) ? 0 : getTasks().hashCode());
-		result = prime
-				* result
-				+ ((getBranchTreks() == null) ? 0 : getBranchTreks().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (note != null ? note.hashCode() : 0);
+		result = prime * result	+ (xmlData != null ? xmlData.hashCode() : 0);
+		result = prime * result + getTasks().hashCode();
+		result = prime * result	+ getBranchTreks().hashCode();
+		
 		return result;
 	}
 

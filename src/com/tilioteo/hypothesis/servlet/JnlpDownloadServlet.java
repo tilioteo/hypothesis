@@ -246,10 +246,11 @@ public class JnlpDownloadServlet extends HttpServlet {
 
 		pathRemapper = new PathRemapper();
 		pathRemapper.put("/resource/close", "/WEB-INF/close");
-		pathRemapper.put("/resource/browser", "/WEB-INF/browser");
+		pathRemapper.put("/resource/browserapplet", "/WEB-INF/browserapplet");
+		pathRemapper.put("/resource/browserapplication", "/WEB-INF/browserapplication");
 		pathRemapper.put("/resource/swt", "/WEB-INF/swt");
-		pathRemapper.put("/resource/browser-applet", "/WEB-INF/lib/browser-applet-0.0.1");
-		pathRemapper.put("/resource/hypothesis-browser", "/WEB-INF/lib/hypothesis-browser-1.1.0-signed");
+		pathRemapper.put("/resource/browser-applet", "/WEB-INF/lib/browser-applet-0.0.2");
+		pathRemapper.put("/resource/browser-application", "/WEB-INF/lib/browser-application-0.0.1");
 		pathRemapper.put("/resource/swt-win32-x86_64", "/WEB-INF/lib/swt-signed-4.3-win32-win32-x86_64");
 		pathRemapper.put("/resource/swt-win32-x86", "/WEB-INF/lib/swt-signed-4.3-win32-win32-x86");
 		pathRemapper.put("/resource/swt-linux-x86_64", "/WEB-INF/lib/swt-signed-4.3-gtk-linux-x86_64");

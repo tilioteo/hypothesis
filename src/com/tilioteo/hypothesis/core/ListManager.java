@@ -55,12 +55,12 @@ public class ListManager<T extends HasList<E>, E> {
 	}
 
 	public void setListParent(T parent) {
-		this.list.clear();
+		list.clear();
 		randomGenerator = new Random();
 		if (parent != null) {
 			for (E item : parent.getList()) {
 				if (item != null) {
-					this.list.add(item);
+					list.add(item);
 				}
 			}
 		}

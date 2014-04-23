@@ -4,19 +4,25 @@
 package com.tilioteo.hypothesis.persistence;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Restrictions;
 
 import com.tilioteo.hypothesis.common.EntityConstants;
 import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+import com.tilioteo.hypothesis.dao.EventDao;
 import com.tilioteo.hypothesis.dao.SlideOrderDao;
 import com.tilioteo.hypothesis.dao.TestDao;
+import com.tilioteo.hypothesis.entity.Event;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.SlideOrder;
 import com.tilioteo.hypothesis.entity.Task;
-import com.tilioteo.hypothesis.entity.Test;
-import com.tilioteo.hypothesis.entity.Test.Status;
+import com.tilioteo.hypothesis.entity.SimpleTest;
+import com.tilioteo.hypothesis.entity.Status;
 import com.tilioteo.hypothesis.entity.User;
 
 /**
@@ -26,18 +32,20 @@ import com.tilioteo.hypothesis.entity.User;
 public class TestManager {
 
 	private TestDao testDao;
+	private EventDao eventDao;
 	private SlideOrderDao slideOrderDao;
 
 	public static TestManager newInstance() {
-		return new TestManager(new TestDao(), new SlideOrderDao());
+		return new TestManager(new TestDao(), new EventDao(), new SlideOrderDao());
 	}
 	
-	protected TestManager(TestDao testDao, SlideOrderDao slideOrderDao) {
+	protected TestManager(TestDao testDao, EventDao eventDao, SlideOrderDao slideOrderDao) {
 		this.testDao = testDao;
+		this.eventDao = eventDao;
 		this.slideOrderDao = slideOrderDao;
 	}
 
-	public List<Test> findTestsBy(User user, Pack pack, Status... statuses) {
+	public List<SimpleTest> findTestsBy(User user, Pack pack, Status... statuses) {
 		try {
 			testDao.beginTransaction();
 			/*
@@ -45,7 +53,7 @@ public class TestManager {
 			 * < statuses.length; ++i) { stats[i] = statuses[i].getCode(); }
 			 */
 
-			List<Test> tests = testDao.findByCriteria(Restrictions.and(
+			List<SimpleTest> tests = testDao.findByCriteria(Restrictions.and(
 					Restrictions.eq(EntityConstants.PACK, pack), Restrictions
 							.and(Restrictions.eq(EntityConstants.USER, user),
 									Restrictions.in(EntityFieldConstants.STATUS,
@@ -58,11 +66,11 @@ public class TestManager {
 		return null;
 	}
 
-	public Test getUnattendedTest(User user, Pack pack, boolean production) {
+	public SimpleTest getUnattendedTest(User user, Pack pack, boolean production) {
 		try {
 			testDao.beginTransaction();
 			
-			List<Test> tests;
+			List<SimpleTest> tests;
 			
 			// anonymous user cannot continue broken test 
 			if (user != null) {
@@ -73,16 +81,16 @@ public class TestManager {
 				//				Restrictions.eq(FieldConstants.USER, user),
 				//				Restrictions.ne(FieldConstants.STATUS, Status.FINISHED))));
 				// TODO remove this line after uncommenting code block above
-				tests = new ArrayList<Test>();
+				tests = new ArrayList<SimpleTest>();
 			} else {
-				tests = new ArrayList<Test>();
+				tests = new ArrayList<SimpleTest>();
 			}
 
-			Test outputTest = null;
+			SimpleTest outputTest = null;
 			if (tests.size() > 0) {
 				outputTest = tests.get(0);
 			} else {
-				outputTest = new Test(pack, user);
+				outputTest = new SimpleTest(pack, user);
 				outputTest.setProduction(production);
 				testDao.makePersistent(outputTest);
 			}
@@ -97,7 +105,7 @@ public class TestManager {
 		return null;
 	}
 
-	public void updateTest(Test test) {
+	public void updateTest(SimpleTest test) {
 		if (test != null) {
 			try {
 				testDao.beginTransaction();
@@ -109,8 +117,57 @@ public class TestManager {
 			}
 		}
 	}
+	
+	public void saveEvent(Event event, SimpleTest test) {
+		if (event != null && test != null) {
+			try {
+				eventDao.beginTransaction();
+				eventDao.makePersistent(event);
+				eventDao.flush();
+				
+				int rank = getLastTestEventRank(test);
+				saveTestEventJoin(test, event, ++rank);
+				
+				eventDao.commit();
+			} catch (Throwable e) {
+				eventDao.rollback();
+				e.getMessage();
+			}
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	private int getLastTestEventRank(SimpleTest test) {
+		SQLQuery query = eventDao.getSession().createSQLQuery(
+				"SELECT max("  + EntityFieldConstants.RANK + ") FROM " +
+						EntityTableConstants.TEST_EVENT_TABLE + " WHERE " +
+						EntityFieldConstants.TEST_ID + "=:testId GROUP BY " +
+						EntityFieldConstants.TEST_ID);
+		query.setParameter("testId", test.getId());
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		List results = query.list();
+		
+		if (results.size() > 0) {
+			return (Integer)((HashMap<?, ?>)results.get(0)).get("max");
+		}
+		
+		return 0;
+	}
+	
+	private void saveTestEventJoin(SimpleTest test, Event event, int rank) {
+		SQLQuery query = eventDao.getSession().createSQLQuery(
+				"INSERT INTO " + EntityTableConstants.TEST_EVENT_TABLE + " (" +
+						EntityFieldConstants.TEST_ID + "," +
+						EntityFieldConstants.EVENT_ID + "," +
+						EntityFieldConstants.RANK +
+						") VALUES (:testId,:eventId,:rank)");
+		query.setParameter("testId", test.getId());
+		query.setParameter("eventId", event.getId());
+		query.setParameter("rank", rank);
+		query.executeUpdate();
+	}
 
-	public SlideOrder findTaskSlideOrder(Test test, Task task) {
+	public SlideOrder findTaskSlideOrder(SimpleTest test, Task task) {
 		try {
 			slideOrderDao.beginTransaction();
 			

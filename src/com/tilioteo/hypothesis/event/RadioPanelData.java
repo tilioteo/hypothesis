@@ -26,6 +26,14 @@ public class RadioPanelData extends AbstractComponentData<RadioPanel> {
 		return radioButton;
 	}
 
+	public int getRadioButtonIndex() {
+		if (radioButton != null) {
+			return getSender().getChildIndex(radioButton) + 1;
+		} else {
+			return 0;
+		}
+	}
+
 	public void setRadioButton(RadioButton radioButton) {
 		this.radioButton = radioButton;
 	}

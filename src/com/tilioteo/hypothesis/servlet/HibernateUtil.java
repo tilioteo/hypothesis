@@ -138,6 +138,7 @@ public class HibernateUtil {
 		final Session session = getSessionFactory().getCurrentSession();
 
 		commitTransaction();
+		session.flush();
 
 		if (session.isOpen()) {
 			log.trace("Close opened Hibernate Session.");

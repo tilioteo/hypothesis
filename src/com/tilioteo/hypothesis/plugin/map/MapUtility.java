@@ -3,7 +3,12 @@
  */
 package com.tilioteo.hypothesis.plugin.map;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+
 import org.dom4j.Element;
+import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.ui.control.Control;
 import org.vaadin.maps.ui.control.DrawFeatureControl;
 import org.vaadin.maps.ui.feature.VectorFeature;
@@ -13,6 +18,7 @@ import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.plugin.map.ui.Map;
 import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
@@ -25,6 +31,14 @@ import com.vividsolutions.jts.io.WKTReader;
  *
  */
 public class MapUtility {
+	private static Map map = null;
+	
+	public static final void setMap(Map map) {
+		MapUtility.map = map;
+	}
+	public static final Map getMap() {
+		return map;
+	}
 	
 	public static void setCommonProperties(Component component, Element element, StringMap properties) {
 		// store component id
@@ -55,10 +69,75 @@ public class MapUtility {
 	}
 
 	public static void setFeatureProperties(VectorFeature vectorFeature,
-			Element element/*, StringMap properties*/) {
-		
+			Element element, StringMap properties) {
+		setCommonProperties(vectorFeature, element, properties);
 		setGeometry(vectorFeature, element);
+		setStyle(vectorFeature, properties);
+		vectorFeature.setHidden(properties.getBoolean(SlideXmlConstants.HIDDEN, false));
+	}
+
+	public static void setFeatureText(VectorFeature vectorFeature, Element element) {
+		Element textElement = SlideXmlUtility.getTextElement(element);
+		if (textElement != null) {
+			String value = com.tilioteo.hypothesis.dom.SlideXmlUtility.getValue(textElement);
+			if (!Strings.isNullOrEmpty(value)) {
+				vectorFeature.setText(value);
+			}
+			
+			Element offsetElement = SlideXmlUtility.getOffsetElement(textElement);
+			if (offsetElement != null) {
+				Double offsetX = getAttributeDouble(offsetElement, SlideXmlConstants.X);
+				Double offsetY = getAttributeDouble(offsetElement, SlideXmlConstants.Y);
+				vectorFeature.setTextOffset(offsetX != null ? offsetX : 0.0, offsetY != null ? offsetY : 0.0);
+			}
+		}
 		
+	}
+	
+	private static Double getAttributeDouble(Element element, String name) {
+		String value = element.attributeValue(name);
+		if (value != null) {
+			try {
+				Double doubleValue = Double.parseDouble(value);
+				return doubleValue;
+			} catch (Throwable e) {
+			}
+		}
+		
+		return null;
+	}
+	
+	public static HashMap<String, String> getStyleMap(Style style) {
+		if (style != null) {
+			HashMap<String, String> map = new HashMap<String, String>();
+			
+			Field[] fields = style.getClass().getDeclaredFields();
+			for (Field field : fields) {
+				if ((field.getModifiers() & Modifier.STATIC) != Modifier.STATIC) {
+					try {
+						map.put(field.getName(), field.get(style).toString());
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			return map;
+		}
+		return null;
+	}
+
+	private static void setStyle(VectorFeature vectorFeature, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				vectorFeature.setStyle(style);
+				return;
+			}
+		}
+		vectorFeature.setStyle(Style.DEFAULT);
 	}
 
 	private static void setGeometry(VectorFeature vectorFeature, Element element) {

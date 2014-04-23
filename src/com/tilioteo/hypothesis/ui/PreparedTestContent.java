@@ -20,12 +20,14 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class PreparedTestContent extends VerticalLayout {
+	
+	private Label heading;
 
 	public PreparedTestContent(final ProcessUI ui, final Command nextCommand) {
 		super();
 		setSizeFull();
 		
-		Label heading = new Label("<h2>"
+		heading = new Label("<h2>"
 				+ "Test je připraven. Stiskněte tlačítko pro jeho spuštění."
 				//+ ApplicationMessages.get().getString(Messages.TEXT_TEST_FINISHED)
 				+ "</h2>");
@@ -48,26 +50,33 @@ public class PreparedTestContent extends VerticalLayout {
 		button.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Timer timer = new Timer();
-				timer.setDirection(Direction.DOWN);
+				removeComponent(heading);
+				// if not fullscreen requested, process test directly
+				if (!ui.isFullscreen()) {
+					ui.clearContent(ui.isAnimated(), nextCommand);
+				} else {
+					// countdown for fullscreen initialization
+					Timer timer = new Timer();
+					timer.setDirection(Direction.DOWN);
+					
+					timer.addStopListener(new Timer.StopListener() {
+						@Override
+						public void stop(StopEvent event) {
+							ui.clearContent(ui.isAnimated(), nextCommand);
+						}
+					});
+					
+					ui.addTimer(timer);
+					
+					TimerLabel timerLabel = new TimerLabel();
+					timerLabel.setTimer(timer);
+					timerLabel.setTimeFormat("s.S");
+					timerLabel.setWidth(null);
 				
-				timer.addStopListener(new Timer.StopListener() {
-					@Override
-					public void stop(StopEvent event) {
-						ui.clearContent(ui.isAnimated(), nextCommand);
-					}
-				});
-				
-				ui.addTimer(timer);
-				
-				TimerLabel timerLabel = new TimerLabel();
-				timerLabel.setTimer(timer);
-				timerLabel.setTimeFormat("s.S");
-				timerLabel.setWidth(null);
-				
-				replaceComponent(button, timerLabel);
-				setComponentAlignment(timerLabel, Alignment.MIDDLE_CENTER);
-				timer.start(5000);
+					replaceComponent(button, timerLabel);
+					setComponentAlignment(timerLabel, Alignment.MIDDLE_CENTER);
+					timer.start(5000);
+				}
 			}
 		});
 		

@@ -241,7 +241,7 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 		final Command componentEvent = CommandFactory
 				.createImageClickEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+				actionId, data);
 
 		addClickListener(new MouseEvents.ClickListener() {
 			@Override
@@ -280,10 +280,11 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 	}
 
 	private void setLoadHandler(String actionId) {
+		final ImageData data = new ImageData(this, slideManager);
 		final Command componentEvent = CommandFactory
-				.createImageLoadEventCommand(this, slideManager);
+				.createImageLoadEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+				actionId, data);
 
 		addLoadListener(new LoadListener() {
 			@Override

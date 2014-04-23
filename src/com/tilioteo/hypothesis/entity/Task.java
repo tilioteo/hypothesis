@@ -92,9 +92,9 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = EntityTableConstants.TASK_SLIDE_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.TASK_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.SLIDE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = EntityFieldConstants.RANK)
-	public final List<Slide> getSlides() {
+	public List<Slide> getSlides() {
 		return slides;
 	}
 
@@ -104,63 +104,82 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 
 	@Transient
 	public final List<Slide> getList() {
-		return slides;
+		return getSlides();
 	}
 
 	public final void addSlide(Slide slide) {
-		if (slide != null)
-			this.slides.add(slide);
+		if (slide != null) {
+			getSlides().add(slide);
+		}
 	}
 
 	public final void removeSlide(Slide slide) {
-		this.slides.remove(slide);
+		getSlides().remove(slide);
 	}
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof Task))
+		}
+		if (!(obj instanceof Task)) {
 			return false;
+		}
 		Task other = (Task) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getName()))
+		
+		Long id = getId();
+		Long id2 = other.getId();
+		String name = getName();
+		String name2 = other.getName();
+		String note = getNote();
+		String note2 = other.getNote();
+		boolean randomized = isRandomized();
+		boolean randomized2 = other.isRandomized();
+		//List<Slide> slides = getSlides();
+		//List<Slide> slides2 = other.getSlides();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getName() == null) {
-			if (other.getName() != null)
-				return false;
-		} else if (!getName().equals(other.getName()))
+		}
+
+		if (name != null && !name.equals(name2)) {
 			return false;
-		if (getNote() == null) {
-			if (other.getNote() != null)
-				return false;
-		} else if (!getNote().equals(other.getNote()))
+		} else if (name2 != null) {
 			return false;
-		if (getSlides() == null) {
-			if (other.getSlides() != null)
-				return false;
-		} else if (!getSlides().equals(other.getSlides()))
+		}
+		
+		if (note != null && !note.equals(note2)) {
 			return false;
+		} else if (note2 != null) {
+			return false;
+		}
+		
+		if (randomized != randomized2) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 43;
+		Long id = getId();
+		String name = getName();
+		String note = getNote();
+		boolean randomized = isRandomized();
+		List<Slide> slides = getSlides();
+
+		final int prime = 47;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime * result
-				+ ((getName() == null) ? 0 : getName().hashCode());
-		result = prime * result
-				+ ((getNote() == null) ? 0 : getNote().hashCode());
-		result = prime * result
-				+ ((getSlides() == null) ? 0 : getSlides().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (name != null ? name.hashCode() : 0);
+		result = prime * result	+ (note != null ? note.hashCode() : 0);
+		result = prime * result	+ (randomized ? 1 : 0);
+		result = prime * result	+ slides.hashCode();
 		return result;
 	}
 

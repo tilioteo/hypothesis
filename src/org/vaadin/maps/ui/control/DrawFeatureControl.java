@@ -10,7 +10,8 @@ import java.lang.reflect.Type;
 import org.vaadin.maps.shared.ui.control.DrawFeatureControlState;
 import org.vaadin.maps.ui.CanCancel;
 import org.vaadin.maps.ui.CanUndoRedo;
-import org.vaadin.maps.ui.handler.AbstractHandler;
+import org.vaadin.maps.ui.handler.FeatureHandler;
+import org.vaadin.maps.ui.handler.FeatureHandler.GeometryListener;
 import org.vaadin.maps.ui.handler.RequiresVectorFeatureLayer;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 
@@ -19,7 +20,7 @@ import org.vaadin.maps.ui.layer.VectorFeatureLayer;
  *
  */
 @SuppressWarnings("serial")
-public abstract class DrawFeatureControl<H extends AbstractHandler> extends AbstractControl implements CanUndoRedo, CanCancel {
+public abstract class DrawFeatureControl<H extends FeatureHandler> extends AbstractControl implements CanUndoRedo, CanCancel {
 	private final Class<H> handlerClass;
 	
 	protected VectorFeatureLayer layer = null;
@@ -105,6 +106,18 @@ public abstract class DrawFeatureControl<H extends AbstractHandler> extends Abst
 	public void cancel() {
 		if (handler != null)
 			handler.cancel();
+	}
+	
+	public void addGeomertyListener(GeometryListener listener) {
+		if (handlerInstance != null) {
+			handlerInstance.addGeometryListener(listener);
+		}
+	}
+	
+	public void removeGeometryListener(GeometryListener listener) {
+		if (handlerInstance != null) {
+			handlerInstance.removeGeometryListener(listener);
+		}
 	}
 
 }

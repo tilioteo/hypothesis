@@ -203,7 +203,7 @@ public class ComponentFactory {
 
 	private static void setViewportInitHandler(String actionId,
 			SlideManager slideManager) {
-		final Command action = CommandFactory.createActionCommand(slideManager, actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager, actionId, null);
 		slideManager.addViewportEventListener(SlideManager.InitEvent.class,
 				new ViewportEventListener() {
 					@Override
@@ -215,7 +215,7 @@ public class ComponentFactory {
 
 	private static void setViewportShowHandler(String actionId,
 			SlideManager slideManager) {
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, null);
 		slideManager.addViewportEventListener(SlideManager.ShowEvent.class,
 				new ViewportEventListener() {
 					@Override

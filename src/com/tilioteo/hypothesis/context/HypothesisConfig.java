@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.context;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,9 +14,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class HypothesisConfig {
 	
-	@Bean
+	//@Autowired
+	//private SecretKey secretKey;
+	
+	/*@Bean
 	public SecretKey secretKey() {
 		return new SecretKey();
-	}
+	}*/
+	
+	//public SecretKey getSecretKey() {
+	//	return secretKey;
+	//}
 
 }

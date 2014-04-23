@@ -264,6 +264,17 @@ public class SVGImpl extends DrawImpl {
 	}
 
 	@Override
+	public double getOpacity(Element element) {
+		return NumberUtil.parseDoubleValue(
+				element.getAttribute("opacity"), 1);
+	}
+
+	@Override
+	public void setOpacity(Element element, double opacity) {
+		SVGUtil.setAttributeNS(element, "opacity", "" + opacity);
+	}
+
+	@Override
 	public int getWidth(Element element) {
 		return NumberUtil.parseIntValue(element, "width", 0);
 	}

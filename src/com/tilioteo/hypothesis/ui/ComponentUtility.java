@@ -39,12 +39,6 @@ public class ComponentUtility {
 			if (caption != null) {
 				component.setCaption(caption);
 			}
-
-			/*
-			 * component.setCaption(stringMap.get(SlideXmlConstants.CAPTION,
-			 * ((AbstractComponent) component).getData() != null ? (String)
-			 * ((AbstractComponent) component).getData() : ""));
-			 */
 		}
 	}
 

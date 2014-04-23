@@ -24,7 +24,7 @@ import com.vividsolutions.jts.io.ParseException;
  *
  */
 @SuppressWarnings("serial")
-public class PointHandler extends AbstractHandler implements RequiresVectorFeatureLayer {
+public class PointHandler extends FeatureHandler {
 
 	private PointHandlerServerRpc rpc = new PointHandlerServerRpc() {
 
@@ -38,6 +38,12 @@ public class PointHandler extends AbstractHandler implements RequiresVectorFeatu
 		@Override
 		public void geometry(String wkb) {
 			addNewFeature(wkb);
+			try {
+				fireEvent(new GeometryEvent(PointHandler.this, Utils.wkbHexToGeometry(wkb)));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	};
 	
@@ -229,68 +235,6 @@ public class PointHandler extends AbstractHandler implements RequiresVectorFeatu
 		removeListener(ClickEvent.class, listener,
 				ClickListener.CLICK_METHOD);
 	}
-
-	/**
-	 * This event is thrown, when the geometry is drawn.
-	 * 
-	 */
-	public class GeometryEvent extends Component.Event {
-		
-		public GeometryEvent(PointHandler source, Geometry geometry) {
-			super(source);
-			this.geometry = geometry;
-		}
-
-		private Geometry geometry;
-		
-		public Geometry getGeometry() {
-			return geometry;
-		}
-	}
-	
-	/**
-	 * Interface for listening for a {@link GeometryEvent} fired by a
-	 * {@link PointHandler}.
-	 * 
-	 */
-	public interface GeometryListener extends Serializable {
-
-		public static final Method GEOMETRY_METHOD = ReflectTools
-				.findMethod(ClickListener.class, "geometry",
-						ClickEvent.class);
-
-		/**
-		 * Called when a geometry has been drawn.
-		 * 
-		 * @param event
-		 *            An event containing information about the geometry.
-		 */
-		public void geometry(GeometryEvent event);
-
-	}
-	
-	/**
-	 * Adds the geometry listener.
-	 * 
-	 * @param listener
-	 *            the Listener to be added.
-	 */
-	public void addGeometryListener(GeometryListener listener) {
-		addListener(GeometryEvent.class, listener,
-				GeometryListener.GEOMETRY_METHOD);
-	}
-
-	/**
-	 * Removes the geometry listener.
-	 * 
-	 * @param listener
-	 *            the Listener to be removed.
-	 */
-	public void removeGeometryListener(GeometryListener listener) {
-		removeListener(GeometryEvent.class, listener,
-				GeometryListener.GEOMETRY_METHOD);
-	}
-
 
 }
                 

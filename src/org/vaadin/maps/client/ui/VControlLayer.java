@@ -15,6 +15,8 @@ public class VControlLayer extends VAbstractLayer {
 	public VControlLayer() {
 		super();
 		setStylePrimaryName(CLASSNAME);
+		setVisible(false);
+		//setSize("0px", "0px");
 	}
 
 }

@@ -134,46 +134,56 @@ public final class SlideTemplate extends SerializableUidObject {
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof SlideTemplate))
+		}
+		if (!(obj instanceof SlideTemplate)) {
 			return false;
+		}
 		SlideTemplate other = (SlideTemplate) obj;
-		if (getUid() == null) {
-			if (other.getUid() != null)
-				return false;
-		} else if (!getUid().equals(other.getUid()))
+
+		String uid = getUid();
+		String uid2 = other.getUid();
+		String xmlData = getXmlData();
+		String xmlData2 = other.getXmlData();
+		String note = getNote();
+		String note2 = other.getNote();
+		
+		if (uid != null && !uid.equals(uid2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getNote() == null) {
-			if (other.getNote() != null)
-				return false;
-		} else if (!getNote().equals(other.getNote()))
+		} else if (uid2 != null) {
 			return false;
-		if (getXmlData() == null) {
-			if (other.getXmlData() != null)
-				return false;
-		} else if (!getXmlData().equals(other.getXmlData()))
+		}
+
+		if (xmlData != null && !xmlData.equals(xmlData2)) {
 			return false;
+		} else if (xmlData2 != null) {
+			return false;
+		}
+
+		if (note != null && !note.equals(note2)) {
+			return false;
+		} else if (note2 != null) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 3;
+		String uid = getUid();
+		String xmlData = getXmlData();
+		String note = getNote();
+
+		final int prime = 43;
 		int result = 1;
-		// result = prime * result + ((getId() == null) ? 0 :
-		// getId().hashCode());
-		result = prime * result
-				+ ((getUid() == null) ? 0 : getUid().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime * result
-				+ ((getNote() == null) ? 0 : getNote().hashCode());
-		result = prime
-				* result
-				+ ((getXmlData() == null) ? 0 : getXmlData().hashCode());
+		result = prime * result	+ (uid != null ? uid.hashCode() : 0);
+		result = prime * result	+ (xmlData != null ? xmlData.hashCode() : 0);
+		result = prime * result	+ (note != null ? note.hashCode() : 0);
 		return result;
 	}
 

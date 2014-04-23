@@ -4,11 +4,8 @@
 package com.tilioteo.hypothesis.entity;
 
 import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -25,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
@@ -34,41 +32,13 @@ import com.tilioteo.hypothesis.common.EntityFieldConstants;
 import com.tilioteo.hypothesis.common.EntityTableConstants;
 
 /**
- * @author Kamil Morong - Hypothesis
- * 
- *         Database entity for test instance
- * 
+ * @author kamil
+ *
  */
 @Entity
 @Table(name = EntityTableConstants.TEST_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Test extends SerializableIdObject {
-	public enum Status {
-		CREATED(1), STARTED(2), FINISHED(3), BROKEN_BY_CLIENT(4), BROKEN_BY_ERROR(
-				5);
-
-		private static final Map<Integer, Status> lookup = new HashMap<Integer, Status>();
-
-		static {
-			for (Status s : EnumSet.allOf(Status.class))
-				lookup.put(s.getCode(), s);
-		}
-
-		public static Status get(int code) {
-			return lookup.get(code);
-		}
-
-		private Integer code;
-
-		private Status(Integer code) {
-			this.code = code;
-		}
-
-		public Integer getCode() {
-			return code;
-		}
-	}
-
+public class Test extends SerializableIdObject {
 	/**
 	 * 
 	 */
@@ -132,13 +102,12 @@ public final class Test extends SerializableIdObject {
 	 */
 	private List<Event> events = new LinkedList<Event>();
 
-	public static final Test DUMMY_TEST = new Test();
-	
+
 	protected Test() {
 		super();
 	}
 
-	public Test(Pack pack, User user) {
+	/*public Test(Pack pack, User user) {
 		this();
 		production = false;
 		this.pack = pack;
@@ -153,7 +122,7 @@ public final class Test extends SerializableIdObject {
 		broken = null;
 		lastAccess = created;
 		setStatus(Status.CREATED);
-	}
+	}*/
 
 	@Override
 	@Id
@@ -174,7 +143,7 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@Column(name = EntityFieldConstants.CREATED, nullable = false)
-	public final Date getCreated() {
+	public Date getCreated() {
 		return created;
 	}
 
@@ -183,54 +152,67 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@Column(name = EntityFieldConstants.STARTED)
-	public final Date getStarted() {
+	public Date getStarted() {
 		return started;
 	}
 
-	public final void setStarted(Date started) {
+	public void setStarted(Date started) {
 		this.started = started;
 	}
 
 	@Column(name = EntityFieldConstants.FINISHED)
-	public final Date getFinished() {
+	public Date getFinished() {
 		return finished;
 	}
 
-	public final void setFinished(Date finished) {
+	public void setFinished(Date finished) {
 		this.finished = finished;
 	}
 
 	@Column(name = EntityFieldConstants.BROKEN)
-	public final Date getBroken() {
+	public Date getBroken() {
 		return broken;
 	}
 
-	public final void setBroken(Date broken) {
+	public void setBroken(Date broken) {
 		this.broken = broken;
 	}
 
 	@Column(name = EntityFieldConstants.LAST_ACCESS, nullable = false)
-	public final Date getLastAccess() {
+	public Date getLastAccess() {
 		return lastAccess;
 	}
 
-	public final void setLastAccess(Date lastAccess) {
+	public void setLastAccess(Date lastAccess) {
 		this.lastAccess = lastAccess;
 	}
-
+	
 	@Column(name = EntityFieldConstants.STATUS, nullable = false)
+	protected Integer getStatusInternal() {
+		return status;
+	}
+	
+	protected void setStatusInternal(Integer status) {
+		this.status = status;
+	}
+
+	@Transient
 	public final Status getStatus() {
-		return Status.get(status);
+		return Status.get(getStatusInternal());
 	}
 
 	public final void setStatus(Status status) {
-		this.status = status.getCode();
+		if (status != null) {
+			setStatusInternal(status.getCode());
+		} else {
+			setStatusInternal(null);
+		}
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
 	@JoinColumn(name = EntityFieldConstants.USER_ID)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final User getUser() {
+	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public User getUser() {
 		return user;
 	}
 
@@ -238,10 +220,10 @@ public final class Test extends SerializableIdObject {
 		this.user = user;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
 	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Pack getPack() {
+	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -249,45 +231,45 @@ public final class Test extends SerializableIdObject {
 		this.pack = pack;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
 	@JoinColumn(name = EntityFieldConstants.LAST_BRANCH_ID)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Branch getLastBranch() {
+	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public Branch getLastBranch() {
 		return lastBranch;
 	}
 
-	public final void setLastBranch(Branch branch) {
+	public void setLastBranch(Branch branch) {
 		this.lastBranch = branch;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
 	@JoinColumn(name = EntityFieldConstants.LAST_TASK_ID)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Task getLastTask() {
+	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public Task getLastTask() {
 		return lastTask;
 	}
 
-	public final void setLastTask(Task task) {
+	public void setLastTask(Task task) {
 		this.lastTask = task;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
 	@JoinColumn(name = EntityFieldConstants.LAST_SLIDE_ID)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Slide getLastSlide() {
+	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	public Slide getLastSlide() {
 		return lastSlide;
 	}
 
-	public final void setLastSlide(Slide slide) {
+	public void setLastSlide(Slide slide) {
 		this.lastSlide = slide;
 	}
 
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = EntityTableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.TEST_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.EVENT_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = EntityFieldConstants.RANK)
-	public final List<Event> getEvents() {
+	public List<Event> getEvents() {
 		return events;
 	}
 
@@ -296,122 +278,168 @@ public final class Test extends SerializableIdObject {
 	}
 
 	public final void addEvent(Event event) {
-		if (event != null)
-			this.events.add(event);
+		if (event != null) {
+			getEvents().add(event);
+		}
 	}
 
 	public final void removeEvent(Event event) {
-		this.events.remove(event);
+		getEvents().remove(event);
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		Test other = (Test) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+		}
+		SimpleTest other = (SimpleTest) obj;
+		
+		Long id = getId();
+		Long id2 = other.getId();
+		boolean production = isProduction();
+		boolean production2 = other.isProduction();
+		Date created = getCreated();
+		Date created2 = other.getCreated();
+		Date started = getStarted();
+		Date started2 = other.getStarted();
+		Date finished = getFinished();
+		Date finished2 = other.getFinished();
+		Date broken = getBroken();
+		Date broken2 = other.getBroken();
+		Date lastAccess = getLastAccess();
+		Date lastAccess2 = other.getLastAccess();
+		Integer status = getStatusInternal();
+		Integer status2 = other.getStatusInternal();
+		User user = getUser();
+		User user2 = other.getUser();
+		Pack pack = getPack();
+		Pack pack2 = other.getPack();
+		Branch lastBranch = getLastBranch();
+		Branch lastBranch2 = other.getLastBranch();
+		Task lastTask = getLastTask();
+		Task lastTask2 = other.getLastTask();
+		Slide lastSlide = getLastSlide();
+		Slide lastSlide2 = other.getLastSlide();
+		//List<Event> events = getEvents();
+		//List<Event> events2 = other.getEvents();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getBroken() == null) {
-			if (other.getBroken() != null)
-				return false;
-		} else if (!getBroken().equals(other.getBroken()))
+		}
+		
+		if (production != production2) {
 			return false;
-		if (getCreated() == null) {
-			if (other.getCreated() != null)
-				return false;
-		} else if (!getCreated().equals(other.getCreated()))
+		}
+
+		if (created != null && !created.equals(created2)) {
 			return false;
-		if (getEvents() == null) {
-			if (other.getEvents() != null)
-				return false;
-		} else if (!getEvents().equals(other.getEvents()))
+		} else if (created2 != null) {
 			return false;
-		if (getFinished() == null) {
-			if (other.getFinished() != null)
-				return false;
-		} else if (!getFinished().equals(other.getFinished()))
+		}
+		
+		if (started != null && !started.equals(started2)) {
 			return false;
-		if (getLastAccess() == null) {
-			if (other.getLastAccess() != null)
-				return false;
-		} else if (!getLastAccess().equals(other.getLastAccess()))
+		} else if (started2 != null) {
 			return false;
-		if (getLastBranch() == null) {
-			if (other.getLastBranch() != null)
-				return false;
-		} else if (!getLastBranch().equals(other.getLastBranch()))
+		}
+		
+		if (finished != null && !finished.equals(finished2)) {
 			return false;
-		if (getLastSlide() == null) {
-			if (other.getLastSlide() != null)
-				return false;
-		} else if (!getLastSlide().equals(other.getLastSlide()))
+		} else if (finished2 != null) {
 			return false;
-		if (getLastTask() == null) {
-			if (other.getLastTask() != null)
-				return false;
-		} else if (!getLastTask().equals(other.getLastTask()))
+		}
+		
+		if (broken != null && !broken.equals(broken2)) {
 			return false;
-		if (getPack() == null) {
-			if (other.getPack() != null)
-				return false;
-		} else if (!getPack().equals(other.getPack()))
+		} else if (broken2 != null) {
 			return false;
-		if (getStarted() == null) {
-			if (other.getStarted() != null)
-				return false;
-		} else if (!getStarted().equals(other.getStarted()))
+		}
+		
+		if (lastAccess != null && !lastAccess.equals(lastAccess2)) {
 			return false;
-		if (getStatus() == null) {
-			if (other.getStatus() != null)
-				return false;
-		} else if (!getStatus().equals(other.getStatus()))
+		} else if (lastAccess2 != null) {
 			return false;
-		if (getUser() == null) {
-			if (other.getUser() != null)
-				return false;
-		} else if (!getUser().equals(other.getUser()))
+		}
+		
+		if (status != null && !status.equals(status2)) {
 			return false;
+		} else if (status2 != null) {
+			return false;
+		}
+		
+		if (user != null && !user.equals(user2)) {
+			return false;
+		} else if (user2 != null) {
+			return false;
+		}
+		
+		if (pack != null && !pack.equals(pack2)) {
+			return false;
+		} else if (pack2 != null) {
+			return false;
+		}
+		
+		if (lastBranch != null && !lastBranch.equals(lastBranch2)) {
+			return false;
+		} else if (lastBranch2 != null) {
+			return false;
+		}
+		
+		if (lastTask != null && !lastTask.equals(lastTask2)) {
+			return false;
+		} else if (lastTask2 != null) {
+			return false;
+		}
+		
+		if (lastSlide != null && !lastSlide.equals(lastSlide2)) {
+			return false;
+		} else if (lastSlide2 != null) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
-	public final int hashCode() {
-		final int prime = 79;
+	public int hashCode() {
+		Long id = getId();
+		boolean production = isProduction();
+		Date created = getCreated();
+		Date started = getStarted();
+		Date finished = getFinished();
+		Date broken = getBroken();
+		Date lastAccess = getLastAccess();
+		Integer status = getStatusInternal();
+		User user = getUser();
+		Pack pack = getPack();
+		Branch lastBranch = getLastBranch();
+		Task lastTask = getLastTask();
+		Slide lastSlide = getLastSlide();
+		List<Event> events = getEvents();
+
+		final int prime = 53;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime * result
-				+ ((getBroken() == null) ? 0 : getBroken().hashCode());
-		result = prime * result
-				+ ((getCreated() == null) ? 0 : getCreated().hashCode());
-		result = prime * result
-				+ ((getEvents() == null) ? 0 : getEvents().hashCode());
-		result = prime * result
-				+ ((getFinished() == null) ? 0 : getFinished().hashCode());
-		result = prime * result
-				+ ((getLastAccess() == null) ? 0 : getLastAccess().hashCode());
-		result = prime * result
-				+ ((getLastBranch() == null) ? 0 : getLastBranch().hashCode());
-		result = prime * result
-				+ ((getLastSlide() == null) ? 0 : getLastSlide().hashCode());
-		result = prime * result
-				+ ((getLastTask() == null) ? 0 : getLastTask().hashCode());
-		result = prime * result
-				+ ((getPack() == null) ? 0 : getPack().hashCode());
-		result = prime * result
-				+ ((getStarted() == null) ? 0 : getStarted().hashCode());
-		result = prime * result
-				+ ((getStatus() == null) ? 0 : getStatus().hashCode());
-		result = prime * result
-				+ ((getUser() == null) ? 0 : getUser().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result + (production ? 1 : 0);
+		result = prime * result + (created != null ? created.hashCode() : 0);
+		result = prime * result + (started != null ? started.hashCode() : 0);
+		result = prime * result + (finished != null ? finished.hashCode() : 0);
+		result = prime * result + (broken != null ? broken.hashCode() : 0);
+		result = prime * result + (lastAccess != null ? lastAccess.hashCode() : 0);
+		result = prime * result + (status != null ? status.hashCode() : 0);
+		result = prime * result + (user != null ? user.hashCode() : 0);
+		result = prime * result + (pack != null ? pack.hashCode() : 0);
+		result = prime * result + (lastBranch != null ? lastBranch.hashCode() : 0);
+		result = prime * result + (lastTask != null ? lastTask.hashCode() : 0);
+		result = prime * result + (lastSlide != null ? lastSlide.hashCode() : 0);
+		result = prime * result + events.hashCode();
 		return result;
 	}
 

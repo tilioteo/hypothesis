@@ -21,8 +21,8 @@ import com.tilioteo.hypothesis.dao.UserPermissionDao;
 import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.GroupPermission;
 import com.tilioteo.hypothesis.entity.Pack;
-import com.tilioteo.hypothesis.entity.Test;
-import com.tilioteo.hypothesis.entity.Test.Status;
+import com.tilioteo.hypothesis.entity.SimpleTest;
+import com.tilioteo.hypothesis.entity.Status;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.entity.UserPermission;
 
@@ -340,7 +340,7 @@ public class PermissionManager {
 							|| excludeFinished == null || !excludeFinished) {
 						packs.add(pack);
 					} else {
-						List<Test> finishedTests = testManager.findTestsBy(
+						List<SimpleTest> finishedTests = testManager.findTestsBy(
 								user, pack, Status.FINISHED);
 						if (userPermission.getPass() < finishedTests.size()) {
 							packs.add(pack);

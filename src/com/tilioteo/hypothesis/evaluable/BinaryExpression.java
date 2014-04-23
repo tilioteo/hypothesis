@@ -75,8 +75,8 @@ public class BinaryExpression extends UnaryExpression {
 				
 				if (leftValue != null && rightValue != null) {
 					if (leftValue instanceof Boolean && rightValue instanceof Boolean) {
-						Boolean left = (Boolean)leftValue;
-						Boolean right = (Boolean)rightValue;
+						boolean left = (Boolean)leftValue;
+						boolean right = (Boolean)rightValue;
 						switch (operator) {
 						case PLUS:
 						case OR:
@@ -94,10 +94,10 @@ public class BinaryExpression extends UnaryExpression {
 					}
 					
 					if (leftValue instanceof Integer) {
-						Integer left = (Integer)leftValue;
+						int left = (Integer)leftValue;
 						
 						if (rightValue instanceof Integer) {
-							Integer right = (Integer)rightValue;
+							int right = (Integer)rightValue;
 							switch (operator) {
 							case MINUS:
 								return left - right;
@@ -127,7 +127,7 @@ public class BinaryExpression extends UnaryExpression {
 								return left ^ right;
 							}
 						} else if (rightValue instanceof Double) {
-							Double right = (Double)rightValue;
+							double right = (Double)rightValue;
 							switch (operator) {
 							case MINUS:
 								return left - right;
@@ -138,9 +138,9 @@ public class BinaryExpression extends UnaryExpression {
 							case DIVIDE:
 								return left / right;
 							case EQUALS:
-								return left.equals(right);
+								return left == right;
 							case NOT_EQUALS:
-								return !left.equals(right);
+								return left != right;
 							case GREATER:
 								return left > right;
 							case LESS:
@@ -152,9 +152,10 @@ public class BinaryExpression extends UnaryExpression {
 							}
 						}
 					}
+					
 					if (leftValue instanceof Double && rightValue instanceof Double) {
-						Double left = (Double)leftValue;
-						Double right = (Double)rightValue;
+						double left = (Double)leftValue;
+						double right = (Double)rightValue;
 						switch (operator) {
 						case MINUS:
 							return left - right;
@@ -165,9 +166,9 @@ public class BinaryExpression extends UnaryExpression {
 						case DIVIDE:
 							return left / right;
 						case EQUALS:
-							return left.equals(right);
+							return left == right;
 						case NOT_EQUALS:
-							return !left.equals(right);
+							return left != right;
 						case GREATER:
 							return left > right;
 						case LESS:
@@ -176,6 +177,27 @@ public class BinaryExpression extends UnaryExpression {
 							return left >= right;
 						case LESS_OR_EQUAL:
 							return left <= right;
+						}
+					}
+					
+					if (leftValue instanceof String && rightValue instanceof String) {
+						String left = (String)leftValue;
+						String right = (String)rightValue;
+						switch (operator) {
+						case PLUS:
+							return left + right;
+						case EQUALS:
+							return left.equals(right);
+						case NOT_EQUALS:
+							return !left.equals(right);
+						case GREATER:
+							return left.compareTo(right) > 0;
+						case LESS:
+							return left.compareTo(right) < 0;
+						case GREATER_OR_EQUAL:
+							return left.compareTo(right) >= 0;
+						case LESS_OR_EQUAL:
+							return left.compareTo(right) <= 0;
 						}
 					}
 				}

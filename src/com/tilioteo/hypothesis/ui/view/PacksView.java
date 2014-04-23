@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.model.PacksModel;
-import com.tilioteo.hypothesis.ui.BrowserApplet;
+import com.tilioteo.hypothesis.ui.BrowserAppletFrame;
 import com.tilioteo.hypothesis.ui.PackPanel;
 import com.tilioteo.hypothesis.ui.PackPanel.StartEvent;
 import com.tilioteo.hypothesis.ui.PackPanel.StartListener;
@@ -31,10 +31,9 @@ public class PacksView extends HypothesisView implements MouseEvents.ClickListen
 	
 	private PacksModel packsModel;
 	private VerticalLayout packLayout;
-	private BrowserApplet applet;
+	private BrowserAppletFrame frame;
 	
-	public PacksView() {
-		
+	public PacksView(String hash) {
 		packsModel = new PacksModel();
 		
 		setSizeFull();
@@ -66,10 +65,11 @@ public class PacksView extends HypothesisView implements MouseEvents.ClickListen
 		Panel leftPanel = new Panel();
 		leftPanel.setSizeFull();
 		
-		applet = new BrowserApplet();
-		applet.setWidth("100px");
-		applet.setHeight("100px");
-		leftPanel.setContent(applet);
+		frame = new BrowserAppletFrame();
+		frame.setWidth("150px");
+		frame.setHeight("150px");
+		frame.addReadyCheckedListener(packsModel);
+		leftPanel.setContent(frame);
 		
 
 		horizontalLayout.addComponent(leftPanel);
@@ -85,13 +85,19 @@ public class PacksView extends HypothesisView implements MouseEvents.ClickListen
 		packLayout.setWidth("100%");
 		mainPanel.setContent(packLayout);
 
-		List<Pack> packs = packsModel.getPublicPacks();
+		
+		List<Pack> packs = (hash != null ? packsModel.getPackByHash(hash) : packsModel.getPublicPacks());
 				
+		int packsCount = packs.size();
+		
 		for (Pack pack : packs) {
 			PackPanel packPanel = new PackPanel(pack);
 			packPanel.addClickListener(this);
 			packPanel.addStartListener(this);
 			
+			if (packsCount == 1) {
+				packPanel.disableCollapse();
+			}
 			packLayout.addComponent(packPanel);
 		}
 	}
@@ -120,7 +126,7 @@ public class PacksView extends HypothesisView implements MouseEvents.ClickListen
 
 	@Override
 	public void start(StartEvent event) {
-		packsModel.startTest(event.getPack(), applet);
+		packsModel.startTest(event.getPack(), frame, event.getForceLegacy());
 	}
 
 }

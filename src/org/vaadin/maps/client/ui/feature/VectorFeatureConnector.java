@@ -3,8 +3,9 @@
  */
 package org.vaadin.maps.client.ui.feature;
 
-import org.vaadin.maps.client.geometry.Utils;
+import org.vaadin.maps.client.drawing.Utils;
 import org.vaadin.maps.client.io.ParseException;
+import org.vaadin.maps.client.ui.MapUtility;
 import org.vaadin.maps.client.ui.VVectorFeature;
 import org.vaadin.maps.shared.ui.feature.FeatureServerRpc;
 import org.vaadin.maps.shared.ui.feature.VectorFeatureState;
@@ -62,12 +63,29 @@ public class VectorFeatureConnector extends AbstractComponentConnector {
 	public void onStateChanged(StateChangeEvent stateChangeEvent) {
 		super.onStateChanged(stateChangeEvent);
 		
+		if (stateChangeEvent.hasPropertyChanged("hidden")) {
+			getWidget().setHidden(getState().hidden);
+		}
 		if (stateChangeEvent.hasPropertyChanged("wkb")) {
 			try {
 				getWidget().setGeometry(Utils.hexWKBToGeometry(getState().wkb));
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
+		}
+		if (stateChangeEvent.hasPropertyChanged("centroidX") ||
+				stateChangeEvent.hasPropertyChanged("centroidY")) {
+			getWidget().setCentroid(getState().centroidX, getState().centroidY);
+		}
+		if (stateChangeEvent.hasPropertyChanged("style")) {
+			getWidget().setStyle(MapUtility.getStyleFromMap(getState().style));
+		}
+		if (stateChangeEvent.hasPropertyChanged("offsetX") ||
+				stateChangeEvent.hasPropertyChanged("offsetY")) {
+			getWidget().setTextOffset(getState().offsetX, getState().offsetY);
+		}
+		if (stateChangeEvent.hasPropertyChanged("text")) {
+			getWidget().setText(getState().text);
 		}
 	}
 

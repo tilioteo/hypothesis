@@ -3,7 +3,7 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.entity.Test;
+import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.vaadin.ui.Notification;
 
 /**
@@ -16,18 +16,18 @@ public abstract class AbstractNotificationEvent extends AbstractProcessEvent {
 	protected String caption;
 	protected String description;
 
-	protected AbstractNotificationEvent(Test test, String caption) {
+	protected AbstractNotificationEvent(SimpleTest test, String caption) {
 		this(test, caption, null);
 	}
 
-	protected AbstractNotificationEvent(Test test, String caption, String description) {
+	protected AbstractNotificationEvent(SimpleTest test, String caption, String description) {
 		super(test);
 		this.caption = caption;
 		this.description = description;
 	}
 	
-	public Test getTest() {
-		return (Test)getSource();
+	public SimpleTest getTest() {
+		return (SimpleTest)getSource();
 	}
 	
 	public String getCaption() {

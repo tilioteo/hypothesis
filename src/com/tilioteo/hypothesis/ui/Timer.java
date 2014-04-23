@@ -205,6 +205,7 @@ public class Timer extends AbstractComponent implements SlideComponent {
 	}
 
 	public boolean isRunning() {
+		// TODO takhle to zrejme nejde
 		clientRpc.getRunning();
 		return getState().running;
 	}
@@ -378,7 +379,7 @@ public class Timer extends AbstractComponent implements SlideComponent {
 	private void setStartHandler(String actionId) {
 		final TimerData data = new TimerData(this, slideManager);
 		final Command componentEvent = CommandFactory.createTimerStartEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 
 		addStartListener(new StartListener() {
 			@Override
@@ -393,7 +394,7 @@ public class Timer extends AbstractComponent implements SlideComponent {
 	private void setStopHandler(String actionId) {
 		final TimerData data = new TimerData(this, slideManager);
 		final Command componentEvent = CommandFactory.createTimerStopEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 
 		addStopListener(new StopListener() {
 			@Override
@@ -409,7 +410,7 @@ public class Timer extends AbstractComponent implements SlideComponent {
 		if (interval != null) {
 			final TimerData data = new TimerData(this, slideManager);
 			final Command componentEvent = CommandFactory.createTimerUpdateEventCommand(data);
-			final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+			final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 
 			addUpdateListener(interval, new UpdateListener() {
 				@Override

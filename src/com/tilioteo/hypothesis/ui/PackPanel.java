@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import com.tilioteo.hypothesis.entity.Pack;
-import com.tilioteo.hypothesis.entity.Test;
+import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
@@ -35,6 +35,7 @@ public class PackPanel extends Panel implements ClickListener {
 	private VerticalLayout risedLayout = new VerticalLayout();
 	private VerticalLayout collapsedLayout = new VerticalLayout();
 	private Button startButton;
+	private boolean collapseDisabled;
 	
 	private BeanItem<Pack> beanItem;
 	
@@ -127,7 +128,7 @@ public class PackPanel extends Panel implements ClickListener {
 	}
 	
 	public void collapse() {
-		if (!collapsed) {
+		if (!collapseDisabled && !collapsed) {
 			
 			setHeight(-1, Unit.PIXELS);
 			setContent(collapsedLayout);
@@ -150,7 +151,7 @@ public class PackPanel extends Panel implements ClickListener {
 
 	@Override
 	public void buttonClick(ClickEvent event) {
-		fireEvent(new StartEvent(this, beanItem.getBean()));
+		fireEvent(new StartEvent(this, beanItem.getBean(), event.isAltKey()));
 		
 		collapse();
 	}
@@ -161,15 +162,25 @@ public class PackPanel extends Panel implements ClickListener {
 		public static final String EVENT_ID = "start";
 		
 		private Pack pack;
+		private boolean forceLegacy = false;
 
 		public StartEvent(Component source, Pack pack) {
 			super(source);
 			
 			this.pack = pack;
 		}
+
+		public StartEvent(Component source, Pack pack, boolean forceLegacy) {
+			this(source, pack);
+			this.forceLegacy = forceLegacy;
+		}
 		
 		public Pack getPack() {
 			return pack;
+		}
+		
+		public boolean getForceLegacy() {
+			return forceLegacy;
 		}
 		
 	}
@@ -180,7 +191,7 @@ public class PackPanel extends Panel implements ClickListener {
 				.findMethod(StartListener.class, "start", StartEvent.class);
 
 		/**
-		 * Called when a {@link Test} has to be started. A reference to the
+		 * Called when a {@link SimpleTest} has to be started. A reference to the
 		 * pack is given by {@link StartEvent#getPack()}.
 		 * 
 		 * @param event
@@ -196,5 +207,10 @@ public class PackPanel extends Panel implements ClickListener {
 	
 	public void removeStartListener(StartListener listener) {
 		removeListener(StartEvent.EVENT_ID, StartEvent.class, listener);
+	}
+
+	public void disableCollapse() {
+		collapseDisabled = true;
+		rise();
 	}
 }

@@ -7,12 +7,16 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import org.vaadin.maps.geometry.Utils;
+import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.feature.FeatureServerRpc;
+import org.vaadin.maps.shared.ui.feature.VectorFeatureState;
 
+import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.Component;
 import com.vaadin.util.ReflectTools;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 
 
 /**
@@ -35,6 +39,7 @@ public class VectorFeature extends AbstractFeature {
 	};
 	
 	private Geometry geometry = null;
+	private Style style = null;
 	
 	public VectorFeature() {
 		super();
@@ -53,8 +58,56 @@ public class VectorFeature extends AbstractFeature {
 
 	public void setGeometry(Geometry geometry) {
 		this.geometry = geometry;
-		
 		getState().wkb = Utils.geometryToWKBHex(geometry);
+		
+		setGeometryCentroid();
+	}
+
+	private void setGeometryCentroid() {
+		if (geometry != null) {
+			Point centroid = geometry.getCentroid();
+			getState().centroidX = centroid.getX();
+			getState().centroidY = centroid.getY();
+		} else {
+			getState().centroidX = null;
+			getState().centroidY = null;
+		}
+	}
+
+	public Style getStyle() {
+		return style;
+	}
+
+	public void setStyle(Style style) {
+		this.style = style;
+		getState().style = MapUtility.getStyleMap(style);
+		markAsDirty();
+	}
+	
+	public String getText() {
+		return getState().text;
+	}
+	
+	public void setText(String text) {
+		getState().text = text;
+	}
+
+	public void setTextOffset(double x, double y) {
+		getState().offsetX = x;
+		getState().offsetY = y;
+	}
+	
+	public boolean isHidden() {
+		return getState().hidden;
+	}
+	
+	public void setHidden(boolean hidden) {
+		getState().hidden = hidden;
+	}
+
+	@Override
+	protected VectorFeatureState getState() {
+		return (VectorFeatureState) super.getState();
 	}
 
 	/**
@@ -312,5 +365,5 @@ public class VectorFeature extends AbstractFeature {
 		removeListener(DoubleClickEvent.class, listener,
 				DoubleClickListener.FEATURE_DOUBLE_CLICK_METHOD);
 	}
-
+	
 }

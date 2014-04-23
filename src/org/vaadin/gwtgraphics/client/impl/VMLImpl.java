@@ -259,6 +259,16 @@ public class VMLImpl extends DrawImpl {
 	}
 
 	@Override
+	public double getOpacity(Element element) {
+		return element.getPropertyDouble("opacity");
+	}
+
+	@Override
+	public void setOpacity(Element element, double opacity) {
+		element.setPropertyDouble("opacity", opacity);
+	}
+
+	@Override
 	public int getWidth(Element element) {
 		if (VMLUtil.getTagName(element).equals("group")) {
 			// DrawingArea's root element

@@ -7,6 +7,7 @@ import org.vaadin.maps.client.ui.AbstractLayerConnector;
 import org.vaadin.maps.client.ui.VImageLayer;
 import org.vaadin.maps.shared.ui.layer.ImageLayerState;
 
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.shared.ui.Connect;
 
@@ -37,7 +38,10 @@ public class ImageLayerConnector extends AbstractLayerConnector {
 	public void onConnectorHierarchyChange(
 			ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent) {
         // We always have 1 child, unless the child is hidden
-        getWidget().setWidget(getContentWidget());
+        Widget content = getContentWidget();
+        if (content != null) {
+        	getWidget().setWidget(content);
+        }
 	}
 
 }

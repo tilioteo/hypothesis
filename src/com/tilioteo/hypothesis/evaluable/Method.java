@@ -47,14 +47,8 @@ public class Method extends Primitive implements HasReference {
 						args = new Object[] {};
 					}
 					
-					/*java.lang.reflect.Method[] methods = obj.getClass().getDeclaredMethods();
-					for (int i = 0; i < methods.length; ++i) {
-						java.lang.reflect.Method method2 = methods[i];
-						Class<?>[] types = method2.getParameterTypes();
-					}*/
-					
 					// TODO: find substitute method for parameter typecast
-					method = obj.getClass().getDeclaredMethod(name, argTypes);
+					method = getDeclaredMethodDeeply(obj.getClass(), name, argTypes);
 					//method = obj.getClass().getMethod(name, argTypes);
 					
 					if (method != null) {
@@ -74,6 +68,21 @@ public class Method extends Primitive implements HasReference {
 			} /*else
 				throw new NullReferenceException(String.format("Object reference for method %s is null", name));*/
 		}
+		return null;
+	}
+	
+	private java.lang.reflect.Method getDeclaredMethodDeeply(Class<?> clazz, String name, Class<?>... parameterTypes) {
+		do {
+			java.lang.reflect.Method method = null;
+			try {
+				method = clazz.getDeclaredMethod(name, parameterTypes);
+				return method;
+			} catch (Exception e) {
+			}
+			
+			clazz = clazz.getSuperclass();
+			
+		} while (clazz != null);
 		return null;
 	}
 	

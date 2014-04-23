@@ -74,6 +74,10 @@ public abstract class DrawImpl {
 	public abstract double getStrokeOpacity(Element element);
 
 	public abstract void setStrokeOpacity(Element element, double opacity);
+	
+	public abstract double getOpacity(Element element);
+
+	public abstract void setOpacity(Element element, double opacity);
 
 	public abstract int getCircleRadius(Element element);
 

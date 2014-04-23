@@ -129,6 +129,27 @@ public abstract class Shape extends AbstractDrawing implements Strokeable,
 		getImpl().setFillOpacity(getElement(), opacity);
 	}
 
+	/**
+	 * Returns the opacity of the Shape element.
+	 * 
+	 * @return the current opacity
+	 */
+	public double getOpacity() {
+		return getImpl().getOpacity(getElement());
+	}
+
+	/**
+	 * Sets the opacity of the Shape element. The initial value 1.0 means
+	 * fully opaque shape. On the other hand, value 0.0 means fully transparent
+	 * paint.
+	 * 
+	 * @param opacity
+	 *            the new opacity
+	 */
+	public void setOpacity(double opacity) {
+		getImpl().setOpacity(getElement(), opacity);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -203,6 +224,8 @@ public abstract class Shape extends AbstractDrawing implements Strokeable,
 			setStrokeOpacity(value);
 		} else if ("strokewidth".equals(property)) {
 			setStrokeWidth((int) value);
+		} else if ("opacity".equals(property)) {
+			setOpacity(value);
 		} else if ("rotation".equals(property)) {
 			setRotation((int) value);
 		}

@@ -5,7 +5,6 @@ package com.tilioteo.hypothesis.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,8 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
-import org.hibernate.annotations.Cascade;
 
 import com.tilioteo.hypothesis.common.EntityFieldConstants;
 import com.tilioteo.hypothesis.common.EntityTableConstants;
@@ -86,9 +83,8 @@ public final class UserPermission extends SerializableIdObject {
 		return super.getId();
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.USER_ID, nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final User getUser() {
 		return user;
 	}
@@ -97,9 +93,8 @@ public final class UserPermission extends SerializableIdObject {
 		this.user = user;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;
 	}
@@ -128,56 +123,75 @@ public final class UserPermission extends SerializableIdObject {
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof UserPermission))
+		}
+		if (!(obj instanceof UserPermission)) {
 			return false;
+		}
 		UserPermission other = (UserPermission) obj;
-		/*
-		 * if (getId() == null) { if (other.getId() != null) return false; }
-		 * else if (!getId().equals(other.getId())) return false;
-		 */
-		// TODO remove when Buffered.SourceException occurs and use ID
-		if (getEnabled() == null) {
-			if (other.getEnabled() != null)
-				return false;
-		} else if (!getEnabled().equals(other.getEnabled()))
+
+		Long id = getId();
+		Long id2 = other.getId();
+		User user = getUser();
+		User user2 = other.getUser();
+		Pack pack = getPack();
+		Pack pack2 = other.getPack();
+		Boolean enabled = getEnabled();
+		Boolean enabled2 = other.getEnabled();
+		Integer pass = getPass();
+		Integer pass2 = other.getPass();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		if (getPack() == null) {
-			if (other.getPack() != null)
-				return false;
-		} else if (!getPack().equals(other.getPack()))
+		}
+
+		if (user != null && !user.equals(user2)) {
 			return false;
-		if (getPass() == null) {
-			if (other.getPass() != null)
-				return false;
-		} else if (!getPass().equals(other.getPass()))
+		} else if (user2 != null) {
 			return false;
-		if (getUser() == null) {
-			if (other.getUser() != null)
-				return false;
-		} else if (!getUser().equals(other.getUser()))
+		}
+		
+		if (pack != null && !pack.equals(pack2)) {
 			return false;
+		} else if (pack2 != null) {
+			return false;
+		}
+		
+		if (enabled != null && !enabled.equals(enabled2)) {
+			return false;
+		} else if (enabled2 != null) {
+			return false;
+		}
+		
+		if (pass != null && !pass.equals(pass2)) {
+			return false;
+		} else if (pass2 != null) {
+			return false;
+		}
+
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 199;
+		Long id = getId();
+		User user = getUser();
+		Pack pack = getPack();
+		Boolean enabled = getEnabled();
+		Integer pass = getPass();
+
+		final int prime = 67;
 		int result = 1;
-		// result = prime * result + ((getId() == null) ? 0 :
-		// getId().hashCode());
-		// TODO remove when Buffered.SourceException occurs and use ID
-		result = prime * result
-				+ ((getEnabled() == null) ? 0 : getEnabled().hashCode());
-		result = prime * result
-				+ ((getPack() == null) ? 0 : getPack().hashCode());
-		result = prime * result
-				+ ((getPass() == null) ? 0 : getPass().hashCode());
-		result = prime * result
-				+ ((getUser() == null) ? 0 : getUser().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (user != null ? user.hashCode() : 0);
+		result = prime * result	+ (pack != null ? pack.hashCode() : 0);
+		result = prime * result	+ (enabled != null ? enabled.hashCode() : 0);
+		result = prime * result + (pass != null ? pass.hashCode() : 0);
 		return result;
 	}
 

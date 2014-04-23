@@ -7,6 +7,8 @@ import java.util.Locale;
 
 import org.dom4j.Element;
 
+import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlData;
+import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlData;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerData;
@@ -55,4 +57,22 @@ public class SlideFactory {
 		subElement.addText(data.getSender().getGeometry().toText());
 	}
 
+	public static void writeDrawPointControlData(Element sourceElement, DrawPointControlData data) {
+		String id = data.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.DRAW_POINT);
+		if (id != null)
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		Element subElement = sourceElement.addElement(SlideXmlConstants.GEOMETRY);
+		subElement.addText(data.getGeometry().toText());
+	}
+	
+	public static void writeDrawPathControlData(Element sourceElement, DrawPathControlData data) {
+		String id = data.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.DRAW_PATH);
+		if (id != null)
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		Element subElement = sourceElement.addElement(SlideXmlConstants.GEOMETRY);
+		subElement.addText(data.getGeometry().toText());
+	}
+	
 }

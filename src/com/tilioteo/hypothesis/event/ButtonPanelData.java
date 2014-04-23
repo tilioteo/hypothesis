@@ -25,6 +25,14 @@ public class ButtonPanelData extends AbstractComponentData<ButtonPanel> {
 	public Button getButton() {
 		return button;
 	}
+	
+	public int getButtonIndex() {
+		if (button != null) {
+			return getSender().getChildIndex(button) + 1;
+		} else {
+			return 0;
+		}
+	}
 
 	public void setButton(Button button) {
 		this.button = button;

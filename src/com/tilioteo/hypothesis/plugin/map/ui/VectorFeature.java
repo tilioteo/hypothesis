@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.dom4j.Element;
 
+import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
@@ -28,7 +29,7 @@ import com.vaadin.ui.Alignment;
 public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature implements SlideComponent {
 
 	private SlideManager slideManager = null;
-	
+
 	@Override
 	public Alignment getAlignment() {
 		return null;
@@ -37,6 +38,7 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 	@Override
 	public void loadFromXml(Element element) {
 		setProperties(element);
+		setTextProperties(element);
 		setHandlers(element);
 	}
 
@@ -46,9 +48,13 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 	}
 
 	protected void setProperties(Element element) {
-		//StringMap properties = SlideUtility.getPropertyValueMap(element);
-		MapUtility.setFeatureProperties(this, element/*, properties*/);
+		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		MapUtility.setFeatureProperties(this, element, properties);
 
+	}
+
+	private void setTextProperties(Element element) {
+		MapUtility.setFeatureText(this, element);
 	}
 
 	private void setHandlers(Element element) {

@@ -12,6 +12,4 @@ import com.vaadin.shared.AbstractComponentState;
 @SuppressWarnings("serial")
 public class AbstractFeatureState extends AbstractComponentState {
 
-	public String wkb = null;
-	
 }

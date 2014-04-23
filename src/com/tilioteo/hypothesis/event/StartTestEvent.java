@@ -3,8 +3,8 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.entity.Test;
-import com.tilioteo.hypothesis.entity.Test.Status;
+import com.tilioteo.hypothesis.entity.SimpleTest;
+import com.tilioteo.hypothesis.entity.Status;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -13,7 +13,7 @@ import com.tilioteo.hypothesis.entity.Test.Status;
 @SuppressWarnings("serial")
 public class StartTestEvent extends AbstractTestEvent {
 
-	public StartTestEvent(Test test) {
+	public StartTestEvent(SimpleTest test) {
 		super(test);
 	}
 

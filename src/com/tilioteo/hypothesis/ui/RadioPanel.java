@@ -112,7 +112,7 @@ public class RadioPanel extends MultipleComponentPanel<RadioButton> implements
 		final Command componentEvent = CommandFactory
 				.createRadioPanelClickEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+				actionId, data);
 
 		addRadioButtonClickListener(new RadioButton.ClickListener() {
 			@Override

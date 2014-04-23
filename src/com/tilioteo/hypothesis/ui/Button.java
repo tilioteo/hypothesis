@@ -13,6 +13,7 @@ import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
+import com.tilioteo.hypothesis.event.ButtonData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
@@ -52,10 +53,11 @@ public class Button extends com.vaadin.ui.NativeButton implements
 	}
 
 	private void setClickHandler(String actionId) {
+		final ButtonData data = new ButtonData(this, slideManager);
 		final Command componentEvent = CommandFactory
-				.createButtonClickEventCommand(this, slideManager);
+				.createButtonClickEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+				actionId, data);
 
 		addClickListener(new Button.ClickListener() {
 			@Override

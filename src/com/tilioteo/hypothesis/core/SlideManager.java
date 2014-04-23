@@ -12,6 +12,7 @@ import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Slide;
 import com.tilioteo.hypothesis.entity.Task;
+import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.event.ProcessEventManager;
 import com.tilioteo.hypothesis.event.ViewportEvent;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
@@ -263,6 +264,22 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		}
 		
 		return valid;
+	}
+
+	public void addComponentDataVariable(AbstractComponentData<?> data) {
+		Variable<?> variable = (Variable<?>)variables.get("ComponentData");
+		if (null == variable) {
+			variable = new Variable<Object>("ComponentData");
+			variables.put("ComponentData", variable);
+		}
+		variable.setRawValue(data);
+	}
+	
+	public void clearComponentDataVariable() {
+		Variable<?> variable = (Variable<?>)variables.get("ComponentData");
+		if (variable != null) {
+			variable.setRawValue(null);
+		}
 	}
 	
 }

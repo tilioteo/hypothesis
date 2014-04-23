@@ -90,7 +90,7 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 		final Command componentEvent = CommandFactory
 				.createButtonPanelClickEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+				actionId, data);
 
 		addButtonClickListener(new Button.ClickListener() {
 			@Override

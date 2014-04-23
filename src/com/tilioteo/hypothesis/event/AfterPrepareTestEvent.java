@@ -3,7 +3,7 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.entity.Test;
+import com.tilioteo.hypothesis.entity.SimpleTest;
 
 /**
  * @author kamil
@@ -13,7 +13,7 @@ import com.tilioteo.hypothesis.entity.Test;
 public class AfterPrepareTestEvent extends AbstractProcessEvent {
 
 	
-	public AfterPrepareTestEvent(Test source) {
+	public AfterPrepareTestEvent(SimpleTest source) {
 		super(source);
 	}
 
@@ -22,8 +22,8 @@ public class AfterPrepareTestEvent extends AbstractProcessEvent {
 		return ProcessEventTypes.Null;
 	}
 	
-	public Test getTest() {
-		return (Test) super.getSource();
+	public SimpleTest getTest() {
+		return (SimpleTest) super.getSource();
 	}
 
 }

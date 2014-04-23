@@ -7,6 +7,7 @@ import org.vaadin.maps.client.ui.VDrawFeatureControl;
 import org.vaadin.maps.client.ui.layer.VectorFeatureLayerConnector;
 import org.vaadin.maps.shared.ui.control.DrawFeatureControlState;
 
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.shared.Connector;
@@ -52,7 +53,10 @@ public class DrawFeatureControlConnector extends AbstractControlConnector {
 	public void onConnectorHierarchyChange(
 			ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent) {
         // We always have 1 child, unless the child is hidden
-        getWidget().setWidget(getContentWidget());
+        Widget content = getContentWidget();
+        if (content != null) {
+        	getWidget().setWidget(content);
+        }
 	}
 
 }

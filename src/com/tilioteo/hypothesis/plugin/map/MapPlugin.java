@@ -38,7 +38,9 @@ public class MapPlugin implements SlideComponentPlugin {
 	private StringSet eventTypes = new StringSet(
 			MapEventTypes.LayerLoad,
 			MapEventTypes.LayerClick,
-			MapEventTypes.FeatureClick
+			MapEventTypes.FeatureClick,
+			MapEventTypes.DrawPoint,
+			MapEventTypes.DrawPath
 			);
 	
 	private Map<String, Set<ValidParentGroup>> elementParentGroups = new HashMap<String, Set<ValidParentGroup>>();

@@ -51,6 +51,7 @@ public class SlideXmlFactory {
 					if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(id)) {
 						Element origElement = XmlUtility.findElementByNameAndValue(root, name, prefix, uri, SlideXmlConstants.ID, id);
 						if (origElement != null) {
+							mergeElementAttributes(origElement, element);
 							List<Element> bindNodes = element.elements();
 
 							for (Element bindNode : bindNodes) {

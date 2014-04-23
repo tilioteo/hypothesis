@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="US-ASCII">
+<title>Browser Applet Embed</title>
+</head>
+<body>
+	<noscript>A browser with JavaScript enabled is required for this page to operate properly.</noscript>
+	<script src="deployJava.js"></script>
+	<script src="utils.js"></script>
+	<script type="text/javascript">
+	
+	function isReady() {
+		if (!applet) {
+			applet = document.getElementById('browserApplet');
+		}
+		if (applet) {
+			try {
+				var ret = applet.isReady();
+				return ret;
+			} catch(err) {}
+		}
+		return false;
+	}
+	
+	function startBrowser(token) {
+		if (isReady()) {
+			var jnlp = params["app_url"]+'/resource/browserapplication.jnlp?jnlp.app_url='+
+					params["app_url"]+params["process_app"]+'&jnlp.close_key='+params["close_key"]+
+					'&jnlp.token='+token;
+			deployJava.launchWebStartApplication(jnlp);
+		}
+	}
+	
+	var applet;
+	var params = getParameters();
+	
+	var attributes = {
+			id:'browserApplet',
+			code:'com.tilioteo.hypothesis.browser.BrowserApplet',
+			//archive:'/hypothesis/resource/browser-applet.jar',
+			width:100,
+			height:100};
+	
+	var parameters = {
+			jnlp_href:params["app_url"]+'/resource/browserapplet.jnlp',
+			app_url:params["app_url"],
+			process_app:params["process_app"],
+			close_key:params["close_key"]};
+
+	deployJava.runApplet(attributes, parameters, '1.7'); 
+	</script>
+</body>
+</html>

@@ -34,10 +34,7 @@ import com.tilioteo.hypothesis.processing.IfStatement;
 import com.tilioteo.hypothesis.processing.SwitchStatement;
 import com.tilioteo.hypothesis.processing.Variable;
 import com.tilioteo.hypothesis.ui.Button;
-import com.tilioteo.hypothesis.ui.ButtonPanel;
 import com.tilioteo.hypothesis.ui.ComponentFactory;
-import com.tilioteo.hypothesis.ui.RadioButton;
-import com.tilioteo.hypothesis.ui.RadioPanel;
 import com.tilioteo.hypothesis.ui.SlideComponent;
 
 /**
@@ -71,13 +68,11 @@ public class SlideFactory {
 		if (id != null) {
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
 		}
-		ButtonPanel sender = buttonPanelData.getSender();
-		Button button = buttonPanelData.getButton();
-		int index = sender.getChildIndex(button) + 1;
+		int index = buttonPanelData.getButtonIndex();
 		if (index > 0) {
 			Element selectedElement = sourceElement.addElement(SlideXmlConstants.SELECTED);
 			selectedElement.addAttribute(SlideXmlConstants.INDEX, String.format("%d", index));
-			selectedElement.addText(button.getCaption());
+			selectedElement.addText(buttonPanelData.getButton().getCaption());
 		}
 	}
 
@@ -124,13 +119,11 @@ public class SlideFactory {
 		if (id != null) {
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
 		}
-		RadioPanel sender = radioPanelData.getSender();
-		RadioButton radioButton = radioPanelData.getRadioButton();
-		int index = sender.getChildIndex(radioButton) + 1;
+		int index = radioPanelData.getRadioButtonIndex();
 		if (index > 0) {
 			Element selectedElement = sourceElement.addElement(SlideXmlConstants.SELECTED);
 			selectedElement.addAttribute(SlideXmlConstants.INDEX, String.format("%d", index));
-			selectedElement.addText(radioButton.getCaption());
+			selectedElement.addText(radioPanelData.getRadioButton().getCaption());
 		}
 	}
 

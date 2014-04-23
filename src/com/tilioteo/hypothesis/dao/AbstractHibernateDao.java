@@ -141,7 +141,7 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	public void makeTransient(T entity) {
 		getSession().delete(entity);
 	}
-
+	
 	@Override
 	public void rollback() {
 		HibernateUtil.rollbackTransaction();

@@ -29,7 +29,7 @@ public class OutputManager {
 		this.branchOutputDao = branchOutputDao;
 	}
 
-	public void addBranchOutput(BranchOutput branchOutput) {
+	public void saveBranchOutput(BranchOutput branchOutput) {
 		try {
 			branchOutputDao.beginTransaction();
 			branchOutputDao.makePersistent(branchOutput);
@@ -40,7 +40,7 @@ public class OutputManager {
 		}
 	}
 
-	public void addSlideOutput(SlideOutput slideOutput) {
+	public void saveSlideOutput(SlideOutput slideOutput) {
 		try {
 			slideOutputDao.beginTransaction();
 			slideOutputDao.makePersistent(slideOutput);

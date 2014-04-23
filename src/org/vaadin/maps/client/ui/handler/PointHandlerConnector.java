@@ -3,8 +3,8 @@
  */
 package org.vaadin.maps.client.ui.handler;
 
+import org.vaadin.maps.client.drawing.Utils;
 import org.vaadin.maps.client.geometry.Coordinate;
-import org.vaadin.maps.client.geometry.Utils;
 import org.vaadin.maps.client.ui.VPointHandler;
 import org.vaadin.maps.client.ui.VPointHandler.GeometryEvent;
 import org.vaadin.maps.client.ui.VPointHandler.GeometryEventHandler;
@@ -62,7 +62,7 @@ public class PointHandlerConnector extends AbstractHandlerConnector implements C
 
 	@Override
 	public void onClick(ClickEvent event) {
-		Coordinate coordinate = getWidget().createWorldCoordinate(event.getX(), event.getY());
+		Coordinate coordinate = getWidget().createWorldCoordinate(VPointHandler.getMouseEventXY(event));
 		MouseEventDetails mouseDetails = MouseEventDetailsBuilder.buildMouseEventDetails(event.getNativeEvent(), getWidget().getElement());
 		getRpcProxy(PointHandlerServerRpc.class).click(coordinate.x, coordinate.y,
 				mouseDetails.getButtonName(), mouseDetails.isAltKey(), mouseDetails.isCtrlKey(),

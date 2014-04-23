@@ -5,7 +5,7 @@ package com.tilioteo.hypothesis.model;
 
 import com.tilioteo.hypothesis.core.ProcessManager;
 import com.tilioteo.hypothesis.entity.Slide;
-import com.tilioteo.hypothesis.entity.Test;
+import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.event.AfterRenderContentEvent;
 import com.tilioteo.hypothesis.event.CloseTestEvent;
@@ -47,7 +47,7 @@ public class ProcessModel {
 		processManager.fireTestError();
 	}
 
-	public void fireClose(Test test) {
+	public void fireClose(SimpleTest test) {
 		processManager.getProcessEventManager().fireEvent(
 				new CloseTestEvent(test));
 	}
@@ -59,14 +59,14 @@ public class ProcessModel {
 	 */
 	public void fireError(String caption) {
 		processManager.getProcessEventManager().fireEvent(
-				new ErrorNotificationEvent(Test.DUMMY_TEST, caption));
+				new ErrorNotificationEvent(SimpleTest.DUMMY_TEST, caption));
 	}
 
 	public void requestBreak() {
 		processManager.requestBreakTest();
 	}
 	
-	public void processTest(Test test) {
+	public void processTest(SimpleTest test) {
 		processManager.processTest(test);
 	}
 	

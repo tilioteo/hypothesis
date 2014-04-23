@@ -3,8 +3,8 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.entity.Test;
-import com.tilioteo.hypothesis.entity.Test.Status;
+import com.tilioteo.hypothesis.entity.SimpleTest;
+import com.tilioteo.hypothesis.entity.Status;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -15,7 +15,7 @@ public class ErrorTestEvent extends AbstractTestEvent {
 
 	// private String reason;
 
-	public ErrorTestEvent(Test test) {
+	public ErrorTestEvent(SimpleTest test) {
 		super(test);
 		
 		// TODO add reason

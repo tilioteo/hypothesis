@@ -33,6 +33,8 @@ public class IfStatement implements Evaluable {
 	public void evaluate() {
 		if (expression != null && variables != null) {
 			Boolean result = expression.getBoolean();
+			expression.updateVariables(variables.getVariables());
+			
 			if (result != null) {
 				List<Evaluable> evaluables = result ? trueBlock : falseBlock;
 
@@ -52,9 +54,10 @@ public class IfStatement implements Evaluable {
 	}
 
 	public void updateVariables(VariableMap variables) {
-		if (expression != null) {
+		// NOTE If statement cannot update variables after block evaluation
+		/*if (expression != null) {
 			expression.updateVariables(variables);
-		}
+		}*/
 	}
 
 }
