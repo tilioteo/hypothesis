@@ -6,8 +6,6 @@ package com.tilioteo.hypothesis.ui;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.vaadin.dialogs.ConfirmDialog;
-
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -74,8 +72,7 @@ public class ErrorDialog extends Window {
 		buttons.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
 
 		// Approximate the size of the dialog
-		double[] dim = getDialogDimensions(message,
-				ConfirmDialog.ContentMode.TEXT_WITH_NEWLINES);
+		double[] dim = getDialogDimensions(message, true);
 		setWidth(format(dim[0]) + "em");
 		setHeight(format(dim[1]) + "em");
 		setResizable(false);
@@ -88,8 +85,7 @@ public class ErrorDialog extends Window {
 	 *            Message string
 	 * @return
 	 */
-	protected double[] getDialogDimensions(String message,
-			ConfirmDialog.ContentMode style) {
+	protected double[] getDialogDimensions(String message, boolean newLines) {
 
 		// Based on Reindeer style:
 		double chrW = 0.51d;
@@ -98,7 +94,7 @@ public class ErrorDialog extends Window {
 		double rows = Math.ceil(length / MAX_WIDTH);
 
 		// Estimate extra lines
-		if (style == ConfirmDialog.ContentMode.TEXT_WITH_NEWLINES) {
+		if (newLines) {
 			rows += message != null ? count("\n", message) : 0;
 		}
 

@@ -3,16 +3,7 @@
  */
 package com.tilioteo.hypothesis.persistence;
 
-import java.lang.reflect.Method;
-
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import com.tilioteo.hypothesis.entity.Branch;
 import com.tilioteo.hypothesis.entity.Pack;
