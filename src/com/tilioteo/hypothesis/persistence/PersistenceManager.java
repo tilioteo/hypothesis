@@ -30,63 +30,6 @@ public class PersistenceManager {
 		return new PersistenceManager();
 	}
 	
-	/*protected Object mergeInternal(Object entity) {
-		try {
-			HibernateUtil.beginTransaction();
-			Object merged = HibernateUtil.getSession().merge(entity);
-			//Hibernate.initialize(merged);
-			//initializeLazyCollections(merged);
-			HibernateUtil.commitTransaction();
-			
-			return merged;
-		} catch (Throwable e) {
-			HibernateUtil.rollbackTransaction();
-			return null;
-		}
-	}*/
-	
-	private void initializeLazyCollections(Object entity) {
-		Method[] methods = entity.getClass().getDeclaredMethods();
-		for (Method method : methods) {
-			if (method.isAccessible()) {
-				OneToMany oneToMany = null;
-				if (method.isAnnotationPresent(OneToMany.class)) {
-					oneToMany = method.getAnnotation(OneToMany.class);
-				}
-				ManyToOne manyToOne = null;
-				if (method.isAnnotationPresent(ManyToOne.class)) {
-					manyToOne = method.getAnnotation(ManyToOne.class);
-				}
-				ManyToMany manyToMany = null;
-				if (method.isAnnotationPresent(ManyToMany.class)) {
-					manyToMany = method.getAnnotation(ManyToMany.class);
-				}
-
-				LazyCollection lazyCollection = null;
-				if (method.isAnnotationPresent(LazyCollection.class)) {
-					lazyCollection = method.getAnnotation(LazyCollection.class);
-				}
-
-				if (oneToMany != null && FetchType.LAZY.equals(oneToMany.fetch())
-						|| manyToOne != null && FetchType.LAZY.equals(manyToOne.fetch())
-						|| manyToMany != null && FetchType.LAZY.equals(manyToMany.fetch())
-						|| lazyCollection != null && LazyCollectionOption.TRUE.equals(lazyCollection.value())) {
-					try {
-						method.invoke(entity, new Object[] {});
-					} catch (Throwable e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-
-	/*public Pack merge(Pack entity) {
-		Pack pack = (Pack) mergeInternal(entity);
-		Hibernate.initialize(pack.getBranches());
-		
-		return pack;
-	}*/
 	public Pack merge(Pack entity) {
 		try {
 			HibernateUtil.beginTransaction();
@@ -100,14 +43,6 @@ public class PersistenceManager {
 			return null;
 		}
 	}
-	
-	/*public Branch merge(Branch entity) {
-		Branch branch = (Branch) mergeInternal(entity);
-		Hibernate.initialize(branch.getTasks());
-		Hibernate.initialize(branch.getBranchMap());
-		
-		return branch;
-	}*/
 	
 	public Branch merge(Branch entity) {
 		try {
@@ -124,13 +59,6 @@ public class PersistenceManager {
 		}
 	}
 
-	/*public Task merge(Task entity) {
-		Task task = (Task) mergeInternal(entity);
-		Hibernate.initialize(task.getSlides());
-		
-		return task;
-	}*/
-	
 	public Task merge(Task entity) {
 		try {
 			HibernateUtil.beginTransaction();
@@ -145,10 +73,6 @@ public class PersistenceManager {
 		}
 	}
 
-	/*public SimpleTest merge(SimpleTest entity) {
-		return (SimpleTest) mergeInternal(entity);
-	}*/
-	
 	public SimpleTest merge(SimpleTest entity) {
 		try {
 			HibernateUtil.beginTransaction();
