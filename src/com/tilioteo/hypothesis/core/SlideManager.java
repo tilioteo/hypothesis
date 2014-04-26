@@ -281,5 +281,21 @@ public class SlideManager extends ListManager<Task, Slide> implements
 			variable.setRawValue(null);
 		}
 	}
+
+	public void finishSlide() {
+		// stop timers silently
+		for (String key : timers.keySet()) {
+			Timer timer = timers.get(key);
+			timer.stop(true);
+		}
+		
+		// remove close listeners to close windows silently
+		for (String key : windows.keySet()) {
+			Window window = windows.get(key);
+			window.removeAllCloseListeners();
+			window.close();
+		}
+		
+	}
 	
 }

@@ -228,6 +228,7 @@ public class ProcessManager implements ProcessEventListener {
 	}
 
 	private void processFinishSlide(FinishSlideEvent eventObj) {
+		slideManager.finishSlide();
 		saveProcessEvent(eventObj);
 
 		slideManager.find(eventObj.getSlide());

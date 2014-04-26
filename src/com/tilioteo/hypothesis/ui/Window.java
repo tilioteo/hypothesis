@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.ui;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.dom4j.Element;
@@ -147,6 +148,8 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 
 	private boolean initialized = false;
 
+	private ArrayList<CloseListener> closeListeners = new ArrayList<CloseListener>();
+	
 	public Window() {
 		this.parentAlignment = new ParentAlignment();
 	}
@@ -267,6 +270,19 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 			}
 		});
 	}
+
+    @Override
+	public void addCloseListener(CloseListener listener) {
+    	super.addCloseListener(listener);
+    	closeListeners.add(listener);
+    }
+    
+    public void removeAllCloseListeners() {
+    	for (CloseListener listener : closeListeners) {
+    		removeCloseListener(listener);
+    	}
+    	closeListeners.clear();
+    }
 
 	protected void setHandler(Element element) {
 		String name = element.getName();
