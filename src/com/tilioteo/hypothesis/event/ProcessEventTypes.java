@@ -41,7 +41,8 @@ public class ProcessEventTypes {
 	public static final String ButtonClick = "BUTTON_CLICK";
 	public static final String ButtonPanelClick = "BUTTONPANEL_CLICK";
 	public static final String RadioButtonClick = "RADIOBUTTON_CLICK";
-	public static final String RadioPanelClick = "RADIOPANEL_CLICK";
+	public static final String CheckBoxClick = "CHECKBOX_CLICK";
+	public static final String SelectPanelClick = "SELECTPANEL_CLICK";
 	public static final String ImageClick = "IMAGE_CLICK";
 	public static final String ImageLoad = "IMAGE_LOAD";
 	public static final String TimerStart = "TIMER_START";
@@ -70,15 +71,16 @@ public class ProcessEventTypes {
 		registerEvent(Action); // 50
 		nextId += 49;
 		registerEvent(ButtonClick); // 100
-		registerEvent(ButtonPanelClick); // 101
-		registerEvent(RadioButtonClick); // 102
-		registerEvent(RadioPanelClick); // 103
-		registerEvent(ImageClick); // 104
-		registerEvent(ImageLoad); // 105
-		registerEvent(TimerStart); // 106
-		registerEvent(TimerStop); // 107
-		registerEvent(TimerUpdate); // 108
-		//nextId += 891; // plugin events begin from 1000
+		registerEvent(RadioButtonClick); // 101
+		registerEvent(CheckBoxClick); // 102
+		registerEvent(ButtonPanelClick); // 103
+		registerEvent(SelectPanelClick); // 104
+		registerEvent(ImageClick); // 105
+		registerEvent(ImageLoad); // 106
+		registerEvent(TimerStart); // 107
+		registerEvent(TimerStop); // 108
+		registerEvent(TimerUpdate); // 109
+		//nextId += 890; // plugin events begin from 1000
 	}
 
 	private static long generateId() {

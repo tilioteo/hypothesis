@@ -1,4 +1,4 @@
-package com.tilioteo.hypothesis.client.ui.radiobutton;
+package com.tilioteo.hypothesis.client.ui.selectbutton;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -8,9 +8,9 @@ import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
-import com.tilioteo.hypothesis.client.ui.VRadioButton;
-import com.tilioteo.hypothesis.shared.ui.radiobutton.RadioButtonServerRpc;
-import com.tilioteo.hypothesis.shared.ui.radiobutton.RadioButtonState;
+import com.tilioteo.hypothesis.client.ui.SelectButton;
+import com.tilioteo.hypothesis.shared.ui.selectbutton.SelectButtonServerRpc;
+import com.tilioteo.hypothesis.shared.ui.selectbutton.SelectButtonState;
 import com.vaadin.client.EventHelper;
 import com.vaadin.client.MouseEventDetailsBuilder;
 import com.vaadin.client.communication.StateChangeEvent;
@@ -19,11 +19,9 @@ import com.vaadin.client.ui.AbstractFieldConnector;
 import com.vaadin.client.ui.Icon;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.communication.FieldRpc.FocusAndBlurServerRpc;
-import com.vaadin.shared.ui.Connect;
 
 @SuppressWarnings("serial")
-@Connect(com.tilioteo.hypothesis.ui.RadioButton.class)
-public class RadioButtonConnector extends AbstractFieldConnector implements
+public abstract class SelectButtonConnector extends AbstractFieldConnector implements
 		FocusHandler, BlurHandler, ClickHandler {
 
     private HandlerRegistration focusHandlerRegistration = null;
@@ -91,6 +89,12 @@ public class RadioButtonConnector extends AbstractFieldConnector implements
         blurHandlerRegistration = EventHelper.updateBlurHandler(this,
                 blurHandlerRegistration);
 
+        if (stateChangeEvent.hasPropertyChanged("id")) {
+            if (getState().id != null) {
+                getWidget().updateIdRelatives();
+            }
+        }
+
         if (stateChangeEvent.hasPropertyChanged("caption")
                 || stateChangeEvent.hasPropertyChanged("htmlContentAllowed")) {
             // Set text
@@ -114,16 +118,20 @@ public class RadioButtonConnector extends AbstractFieldConnector implements
 
 			getWidget().buildLabel();
         }
+        
+        if (stateChangeEvent.hasPropertyChanged("checked")) {
+        	getWidget().setValue(getState().checked);
+        }
     }
 
     @Override
-    public RadioButtonState getState() {
-        return (RadioButtonState) super.getState();
+    public SelectButtonState getState() {
+        return (SelectButtonState) super.getState();
     }
 
     @Override
-    public VRadioButton getWidget() {
-        return (VRadioButton) super.getWidget();
+    public SelectButton getWidget() {
+        return (SelectButton) super.getWidget();
     }
 
     @Override
@@ -152,7 +160,7 @@ public class RadioButtonConnector extends AbstractFieldConnector implements
         MouseEventDetails details = MouseEventDetailsBuilder
                 .buildMouseEventDetails(event.getNativeEvent(), getWidget()
                         .getElement());
-        getRpcProxy(RadioButtonServerRpc.class).setChecked(getState().checked,
+        getRpcProxy(SelectButtonServerRpc.class).setChecked(getState().checked,
                 details);
 
     }

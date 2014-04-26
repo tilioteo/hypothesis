@@ -40,7 +40,7 @@ public class SlideXmlConstants {
 	public static final String BUTTON = "Button";
 	public static final String IMAGE = "Image";
 	public static final String BUTTON_PANEL = "ButtonPanel";
-	public static final String RADIO_PANEL = "RadioPanel";
+	public static final String SELECT_PANEL = "SelectPanel";
 	public static final String COMBOBOX = "ComboBox";
 	public static final String DATE_FIELD = "DateField";
 	public static final String TEXT_FIELD = "TextField";
@@ -72,6 +72,7 @@ public class SlideXmlConstants {
 	public static final String CAPTION = "Caption";
 	public static final String ORIENTATION = "Orientation";
 	public static final String LABEL_POSITION = "LabelPosition";
+	public static final String MULTI_SELECT = "MultiSelect";
 	public static final String CLICK = "Click";
 	public static final String LOAD = "Load";
 	public static final String INIT = "Init";
@@ -162,7 +163,7 @@ public class SlideXmlConstants {
 
 	public static final StringSet VALID_CONTAINER_ELEMENTS = new StringSet(
 			VALID_VIEWPORT_ELEMENTS, new String[] { BUTTON, COMBOBOX, BUTTON_PANEL,
-					DATE_FIELD, IMAGE, LABEL, RADIO_PANEL, TEXT_AREA, TEXT_FIELD, TIMER_LABEL });
+					DATE_FIELD, IMAGE, LABEL, SELECT_PANEL, TEXT_AREA, TEXT_FIELD, TIMER_LABEL });
 
 	public static final StringSet VALID_WINDOW_ELEMENTS = VALID_PANEL_ELEMENTS;
 

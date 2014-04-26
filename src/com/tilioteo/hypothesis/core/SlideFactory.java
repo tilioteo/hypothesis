@@ -21,7 +21,7 @@ import com.tilioteo.hypothesis.event.ActionEvent;
 import com.tilioteo.hypothesis.event.ButtonData;
 import com.tilioteo.hypothesis.event.ButtonPanelData;
 import com.tilioteo.hypothesis.event.ImageData;
-import com.tilioteo.hypothesis.event.RadioPanelData;
+import com.tilioteo.hypothesis.event.SelectPanelData;
 import com.tilioteo.hypothesis.event.TimerData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Action;
@@ -113,17 +113,18 @@ public class SlideFactory {
 		subElement.addText(String.format(Locale.ROOT, "%d", timerData.getTime()));
 	}
 
-	public static void writeRadioPanelData(Element sourceElement, RadioPanelData radioPanelData) {
-		String id = radioPanelData.getComponentId();
-		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.RADIO_PANEL);
+	public static void writeSelectPanelData(Element sourceElement, SelectPanelData selectPanelData) {
+		String id = selectPanelData.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.SELECT_PANEL);
 		if (id != null) {
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
 		}
-		int index = radioPanelData.getRadioButtonIndex();
+		int index = selectPanelData.getButtonIndex();
 		if (index > 0) {
 			Element selectedElement = sourceElement.addElement(SlideXmlConstants.SELECTED);
 			selectedElement.addAttribute(SlideXmlConstants.INDEX, String.format("%d", index));
-			selectedElement.addText(radioPanelData.getRadioButton().getCaption());
+			selectedElement.addAttribute(SlideXmlConstants.VALUE, selectPanelData.getButton().getValue() ? "true" : "false");
+			selectedElement.addText(selectPanelData.getButton().getCaption());
 		}
 	}
 

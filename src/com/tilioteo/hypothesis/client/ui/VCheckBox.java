@@ -10,13 +10,13 @@ import com.google.gwt.user.client.DOM;
  * @author kamil
  *
  */
-public class VRadioButton extends SelectButton {
+public class VCheckBox extends SelectButton {
 
-	public static final String CLASSNAME = "v-radiobutton";
+	public static final String CLASSNAME = "v-checkbox";
 
 	@Override
 	protected Element createInputElement() {
-		return DOM.createInputRadio("");
+		return DOM.createInputCheck();
 	}
 
 }

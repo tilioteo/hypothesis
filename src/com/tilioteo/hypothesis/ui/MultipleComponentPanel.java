@@ -25,7 +25,7 @@ public class MultipleComponentPanel<C extends AbstractComponent> extends Panel {
 		Vertical, Horizontal
 	};
 
-	private List<C> childList = new LinkedList<C>();
+	protected List<C> childList = new LinkedList<C>();
 	private Orientation orientation = Orientation.Horizontal;
 	private String childWidth = null;
 	private String childHeight = null;

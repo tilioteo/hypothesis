@@ -18,6 +18,7 @@ import com.tilioteo.hypothesis.data.EmptyValidator;
 import com.tilioteo.hypothesis.data.IntegerValidator;
 import com.tilioteo.hypothesis.data.NumberRangeValidator;
 import com.tilioteo.hypothesis.data.NumberValidator;
+import com.tilioteo.hypothesis.data.SelectPanelEmptyValidator;
 import com.tilioteo.hypothesis.data.Validator;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
@@ -65,9 +66,9 @@ public class ComponentFactory {
 			else if (name.equals(SlideXmlConstants.BUTTON_PANEL))
 				component = ComponentFactory.<ButtonPanel> createFromElement(
 						ButtonPanel.class, element, slideManager);
-			else if (name.equals(SlideXmlConstants.RADIO_PANEL))
-				component = ComponentFactory.<RadioPanel> createFromElement(
-						RadioPanel.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.SELECT_PANEL))
+				component = ComponentFactory.<SelectPanel> createFromElement(
+						SelectPanel.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.TEXT_FIELD))
 				component = ComponentFactory.<TextField> createFromElement(
 						TextField.class, element, slideManager);
@@ -338,6 +339,33 @@ public class ComponentFactory {
 		}
 		
 		return validators;
+	}
+
+	public static List<Validator> createSelectPanelValidators(Element element) {
+		List<Element> validatorElements = SlideUtility.getValidatorElements(element);
+		List<Validator> validators = new ArrayList<Validator>();
+		
+		for (Element validatorElement : validatorElements) {
+			Validator validator = null;
+			String name = validatorElement.getName();
+			
+			if (name.equals(SlideXmlConstants.EMPTY)) {
+				validator = createSelectPanelEmptyValidator(validatorElement);
+			}
+			
+			if (validator != null) {
+				validators.add(validator);
+			}
+		}
+		
+		return validators;
+	}
+
+	public static SelectPanelEmptyValidator createSelectPanelEmptyValidator(Element element) {
+		// TODO add default validator message
+		String message = SlideXmlUtility.getValidatorMessage(element, "");
+		
+		return new SelectPanelEmptyValidator(message);
 	}
 
 }

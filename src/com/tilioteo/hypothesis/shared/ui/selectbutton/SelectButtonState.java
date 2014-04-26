@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.shared.ui.radiobutton;
+package com.tilioteo.hypothesis.shared.ui.selectbutton;
 
 import com.vaadin.shared.AbstractFieldState;
 
@@ -10,9 +10,9 @@ import com.vaadin.shared.AbstractFieldState;
  * 
  */
 @SuppressWarnings("serial")
-public class RadioButtonState extends AbstractFieldState {
+public class SelectButtonState extends AbstractFieldState {
 	{
-		primaryStyleName = "v-radiobutton";
+		primaryStyleName = "v-selectbutton";
 	}
 
 	public enum LabelPosition {

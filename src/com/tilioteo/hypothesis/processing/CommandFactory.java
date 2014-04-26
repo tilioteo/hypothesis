@@ -12,8 +12,8 @@ import com.tilioteo.hypothesis.event.ButtonPanelData;
 import com.tilioteo.hypothesis.event.ButtonPanelEvent;
 import com.tilioteo.hypothesis.event.ImageData;
 import com.tilioteo.hypothesis.event.ImageEvent;
-import com.tilioteo.hypothesis.event.RadioPanelData;
-import com.tilioteo.hypothesis.event.RadioPanelEvent;
+import com.tilioteo.hypothesis.event.SelectPanelData;
+import com.tilioteo.hypothesis.event.SelectPanelEvent;
 import com.tilioteo.hypothesis.event.TimerData;
 import com.tilioteo.hypothesis.event.TimerEvent;
 
@@ -73,8 +73,8 @@ public class CommandFactory {
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createRadioPanelClickEventCommand(RadioPanelData data) {
-		RadioPanelEvent event = new RadioPanelEvent.Click(data);
+	public static Command createSelectPanelClickEventCommand(SelectPanelData data) {
+		SelectPanelEvent event = new SelectPanelEvent.Click(data);
 
 		return createComponentEventCommand(event);
 	}
