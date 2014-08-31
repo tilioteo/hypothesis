@@ -16,6 +16,7 @@ public class VectorFeatureState extends AbstractFeatureState {
 	public Double centroidX = null;
 	public Double centroidY = null;
 	public Map<String, String> style = null;
+	public Map<String, String> hoverStyle = null;
 	public String text = null;
 	public double offsetX = 0.0;
 	public double offsetY = 0.0;

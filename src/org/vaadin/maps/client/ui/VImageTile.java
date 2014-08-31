@@ -15,5 +15,12 @@ public class VImageTile extends Image {
 
     public VImageTile() {
         setStylePrimaryName(CLASSNAME);
+        
+        setAltText("");
+    }
+    
+    @Override
+    public void setUrl(String url) {
+    	super.setUrl(url != null ? url : "");
     }
 }

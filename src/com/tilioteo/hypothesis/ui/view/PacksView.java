@@ -9,8 +9,8 @@ import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.model.PacksModel;
 import com.tilioteo.hypothesis.ui.BrowserAppletFrame;
 import com.tilioteo.hypothesis.ui.PackPanel;
-import com.tilioteo.hypothesis.ui.PackPanel.StartEvent;
-import com.tilioteo.hypothesis.ui.PackPanel.StartListener;
+import com.tilioteo.hypothesis.ui.SimplePackPanel.StartEvent;
+import com.tilioteo.hypothesis.ui.SimplePackPanel.StartListener;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -126,7 +126,7 @@ public class PacksView extends HypothesisView implements MouseEvents.ClickListen
 
 	@Override
 	public void start(StartEvent event) {
-		packsModel.startTest(event.getPack(), frame, event.getForceLegacy());
+		packsModel.startTest(event.getPack(), frame, event.isAlt());
 	}
 
 }

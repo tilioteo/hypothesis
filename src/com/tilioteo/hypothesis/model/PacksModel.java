@@ -43,6 +43,10 @@ public class PacksModel implements ReadyCheckedListener {
 		return permissionManager.getPublishedPacks();
 	}
 	
+	public List<Pack> getSimplePublicPacks() {
+		return permissionManager.getSimplePublishedPacks();
+	}
+	
 	public List<Pack> getPackByHash(String hash) {
 		List<Pack> packs = permissionManager.findAllPacks();
 		
@@ -91,6 +95,14 @@ public class PacksModel implements ReadyCheckedListener {
 			}
 		}
 	}
+	
+	public void startSimpleTest(Pack pack) {
+		token = createToken(pack);
+		
+		if (token != null) {
+			navigateToTest();
+		}
+	}
 
 	private Token createToken(Pack pack) {
 		return tokenManager.createToken(null, pack, true);
@@ -104,6 +116,18 @@ public class PacksModel implements ReadyCheckedListener {
 		String url = String.format("%s/process/?%s=%s%s", contextUrl, "token", token.getUid(), "&fs");
 		JavaScript javaScript = Page.getCurrent().getJavaScript();
 		javaScript.execute("open(\"" + url + "\",\"_blank\",\"width=800,height=600,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no\")");
+		token = null;
+	}
+
+	private void navigateToTest() {
+		String contextUrl = ServletUtil.getContextURL((VaadinServletRequest)VaadinService.getCurrentRequest());
+
+		//client debug
+		//String url = String.format("%s/process/?gwt.codesvr=127.0.0.1:9997&%s=%s%s", contextUrl, "token", token.getUid(), "&fs&bk=true");
+		String url = String.format("%s/process/?%s=%s%s", contextUrl, "token", token.getUid(), "&fs&bk=true");
+		Page.getCurrent().setLocation(url);
+		/*JavaScript javaScript = Page.getCurrent().getJavaScript();
+		javaScript.execute("window.location.href=\"" + url + "\"");*/
 		token = null;
 	}
 

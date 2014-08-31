@@ -140,13 +140,21 @@ public class SlideXmlFactory {
 			Element destinationElement, Element sourceSubElement) {
 		log.debug("mergeBindingNodes(...)");
 		
-		String sourceSubElementName = sourceSubElement.getName();
-
-		Element destinationSubElement = (Element) destinationElement
-				.selectSingleNode(sourceSubElementName);
+		String name = sourceSubElement.getName();
+		String prefix = sourceSubElement.getNamespacePrefix();
+		String uri = sourceSubElement.getNamespaceURI();
+		
+		String id = SlideXmlUtility.getId(sourceSubElement);
+		
+		Element destinationSubElement = null;
+		if (!Strings.isNullOrEmpty(id)) {
+			destinationSubElement = XmlUtility.findElementByNameAndValue(destinationElement, name, prefix, uri, SlideXmlConstants.ID, id);
+		} else {
+			destinationSubElement = XmlUtility.findElementByNameAndValue(destinationElement, name, prefix, uri, null, null);
+		}
 		if (destinationSubElement == null) {
 			destinationSubElement = destinationElement
-					.addElement(sourceSubElementName);
+					.addElement(name);
 		}
 
 		mergeElements(destinationSubElement, sourceSubElement);
@@ -171,13 +179,25 @@ public class SlideXmlFactory {
 		List<Node> sourceNodes = source.selectNodes("*");
 		for (Node sourceNode : sourceNodes) {
 			if (sourceNode instanceof Element) {
-				Element destinationElement = (Element) XmlUtility
-						.findFirstNodeByName(destination, sourceNode.getName());
-				if (destinationElement == null) {
-					destination.add((Node) sourceNode.clone());
+				Element sourceSubElement = (Element)sourceNode;
+				String name = sourceSubElement.getName();
+				String prefix = sourceSubElement.getNamespacePrefix();
+				String uri = sourceSubElement.getNamespaceURI();
+				
+				String id = SlideXmlUtility.getId(sourceSubElement);
+				
+				Element destinationSubElement = null;
+				if (!Strings.isNullOrEmpty(id)) {
+					destinationSubElement = XmlUtility.findElementByNameAndValue(destination, name, prefix, uri, SlideXmlConstants.ID, id);
 				} else {
-					mergeElements(destinationElement, (Element) sourceNode);
+					destinationSubElement = XmlUtility.findElementByNameAndValue(destination, name, prefix, uri, null, null);
 				}
+				if (destinationSubElement == null) {
+					destinationSubElement = destination.addElement(name);
+				}
+					//destination.add((Node) sourceNode.clone());
+				//} else {
+					mergeElements(destinationSubElement, sourceSubElement);
 			}
 		}
 	}

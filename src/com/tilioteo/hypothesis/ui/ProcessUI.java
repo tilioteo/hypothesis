@@ -34,6 +34,7 @@ import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
@@ -48,12 +49,13 @@ import com.vaadin.ui.VerticalLayout;
 public class ProcessUI extends HUI implements ProcessEventListener,
 		DetachListener {
 
+	private static Logger log = Logger.getLogger(ProcessUI.class);
+
 	public static final String FULLSCREEN_PARAMETER = "fs";
+	public static final String BACK_PARAMETER = "bk";
 	public static final String TOKEN_PARAMETER = "token";
 	public static final String CLOSE_URL = "/resource/close.html";
 	public static final String ERROR_INVALID_ACCESS = "Invalid access.";
-
-	private static Logger log = Logger.getLogger(ProcessUI.class);
 
 	@WebServlet(value = "/process/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = ProcessUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
@@ -63,6 +65,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 	private final ProcessModel processModel = new ProcessModel(this);
 	private VerticalLayout clearLayout = new VerticalLayout();
 	private boolean requestFullscreen = false;
+	private boolean requestBack = false;
 	private boolean animate = true;
 	
 	@Override
@@ -75,6 +78,13 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 		String fullScreen = request.getParameter(FULLSCREEN_PARAMETER);
 		if (fullScreen != null && !fullScreen.equalsIgnoreCase("false")) {
 			requestFullscreen = true;
+		}
+
+		String canBack = request.getParameter(BACK_PARAMETER);
+		if (null == canBack || !canBack.equalsIgnoreCase("true")) {
+			requestBack = false;
+		} else {
+			requestBack = true;
 		}
 
 		String token = request.getParameter(TOKEN_PARAMETER);
@@ -92,6 +102,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 
 	@Override
 	public void handleEvent(ProcessEvent event) {
+		log.debug(String.format("handleEvent: name = %s", event.getName() != null ? event.getName() : "NULL"));
 		if (event instanceof AfterPrepareTestEvent) {
 			showPreparedContent((AfterPrepareTestEvent) event);
 			
@@ -114,10 +125,13 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 
 		} else if (event instanceof CloseTestEvent) {
 			close();
+		} else {
+			log.debug("Unknown process event - skip handling");
 		}
 	}
 
 	private void doAfterFinishSlide(final AfterFinishSlideEvent event) {
+		log.debug(String.format("doAfterFinishSlide: slide id = %s", event.getSlide() != null ? event.getSlide().getId() : "NULL"));
 		clearContent(animate, new Command() {
 			@Override
 			public void execute() {
@@ -127,6 +141,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 	}
 
 	private void renderContent(RenderContentEvent event) {
+		log.debug("renderContent::");
 		LayoutComponent content = event.getContent();
 		// set slide component to window content
 		// Alignment is ignored here
@@ -135,11 +150,13 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 			setSlideContent(component, event.getTimers());
 			processModel.fireAfterRender(content);
 		} else {
+			log.error("Error while rendering slide.");
 			processModel.fireTestError();
 		}
 	}
 	
 	private void showPreparedContent(final AfterPrepareTestEvent afterPrepareTestEvent) {
+		log.debug(String.format("showPreparedContent: test id = %s", afterPrepareTestEvent.getTest() != null ? afterPrepareTestEvent.getTest().getId() : "NULL"));
 		setContent(new PreparedTestContent(this, new Command() {
 			@Override
 			public void execute() {
@@ -149,6 +166,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 	}
 
 	private void showFinishContent(final FinishTestEvent finishTestEvent) {
+		log.debug(String.format("showFinishContent: test id = %s", finishTestEvent.getTest() != null ? finishTestEvent.getTest().getId() : "NULL"));
 		clearContent(false, null);
 		
 		setContent(new FinishTestContent(new Command() {
@@ -160,11 +178,13 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 	}
 
 	private void showNotification(AbstractNotificationEvent event) {
+		log.debug(String.format("showNotification: test id = %s, message = %s", event.getTest() != null ? event.getTest().getId() : "NULL", event.getDescription() != null ? event.getDescription() : "NULL"));
 		Notification notification = event.getNotification();
 		notification.show(Page.getCurrent());
 	}
 
 	private void showErrorDialog(final ErrorNotificationEvent event) {
+		log.debug(String.format("showErrorDialog: test id = %s, message = %s", event.getTest() != null ? event.getTest().getId() : "NULL", event.getDescription() != null ? event.getDescription() : "NULL"));
 		ErrorDialog errorDialog = new ErrorDialog("Error", event.getCaption());
 		errorDialog.addCloseListener(new Window.CloseListener() {
 			@Override
@@ -179,6 +199,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 	 * sets empty vertical layout to remove old content
 	 */
 	public void clearContent(boolean animate, final Command nextCommand) {
+		log.debug("clearContent::");
 		removeAllTimers();
 		if (animate) {
 			Component content = getContent();
@@ -207,6 +228,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 	}
 
 	private void setSlideContent(Component component, Collection<Timer> timers) {
+		log.debug("setSlideContent::");
 		setContent(component);
 		for (Timer timer : timers) {
 			addTimer(timer);
@@ -215,17 +237,25 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 
 	@Override
 	public void detach(DetachEvent event) {
-		log.debug("ProcessUI detached");
+		log.debug("ProcessUI detached.");
 		
 		processModel.requestBreak();
 	}
 
 	@Override
 	public void close() {
+		log.debug("close::");
 		super.close();
 
-		String path = VaadinServlet.getCurrent().getServletContext().getContextPath();
-		Page.getCurrent().setLocation(path + CLOSE_URL);
+		if (!requestBack) {
+			log.debug("Setting close url.");
+			String path = VaadinServlet.getCurrent().getServletContext().getContextPath();
+			Page.getCurrent().setLocation(path + CLOSE_URL);
+		} else {
+			log.debug("History back.");
+			JavaScript javaScript = Page.getCurrent().getJavaScript();
+			javaScript.execute("window.history.back();");
+		}
 	}
 	
 	public boolean isFullscreen() {

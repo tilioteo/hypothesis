@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.persistence;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 
 import com.tilioteo.hypothesis.common.EntityFieldConstants;
@@ -19,6 +20,8 @@ import com.tilioteo.hypothesis.entity.User;
  * 
  */
 public class TokenManager {
+
+	private static Logger log = Logger.getLogger(TokenManager.class);
 
 	private static final int TOKEN_VALID_TIME = 120 * 1000; // 2 minutes
 
@@ -46,6 +49,7 @@ public class TokenManager {
 	}
 
 	public Token findTokenByUid(String uid) {
+		log.debug("findTokenByUid");
 		try {
 			tokenDao.beginTransaction();
 			// first purge invalid tokens and then find token by uid
@@ -68,12 +72,14 @@ public class TokenManager {
 
 			return token;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			tokenDao.rollback();
 			return null;
 		}
 	}
 
 	private boolean persistToken(Token token) {
+		log.debug("persistToken");
 		try {
 			tokenDao.beginTransaction();
 			tokenDao.makePersistent(token);
@@ -81,6 +87,7 @@ public class TokenManager {
 
 			return true;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			tokenDao.rollback();
 			return false;
 		}

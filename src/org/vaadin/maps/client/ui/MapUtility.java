@@ -18,10 +18,10 @@ import com.gwtent.reflection.client.TypeOracle;
 public class MapUtility {
 
 	
-	public static final Style getStyleFromMap(Map<String, String> map) {
-		Style style = new Style();
-		
-		if (map != null) {
+	public static final Style getStyleFromMap(Map<String, String> map, Style defaultStyle) {
+		if (map != null && !map.isEmpty()) {
+			Style style = new Style();
+
 			ClassType<Style> classType = TypeOracle.Instance.getClassType(Style.class);
 
 			Field[] fields = classType.getFields();
@@ -51,9 +51,10 @@ public class MapUtility {
 					}
 				}
 			}
+			return style;
+		} else {
+			return defaultStyle;
 		}
-		
-		return style;
 	}
 	
 }

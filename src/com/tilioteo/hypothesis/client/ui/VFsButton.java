@@ -41,10 +41,16 @@ public class VFsButton extends VButton {
 					var docElm = $doc.documentElement;
 					if (docElm.requestFullscreen) {
 						docElm.requestFullscreen();
+					} else if (docElm.requestFullScreen) {
+						docElm.requestFullScreen();
 					} else if (docElm.msRequestFullscreen) {
 						docElm.msRequestFullscreen();
+					} else if (docElm.msRequestFullScreen) {
+						docElm.msRequestFullScreen();
 					} else if (docElm.mozRequestFullScreen) {
 						docElm.mozRequestFullScreen();
+					} else if (docElm.webkitRequestFullscreen) {
+						docElm.webkitRequestFullscreen();
 					} else if (docElm.webkitRequestFullScreen) {
 						docElm.webkitRequestFullScreen();
 					}

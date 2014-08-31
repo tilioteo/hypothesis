@@ -5,6 +5,8 @@ package com.tilioteo.hypothesis.evaluable;
 
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.tilioteo.hypothesis.common.ReadOnlyHashSet;
 import com.tilioteo.hypothesis.common.StringConstants;
 import com.tilioteo.hypothesis.common.Strings;
@@ -14,6 +16,8 @@ import com.tilioteo.hypothesis.common.Strings;
  *
  */
 public class ExpressionFactory {
+
+	private static Logger log = Logger.getLogger(ExpressionFactory.class);
 
 	private static final Set<Character> PROHIBITED = new ReadOnlyHashSet<Character>(
 			StringConstants.CHR_REV_QUOTE,
@@ -77,7 +81,9 @@ public class ExpressionFactory {
 		Expression expression = null;
 		try {
 			expression = buildExpression(text);
-		} catch (Throwable e) {}
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+		}
 		
 		return expression;
 	}

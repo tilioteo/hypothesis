@@ -9,9 +9,10 @@ import org.vaadin.maps.server.ImageResource;
 import org.vaadin.maps.shared.ui.layer.ImageLayerServerRpc;
 import org.vaadin.maps.shared.ui.layer.ImageLayerState;
 import org.vaadin.maps.ui.tile.ImageTile;
-import org.vaadin.maps.ui.tile.ImageTile.ClickListener;
-import org.vaadin.maps.ui.tile.ImageTile.LoadListener;
+import org.vaadin.maps.ui.tile.ProxyTile.ErrorListener;
+import org.vaadin.maps.ui.tile.ProxyTile.LoadListener;
 
+import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.ui.Component.Focusable;
 
 /**
@@ -123,6 +124,26 @@ public class ImageLayer extends AbstractLayer<ImageTile> implements Focusable {
 	 */
 	public void removeLoadListener(LoadListener listener) {
 		getContent().removeLoadListener(listener);
+	}
+
+	/**
+	 * Adds the image tile error listener.
+	 * 
+	 * @param listener
+	 *            the Listener to be added.
+	 */
+	public void addErrorListener(ErrorListener listener) {
+		getContent().addErrorListener(listener);
+	}
+
+	/**
+	 * Removes the image tile error listener.
+	 * 
+	 * @param listener
+	 *            the Listener to be removed.
+	 */
+	public void removeErrorListener(ErrorListener listener) {
+		getContent().removeErrorListener(listener);
 	}
 
 }

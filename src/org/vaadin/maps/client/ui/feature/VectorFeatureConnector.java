@@ -7,6 +7,7 @@ import org.vaadin.maps.client.drawing.Utils;
 import org.vaadin.maps.client.io.ParseException;
 import org.vaadin.maps.client.ui.MapUtility;
 import org.vaadin.maps.client.ui.VVectorFeature;
+import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.feature.FeatureServerRpc;
 import org.vaadin.maps.shared.ui.feature.VectorFeatureState;
 
@@ -78,7 +79,10 @@ public class VectorFeatureConnector extends AbstractComponentConnector {
 			getWidget().setCentroid(getState().centroidX, getState().centroidY);
 		}
 		if (stateChangeEvent.hasPropertyChanged("style")) {
-			getWidget().setStyle(MapUtility.getStyleFromMap(getState().style));
+			getWidget().setStyle(MapUtility.getStyleFromMap(getState().style, Style.DEFAULT));
+		}
+		if (stateChangeEvent.hasPropertyChanged("hoverStyle")) {
+			getWidget().setHoverStyle(MapUtility.getStyleFromMap(getState().hoverStyle, null));
 		}
 		if (stateChangeEvent.hasPropertyChanged("offsetX") ||
 				stateChangeEvent.hasPropertyChanged("offsetY")) {

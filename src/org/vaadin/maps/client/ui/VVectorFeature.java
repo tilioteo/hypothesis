@@ -12,6 +12,11 @@ import org.vaadin.maps.client.geometry.Coordinate;
 import org.vaadin.maps.client.geometry.Geometry;
 import org.vaadin.maps.shared.ui.Style;
 
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -27,9 +32,13 @@ public class VVectorFeature extends AbstractDrawingContainer {
 	private String text = null;
 	private Text textShape = null;
 	private Style style = Style.DEFAULT;
+	private Style hoverStyle = null;
 	private Coordinate centroid = null;
 	private Coordinate textOffset = new Coordinate();
 	private boolean hidden = false;
+	
+	private HandlerRegistration mouseOverHandler = null;
+	private HandlerRegistration mouseOutHandler = null;
 	
 	public VVectorFeature() {
 		super();
@@ -78,6 +87,16 @@ public class VVectorFeature extends AbstractDrawingContainer {
 		updateTextStyle();
 	}
 	
+	public Style getHoverStyle() {
+		return hoverStyle;
+	}
+	
+	public void setHoverStyle(Style style) {
+		this.hoverStyle = style;
+		updateHoverStyle();
+		//updateTextStyle();
+	}
+	
 	public boolean isHidden() {
 		return hidden;
 	}
@@ -109,6 +128,34 @@ public class VVectorFeature extends AbstractDrawingContainer {
 		}
 	}
 
+	private void updateHoverStyle() {
+		if (drawing != null) {
+			if (hoverStyle != null) {
+				mouseOverHandler = drawing.addMouseOverHandler(new MouseOverHandler() {
+					@Override
+					public void onMouseOver(MouseOverEvent event) {
+						Utils.updateDrawingStyle(drawing, hoverStyle);
+					}
+				});
+				mouseOutHandler = drawing.addMouseOutHandler(new MouseOutHandler() {
+					@Override
+					public void onMouseOut(MouseOutEvent event) {
+						Utils.updateDrawingStyle(drawing, style);
+					}
+				});
+			} else {
+				if (mouseOverHandler != null) {
+					mouseOverHandler.removeHandler();
+					mouseOverHandler = null;
+				}
+				if (mouseOutHandler != null) {
+					mouseOutHandler.removeHandler();
+					mouseOutHandler = null;
+				}
+			}
+		}
+	}
+
 	private void updateTextStyle() {
 		if (textShape != null && style != null) {
 			Utils.updateDrawingStyle(textShape, style);
@@ -132,6 +179,7 @@ public class VVectorFeature extends AbstractDrawingContainer {
 	private void drawGeometry(Geometry geometry) {
 		drawing = Utils.drawGeometry(geometry);
 		updateDrawingStyle();
+		updateHoverStyle();
 		add(drawing);
 	}
 	

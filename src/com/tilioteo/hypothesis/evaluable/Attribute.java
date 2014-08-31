@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.evaluable;
 
+import org.apache.log4j.Logger;
+
 import com.tilioteo.hypothesis.annotation.ExpressionScope;
 import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
 import com.tilioteo.hypothesis.annotation.ExpressionScopePrivate;
@@ -13,6 +15,8 @@ import com.tilioteo.hypothesis.annotation.ExpressionScopePrivate;
  */
 public class Attribute extends Variable implements HasReference {
 	
+	private static Logger log = Logger.getLogger(Attribute.class);
+
 	private Primitive reference;
 	
 	public Attribute(String name) {
@@ -56,8 +60,9 @@ public class Attribute extends Variable implements HasReference {
 					Object res = field.get(obj);
 					return res;
 				} catch (Exception e) {
+					log.error(e.getMessage());
 					// TODO: handle exception
-					System.err.println(e.getMessage());
+					System.err.println();
 				}
 			} /*else
 				throw new NullReferenceException(String.format("Object reference for method %s is null", name));*/

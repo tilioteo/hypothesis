@@ -33,10 +33,10 @@ public class VPathHandler extends VPointHandler {
 	 * Stack of line vertices, excluding first and last vertex
 	 */
 	protected Stack<Circle> vertices = new Stack<Circle>();
-	protected Style drawVertexStyle = Style.DEFAULT_DRAW_VERTEX;
+	protected Style vertexStyle = Style.DEFAULT_DRAW_VERTEX;
 	
 	protected Path line = null;
-	protected Style drawLineStyle = Style.DEFAULT_DRAW_LINE;
+	protected Style lineStyle = Style.DEFAULT_DRAW_LINE;
 	
 	/**
 	 * line actually drawn
@@ -69,13 +69,13 @@ public class VPathHandler extends VPointHandler {
 	private void addLine(int x, int y) {
 		line = new Path(x, y);
 		line.lineTo(x, y);
-		updateDrawLineStyle();
+		updateLineStyle();
 		container.add(line);
 	}
 	
-	private void updateDrawLineStyle() {
-		if (line != null && drawLineStyle != null) {
-			Utils.updateDrawingStyle(line, drawLineStyle);
+	private void updateLineStyle() {
+		if (line != null && lineStyle != null) {
+			Utils.updateDrawingStyle(line, lineStyle);
 		}
 	}
 
@@ -93,8 +93,8 @@ public class VPathHandler extends VPointHandler {
 	}
 
 	private void updateDrawVertexStyle(Circle vertex) {
-		if (vertex != null && drawVertexStyle != null) {
-			Utils.updateDrawingStyle(vertex, drawVertexStyle);
+		if (vertex != null && vertexStyle != null) {
+			Utils.updateDrawingStyle(vertex, vertexStyle);
 		}
 	}
 	
@@ -111,13 +111,13 @@ public class VPathHandler extends VPointHandler {
 		}
 	}
 
-	private void addLineSegment(int x, int y) {
+	protected void addLineSegment(int x, int y) {
 		addVertex(x, y);
 		
 		line.lineTo(x, y);
 	}
 	
-	private void addLineStringVertex(int[] xy) {
+	protected void addLineStringVertex(int[] xy) {
 		lineString.getCoordinateSequence().add(createWorldCoordinate(xy));
 	}
 
@@ -130,12 +130,12 @@ public class VPathHandler extends VPointHandler {
 		}
 	}
 	
-	private void prepareDrawing(int x, int y) {
+	protected void prepareDrawing(int x, int y) {
 		addStartPoint(x, y);
 		addLine(x, y);
 	}
 	
-	private void prepareLineString(int[] xy) {
+	protected void prepareLineString(int[] xy) {
 		lineString = new LineString(createWorldCoordinate(xy));
 	}
 	
@@ -143,17 +143,17 @@ public class VPathHandler extends VPointHandler {
 		lineString.getCoordinateSequence().add(createWorldCoordinate(xy));
 	}
 	
-	private void closeLineString() {
+	protected void closeLineString() {
 		lineString.close();
 	}
 
-	private void cleanDrawing() {
+	protected void cleanDrawing() {
 		removeVertices();
 		removeStartPoint();
 		removeLine();
 	}
 	
-	private void cleanLineString() {
+	protected void cleanLineString() {
 		lineString = null;
 	}
 	
@@ -163,37 +163,37 @@ public class VPathHandler extends VPointHandler {
 	
 	public void setStartPointStyle(Style style) {
 		if (style != null) {
-			this.startPointStyle = style;
+			startPointStyle = style;
 		} else {
-			this.startPointStyle = Style.DEFAULT_DRAW_CURSOR;
+			startPointStyle = Style.DEFAULT_DRAW_CURSOR;
 		}
 		
 		updateStartPointStyle();
 	}
 
-	public Style getDrawLineStyle() {
-		return drawLineStyle;
+	public Style getLineStyle() {
+		return lineStyle;
 	}
 	
-	public void setDrawLineStyle(Style style) {
+	public void setLineStyle(Style style) {
 		if (style != null) {
-			this.drawLineStyle = style;
+			lineStyle = style;
 		} else {
-			this.drawLineStyle = Style.DEFAULT_DRAW_LINE;
+			lineStyle = Style.DEFAULT_DRAW_LINE;
 		}
 		
-		updateDrawLineStyle();
+		updateLineStyle();
 	}
 
-	public Style getDrawVertexStyle() {
-		return drawVertexStyle;
+	public Style getVertexStyle() {
+		return vertexStyle;
 	}
 	
-	public void setDrawVertexStyle(Style style) {
+	public void setVertexStyle(Style style) {
 		if (style != null) {
-			this.drawVertexStyle = style;
+			vertexStyle = style;
 		} else {
-			this.drawVertexStyle = Style.DEFAULT_DRAW_VERTEX;
+			vertexStyle = Style.DEFAULT_DRAW_VERTEX;
 		}
 		
 		updateVerticesStyle();
@@ -246,7 +246,7 @@ public class VPathHandler extends VPointHandler {
 		}
 	}
 
-	private boolean isWithinCircle(int circleX, int circleY, int radius, int pointX, int pointY) {
+	protected boolean isWithinCircle(int circleX, int circleY, int radius, int pointX, int pointY) {
 		return Math.sqrt(
 				Math.pow(pointX - circleX, 2) +
 				Math.pow(pointY - circleY, 2)

@@ -26,7 +26,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
  * @author kamil
  *
  */
-public class VPointHandler extends AbstractHandler implements ClickHandler, MouseMoveHandler {
+public class VPointHandler extends AbstractDrawFeatureHandler implements ClickHandler, MouseMoveHandler {
 
 	public static final String CLASSNAME = "v-pointhandler";
 	
@@ -34,8 +34,6 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 	
 	protected VVectorFeatureLayer layer = null;
 	protected VVectorFeatureContainer container = null;
-	
-	protected Style cursorStyle = Style.DEFAULT_DRAW_CURSOR;
 	
 	/**
 	 * point of mouse cursor position
@@ -166,16 +164,9 @@ public class VPointHandler extends AbstractHandler implements ClickHandler, Mous
 		super.deactivate();
 	}
 	
-	public Style getCursorStyle() {
-		return cursorStyle;
-	}
-
+	@Override
 	public void setCursorStyle(Style style) {
-		if (style != null) {
-			this.cursorStyle = style;
-		} else {
-			this.cursorStyle = Style.DEFAULT_DRAW_CURSOR;
-		}
+		super.setCursorStyle(style);
 		
 		updateCursorStyle();
 	}

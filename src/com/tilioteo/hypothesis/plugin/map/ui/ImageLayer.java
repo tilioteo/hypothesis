@@ -6,10 +6,8 @@ package com.tilioteo.hypothesis.plugin.map.ui;
 import java.util.List;
 
 import org.dom4j.Element;
-import org.vaadin.maps.ui.tile.ImageTile.ClickEvent;
-import org.vaadin.maps.ui.tile.ImageTile.ClickListener;
-import org.vaadin.maps.ui.tile.ImageTile.LoadEvent;
-import org.vaadin.maps.ui.tile.ImageTile.LoadListener;
+import org.vaadin.maps.ui.tile.ProxyTile.LoadEvent;
+import org.vaadin.maps.ui.tile.ProxyTile.LoadListener;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
@@ -24,6 +22,8 @@ import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.tilioteo.hypothesis.ui.SlideComponent;
+import com.vaadin.event.MouseEvents.ClickEvent;
+import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.ui.Alignment;
 
 /**

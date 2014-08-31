@@ -3,6 +3,8 @@
  */
 package org.vaadin.maps.shared.ui.control;
 
+import java.util.Map;
+
 import com.vaadin.shared.Connector;
 
 /**
@@ -16,4 +18,6 @@ public class DrawFeatureControlState extends AbstractControlState {
     }
 
 	public Connector layer = null;
+	public Map<String, String> cursorStyle = null;
+
 }

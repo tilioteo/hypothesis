@@ -40,10 +40,16 @@ public class VectorFeature extends AbstractFeature {
 	
 	private Geometry geometry = null;
 	private Style style = null;
+	private Style hoverStyle = null;
 	
+	private Style inheritedStyle = null;
+	private Style inheritedHoverStyle = null;
+
 	public VectorFeature() {
 		super();
 		registerRpc(rpc);
+		
+		setStyle(null);
 	}
 	
 	public VectorFeature(Geometry geometry) {
@@ -77,11 +83,47 @@ public class VectorFeature extends AbstractFeature {
 	public Style getStyle() {
 		return style;
 	}
-
+	
 	public void setStyle(Style style) {
 		this.style = style;
-		getState().style = MapUtility.getStyleMap(style);
+		
+		getState().style = MapUtility.getStyleMap(this.style != null ? this.style : inheritedStyle);
 		markAsDirty();
+	}
+	
+	public Style getHoverStyle() {
+		return hoverStyle;
+	}
+
+	public void setHoverStyle(Style style) {
+		hoverStyle = style;
+		
+		getState().hoverStyle = MapUtility.getStyleMap(hoverStyle != null ? hoverStyle : style);
+		markAsDirty();
+	}
+	
+	public Style getInheritedStyle() {
+		return inheritedStyle;
+	}
+	
+	public void setInheritedStyle(Style style) {
+		inheritedStyle = style;
+		
+		if (null == this.style) {
+			getState().style = MapUtility.getStyleMap(inheritedStyle);
+		}
+	}
+	
+	public Style getInheritedHoverStyle() {
+		return inheritedHoverStyle;
+	}
+
+	public void setInheritedHoverStyle(Style style) {
+		inheritedHoverStyle = style;
+		
+		if (null == hoverStyle) {
+			getState().hoverStyle = MapUtility.getStyleMap(inheritedHoverStyle);
+		}
 	}
 	
 	public String getText() {

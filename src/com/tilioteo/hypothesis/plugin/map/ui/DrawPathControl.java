@@ -54,7 +54,8 @@ public class DrawPathControl extends org.vaadin.maps.ui.control.DrawPathControl 
 
 		MapUtility.setDrawFeatureControlProperties(this, element, properties, slideManager);
 		
-		// set DrawPointControl specific properties
+		// set DrawPathControl specific properties
+		MapUtility.setDrawPathControlProperties(this, element, properties, slideManager);
 	}
 
 	private void setHandlers(Element element) {

@@ -22,5 +22,5 @@ public interface LoadRpc extends ServerRpc {
      * listeners for the event.
      * 
      */
-	//public void error();
+	public void error();
 }

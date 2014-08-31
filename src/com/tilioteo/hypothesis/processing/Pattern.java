@@ -6,6 +6,8 @@ package com.tilioteo.hypothesis.processing;
 import java.util.HashMap;
 import java.util.ListIterator;
 
+import org.apache.log4j.Logger;
+
 import com.tilioteo.hypothesis.core.Pair;
 import com.tilioteo.hypothesis.core.PairList;
 import com.tilioteo.hypothesis.entity.Slide;
@@ -15,6 +17,8 @@ import com.tilioteo.hypothesis.entity.Slide;
  * 
  */
 public class Pattern extends AbstractBaseFormula {
+	
+	private static Logger log = Logger.getLogger(Pattern.class);
 
 	private HashMap<Long, Nick> nickMap = new HashMap<Long, Nick>();
 
@@ -29,6 +33,7 @@ public class Pattern extends AbstractBaseFormula {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean evaluate(Object... parameters) {
+		log.debug("evaluate::");
 		if (parameters.length == 1
 				&& parameters[0] instanceof PairList<?, ?>) {
 			boolean result = true;
@@ -50,6 +55,7 @@ public class Pattern extends AbstractBaseFormula {
 				return result;
 
 			} catch (Exception e) {
+				log.error(e.getMessage());
 				// TODO: handle exception
 			}
 		}

@@ -18,6 +18,7 @@ import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
 import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.AbstractComponent;
@@ -52,15 +53,20 @@ public class MapUtility {
 		// TODO
 	}
 
+	public static void setFeatureLayerProperties(VectorFeatureLayer layer, Element element, StringMap properties) {
+		setFeatureLayerStyle(layer, properties);		
+		setFeatureLayerHoverStyle(layer, properties);		
+	}
+
 	public static void setControlProperties(Control control, Element element, StringMap properties) {
 		setCommonProperties(control, element, properties);
-		
 	}
 
 	public static void setDrawFeatureControlProperties(DrawFeatureControl<?> control, Element element,
 			StringMap properties, SlideManager slideManager) {
 		
 		setControlProperties(control, element, properties);
+		setCursorStyle(control, properties);
 		
 		SlideComponent component = slideManager.getComponent(properties.get(SlideXmlConstants.LAYER_ID));
 		if (component != null && component instanceof VectorFeatureLayer) {
@@ -68,11 +74,68 @@ public class MapUtility {
 		}
 	}
 
+	public static void setDrawPathControlProperties(DrawPathControl control, Element element,
+			StringMap properties, SlideManager slideManager) {
+		
+		setStartPointStyle(control, properties);
+		setLineStyle(control, properties);
+		setVertexStyle(control, properties);
+	}
+
+	private static void setCursorStyle(DrawFeatureControl<?> control, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.CURSOR_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setCursorStyle(style);
+				return;
+			}
+		}
+		control.setCursorStyle(Style.DEFAULT_DRAW_CURSOR);
+	}
+	
+	private static void setStartPointStyle(DrawPathControl control, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.START_POINT_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setStartPointStyle(style);
+				return;
+			}
+		}
+		control.setStartPointStyle(Style.DEFAULT_DRAW_START_POINT);
+	}
+	
+	private static void setVertexStyle(DrawPathControl control, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.VERTEX_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setVertexStyle(style);
+				return;
+			}
+		}
+		control.setVertexStyle(Style.DEFAULT_DRAW_VERTEX);
+	}
+	
+	private static void setLineStyle(DrawPathControl control, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.LINE_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setLineStyle(style);
+				return;
+			}
+		}
+		control.setLineStyle(Style.DEFAULT_DRAW_LINE);
+	}
+	
 	public static void setFeatureProperties(VectorFeature vectorFeature,
 			Element element, StringMap properties) {
 		setCommonProperties(vectorFeature, element, properties);
 		setGeometry(vectorFeature, element);
-		setStyle(vectorFeature, properties);
+		setFeatureStyle(vectorFeature, properties);
+		setFeatureHoverStyle(vectorFeature, properties);
 		vectorFeature.setHidden(properties.getBoolean(SlideXmlConstants.HIDDEN, false));
 	}
 
@@ -128,7 +191,7 @@ public class MapUtility {
 		return null;
 	}
 
-	private static void setStyle(VectorFeature vectorFeature, StringMap properties) {
+	private static void setFeatureStyle(VectorFeature vectorFeature, StringMap properties) {
 		String styleId = properties.get(SlideXmlConstants.STYLE);
 		if (styleId != null && map != null) {
 			Style style = map.getStyle(styleId);
@@ -137,7 +200,43 @@ public class MapUtility {
 				return;
 			}
 		}
-		vectorFeature.setStyle(Style.DEFAULT);
+		vectorFeature.setStyle(null);
+	}
+
+	private static void setFeatureHoverStyle(VectorFeature vectorFeature, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.HOVER_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				vectorFeature.setHoverStyle(style);
+				return;
+			}
+		}
+		vectorFeature.setHoverStyle(null);
+	}
+
+	private static void setFeatureLayerStyle(VectorFeatureLayer vectorFeatureLayer, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				vectorFeatureLayer.setStyle(style);
+				return;
+			}
+		}
+		vectorFeatureLayer.setStyle(Style.DEFAULT);
+	}
+
+	private static void setFeatureLayerHoverStyle(VectorFeatureLayer vectorFeatureLayer, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.HOVER_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				vectorFeatureLayer.setHoverStyle(style);
+				return;
+			}
+		}
+		vectorFeatureLayer.setHoverStyle(null);
 	}
 
 	private static void setGeometry(VectorFeature vectorFeature, Element element) {

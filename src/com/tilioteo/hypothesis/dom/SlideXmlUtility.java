@@ -73,6 +73,14 @@ public class SlideXmlUtility {
 		return getElementSubNodeChilds(component, SlideXmlConstants.ITEMS, null);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static List<Element> getComponentSources(Element component) {
+		return component.selectNodes(String.format(
+				"%s//%s", SlideXmlConstants.SOURCES,
+				SlideXmlConstants.SOURCE));
+
+	}
+
 	public static List<Element> getFieldValidators(Element field) {
 		return getElementSubNodeChilds(field, SlideXmlConstants.VALIDATORS,
 				null);
@@ -163,6 +171,10 @@ public class SlideXmlUtility {
 		return element.attributeValue(SlideXmlConstants.ID);
 	}
 
+	public static String getClass(Element element) {
+		return element.attributeValue(SlideXmlConstants.CLASS);
+	}
+
 	public static Element getInputValueElement(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS
@@ -220,6 +232,21 @@ public class SlideXmlUtility {
 			if (reference != null) {
 				@SuppressWarnings("unchecked")
 				List<Element> elements = reference.elements();
+				if (elements.size() > 0)
+					return elements.get(0);
+			}
+		}
+
+		return null;
+	}
+
+	public static Element getInstanceSubElement(Element element) {
+		if (element != null) {
+			Element instance = (Element) element
+					.selectSingleNode(SlideXmlConstants.INSTANCE);
+			if (instance != null) {
+				@SuppressWarnings("unchecked")
+				List<Element> elements = instance.elements();
 				if (elements.size() > 0)
 					return elements.get(0);
 			}

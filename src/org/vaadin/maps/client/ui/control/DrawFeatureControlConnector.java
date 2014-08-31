@@ -3,6 +3,7 @@
  */
 package org.vaadin.maps.client.ui.control;
 
+import org.vaadin.maps.client.ui.MapUtility;
 import org.vaadin.maps.client.ui.VDrawFeatureControl;
 import org.vaadin.maps.client.ui.layer.VectorFeatureLayerConnector;
 import org.vaadin.maps.shared.ui.control.DrawFeatureControlState;
@@ -46,6 +47,9 @@ public class DrawFeatureControlConnector extends AbstractControlConnector {
 					getWidget().setLayer(((VectorFeatureLayerConnector)connector).getWidget());
 			} else
 				getWidget().setLayer(null);
+		}
+		if (stateChangeEvent.hasPropertyChanged("cursorStyle")) {
+			getWidget().setCursorStyle(MapUtility.getStyleFromMap(getState().cursorStyle, null));
 		}
 	}
 

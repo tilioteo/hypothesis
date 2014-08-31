@@ -63,13 +63,6 @@ public final class Event extends SerializableIdObject {
 	private String xmlData;
 
 	/**
-	 * event result
-	 */
-	/*
-	 * private Integer result = null; private String resultDetail = null;
-	 */
-
-	/**
 	 * current processing branch
 	 */
 	private Branch branch;

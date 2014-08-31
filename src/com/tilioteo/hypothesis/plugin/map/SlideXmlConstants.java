@@ -41,6 +41,11 @@ public class SlideXmlConstants {
 
 	public static final String STYLES = "Styles";
 	public static final String STYLE = "Style";
+	public static final String HOVER_STYLE = "HoverStyle";
+	public static final String CURSOR_STYLE = "CursorStyle";
+	public static final String START_POINT_STYLE = "StartPointStyle";
+	public static final String LINE_STYLE = "LineStyle";
+	public static final String VERTEX_STYLE = "VertexStyle";
 	
 	public static final String OPACITY = "Opacity";
 	public static final String STROKE_COLOR = "StrokeColor";

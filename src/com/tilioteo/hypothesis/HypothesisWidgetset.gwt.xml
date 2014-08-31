@@ -3,6 +3,7 @@
 <module>
 	<inherits name="com.vaadin.DefaultWidgetSet" />
 	<inherits name="org.vaadin.maps.VaadinMapsWidgetset" />
+	<inherits name="org.google.gwt.user.DOM" />
 	<inherits name="org.vaadin.jouni.animator.AnimatorWidgetset" />
 
 	<source path="client" />

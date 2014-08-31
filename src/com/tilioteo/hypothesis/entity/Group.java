@@ -75,7 +75,7 @@ public final class Group extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = EntityFieldConstants.NOTE, nullable = true)
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}

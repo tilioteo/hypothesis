@@ -96,8 +96,13 @@ public class XmlUtility {
 				if (node instanceof Element) {
 					Element el = (Element)node;
 					
-					Attribute attr = el.attribute(attributeName);
-					if (attr != null && attr.getValue().equals(attributeValue)) {
+					if (attributeName != null) {
+						Attribute attr = el.attribute(attributeName);
+						if (attr != null && attr.getValue().equals(attributeValue)) {
+							result = el;
+							break;
+						}
+					} else {
 						result = el;
 						break;
 					}

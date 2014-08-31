@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -23,23 +24,28 @@ import com.tilioteo.hypothesis.entity.User;
  * 
  */
 public class UserGroupManager {
+
+	private static Logger log = Logger.getLogger(UserGroupManager.class);
+
 	public static final Role ROLE_SUPERUSER = initRoleByName("SUPERUSER");
 	public static final Role ROLE_MANAGER = initRoleByName("MANAGER");
 	public static final Role ROLE_USER = initRoleByName("USER");
 
 	private static Role initRoleByName(String name) {
-		RoleDao dao = new RoleDao();
+		log.debug(String.format("initRoleByName: name = %s", name != null ? name : "NULL"));
+		RoleDao roleDao = new RoleDao();
 		try {
-			dao.beginTransaction();
-			Role role = dao.findByNameIgnoreCase(name);
+			roleDao.beginTransaction();
+			Role role = roleDao.findByNameIgnoreCase(name);
 			if (role == null) {
 				role = new Role(name.toUpperCase());
-				dao.makePersistent(role);
+				roleDao.makePersistent(role);
 			}
-			dao.commit();
+			roleDao.commit();
 			return role;
 		} catch (Throwable e) {
-			dao.rollback();
+			log.error(e.getMessage());
+			roleDao.rollback();
 		}
 
 		return null;
@@ -59,54 +65,66 @@ public class UserGroupManager {
 	}
 
 	public Group addGroup(Group group) {
+		log.debug("addGroup");
 		try {
 			groupDao.beginTransaction();
 			group = groupDao.makePersistent(group);
 			groupDao.commit();
 			return group;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			groupDao.rollback();
-			throw e;
+			//throw e;
+			return null;
 		}
 	}
 
 	public void addPack(Pack pack) throws HibernateException {
+		log.debug("addPack");
 		try {
 			packDao.beginTransaction();
 			packDao.makePersistent(pack);
 			packDao.commit();
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			packDao.rollback();
-			throw e;
+			//throw e;
 		}
 	}
 
 	public Role addRole(Role role) {
+		log.debug("addRole");
 		try {
 			roleDao.beginTransaction();
 			role = roleDao.makePersistent(role);
 			roleDao.commit();
 			return role;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			roleDao.rollback();
-			throw e;
+			//throw e;
+			return null;
 		}
 	}
 
 	public User addUser(User user) {
+		log.debug("addUser");
 		try {
 			userDao.beginTransaction();
 			user = userDao.makePersistent(user);
 			userDao.commit();
 			return user;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			userDao.rollback();
-			throw e;
+			//throw e;
+			return null;
 		}
 	}
 
 	// TODO: nejak rozumneji vyhledat primo v databazi
 	public boolean anotherSuperuserExists(Long id) {
+		log.debug("anotherSuperuserExists");
 		for (User user : findAllUsers()) {
 			if (user.getRoles().contains(ROLE_SUPERUSER)
 					&& !id.equals(user.getId())) {
@@ -117,79 +135,94 @@ public class UserGroupManager {
 	}
 
 	public void deleteAllGroups() {
+		log.debug("deleteAllGroups");
 		try {
 			List<Group> allGroups = this.findAllGroups();
 			for (Group group : allGroups) {
 				this.deleteGroup(group);
 			}
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 		}
 	}
 
 	public void deleteAllRoles() {
+		log.debug("deleteAllRoles");
 		try {
 			List<Role> allRoles = this.findAllRoles();
 			for (Role roles : allRoles) {
 				this.deleteRole(roles);
 			}
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 		}
 	}
 
 	public void deleteAllUsers() {
+		log.debug("deleteAllUsers");
 		try {
 			List<User> allUsers = this.findAllUsers();
 			for (User user : allUsers) {
 				this.deleteUser(user);
 			}
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 		}
 	}
 
 	public void deleteGroup(Group group) {
+		log.debug("deleteGroup");
 		try {
 			groupDao.beginTransaction();
 			groupDao.makeTransient(group);
 			groupDao.commit();
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			groupDao.rollback();
 		}
 	}
 
 	public void deleteRole(Role role) {
+		log.debug("deleteRole");
 		try {
 			roleDao.beginTransaction();
 			roleDao.makeTransient(role);
 			roleDao.commit();
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			roleDao.rollback();
 		}
 	}
 
 	public void deleteUser(User user) {
+		log.debug("deleteUser");
 		try {
 			userDao.beginTransaction();
 			userDao.makeTransient(user);
 			userDao.commit();
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			userDao.rollback();
-			throw e;
+			//throw e;
 		}
 	}
 
 	public List<Group> findAllGroups() {
+		log.debug("findAllGroups");
 		try {
 			groupDao.beginTransaction();
 			List<Group> allGroups = groupDao.findAll();
 			groupDao.commit();
 			return allGroups;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			groupDao.rollback();
 		}
 		return null;
 	}
 
 	public List<String> findAllRoleNames() {
+		log.debug("findAllRoleNames");
 		try {
 			List<Role> allRoles = findAllRoles();
 			List<String> roleNames = new ArrayList<String>();
@@ -198,41 +231,48 @@ public class UserGroupManager {
 			}
 			return roleNames;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 		}
 		return null;
 	}
 
 	public List<Role> findAllRoles() {
+		log.debug("findAllRoles");
 		try {
 			roleDao.beginTransaction();
 			List<Role> allRoles = roleDao.findAll();
 			roleDao.commit();
 			return allRoles;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			roleDao.rollback();
 		}
 		return null;
 	}
 
 	public List<User> findAllUsers() {
+		log.debug("findAllUsers");
 		try {
 			userDao.beginTransaction();
 			List<User> allUsers = userDao.findAll();
 			userDao.commit();
 			return allUsers;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			userDao.rollback();
 		}
 		return null;
 	}
 
 	public Group findGroup(long id) {
+		log.debug("findGroup");
 		try {
 			groupDao.beginTransaction();
 			Group grp = groupDao.findById(Long.valueOf(id), true);
 			groupDao.commit();
 			return grp;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			groupDao.rollback();
 		}
 		return null;
@@ -248,6 +288,7 @@ public class UserGroupManager {
 	 */
 
 	public List<Group> findOwnerGroups(User owner) {
+		log.debug("findOwnerGroups");
 		try {
 			groupDao.beginTransaction();
 			List<Group> allGroups = groupDao.findByCriteria(Restrictions.eq(
@@ -255,12 +296,15 @@ public class UserGroupManager {
 			groupDao.commit();
 			return allGroups;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			groupDao.rollback();
-			throw e;
+			//throw e;
+			return null;
 		}
 	}
 
 	public List<User> findOwnerUsers(User owner) {
+		log.debug("findOwnerUsers");
 		try {
 			userDao.beginTransaction();
 			List<User> allUsers = userDao.findByCriteria(Restrictions.eq(
@@ -269,11 +313,13 @@ public class UserGroupManager {
 			return allUsers;
 		} catch (HibernateException e) {
 			userDao.rollback();
-			throw e;
+			//throw e;
+			return null;
 		}
 	}
 
 	public Role findRoleByName(String roleName) {
+		log.debug("findRoleByName");
 		try {
 			roleDao.beginTransaction();
 			List<Role> roles = roleDao.findByCriteria(Restrictions.eq(
@@ -281,24 +327,28 @@ public class UserGroupManager {
 			roleDao.commit();
 			return (roles.isEmpty() || roles.size() > 1) ? null : roles.get(0);
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			roleDao.rollback();
 		}
 		return null;
 	}
 
 	public User findUser(long id) {
+		log.debug("findUser");
 		try {
 			userDao.beginTransaction();
 			User usr = userDao.findById(Long.valueOf(id), true);
 			userDao.commit();
 			return usr;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			userDao.rollback();
 		}
 		return null;
 	}
 
 	public User findUserByUsername(String username) {
+		log.debug("findUserByUsername");
 		try {
 			userDao.beginTransaction();
 			List<User> users = userDao.findByCriteria(Restrictions.eq(
@@ -306,12 +356,15 @@ public class UserGroupManager {
 			userDao.commit();
 			return users.get(0);
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			userDao.rollback();
-			throw e;
+			//throw e;
+			return null;
 		}
 	}
 
 	public User findUserByUsernamePassword(String username, String password) {
+		log.debug("findUserByUsernamePassword");
 		try {
 			userDao.beginTransaction();
 			List<User> usrs = userDao.findByCriteria(Restrictions.and(
@@ -326,22 +379,26 @@ public class UserGroupManager {
 				return user;
 			}
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			userDao.rollback();
 		}
 		return null;
 	}
 
 	public Set<User> findUsersByGroups() {
+		log.debug("findUsersByGroups");
 		try {
 			Group group = findGroup(7);
 			Set<User> users = group.getUsers();
 			return users;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 		}
 		return null;
 	}
 
 	public boolean groupNameExists(Long id, String name) {
+		log.debug("groupNameExists");
 		try {
 			groupDao.beginTransaction();
 			Criterion crit = (id == null) ? Restrictions.eq(
@@ -352,12 +409,15 @@ public class UserGroupManager {
 			groupDao.commit();
 			return !groups.isEmpty();
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			groupDao.rollback();
-			throw e;
+			//throw e;
+			return false;
 		}
 	}
 
 	public boolean usernameExists(Long id, String username) {
+		log.debug("usernameExists");
 		try {
 			userDao.beginTransaction();
 			Criterion crit = (id == null) ? Restrictions.eq(
@@ -368,8 +428,10 @@ public class UserGroupManager {
 			userDao.commit();
 			return !users.isEmpty();
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			userDao.rollback();
-			throw e;
+			//throw e;
+			return false;
 		}
 	}
 

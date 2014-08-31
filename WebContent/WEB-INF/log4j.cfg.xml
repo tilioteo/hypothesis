@@ -12,10 +12,10 @@
 	</appender>
 
 	<appender name="rolling-file" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="hypothesis.log" />
+		<param name="File" value="logs/hypothesis.log" />
 		<param name="MaxFileSize" value="1000KB"/>
 		<!-- Keep one backup file -->
-		<param name="MaxBackupIndex" value="10"/>
+		<param name="MaxBackupIndex" value="100"/>
 		<!-- <param name="Append" value="true" /> -->
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d %-4r [%t] %-5p %c [%x] - %m%n" />
@@ -27,11 +27,11 @@
 	</logger>
 
 	<logger name="org.hibernate.SQL">
-		<level value="trace"/>
+		<level value="info"/>
 	</logger>
 
 	<logger name="org.hibernate.type">
-		<level value="debug"/>
+		<level value="info"/>
 	</logger>
 
 	<root>

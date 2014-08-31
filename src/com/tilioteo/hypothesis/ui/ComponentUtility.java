@@ -3,14 +3,21 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.dom4j.Element;
 
+import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.ui.MultipleComponentPanel.Orientation;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractMedia;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
@@ -84,6 +91,22 @@ public class ComponentUtility {
 		component.setOrientation(orientation);
 		
 		setChildsSize(component, stringMap);
+	}
+	
+	public static void setMediaSources(AbstractMedia media, Element component) {
+		List<Element> elements = SlideXmlUtility.getComponentSources(component);
+		
+		List<Resource> resources = new ArrayList<Resource>();
+		for (Element element : elements) {
+			String url = element.attributeValue(SlideXmlConstants.URL);
+			if (!Strings.isNullOrEmpty(url)) {
+				resources.add(new ExternalResource(url));
+			}
+		}
+		
+		if (!resources.isEmpty()) {
+			media.setSources(resources.toArray(new Resource[0]));
+		}
 	}
 
 	private static void setChildsSize(

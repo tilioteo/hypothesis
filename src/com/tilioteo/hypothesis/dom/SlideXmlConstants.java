@@ -39,6 +39,8 @@ public class SlideXmlConstants {
 	public static final String FORM_LAYOUT = "FormLayout";
 	public static final String BUTTON = "Button";
 	public static final String IMAGE = "Image";
+	public static final String VIDEO = "Video";
+	public static final String AUDIO = "Audio";
 	public static final String BUTTON_PANEL = "ButtonPanel";
 	public static final String SELECT_PANEL = "SelectPanel";
 	public static final String COMBOBOX = "ComboBox";
@@ -51,6 +53,7 @@ public class SlideXmlConstants {
 	public static final String HANDLERS = "Handlers";
 	public static final String VALIDATORS = "Validators";
 	public static final String REFERENCE = "Reference";
+	public static final String INSTANCE = "Instance";
 	public static final String ITEMS = "Items";
 	public static final String ITEM = "Item";
 	public static final String EXPRESSION = "Expression";
@@ -96,6 +99,7 @@ public class SlideXmlConstants {
 
 	public static final String TYPE = "Type";
 	public static final String ID = "Id";
+	public static final String CLASS = "Class";
 	public static final String NAME = "Name";
 	public static final String VALUE = "Value";
 	public static final String FORMAT = "Format";
@@ -112,44 +116,12 @@ public class SlideXmlConstants {
 	public static final String FIELD = "Field";
 
 	public static final String EVENT_DATA = "EventData";
+	public static final String SOURCES = "Sources";
 	public static final String SOURCE = "Source";
 	public static final String SELECTED = "Selected";
 	public static final String INDEX = "Index";
 	public static final String X = "X";
 	public static final String Y = "Y";
-
-	// public static final String TEXT = "Text";
-	// public static final String ICONS = "Icons";
-	// public static final String ICON = "Icon";
-	// public static final String MARKERS = "Markers";
-	// public static final String MARKER = "Marker";
-	// public static final String PROPERTY = "Property";
-	// public static final String STYLES = "Styles";
-	// public static final String STYLE = "Style";
-	// public static final String STYLE_MAPS = "StyleMaps";
-	// public static final String STYLE_MAP = "StyleMap";
-	// public static final String EVALUATION = "Evaluation";
-	// public static final String EVALUATE = "Evaluate";
-
-	// public static final String COPY_STYLE_ID = "CopyStyleId";
-	// public static final String STYLE_MAP_ID = "StyleMapId";
-	// public static final String EVENT = "Event";
-	// public static final String NUMBER = "Nr";
-	// public static final String ICON_ID = "IconId";
-	// public static final String LONLAT = "LonLat";
-	// public static final String SIZE = "Size";
-	// public static final String OFFSET = "Offset";
-	// public static final String POINT_IN_RADIUS = "PointInRadius";
-	// public static final String POINT_IN_AREA = "PointInArea";
-	// public static final String LINE_IN_AREA = "LineInArea";
-	// public static final String FEATURE_ATTRIBUTE = "FeatureAttribute";
-	// public static final String POINT = "Point";
-	// public static final String RADIUS = "Radius";
-	// public static final String AREA = "Area";
-	// public static final String BEGIN_POINT = "BeginPoint";
-	// public static final String END_POINT = "EndPoint";
-	// public static final String BEGIN_RADIUS = "BeginRadius";
-	// public static final String END_RADIUS = "EndRadius";
 
 	// TODO replace with DTD schema
 	public static final StringSet VALID_SLIDE_ROOT_ELEMENTS = new StringSet(

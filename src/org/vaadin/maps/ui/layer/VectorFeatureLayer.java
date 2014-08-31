@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import com.vaadin.ui.Component.Focusable;
 
+import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.layer.VectorFeatureLayerServerRpc;
 import org.vaadin.maps.shared.ui.layer.VectorFeatureLayerState;
 import org.vaadin.maps.ui.feature.VectorFeature;
@@ -27,6 +28,9 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
 		}*/
 	};
 	
+	private Style style = null;
+	private Style hoverStyle = null;
+	
 	public VectorFeatureLayer() {
 		registerRpc(rpc);
 		VectorFeatureContainer container = new VectorFeatureContainer();
@@ -34,6 +38,8 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
 		setContent(container);
 		getContent().setSizeFull();
 		getState().tabIndex = -1;
+		
+		setStyle(null);
 	}
 	
 	@Override
@@ -69,9 +75,11 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
      */
     public void addComponent(VectorFeature feature) {
     	getContent().addComponent(feature);
+    	
+    	setInheritedStyles(feature);
     }
 
-    /**
+	/**
      * Adds a feature into indexed position in this layer.
      * 
      * @param feature
@@ -82,6 +90,8 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
      */
     public void addComponent(VectorFeature feature, int index) {
     	getContent().addComponent(feature, index);
+    	
+    	setInheritedStyles(feature);
     }
 
     /**
@@ -92,7 +102,18 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
      */
     public void addComponents(VectorFeature... features) {
     	getContent().addComponents(features);
+    	
+    	for (VectorFeature feature : features) {
+    		setInheritedStyles(feature);
+    	}
     }
+
+    private void setInheritedStyles(VectorFeature feature) {
+    	if (feature != null) {
+   			feature.setInheritedStyle(style);
+   			feature.setInheritedHoverStyle(hoverStyle);
+    	}
+	}
 
     /**
      * Removes the feature from this layer.
@@ -195,6 +216,42 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
 	 */
 	public void removeClickListener(ClickListener listener) {
 		getContent().removeClickListener(listener);
+	}
+
+	public Style getStyle() {
+		return style;
+	}
+	
+	public void setStyle(Style style) {
+		if (this.style != style) {
+			this.style = style;
+
+			updateFeaturesInheritedStyle();
+		}
+	}
+	
+	private void updateFeaturesInheritedStyle() {
+		for (Iterator<VectorFeature> iterator = featureIterator(); iterator.hasNext();) {
+			iterator.next().setInheritedStyle(style);
+		}
+	}
+
+	public Style getHoverStyle() {
+		return hoverStyle;
+	}
+
+	public void setHoverStyle(Style style) {
+		if (hoverStyle != style) {
+			hoverStyle = style;
+			
+			updateFeaturesInheritedHoverStyle();
+		}
+	}
+	
+	private void updateFeaturesInheritedHoverStyle() {
+		for (Iterator<VectorFeature> iterator = featureIterator(); iterator.hasNext();) {
+			iterator.next().setInheritedHoverStyle(style);
+		}
 	}
 
 }

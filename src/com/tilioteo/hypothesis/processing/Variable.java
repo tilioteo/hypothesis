@@ -40,6 +40,10 @@ public class Variable<T> {
 	public void setValue(T value) {
 		this.value = value;
 	}
+	
+	public Class<?> getType() {
+		return this.getClass().getTypeParameters()[0].getClass();
+	}
 
 	/*
 	 * public void setName(String name) { this.name = name; }

@@ -69,7 +69,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
 	@Override
 	public Branch current() {
-		buildBranch();
+		//buildBranch();
 		return super.current();
 	}
 

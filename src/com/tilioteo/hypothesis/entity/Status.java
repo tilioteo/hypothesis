@@ -12,8 +12,7 @@ import java.util.Map;
  *
  */
 public enum Status {
-	CREATED(1), STARTED(2), FINISHED(3), BROKEN_BY_CLIENT(4), BROKEN_BY_ERROR(
-			5);
+	CREATED(1), STARTED(2), FINISHED(3), BROKEN_BY_CLIENT(4), BROKEN_BY_ERROR(5);
 
 	private static final Map<Integer, Status> lookup = new HashMap<Integer, Status>();
 

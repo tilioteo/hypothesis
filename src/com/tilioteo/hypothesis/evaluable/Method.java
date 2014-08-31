@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.evaluable;
 
+import org.apache.log4j.Logger;
+
 import com.tilioteo.hypothesis.annotation.ExpressionScope;
 import com.tilioteo.hypothesis.annotation.ExpressionScopePrivate;
 import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
@@ -13,6 +15,8 @@ import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
  */
 public class Method extends Primitive implements HasReference {
 	
+	private static Logger log = Logger.getLogger(Method.class);
+
 	private Primitive reference;
 	private String name;
 	private Primitive[] arguments;
@@ -62,6 +66,7 @@ public class Method extends Primitive implements HasReference {
 						return res;
 					}
 				} catch (Exception e) {
+					log.error(e.getMessage());
 					// TODO: handle exception
 					System.err.println(e.getMessage());
 				}
@@ -72,6 +77,7 @@ public class Method extends Primitive implements HasReference {
 	}
 	
 	private java.lang.reflect.Method getDeclaredMethodDeeply(Class<?> clazz, String name, Class<?>... parameterTypes) {
+		//log.debug(String.format("getDeclaredMethodDeeply: name = %s", name != null ? name : "NULL"));
 		do {
 			java.lang.reflect.Method method = null;
 			try {

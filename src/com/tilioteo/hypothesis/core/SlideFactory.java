@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -18,11 +19,13 @@ import com.tilioteo.hypothesis.evaluable.ExpressionFactory;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;
 import com.tilioteo.hypothesis.event.ActionEvent;
+import com.tilioteo.hypothesis.event.AudioData;
 import com.tilioteo.hypothesis.event.ButtonData;
 import com.tilioteo.hypothesis.event.ButtonPanelData;
 import com.tilioteo.hypothesis.event.ImageData;
 import com.tilioteo.hypothesis.event.SelectPanelData;
 import com.tilioteo.hypothesis.event.TimerData;
+import com.tilioteo.hypothesis.event.VideoData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Action;
 import com.tilioteo.hypothesis.processing.CallAction;
@@ -33,6 +36,7 @@ import com.tilioteo.hypothesis.processing.FieldList;
 import com.tilioteo.hypothesis.processing.IfStatement;
 import com.tilioteo.hypothesis.processing.SwitchStatement;
 import com.tilioteo.hypothesis.processing.Variable;
+import com.tilioteo.hypothesis.processing.VariableMap;
 import com.tilioteo.hypothesis.ui.Button;
 import com.tilioteo.hypothesis.ui.ComponentFactory;
 import com.tilioteo.hypothesis.ui.SlideComponent;
@@ -102,6 +106,37 @@ public class SlideFactory {
 		}
 	}
 
+	public static void writeVideoData(Element sourceElement, VideoData videoData) {
+		String id = videoData.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.VIDEO);
+		if (id != null) {
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		}
+		if (videoData.hasCoordinate()) {
+			Element subElement = sourceElement.addElement(SlideXmlConstants.X);
+			// use Locale.ROOT for locale neutral formating of decimals
+			subElement.addText(String.format(Locale.ROOT, "%g", videoData.getCoordinate().x));
+			subElement = sourceElement.addElement(SlideXmlConstants.Y);
+			subElement.addText(String.format(Locale.ROOT, "%g",	videoData.getCoordinate().y));
+		} if (videoData.getTime() > 0) {
+			Element subElement = sourceElement.addElement(SlideXmlConstants.TIME);
+			// use Locale.ROOT for locale neutral formating of decimals
+			subElement.addText(String.format(Locale.ROOT, "%g", videoData.getTime()));
+		}
+	}
+
+	public static void writeAudioData(Element sourceElement, AudioData audioData) {
+		String id = audioData.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.AUDIO);
+		if (id != null) {
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		} if (audioData.getTime() > 0) {
+			Element subElement = sourceElement.addElement(SlideXmlConstants.TIME);
+			// use Locale.ROOT for locale neutral formating of decimals
+			subElement.addText(String.format(Locale.ROOT, "%g", audioData.getTime()));
+		}
+	}
+
 	public static void writeTimerData(Element sourceElement, TimerData timerData) {
 		String id = timerData.getComponentId();
 		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.TIMER);
@@ -158,6 +193,36 @@ public class SlideFactory {
 	private void writeFieldData(Element element, Field field) {
 		Element fieldElement = element.addElement(SlideXmlConstants.FIELD);
 		field.writeDataToElement(fieldElement);
+	}
+
+	private void writeVariablesData(Element element, VariableMap variables) {
+		Element variablesElement = element.addElement(SlideXmlConstants.VARIABLES);
+		for (Variable<?> variable : variables.values()) {
+			writeVariableData(variablesElement, variable);
+		}
+	}
+
+	private void writeVariableData(Element element, Variable<?> variable) {
+		Class<?> type = variable.getType();
+		String typeName = "";
+		if (type.isAssignableFrom(Integer.class)) {
+			typeName = SlideXmlConstants.INTEGER;
+		} else if (type.isAssignableFrom(Double.class)) {
+			typeName = SlideXmlConstants.FLOAT;
+		} else if (type.isAssignableFrom(Boolean.class)) {
+			typeName = SlideXmlConstants.BOOLEAN;
+		}
+		
+		if (!typeName.isEmpty()) {
+			String value = "";
+			if (variable.getValue() != null) {
+				value = (String) variable.getValue();
+			}
+			Element variableElement = element.addElement(SlideXmlConstants.VARIABLE);
+			variableElement.addAttribute(SlideXmlConstants.ID, variable.getName());
+			variableElement.addAttribute(SlideXmlConstants.TYPE, typeName);
+			variableElement.addText(value);
+		}
 	}
 
 	private AbstractBaseAction createAction(Element element) {
@@ -339,6 +404,10 @@ public class SlideFactory {
 		if (slideManager.getFields().size() > 0) {
 			writeFieldsData(root, slideManager.getFields());
 		}
+		// add variables
+		if (slideManager.getVariables().size() > 0) {
+			writeVariablesData(root, slideManager.getVariables());
+		}
 		return doc;
 	}
 
@@ -414,6 +483,23 @@ public class SlideFactory {
 						
 						if (component != null) {
 							variable.setRawValue(component);
+						}
+					}
+				} else {
+					Element instance = SlideXmlUtility.getInstanceSubElement(element);
+					if (instance != null) {
+						String className = SlideXmlUtility.getClass(instance);
+						if (!Strings.isNullOrEmpty(className)) {
+							try {
+								Class<?> clazz = Class.forName(className);
+								Constructor<?> ctor = clazz.getConstructor(new Class[] {});
+								Object object = ctor.newInstance(new Object[] {});
+								if (object != null) {
+									variable.setRawValue(object);
+								}
+							} catch(Throwable e) {
+								
+							}
 						}
 					}
 				}

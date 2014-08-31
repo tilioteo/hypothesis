@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Order;
@@ -32,7 +33,7 @@ import com.tilioteo.hypothesis.entity.UserPermission;
  */
 public class PermissionManager {
 
-	// private static Logger logger = Logger.getLogger(PermissionManager.class);
+	private static Logger log = Logger.getLogger(PermissionManager.class);
 
 	private UserPermissionDao userPermissionDao;
 	private GroupPermissionDao groupPermissionDao;
@@ -61,30 +62,37 @@ public class PermissionManager {
 	}
 
 	public GroupPermission addGroupPermission(GroupPermission groupPermission) {
+		log.debug("addGroupPermission");
 		try {
 			groupPermissionDao.beginTransaction();
 			groupPermission = groupPermissionDao.makePersistent(groupPermission);
 			groupPermissionDao.commit();
 			return groupPermission;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			groupPermissionDao.rollback();
-			throw e;
+			//throw e;
+			return null;
 		}
 	}
 
 	public UserPermission addUserPermission(UserPermission userPermission) {
+		log.debug("addUserPermission");
 		try {
 			userPermissionDao.beginTransaction();
 			userPermission = userPermissionDao.makePersistent(userPermission);
 			userPermissionDao.commit();
 			return userPermission;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			userPermissionDao.rollback();
-			throw e;
+			//throw e;
+			return null;
 		}
 	}
 
 	public void deleteGroupPermissions(Group group) {
+		log.debug("deleteGroupPermissions");
 		try {
 			Set<GroupPermission> groupPermissions = getGroupPermissions(group);
 			groupPermissionDao.beginTransaction();
@@ -93,12 +101,14 @@ public class PermissionManager {
 			}
 			groupPermissionDao.commit();
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			groupPermissionDao.rollback();
-			throw e;
+			//throw e;
 		}
 	}
 
 	public void deleteUserPermissions(User user) {
+		log.debug("deleteUserPermissions");
 		try {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
 			userPermissionDao.beginTransaction();
@@ -107,12 +117,14 @@ public class PermissionManager {
 			}
 			userPermissionDao.commit();
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			userPermissionDao.rollback();
-			throw e;
+			//throw e;
 		}
 	}
 
 	public void deleteUserPermissions(User user, boolean enabled) {
+		log.debug("deleteUserPermissions");
 		try {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
 			userPermissionDao.beginTransaction();
@@ -123,30 +135,35 @@ public class PermissionManager {
 			}
 			userPermissionDao.commit();
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			userPermissionDao.rollback();
-			throw e;
+			//throw e;
 		}
 	}
 
 	public List<GroupPermission> findAllGroupPermissions() {
+		log.debug("findAllGroupPermissions");
 		try {
 			groupPermissionDao.beginTransaction();
 			List<GroupPermission> groupPermissions = groupPermissionDao.findAll();
 			groupPermissionDao.commit();
 			return groupPermissions;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 			return null;
 		}
 	}
 
 	public List<Pack> findAllPacks() {
+		log.debug("findAllPacks");
 		try {
 			packDao.beginTransaction();
 			List<Pack> allPacks = packDao.findAll();
 			packDao.commit();
 			return allPacks;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			packDao.rollback();
 		}
 		return null;
@@ -164,18 +181,21 @@ public class PermissionManager {
 	 */
 
 	public List<UserPermission> findAllUserPermissions() {
+		log.debug("findAllUserPermissions");
 		try {
 			userPermissionDao.beginTransaction();
 			List<UserPermission> userPermissions = userPermissionDao.findAll();
 			userPermissionDao.commit();
 			return userPermissions;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			userPermissionDao.rollback();
 			return null;
 		}
 	}
 
 	public Set<Pack> findUserPacks(User user, boolean excludeFinished) {
+		log.debug("findUserPacks");
 		Set<Pack> packs = getUserPacks(user, true, excludeFinished);
 		Set<Pack> disabledPacks = getUserPacks(user, false, null);
 
@@ -193,6 +213,7 @@ public class PermissionManager {
 					}
 				}
 			} catch (Throwable e) {
+				log.error(e.getMessage());
 				groupPermissionDao.rollback();
 				return null;
 			}
@@ -219,6 +240,7 @@ public class PermissionManager {
 	 */
 
 	public Set<Pack> findUserPacks2(User user, boolean excludeFinished) {
+		log.debug("findUserPacks2");
 		try {
 			// Set<Pack> packs = new HashSet<Pack>();
 			Hashtable<Long, Pack> packs = new Hashtable<Long, Pack>();
@@ -244,11 +266,14 @@ public class PermissionManager {
 
 			return new HashSet<Pack>(packs.values());
 		} catch (HibernateException e) {
-			throw e;
+			log.error(e.getMessage());
+			//throw e;
+			return null;
 		}
 	}
 
 	public Set<Pack> getGroupPacks(Group group) {
+		log.debug("getGroupPacks");
 		try {
 			Set<GroupPermission> groupPermissions = getGroupPermissions(group);
 			Set<Pack> packs = new HashSet<Pack>();
@@ -257,11 +282,13 @@ public class PermissionManager {
 			}
 			return packs;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			return null;
 		}
 	}
 
 	public Set<GroupPermission> getGroupPermissions(Group group) {
+		log.debug("getGroupPermissions");
 		Set<GroupPermission> groupPermissions = new HashSet<GroupPermission>();
 		try {
 			groupPermissionDao.beginTransaction();
@@ -271,12 +298,14 @@ public class PermissionManager {
 			groupPermissionDao.commit();
 			groupPermissions.addAll(grpPerms);
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 		}
 		return groupPermissions;
 	}
 
 	public Set<GroupPermission> getGroupsPermissions(Set<Group> groups) {
+		log.debug("getGroupsPermissions");
 		try {
 			Set<GroupPermission> groupsPermissions = new HashSet<GroupPermission>();
 			groupPermissionDao.beginTransaction();
@@ -288,12 +317,15 @@ public class PermissionManager {
 
 			return groupsPermissions;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			groupPermissionDao.rollback();
-			throw e;
+			//throw e;
+			return null;
 		}
 	}
 
 	public Set<GroupPermission> getPackGroupPermissions(Pack pack) {
+		log.debug("getPackGroupPermissions");
 		try {
 			Set<GroupPermission> groupPermissions = new HashSet<GroupPermission>();
 			groupPermissionDao.beginTransaction();
@@ -304,12 +336,14 @@ public class PermissionManager {
 
 			return groupPermissions;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 		}
 		return null;
 	}
 
 	public Set<UserPermission> getPackUserPermissions(Pack pack, boolean enabled) {
+		log.debug("getPackUserPermissions");
 		try {
 			Set<UserPermission> userPermissions = new HashSet<UserPermission>();
 			userPermissionDao.beginTransaction();
@@ -322,6 +356,7 @@ public class PermissionManager {
 
 			return userPermissions;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			userPermissionDao.rollback();
 		}
 		return null;
@@ -329,6 +364,7 @@ public class PermissionManager {
 
 	public Set<Pack> getUserPacks(User user, Boolean enabled,
 			Boolean excludeFinished) {
+		log.debug("getUserPacks");
 		try {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
 			Set<Pack> packs = new HashSet<Pack>();
@@ -350,11 +386,13 @@ public class PermissionManager {
 			}
 			return packs;
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			return null;
 		}
 	}
 
 	public Set<UserPermission> getUserPermissions(User user) {
+		log.debug("getUserPermissions");
 		Set<UserPermission> userPermissions = new HashSet<UserPermission>();
 		try {
 			userPermissionDao.beginTransaction();
@@ -363,6 +401,7 @@ public class PermissionManager {
 			userPermissionDao.commit();
 			userPermissions.addAll(usrPerms);
 		} catch (HibernateException e) {
+			log.error(e.getMessage());
 			userPermissionDao.rollback();
 		}
 		return userPermissions;
@@ -370,6 +409,7 @@ public class PermissionManager {
 
 	public Set<UserPermission> getUsersPermissions(Set<User> users,
 			boolean enabled) {
+		log.debug("getUsersPermissions");
 		try {
 			Set<UserPermission> usersPermissions = new HashSet<UserPermission>();
 			userPermissionDao.beginTransaction();
@@ -382,6 +422,7 @@ public class PermissionManager {
 
 			return usersPermissions;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			userPermissionDao.rollback();
 		}
 		return null;
@@ -389,6 +430,7 @@ public class PermissionManager {
 	
 	@SuppressWarnings("unchecked")
 	public List<Pack> getPublishedPacks() {
+		log.debug("getPublishedPacks");
 		try {
 			packDao.beginTransaction();
 			Criteria criteria = packDao.createCriteria();
@@ -398,6 +440,25 @@ public class PermissionManager {
 			packDao.commit();
 			return packs;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
+			packDao.rollback();
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Pack> getSimplePublishedPacks() {
+		log.debug("getSimplePublishedPacks");
+		try {
+			packDao.beginTransaction();
+			Criteria criteria = packDao.createCriteria();
+			criteria.add(Restrictions.eq(EntityFieldConstants.PUBLISHED, true));
+			criteria.addOrder(Order.asc(EntityFieldConstants.ID));
+			List<Pack> packs = criteria.list();
+			packDao.commit();
+			return packs;
+		} catch (Throwable e) {
+			log.error(e.getMessage());
 			packDao.rollback();
 		}
 		return null;

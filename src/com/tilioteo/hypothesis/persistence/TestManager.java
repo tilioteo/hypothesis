@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Restrictions;
@@ -31,6 +32,8 @@ import com.tilioteo.hypothesis.entity.User;
  */
 public class TestManager {
 
+	private static Logger log = Logger.getLogger(TestManager.class);
+
 	private TestDao testDao;
 	private EventDao eventDao;
 	private SlideOrderDao slideOrderDao;
@@ -46,6 +49,7 @@ public class TestManager {
 	}
 
 	public List<SimpleTest> findTestsBy(User user, Pack pack, Status... statuses) {
+		log.debug("findTestsBy");
 		try {
 			testDao.beginTransaction();
 			/*
@@ -61,12 +65,14 @@ public class TestManager {
 			testDao.commit();
 			return tests;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			testDao.rollback();
 		}
 		return null;
 	}
 
 	public SimpleTest getUnattendedTest(User user, Pack pack, boolean production) {
+		log.debug("getUnattendedTest");
 		try {
 			testDao.beginTransaction();
 			
@@ -99,26 +105,28 @@ public class TestManager {
 			return outputTest;
 
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			testDao.rollback();
-			e.getMessage();
 		}
 		return null;
 	}
 
 	public void updateTest(SimpleTest test) {
+		log.debug("updateTest");
 		if (test != null) {
 			try {
 				testDao.beginTransaction();
 				testDao.makePersistent(test);
 				testDao.commit();
 			} catch (Throwable e) {
+				log.error(e.getMessage());
 				testDao.rollback();
-				e.getMessage();
 			}
 		}
 	}
 	
 	public void saveEvent(Event event, SimpleTest test) {
+		log.debug("saveEvent");
 		if (event != null && test != null) {
 			try {
 				eventDao.beginTransaction();
@@ -130,14 +138,15 @@ public class TestManager {
 				
 				eventDao.commit();
 			} catch (Throwable e) {
+				log.error(e.getMessage());
 				eventDao.rollback();
-				e.getMessage();
 			}
 		}
 	}
 	
 	@SuppressWarnings("rawtypes")
 	private int getLastTestEventRank(SimpleTest test) {
+		log.debug("getLastTestEventRank");
 		SQLQuery query = eventDao.getSession().createSQLQuery(
 				"SELECT max("  + EntityFieldConstants.RANK + ") FROM " +
 						EntityTableConstants.TEST_EVENT_TABLE + " WHERE " +
@@ -155,6 +164,7 @@ public class TestManager {
 	}
 	
 	private void saveTestEventJoin(SimpleTest test, Event event, int rank) {
+		log.debug("saveTestEventJoin");
 		SQLQuery query = eventDao.getSession().createSQLQuery(
 				"INSERT INTO " + EntityTableConstants.TEST_EVENT_TABLE + " (" +
 						EntityFieldConstants.TEST_ID + "," +
@@ -168,6 +178,7 @@ public class TestManager {
 	}
 
 	public SlideOrder findTaskSlideOrder(SimpleTest test, Task task) {
+		log.debug("findTaskSlideOrder");
 		try {
 			slideOrderDao.beginTransaction();
 			
@@ -184,20 +195,22 @@ public class TestManager {
 			}
 			
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			slideOrderDao.rollback();
 		}
 		return null;
 	}
 
 	public void updateSlideOrder(SlideOrder slideOrder) {
+		log.debug("updateSlideOrder");
 		if (slideOrder != null) {
 			try {
 				slideOrderDao.beginTransaction();
 				slideOrderDao.makePersistent(slideOrder);
 				slideOrderDao.commit();
 			} catch (Throwable e) {
+				log.error(e.getMessage());
 				slideOrderDao.rollback();
-				e.getMessage();
 			}
 		}
 	}

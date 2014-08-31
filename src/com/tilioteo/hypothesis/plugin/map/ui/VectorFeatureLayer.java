@@ -72,6 +72,7 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 		MapUtility.setLayerProperties(this, element, properties);
 
 		// set VectorFeatureLayer specific properties
+		MapUtility.setFeatureLayerProperties(this, element, properties);
 	}
 
 	private void setHandlers(Element element) {

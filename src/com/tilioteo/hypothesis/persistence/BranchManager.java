@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 
 import com.tilioteo.hypothesis.common.EntityConstants;
@@ -21,6 +22,8 @@ import com.tilioteo.hypothesis.entity.Pack;
  */
 public class BranchManager {
 
+	private static Logger log = Logger.getLogger(BranchManager.class);
+
 	private BranchTrekDao branchTrekDao;
 
 	public BranchManager(BranchTrekDao branchTrekDao) {
@@ -28,6 +31,7 @@ public class BranchManager {
 	}
 
 	public Map<String, BranchTrek> getBranchTreks(Pack pack, Branch branch) {
+		log.debug("getBranchTreks");
 		try {
 			HashMap<String, BranchTrek> map = new HashMap<String, BranchTrek>();
 			branchTrekDao.beginTransaction();
@@ -42,6 +46,8 @@ public class BranchManager {
 
 			return map;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
+			branchTrekDao.rollback();
 		}
 
 		return null;
