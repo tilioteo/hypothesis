@@ -171,10 +171,6 @@ public class SlideXmlUtility {
 		return element.attributeValue(SlideXmlConstants.ID);
 	}
 
-	public static String getClass(Element element) {
-		return element.attributeValue(SlideXmlConstants.CLASS);
-	}
-
 	public static Element getInputValueElement(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS

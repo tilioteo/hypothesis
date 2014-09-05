@@ -75,7 +75,7 @@ public class XmlUtility {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Element findElementByNameAndValue(Element element, String name, String prefix, String uri, String attributeName, String attributeValue) {
+	public static Element findElementByNameAndValue(boolean descendant, Element element, String name, String prefix, String uri, String attributeName, String attributeValue) {
 		Element result = null;
 		if (element != null) {
 			HashMap<String, String> namespaces = new HashMap<String, String>();
@@ -83,7 +83,7 @@ public class XmlUtility {
 				name = String.format("%s:%s", prefix, name);
 				namespaces.put(prefix, uri);
 			}
-			XPath path = element.createXPath(String.format(DESCENDANT_FMT, name));
+			XPath path = element.createXPath(descendant ? String.format(DESCENDANT_FMT, name) : name);
 			if (namespaces.size() > 0) {
 				path.setNamespaceURIs(namespaces);
 			}

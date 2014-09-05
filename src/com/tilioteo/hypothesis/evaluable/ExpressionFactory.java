@@ -433,7 +433,7 @@ public class ExpressionFactory {
 		if (isValue(string))
 			return new Constant(string);
 		else if (isIdentificator(string))
-			return new Variable(string);
+			return new Variable(string, Object.class);
 		
 		return null;
 	}
@@ -465,10 +465,18 @@ public class ExpressionFactory {
 					ClassNodeGroup group = (ClassNodeGroup)operatorNode.getGroup();
 					MethodArgumentGroup argumentGroup = group.getArgumentGroup();
 					if (argumentGroup != null) { // method call
-						Method method = new Method(str, argumentGroup.getArgumentPrimitives());
+						Primitive[] arguments = argumentGroup.getArgumentPrimitives();
+						for (int i = 0; i < arguments.length; ++i) {
+							if (arguments[i] instanceof Expression) {
+								Expression argumentExpression = (Expression)arguments[i];
+								argumentExpression.mergeVariables(expression.variables);
+							}
+						}
+						
+						Method method = new Method(str, arguments);
 						expression.setRightSide(method);
 					} else { // atttribute value
-						Attribute attribute = new Attribute(str);
+						Attribute attribute = new Attribute(str, Object.class);
 						expression.setRightSide(attribute);
 					}
 				}

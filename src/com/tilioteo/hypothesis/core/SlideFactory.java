@@ -488,17 +488,19 @@ public class SlideFactory {
 				} else {
 					Element instance = SlideXmlUtility.getInstanceSubElement(element);
 					if (instance != null) {
-						String className = SlideXmlUtility.getClass(instance);
-						if (!Strings.isNullOrEmpty(className)) {
-							try {
-								Class<?> clazz = Class.forName(className);
-								Constructor<?> ctor = clazz.getConstructor(new Class[] {});
-								Object object = ctor.newInstance(new Object[] {});
-								if (object != null) {
-									variable.setRawValue(object);
-								}
-							} catch(Throwable e) {
+						if (instance.getName().equals(SlideXmlConstants.CLASS)) {
+							String className = SlideXmlUtility.getName(instance);
+							if (!Strings.isNullOrEmpty(className)) {
+								try {
+									Class<?> clazz = Class.forName(className);
+									Constructor<?> ctor = clazz.getConstructor(new Class[] {});
+									Object object = ctor.newInstance(new Object[] {});
+									if (object != null) {
+										variable.setRawValue(object);
+									}
+								} catch(Throwable e) {
 								
+								}
 							}
 						}
 					}

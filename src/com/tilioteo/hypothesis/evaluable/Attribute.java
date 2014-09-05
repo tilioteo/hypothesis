@@ -19,8 +19,8 @@ public class Attribute extends Variable implements HasReference {
 
 	private Primitive reference;
 	
-	public Attribute(String name) {
-		super(name);
+	public Attribute(String name, Class<?> type) {
+		super(name, type);
 	}
 	
 	public String getString() {

@@ -23,11 +23,20 @@ public class SlideXmlConstants {
 
 	public static final String MAP = "Map";
 	public static final String LAYERS = "Layers";
+	public static final String IMAGES = "Images";
+	public static final String IMAGE = "Image";
 	public static final String IMAGE_LAYER = "ImageLayer";
+	public static final String IMAGE_SEQUENCE_LAYER = "ImageSequenceLayer";
 	public static final String FEATURE_LAYER = "FeatureLayer";
 	public static final String FEATURES = "Features";
 	public static final String FEATURE = "Feature";
 	public static final String GEOMETRY = "Geometry";
+	public static final String URL = "Url";
+	public static final String VALUE = "Value";
+	public static final String INDEX = "Index";
+	public static final String CLICK = "Click";
+	public static final String LOAD = "Load";
+	public static final String CHANGE = "Change";
 	public static final String TEXT = "Text";
 	public static final String OFFSET = "Offset";
 	public static final String CONTROLS = "Controls";

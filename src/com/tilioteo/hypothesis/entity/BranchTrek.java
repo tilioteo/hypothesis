@@ -66,7 +66,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.PACK_ID, referencedColumnName = EntityFieldConstants.ID, nullable = false)
+	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
 	public final Pack getPack() {
 		return pack;
 	}
@@ -85,7 +85,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.BRANCH_ID, referencedColumnName = EntityFieldConstants.ID, nullable = false)
+	@JoinColumn(name = EntityFieldConstants.BRANCH_ID, nullable = false)
 	public final Branch getBranch() {
 		return branch;
 	}

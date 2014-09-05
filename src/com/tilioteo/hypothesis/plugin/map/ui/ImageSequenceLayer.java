@@ -3,11 +3,16 @@
  */
 package com.tilioteo.hypothesis.plugin.map.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.dom4j.Element;
-import org.vaadin.maps.ui.tile.ProxyTile.LoadEvent;
-import org.vaadin.maps.ui.tile.ProxyTile.LoadListener;
+import org.vaadin.maps.ui.tile.ImageSequenceTile.ChangeEvent;
+import org.vaadin.maps.ui.tile.ImageSequenceTile.ChangeListener;
+import org.vaadin.maps.ui.tile.ImageSequenceTile.ClickEvent;
+import org.vaadin.maps.ui.tile.ImageSequenceTile.ClickListener;
+import org.vaadin.maps.ui.tile.ImageSequenceTile.LoadEvent;
+import org.vaadin.maps.ui.tile.ImageSequenceTile.LoadListener;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
@@ -17,13 +22,11 @@ import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
-import com.tilioteo.hypothesis.plugin.map.event.ImageLayerData;
+import com.tilioteo.hypothesis.plugin.map.event.ImageSequenceLayerData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.tilioteo.hypothesis.ui.SlideComponent;
-import com.vaadin.event.MouseEvents.ClickEvent;
-import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -31,11 +34,13 @@ import com.vaadin.ui.Alignment;
  *
  */
 @SuppressWarnings("serial")
-public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements SlideComponent {
+public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLayer implements SlideComponent {
 
 	private SlideManager slideManager;
 	
-	public ImageLayer() {
+	private final ArrayList<String> imageTags = new ArrayList<String>();
+	
+	public ImageSequenceLayer() {
 		super();
 	}
 	
@@ -55,13 +60,19 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 		this.slideManager = slideManager;
 	}
 
+	public void addSource(String url, String tag) {
+		addTileUrl(url);
+		imageTags.add(tag != null ? tag : "");
+	}
+
 	protected void setProperties(Element element) {
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
 
 		MapUtility.setLayerProperties(this, element, properties);
 
-		// set ImageLayer specific properties
-		setTileUrl(properties.get(SlideXmlConstants.URL, ""));
+		// set ImageSequenceLayer specific properties
+		MapUtility.setImageSequenceLayerProperties(this, element, properties);
+		addTileUrl(properties.get(SlideXmlConstants.URL, ""));
 	}
 
 	private void setHandlers(Element element) {
@@ -84,20 +95,25 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 				setClickHandler(action);
 			} else if (name.equals(SlideXmlConstants.LOAD)) {
 				setLoadHandler(action);
+			} else if (name.equals(SlideXmlConstants.CHANGE)) {
+				setChangeHandler(action);
 			}
 			// TODO add other event handlers
 		}
 	}
 
 	private void setClickHandler(String actionId) {
-		final ImageLayerData data = new ImageLayerData(this, slideManager);
-		final Command componentEvent = MapComponentFactory.createImageLayerClickEventCommand(data);
+		final ImageSequenceLayerData data = new ImageSequenceLayerData(this, slideManager);
+		final Command componentEvent = MapComponentFactory.createImageSequenceLayerClickEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
 
 		addClickListener(new ClickListener() {
+			
 			@Override
 			public void click(ClickEvent event) {
 				data.setXY(event.getRelativeX(), event.getRelativeY());
+				data.setImageIndex(event.getIndex());
+				data.setImageTag(imageTags.get(event.getIndex()));
 				componentEvent.execute();
 				action.execute();
 			}
@@ -105,7 +121,7 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 	}
 
 	private void setLoadHandler(String actionId) {
-		final Command componentEvent = MapComponentFactory.createImageLayerLoadEventCommand(this, slideManager);
+		final Command componentEvent = MapComponentFactory.createImageSequenceLayerLoadEventCommand(this, slideManager);
 		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
 		
 		addLoadListener(new LoadListener() {
@@ -117,4 +133,19 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 		});
 	}
 
+	private void setChangeHandler(String actionId) {
+		final ImageSequenceLayerData data = new ImageSequenceLayerData(this, slideManager);
+		final Command componentEvent = MapComponentFactory.createImageSequenceLayerChangeEventCommand(data);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+		
+		addChangeListener(new ChangeListener() {
+			@Override
+			public void change(ChangeEvent event) {
+				data.setImageIndex(event.getIndex());
+				data.setImageTag(imageTags.get(event.getIndex()));
+				componentEvent.execute();
+				action.execute();
+			}
+		});
+	}
 }

@@ -8,7 +8,6 @@ import java.util.List;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringSet;
-
 /**
  * @author kamil
  *
@@ -16,6 +15,14 @@ import com.tilioteo.hypothesis.common.StringSet;
 public class SlideXmlUtility {
 
 	//private static Logger log = Logger.getLogger(SlideXmlUtility.class);
+
+	public static String getId(Element element) {
+		return element.attributeValue(SlideXmlConstants.ID);
+	}
+
+	public static String getValue(Element element) {
+		return element.attributeValue(SlideXmlConstants.VALUE);
+	}
 
 	public static List<Element> getStyles(Element element) {
 		return com.tilioteo.hypothesis.dom.SlideXmlUtility.getElementSubNodeChilds(element, SlideXmlConstants.STYLES,
@@ -59,6 +66,11 @@ public class SlideXmlUtility {
 		}
 
 		return null;
+	}
+
+	public static List<Element> getImages(Element element) {
+		return com.tilioteo.hypothesis.dom.SlideXmlUtility.getElementSubNodeChilds(element, SlideXmlConstants.IMAGES,
+				new StringSet(SlideXmlConstants.IMAGE));
 	}
 
 }

@@ -18,12 +18,15 @@ import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlEvent;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerEvent;
+import com.tilioteo.hypothesis.plugin.map.event.ImageSequenceLayerData;
+import com.tilioteo.hypothesis.plugin.map.event.ImageSequenceLayerEvent;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureEvent;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerEvent;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPointControl;
+import com.tilioteo.hypothesis.plugin.map.ui.ImageSequenceLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeature;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeatureLayer;
@@ -51,6 +54,9 @@ public class MapComponentFactory {
 			else if (name.equals(SlideXmlConstants.IMAGE_LAYER))
 				component = ComponentFactory.<ImageLayer> createFromElement(
 						ImageLayer.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.IMAGE_SEQUENCE_LAYER))
+				component = ComponentFactory.<ImageSequenceLayer> createFromElement(
+						ImageSequenceLayer.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.FEATURE_LAYER))
 				component = ComponentFactory
 						.<VectorFeatureLayer> createFromElement(
@@ -69,7 +75,7 @@ public class MapComponentFactory {
 
 			// TODO create other components
 
-			String id = com.tilioteo.hypothesis.dom.SlideXmlUtility.getId(element);
+			String id = SlideXmlUtility.getId(element);
 			slideManager.registerComponent(id, component);
 
 			return component;
@@ -83,38 +89,49 @@ public class MapComponentFactory {
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createImageLayerLoadEventCommand(
-			ImageLayer component, SlideManager slideManager) {
-		final ImageLayerEvent event = new ImageLayerEvent.Load(
-				new ImageLayerData(component, slideManager));
+	public static Command createImageLayerLoadEventCommand(ImageLayer component, SlideManager slideManager) {
+		final ImageLayerEvent event = new ImageLayerEvent.Load(new ImageLayerData(component, slideManager));
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createVectorFeatureLayerClickEventCommand(
-			VectorFeatureLayerData data) {
-		final VectorFeatureLayerEvent event = new VectorFeatureLayerEvent.Click(
-				data);
+	public static Command createImageSequenceLayerClickEventCommand(ImageSequenceLayerData data) {
+		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Click(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createVectorFeatureClickEventCommand(
-			VectorFeatureData data) {
+	public static Command createImageSequenceLayerLoadEventCommand(ImageSequenceLayer component, SlideManager slideManager) {
+		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Load(new ImageSequenceLayerData(component, slideManager));
+
+		return CommandFactory.createComponentEventCommand(event);
+	}
+
+	public static Command createImageSequenceLayerChangeEventCommand(ImageSequenceLayerData data) {
+		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Click(data);
+
+		return CommandFactory.createComponentEventCommand(event);
+	}
+
+	public static Command createVectorFeatureLayerClickEventCommand(VectorFeatureLayerData data) {
+		final VectorFeatureLayerEvent event = new VectorFeatureLayerEvent.Click(data);
+
+		return CommandFactory.createComponentEventCommand(event);
+	}
+
+	public static Command createVectorFeatureClickEventCommand(VectorFeatureData data) {
 		final VectorFeatureEvent event = new VectorFeatureEvent.Click(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createDrawPointControlEventCommand(
-			DrawPointControlData data) {
+	public static Command createDrawPointControlEventCommand(DrawPointControlData data) {
 		final DrawPointControlEvent event = new DrawPointControlEvent.DrawPoint(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createDrawPathControlEventCommand(
-			DrawPathControlData data) {
+	public static Command createDrawPathControlEventCommand(DrawPathControlData data) {
 		final DrawPathControlEvent event = new DrawPathControlEvent.DrawPath(data);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -129,7 +146,7 @@ public class MapComponentFactory {
 			for (Element subElement : elements) {
 				String name = subElement.getName();
 				if (SlideXmlConstants.STYLE_ATTRIBUTES.contains(name)) {
-					Attribute attr = subElement.attribute(com.tilioteo.hypothesis.dom.SlideXmlConstants.VALUE);
+					Attribute attr = subElement.attribute(SlideXmlConstants.VALUE);
 					String value = attr.getValue();
 					
 					if (value != null) {

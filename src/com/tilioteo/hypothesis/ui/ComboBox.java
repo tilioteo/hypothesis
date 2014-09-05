@@ -117,4 +117,18 @@ public class ComboBox extends com.vaadin.ui.ComboBox implements SlideComponent,
 		}
 	}
 
+    @Override
+    public void setValue(Object newValue) throws com.vaadin.data.Property.ReadOnlyException {
+        boolean readOnly = false;
+    	if (isReadOnly()) {
+    		readOnly = true;
+    		setReadOnly(false);
+    	}
+    	super.setValue(newValue);
+    	
+    	if (readOnly) {
+    		setReadOnly(true);
+    	}
+    }
+
 }

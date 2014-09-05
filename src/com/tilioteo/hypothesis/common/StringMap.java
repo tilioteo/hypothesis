@@ -43,7 +43,12 @@ public class StringMap extends HashMap<String, String> {
 	}
 
 	public Boolean getBoolean(String key) {
-		return Boolean.parseBoolean(get(key));
+		String value = get(key);
+		if (!Strings.isNullOrEmpty(value)) {
+			return Boolean.parseBoolean(value);
+		} else {
+			return null;
+		}
 	}
 
 	public boolean getBoolean(String key, boolean defaultValue) {

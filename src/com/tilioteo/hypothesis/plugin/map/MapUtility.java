@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.plugin.map;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.List;
 
 import org.dom4j.Element;
 import org.vaadin.maps.shared.ui.Style;
@@ -19,6 +20,7 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
+import com.tilioteo.hypothesis.plugin.map.ui.ImageSequenceLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
 import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.AbstractComponent;
@@ -44,7 +46,7 @@ public class MapUtility {
 	public static void setCommonProperties(Component component, Element element, StringMap properties) {
 		// store component id
 		if (component instanceof AbstractComponent)
-			((AbstractComponent) component).setData(com.tilioteo.hypothesis.dom.SlideXmlUtility.getId(element));
+			((AbstractComponent) component).setData(SlideXmlUtility.getId(element));
 	}
 
 	public static void setLayerProperties(Layer layer, Element element, StringMap properties) {
@@ -58,6 +60,19 @@ public class MapUtility {
 		setFeatureLayerHoverStyle(layer, properties);		
 	}
 
+	public static void setImageSequenceLayerProperties(ImageSequenceLayer layer, Element element, StringMap properties) {
+		setImageSequenceLayerSources(layer, element);
+	}
+
+	private static void setImageSequenceLayerSources(ImageSequenceLayer layer, Element element) {
+		List<Element> images = SlideXmlUtility.getImages(element);
+		for (Element image : images) {
+			String url = image.attributeValue(SlideXmlConstants.URL);
+			String tag = image.getTextTrim();
+			
+			layer.addSource(url, tag);
+		}
+	}
 	public static void setControlProperties(Control control, Element element, StringMap properties) {
 		setCommonProperties(control, element, properties);
 	}
@@ -142,7 +157,7 @@ public class MapUtility {
 	public static void setFeatureText(VectorFeature vectorFeature, Element element) {
 		Element textElement = SlideXmlUtility.getTextElement(element);
 		if (textElement != null) {
-			String value = com.tilioteo.hypothesis.dom.SlideXmlUtility.getValue(textElement);
+			String value = SlideXmlUtility.getValue(textElement);
 			if (!Strings.isNullOrEmpty(value)) {
 				vectorFeature.setText(value);
 			}
@@ -242,7 +257,7 @@ public class MapUtility {
 	private static void setGeometry(VectorFeature vectorFeature, Element element) {
 		Element geometryElement = SlideXmlUtility.getGeometryElement(element);
 		if (geometryElement != null) {
-			String value = com.tilioteo.hypothesis.dom.SlideXmlUtility.getValue(geometryElement);
+			String value = SlideXmlUtility.getValue(geometryElement);
 			if (!Strings.isNullOrEmpty(value)) {
 				try {
 					WKTReader wktReader = new WKTReader();
@@ -255,5 +270,4 @@ public class MapUtility {
 			}
 		}
 	}
-
 }

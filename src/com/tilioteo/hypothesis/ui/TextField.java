@@ -89,4 +89,18 @@ public class TextField extends com.vaadin.ui.TextField implements SlideComponent
 		valueElement.addText((String) getValue());
 	}
 	
+    @Override
+    public void setValue(String newValue) throws com.vaadin.data.Property.ReadOnlyException {
+        boolean readOnly = false;
+    	if (isReadOnly()) {
+    		readOnly = true;
+    		setReadOnly(false);
+    	}
+    	super.setValue(newValue);
+    	
+    	if (readOnly) {
+    		setReadOnly(true);
+    	}
+    }
+
 }

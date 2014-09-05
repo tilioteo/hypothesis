@@ -42,6 +42,7 @@ public abstract class Expression extends Primitive {
 		Variable variable = variables.get(name);
 		if (variable != null) {
 			variable.setValue(value);
+			variable.setType(value.getClass());
 		}
 	}
 	
@@ -51,6 +52,19 @@ public abstract class Expression extends Primitive {
 			return variable.getValue();
 		}
 		return null;
+	}
+
+	public void mergeVariables(VariableMap variables) {
+		for (String key : this.variables.keySet()) {
+			if (!variables.containsKey(key)) {
+				variables.put(key, this.variables.get(key));
+			}
+		}
+		for (String key : variables.keySet()) {
+			if (!this.variables.containsKey(key) || (this.variables.get(key) != variables.get(key))) {
+				this.variables.put(key, variables.get(key));
+			}
+		}
 	}
 	
 }

@@ -14,6 +14,7 @@ import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
+import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
@@ -74,7 +75,7 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 			action = anonymousAction.getId();
 
 		if (!Strings.isNullOrEmpty(action)) {
-			if (name.equals(com.tilioteo.hypothesis.dom.SlideXmlConstants.CLICK)) {
+			if (name.equals(SlideXmlConstants.CLICK)) {
 				setClickHandler(action);
 			}
 			// TODO add other event handlers

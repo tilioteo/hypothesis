@@ -51,8 +51,7 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 	}
 
 	private void addFeatures(Element element) {
-		List<Element> elements = SlideXmlUtility.getFeatures(
-				element, SlideXmlConstants.VALID_FEATURE_ELEMENTS);
+		List<Element> elements = SlideXmlUtility.getFeatures(element, SlideXmlConstants.VALID_FEATURE_ELEMENTS);
 		for (Element childElement : elements) {
 			SlideComponent component = MapComponentFactory.createComponentFromElement(childElement, slideManager);
 			if (component instanceof VectorFeature) {
@@ -92,7 +91,7 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 			action = anonymousAction.getId();
 
 		if (!Strings.isNullOrEmpty(action)) {
-			if (name.equals(com.tilioteo.hypothesis.dom.SlideXmlConstants.CLICK)) {
+			if (name.equals(SlideXmlConstants.CLICK)) {
 				setClickHandler(action);
 			}
 			// TODO add other event handlers

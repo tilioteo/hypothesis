@@ -64,7 +64,7 @@ public class Map extends LayerLayout implements SlideComponent {
 	private void addStyles(Element element) {
 		List<Element> elements = SlideXmlUtility.getStyles(element);
 		for (Element childElement : elements) {
-			String id = com.tilioteo.hypothesis.dom.SlideXmlUtility.getId(childElement);;
+			String id = SlideXmlUtility.getId(childElement);;
 			if (id != null) {
 				Style style = MapComponentFactory.createStyleFromElement(childElement);
 				addStyle(id, style);

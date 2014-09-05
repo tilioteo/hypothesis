@@ -56,6 +56,7 @@ public class ComponentUtility {
 		setCommonProperties(component, element, stringMap, parentAlignment);
 
 		// set AbstractField specific properties
+		component.setReadOnly(stringMap.getBoolean(SlideXmlConstants.READ_ONLY, false));
 	}
 
 	public static void setCommonLayoutProperties(
@@ -76,6 +77,8 @@ public class ComponentUtility {
 
 		setWidth(component, stringMap.getDimension(SlideXmlConstants.WIDTH));
 		setHeight(component, stringMap.getDimension(SlideXmlConstants.HEIGHT));
+		component.setVisible(stringMap.getBoolean(SlideXmlConstants.VISIBLE, true));
+		component.setEnabled(stringMap.getBoolean(SlideXmlConstants.ENABLED, true));
 
 		setParentAlignment(stringMap, parentAlignment);
 	}

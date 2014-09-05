@@ -49,7 +49,7 @@ public class SlideXmlFactory {
 					
 					String id = SlideXmlUtility.getId(element);
 					if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(id)) {
-						Element origElement = XmlUtility.findElementByNameAndValue(root, name, prefix, uri, SlideXmlConstants.ID, id);
+						Element origElement = XmlUtility.findElementByNameAndValue(true, root, name, prefix, uri, SlideXmlConstants.ID, id);
 						if (origElement != null) {
 							mergeElementAttributes(origElement, element);
 							List<Element> bindNodes = element.elements();
@@ -78,6 +78,7 @@ public class SlideXmlFactory {
 		 * ((Element)slideNode).add((Node)evalNode.clone()); }
 		 */
 
+		//String xmlString = XmlUtility.writeString(doc);
 		return doc;
 	}
 	
@@ -136,8 +137,7 @@ public class SlideXmlFactory {
 		return slideOutput;
 	}
 
-	private static void mergeBindingNodes(Document doc,
-			Element destinationElement, Element sourceSubElement) {
+	private static void mergeBindingNodes(Document doc,	Element destinationElement, Element sourceSubElement) {
 		log.debug("mergeBindingNodes(...)");
 		
 		String name = sourceSubElement.getName();
@@ -148,13 +148,12 @@ public class SlideXmlFactory {
 		
 		Element destinationSubElement = null;
 		if (!Strings.isNullOrEmpty(id)) {
-			destinationSubElement = XmlUtility.findElementByNameAndValue(destinationElement, name, prefix, uri, SlideXmlConstants.ID, id);
+			destinationSubElement = XmlUtility.findElementByNameAndValue(false, destinationElement, name, prefix, uri, SlideXmlConstants.ID, id);
 		} else {
-			destinationSubElement = XmlUtility.findElementByNameAndValue(destinationElement, name, prefix, uri, null, null);
+			destinationSubElement = XmlUtility.findElementByNameAndValue(false, destinationElement, name, prefix, uri, null, null);
 		}
 		if (destinationSubElement == null) {
-			destinationSubElement = destinationElement
-					.addElement(name);
+			destinationSubElement = destinationElement.addElement(name);
 		}
 
 		mergeElements(destinationSubElement, sourceSubElement);
@@ -188,9 +187,9 @@ public class SlideXmlFactory {
 				
 				Element destinationSubElement = null;
 				if (!Strings.isNullOrEmpty(id)) {
-					destinationSubElement = XmlUtility.findElementByNameAndValue(destination, name, prefix, uri, SlideXmlConstants.ID, id);
+					destinationSubElement = XmlUtility.findElementByNameAndValue(false, destination, name, prefix, uri, SlideXmlConstants.ID, id);
 				} else {
-					destinationSubElement = XmlUtility.findElementByNameAndValue(destination, name, prefix, uri, null, null);
+					destinationSubElement = XmlUtility.findElementByNameAndValue(false, destination, name, prefix, uri, null, null);
 				}
 				if (destinationSubElement == null) {
 					destinationSubElement = destination.addElement(name);

@@ -76,6 +76,9 @@ public class SlideXmlConstants {
 	public static final String ORIENTATION = "Orientation";
 	public static final String LABEL_POSITION = "LabelPosition";
 	public static final String MULTI_SELECT = "MultiSelect";
+	public static final String READ_ONLY = "ReadOnly";
+	public static final String ENABLED = "Enabled";
+	public static final String VISIBLE = "Visible";
 	public static final String CLICK = "Click";
 	public static final String LOAD = "Load";
 	public static final String INIT = "Init";

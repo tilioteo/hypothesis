@@ -10,6 +10,7 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlData;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerData;
+import com.tilioteo.hypothesis.plugin.map.event.ImageSequenceLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerData;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -27,6 +28,24 @@ public class SlideFactory {
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
 		if (data.hasCoordinate()) {
 			writeCoordinate(sourceElement, data.getCoordinate());
+		}
+	}
+
+	public static void writeImageSequenceLayerData(Element sourceElement, ImageSequenceLayerData data) {
+		String id = data.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.IMAGE_SEQUENCE_LAYER);
+		if (id != null)
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		if (data.hasCoordinate()) {
+			writeCoordinate(sourceElement, data.getCoordinate());
+		}
+		int index = data.getImageIndex();
+		if (index > 0) {
+			Element selectedElement = sourceElement.addElement(SlideXmlConstants.IMAGE);
+			selectedElement.addAttribute(SlideXmlConstants.INDEX, String.format("%d", index));
+			if (data.getImageTag() != null) {
+				selectedElement.addText(data.getImageTag());
+			}
 		}
 	}
 
