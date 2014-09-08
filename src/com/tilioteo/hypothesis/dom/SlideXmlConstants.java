@@ -110,6 +110,7 @@ public class SlideXmlConstants {
 	public static final String INTEGER = "Integer";
 	public static final String BOOLEAN = "Boolean";
 	public static final String FLOAT = "Float";
+	public static final String STRING = "String";
 	public static final String OBJECT = "Object";
 
 	public static final String UID = "UID";
@@ -119,6 +120,8 @@ public class SlideXmlConstants {
 	public static final String FIELD = "Field";
 
 	public static final String EVENT_DATA = "EventData";
+	public static final String COMPONENT_DATA = "ComponentData";
+	public static final String NAVIGATOR = "Navigator";
 	public static final String SOURCES = "Sources";
 	public static final String SOURCE = "Source";
 	public static final String SELECTED = "Selected";

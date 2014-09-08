@@ -8,6 +8,7 @@ import java.util.Collection;
 import org.dom4j.Document;
 
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Slide;
@@ -267,16 +268,16 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	}
 
 	public void addComponentDataVariable(AbstractComponentData<?> data) {
-		Variable<?> variable = (Variable<?>)variables.get("ComponentData");
+		Variable<?> variable = (Variable<?>)variables.get(SlideXmlConstants.COMPONENT_DATA);
 		if (null == variable) {
-			variable = new Variable<Object>("ComponentData");
-			variables.put("ComponentData", variable);
+			variable = new Variable<Object>(SlideXmlConstants.COMPONENT_DATA);
+			variables.put(SlideXmlConstants.COMPONENT_DATA, variable);
 		}
 		variable.setRawValue(data);
 	}
 	
 	public void clearComponentDataVariable() {
-		Variable<?> variable = (Variable<?>)variables.get("ComponentData");
+		Variable<?> variable = (Variable<?>)variables.get(SlideXmlConstants.COMPONENT_DATA);
 		if (variable != null) {
 			variable.setRawValue(null);
 		}

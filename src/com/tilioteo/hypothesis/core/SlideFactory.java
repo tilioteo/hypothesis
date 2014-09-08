@@ -198,25 +198,33 @@ public class SlideFactory {
 	private void writeVariablesData(Element element, VariableMap variables) {
 		Element variablesElement = element.addElement(SlideXmlConstants.VARIABLES);
 		for (Variable<?> variable : variables.values()) {
-			writeVariableData(variablesElement, variable);
+			String name = variable.getName();
+			if (!(name.equals(SlideXmlConstants.COMPONENT_DATA) ||
+					name.equals(SlideXmlConstants.NAVIGATOR))) {
+				writeVariableData(variablesElement, variable);
+			}
 		}
 	}
 
 	private void writeVariableData(Element element, Variable<?> variable) {
 		Class<?> type = variable.getType();
 		String typeName = "";
-		if (type.isAssignableFrom(Integer.class)) {
+		if (type.equals(Integer.class)) {
 			typeName = SlideXmlConstants.INTEGER;
-		} else if (type.isAssignableFrom(Double.class)) {
+		} else if (type.equals(Double.class)) {
 			typeName = SlideXmlConstants.FLOAT;
-		} else if (type.isAssignableFrom(Boolean.class)) {
+		} else if (type.equals(Boolean.class)) {
 			typeName = SlideXmlConstants.BOOLEAN;
+		} else if (type.equals(String.class)) {
+			typeName = SlideXmlConstants.STRING;
+		} else if (type.equals(Object.class)) {
+			typeName = SlideXmlConstants.OBJECT;
 		}
 		
 		if (!typeName.isEmpty()) {
 			String value = "";
 			if (variable.getValue() != null) {
-				value = (String) variable.getValue();
+				value = variable.getStringValue();
 			}
 			Element variableElement = element.addElement(SlideXmlConstants.VARIABLE);
 			variableElement.addAttribute(SlideXmlConstants.ID, variable.getName());
@@ -508,10 +516,11 @@ public class SlideFactory {
 			} else if (SlideXmlConstants.INTEGER.equalsIgnoreCase(type))
 				variable = new Variable<Integer>(id, Integer.parseInt(value));
 			else if (SlideXmlConstants.BOOLEAN.equalsIgnoreCase(type))
-				variable = new Variable<Boolean>(id,
-						Boolean.parseBoolean(value));
+				variable = new Variable<Boolean>(id, Boolean.parseBoolean(value));
 			else if (SlideXmlConstants.FLOAT.equalsIgnoreCase(type))
 				variable = new Variable<Double>(id, Double.parseDouble(value));
+			else if (SlideXmlConstants.STRING.equalsIgnoreCase(type))
+				variable = new Variable<String>(id, value);
 
 			return variable;
 		} else
@@ -538,30 +547,33 @@ public class SlideFactory {
 	private Variable<Object> createNavigatorObject(SlideManager slideManager) {
 		// TODO invent naming for system objects and mark navigator like a
 		// system object
-		Variable<Object> variable = new Variable<Object>("Navigator");
+		Variable<Object> variable = new Variable<Object>(SlideXmlConstants.NAVIGATOR);
 		Navigator navigator = new Navigator(slideManager);
 		variable.setRawValue(navigator);
 		return variable;
 	}
 
 	private void writeOutputValue(Element element, Object value) {
-		if (value instanceof Double) {
-			element.addAttribute(SlideXmlConstants.TYPE,
-					SlideXmlConstants.FLOAT);
+		Class<?> type = value.getClass();
+		
+		if (type == double.class || type == float.class || type.isAssignableFrom(Double.class)) {
+			element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.FLOAT);
 			// use Locale.ROOT for locale neutral formating of decimals
-			element.addText(String.format(Locale.ROOT, "%g",
-					((Double) value).doubleValue()));
-		} else if (value instanceof Integer) {
-			element.addAttribute(SlideXmlConstants.TYPE,
-					SlideXmlConstants.INTEGER);
+			element.addText(String.format(Locale.ROOT, "%g", ((Double) value).doubleValue()));
+		} else if (type == int.class || type == short.class || type.isAssignableFrom(Integer.class)) {
+			element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.INTEGER);
 			element.addText(((Integer) value).toString());
-		} else if (value instanceof Boolean) {
-			element.addAttribute(SlideXmlConstants.TYPE,
-					SlideXmlConstants.BOOLEAN);
+		} else if (type == long.class || type.isAssignableFrom(Long.class)) {
+			element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.INTEGER);
+			element.addText(((Long) value).toString());
+		} else if (type == boolean.class || type.isAssignableFrom(Boolean.class)) {
+			element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.BOOLEAN);
 			element.addText(((Boolean) value).toString());
+		} else if (type.isAssignableFrom(String.class) || value instanceof String) {
+			element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.STRING);
+			element.addText((String) value);
 		} else {
-			element.addAttribute(SlideXmlConstants.TYPE,
-					SlideXmlConstants.OBJECT);
+			element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.OBJECT);
 			// TODO serialize object type values
 		}
 

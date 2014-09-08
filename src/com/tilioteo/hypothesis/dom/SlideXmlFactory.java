@@ -138,7 +138,7 @@ public class SlideXmlFactory {
 	}
 
 	private static void mergeBindingNodes(Document doc,	Element destinationElement, Element sourceSubElement) {
-		log.debug("mergeBindingNodes(...)");
+		//log.debug("mergeBindingNodes(...)");
 		
 		String name = sourceSubElement.getName();
 		String prefix = sourceSubElement.getNamespacePrefix();
@@ -162,7 +162,7 @@ public class SlideXmlFactory {
 	@SuppressWarnings("unchecked")
 	private static void mergeElementAttributes(Element destination,
 			Element source) {
-		log.debug("mergeElementAttributes(...)");
+		//log.debug("mergeElementAttributes(...)");
 		
 		List<Attribute> sourceAttributes = source.attributes();
 		for (Attribute sourceAttribute : sourceAttributes) {
