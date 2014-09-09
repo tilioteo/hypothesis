@@ -22,6 +22,8 @@ import com.tilioteo.hypothesis.event.TimerData;
 import com.tilioteo.hypothesis.event.TimerEvent;
 import com.tilioteo.hypothesis.event.VideoData;
 import com.tilioteo.hypothesis.event.VideoEvent;
+import com.tilioteo.hypothesis.event.WindowData;
+import com.tilioteo.hypothesis.event.WindowEvent;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -31,9 +33,9 @@ public class CommandFactory {
 
 	private static Logger log = Logger.getLogger(CommandFactory.class);
 
-	public static Command createActionCommand(final SlideManager slideManager, String actionId) {
+	/*public static Command createActionCommand(final SlideManager slideManager, String actionId) {
 		return createActionCommand(slideManager, actionId, null);
-	}
+	}*/
 
 	public static Command createActionCommand(final SlideManager slideManager, String actionId, final AbstractComponentData<?> data) {
 		final AbstractBaseAction action = slideManager != null ? slideManager.getActions().get(actionId) : null;
@@ -145,6 +147,24 @@ public class CommandFactory {
 
 	public static Command createAudioStopEventCommand(AudioData data) {
 		AudioEvent event = new AudioEvent.Stop(data);
+
+		return createComponentEventCommand(event);
+	}
+
+	public static Command createWindowInitEventCommand(WindowData data) {
+		WindowEvent event = new WindowEvent.Init(data);
+
+		return createComponentEventCommand(event);
+	}
+
+	public static Command createWindowOpenEventCommand(WindowData data) {
+		WindowEvent event = new WindowEvent.Open(data);
+
+		return createComponentEventCommand(event);
+	}
+
+	public static Command createWindowCloseEventCommand(WindowData data) {
+		WindowEvent event = new WindowEvent.Close(data);
 
 		return createComponentEventCommand(event);
 	}

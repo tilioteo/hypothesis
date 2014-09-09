@@ -26,6 +26,7 @@ import com.tilioteo.hypothesis.event.ImageData;
 import com.tilioteo.hypothesis.event.SelectPanelData;
 import com.tilioteo.hypothesis.event.TimerData;
 import com.tilioteo.hypothesis.event.VideoData;
+import com.tilioteo.hypothesis.event.WindowData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Action;
 import com.tilioteo.hypothesis.processing.CallAction;
@@ -146,6 +147,14 @@ public class SlideFactory {
 		Element subElement = sourceElement.addElement(SlideXmlConstants.TIME);
 		// use Locale.ROOT for locale neutral formating of decimals
 		subElement.addText(String.format(Locale.ROOT, "%d", timerData.getTime()));
+	}
+
+	public static void writeWindowData(Element sourceElement, WindowData windowData) {
+		String id = windowData.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.WINDOW);
+		if (id != null) {
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		}
 	}
 
 	public static void writeSelectPanelData(Element sourceElement, SelectPanelData selectPanelData) {

@@ -125,8 +125,6 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 
 		} else if (event instanceof CloseTestEvent) {
 			close();
-		} else {
-			log.debug("Unknown process event - skip handling");
 		}
 	}
 

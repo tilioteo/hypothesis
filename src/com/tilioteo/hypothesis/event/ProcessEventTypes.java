@@ -48,6 +48,9 @@ public class ProcessEventTypes {
 	public static final String TimerStart = "TIMER_START";
 	public static final String TimerStop = "TIMER_STOP";
 	public static final String TimerUpdate = "TIMER_UPDATE";
+	public static final String WindowInit = "WINDOW_INIT";
+	public static final String WindowOpen = "WINDOW_OPEN";
+	public static final String WindowClose = "WINDOW_CLOSE";
 	public static final String VideoClick = "VIDEO_CLICK";
 	public static final String VideoLoad = "VIDEO_LOAD";
 	public static final String VideoStart = "VIDEO_START";
@@ -87,14 +90,17 @@ public class ProcessEventTypes {
 		registerEvent(TimerStart); // 107
 		registerEvent(TimerStop); // 108
 		registerEvent(TimerUpdate); // 109
-		registerEvent(VideoClick); // 110
-		registerEvent(VideoLoad); // 111
-		registerEvent(VideoStart); // 112
-		registerEvent(VideoStop); // 113
-		registerEvent(AudioLoad); // 114
-		registerEvent(AudioStart); // 115
-		registerEvent(AudioStop); // 116
-		//nextId += 890; // plugin events begin from 1000
+		registerEvent(WindowInit); // 110
+		registerEvent(WindowOpen); // 111
+		registerEvent(WindowClose); // 112
+		registerEvent(VideoClick); // 113
+		registerEvent(VideoLoad); // 114
+		registerEvent(VideoStart); // 115
+		registerEvent(VideoStop); // 116
+		registerEvent(AudioLoad); // 117
+		registerEvent(AudioStart); // 118
+		registerEvent(AudioStop); // 119
+		//nextId += 881; // plugin events begin from 1000
 	}
 
 	private static long generateId() {
