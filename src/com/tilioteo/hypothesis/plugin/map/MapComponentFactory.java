@@ -89,8 +89,8 @@ public class MapComponentFactory {
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createImageLayerLoadEventCommand(ImageLayer component, SlideManager slideManager) {
-		final ImageLayerEvent event = new ImageLayerEvent.Load(new ImageLayerData(component, slideManager));
+	public static Command createImageLayerLoadEventCommand(ImageLayerData data) {
+		final ImageLayerEvent event = new ImageLayerEvent.Load(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
@@ -101,8 +101,8 @@ public class MapComponentFactory {
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createImageSequenceLayerLoadEventCommand(ImageSequenceLayer component, SlideManager slideManager) {
-		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Load(new ImageSequenceLayerData(component, slideManager));
+	public static Command createImageSequenceLayerLoadEventCommand(ImageSequenceLayerData data) {
+		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Load(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}

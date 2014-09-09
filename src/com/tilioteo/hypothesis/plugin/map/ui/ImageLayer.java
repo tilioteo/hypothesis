@@ -92,7 +92,7 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 	private void setClickHandler(String actionId) {
 		final ImageLayerData data = new ImageLayerData(this, slideManager);
 		final Command componentEvent = MapComponentFactory.createImageLayerClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 
 		addClickListener(new ClickListener() {
 			@Override
@@ -105,8 +105,9 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 	}
 
 	private void setLoadHandler(String actionId) {
-		final Command componentEvent = MapComponentFactory.createImageLayerLoadEventCommand(this, slideManager);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+		final ImageLayerData data = new ImageLayerData(this, slideManager);
+		final Command componentEvent = MapComponentFactory.createImageLayerLoadEventCommand(data);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 		
 		addLoadListener(new LoadListener() {
 			@Override

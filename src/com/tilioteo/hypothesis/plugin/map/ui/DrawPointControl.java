@@ -84,8 +84,7 @@ public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointContro
 	private void setDrawHandler(String actionId) {
 		final DrawPointControlData data = new DrawPointControlData(this, slideManager);
 		final Command componentEvent = MapComponentFactory.createDrawPointControlEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 
 		addGeomertyListener(new FeatureHandler.GeometryListener() {
 			@Override

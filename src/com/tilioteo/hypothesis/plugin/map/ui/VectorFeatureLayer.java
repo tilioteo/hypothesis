@@ -101,8 +101,7 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 	private void setClickHandler(String actionId) {
 		final VectorFeatureLayerData data = new VectorFeatureLayerData(this, slideManager);
 		final Command componentEvent = MapComponentFactory.createVectorFeatureLayerClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 
 		addClickListener(new ClickListener() {
 			@Override

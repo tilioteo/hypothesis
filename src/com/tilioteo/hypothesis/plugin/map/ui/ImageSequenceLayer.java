@@ -105,7 +105,7 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 	private void setClickHandler(String actionId) {
 		final ImageSequenceLayerData data = new ImageSequenceLayerData(this, slideManager);
 		final Command componentEvent = MapComponentFactory.createImageSequenceLayerClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 
 		addClickListener(new ClickListener() {
 			
@@ -121,8 +121,9 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 	}
 
 	private void setLoadHandler(String actionId) {
-		final Command componentEvent = MapComponentFactory.createImageSequenceLayerLoadEventCommand(this, slideManager);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+		final ImageSequenceLayerData data = new ImageSequenceLayerData(this, slideManager);
+		final Command componentEvent = MapComponentFactory.createImageSequenceLayerLoadEventCommand(data);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 		
 		addLoadListener(new LoadListener() {
 			@Override
@@ -136,7 +137,7 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 	private void setChangeHandler(String actionId) {
 		final ImageSequenceLayerData data = new ImageSequenceLayerData(this, slideManager);
 		final Command componentEvent = MapComponentFactory.createImageSequenceLayerChangeEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId);
+		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
 		
 		addChangeListener(new ChangeListener() {
 			@Override
