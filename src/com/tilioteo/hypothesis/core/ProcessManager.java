@@ -27,12 +27,12 @@ import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;
 import com.tilioteo.hypothesis.event.AbstractNotificationEvent;
 import com.tilioteo.hypothesis.event.AbstractProcessEvent;
-import com.tilioteo.hypothesis.event.AbstractRunningEvent;
 import com.tilioteo.hypothesis.event.AbstractTestEvent;
 import com.tilioteo.hypothesis.event.ActionEvent;
 import com.tilioteo.hypothesis.event.AfterFinishSlideEvent;
 import com.tilioteo.hypothesis.event.AfterRenderContentEvent;
 import com.tilioteo.hypothesis.event.BreakTestEvent;
+import com.tilioteo.hypothesis.event.CloseTestEvent;
 import com.tilioteo.hypothesis.event.ContinueTestEvent;
 import com.tilioteo.hypothesis.event.ErrorNotificationEvent;
 import com.tilioteo.hypothesis.event.ErrorTestEvent;
@@ -92,15 +92,35 @@ public class ProcessManager implements ProcessEventListener {
 
 		processEventManager.addListener(this,
 				PrepareTestEvent.class,
-				AbstractRunningEvent.class,
+				StartTestEvent.class,
+				ContinueTestEvent.class,
+				NextSlideEvent.class,
+				PriorSlideEvent.class,
+				FinishSlideEvent.class,
+				NextTaskEvent.class,
+				FinishTaskEvent.class,
+				NextBranchEvent.class,
+				FinishBranchEvent.class,
+				BreakTestEvent.class,
+				FinishTestEvent.class,
+
 				AfterRenderContentEvent.class,
-				AbstractComponentEvent.class);
+
+				ErrorTestEvent.class,
+				AbstractComponentEvent.class,
+				ActionEvent.class
+				//AbstractRunningEvent.class
+				);
 		if (listener != null) {
 			processEventManager.addListener(listener,
 					AfterPrepareTestEvent.class,
 					RenderContentEvent.class,
-					AbstractRunningEvent.class,
-					AbstractNotificationEvent.class);
+					AfterFinishSlideEvent.class,
+					FinishTestEvent.class,
+					CloseTestEvent.class,
+					AbstractNotificationEvent.class
+					//AbstractRunningEvent.class
+					);
 		}
 
 		slideManager = new SlideManager(processEventManager);

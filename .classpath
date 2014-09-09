@@ -20,5 +20,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=hypothesis&amp;ivyXmlPath=ivy.xml&amp;confs=widgetset-compile&amp;ivySettingsPath=%24%7Bworkspace_loc%3Ahypothesis%2Fivysettings.xml%7D&amp;loadSettingsOnDemand=false&amp;ivyUserDir=&amp;propertyFiles="/>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?project=hypothesis&amp;ivyXmlPath=ivy.xml&amp;confs=nodeploy&amp;ivySettingsPath=%24%7Bworkspace_loc%3Ahypothesis%2Fivysettings.xml%7D&amp;loadSettingsOnDemand=false&amp;ivyUserDir=&amp;propertyFiles="/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

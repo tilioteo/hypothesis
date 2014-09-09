@@ -19,8 +19,7 @@ public class ViewportEventManager {
 
 	private HashMap<Class<? extends ViewportEvent>, EventListenerList> listenersMap = new HashMap<Class<? extends ViewportEvent>, EventListenerList>();
 
-	public final void addListener(Class<? extends ViewportEvent> eventClass,
-			ViewportEventListener eventListener) {
+	public final void addListener(Class<? extends ViewportEvent> eventClass, ViewportEventListener eventListener) {
 		if (!isListening(eventListener, eventClass)) {
 			EventListenerList listeners = listenersMap.get(eventClass);
 			if (listeners == null) {
@@ -40,13 +39,10 @@ public class ViewportEventManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	private EventListenerList findListeners(
-			Class<? extends EventObject> eventClass) {
+	private EventListenerList findListeners(Class<? extends EventObject> eventClass) {
 		EventListenerList listeners = listenersMap.get(eventClass);
-		if (listeners == null
-				&& !eventClass.getSuperclass().equals(EventObject.class))
-			return findListeners((Class<? extends EventObject>) eventClass
-					.getSuperclass());
+		if (listeners == null && !eventClass.getSuperclass().equals(EventObject.class))
+			return findListeners((Class<? extends EventObject>) eventClass.getSuperclass());
 
 		return listeners;
 	}
@@ -60,8 +56,7 @@ public class ViewportEventManager {
 
 				for (int i = 0; i < listeners.length; i += 2) {
 					if (listeners[i] == ViewportEventListener.class) {
-						((ViewportEventListener) listeners[i + 1])
-								.handleEvent(event);
+						((ViewportEventListener) listeners[i + 1]).handleEvent(event);
 					}
 				}
 			}
@@ -88,16 +83,14 @@ public class ViewportEventManager {
 		listenersMap.clear();
 	}
 
-	public final void removeAllListeners(
-			Class<? extends ViewportEvent> eventClass) {
+	public final void removeAllListeners(Class<? extends ViewportEvent> eventClass) {
 		EventListenerList listenerList = findListeners(eventClass);
 		if (listenerList != null) {
 			Object[] listeners = listenerList.getListenerList();
 
 			for (int i = 0; i < listeners.length; i += 2) {
 				if (listeners[i] == ViewportEventListener.class) {
-					listenerList.remove(ViewportEventListener.class,
-							(ViewportEventListener) listeners[i]);
+					listenerList.remove(ViewportEventListener.class, (ViewportEventListener) listeners[i]);
 				}
 			}
 		}

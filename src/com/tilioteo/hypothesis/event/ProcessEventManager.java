@@ -21,9 +21,7 @@ public class ProcessEventManager {
 
 	}
 
-	public final void addListener(
-			Class<? extends ProcessEvent> eventClass,
-			ProcessEventListener eventListener) {
+	public final void addListener(Class<? extends ProcessEvent> eventClass,	ProcessEventListener eventListener) {
 		if (!isListening(eventListener, eventClass)) {
 			EventListenerList listeners = listenersMap.get(eventClass);
 			if (listeners == null) {
@@ -43,13 +41,10 @@ public class ProcessEventManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	private EventListenerList findListeners(
-			Class<? extends ProcessEvent/*Object*/> eventClass) {
+	private EventListenerList findListeners(Class<? extends ProcessEvent> eventClass) {
 		EventListenerList listeners = listenersMap.get(eventClass);
-		if (listeners == null
-				&& !eventClass.getSuperclass().equals(EventObject.class))
-			return findListeners((Class<? extends ProcessEvent/*Object*/>) eventClass
-					.getSuperclass());
+		if (listeners == null && !eventClass.getSuperclass().equals(EventObject.class))
+			return findListeners((Class<? extends ProcessEvent>)eventClass.getSuperclass());
 
 		return listeners;
 	}
@@ -77,8 +72,7 @@ public class ProcessEventManager {
 			Object[] listeners = listenerList.getListenerList();
 
 			for (int i = 0; i < listeners.length; i += 2) {
-				if (listeners[i] == ProcessEventListener.class
-						&& listeners[i + 1] == eventListener) {
+				if (listeners[i] == ProcessEventListener.class && listeners[i + 1] == eventListener) {
 					return true;
 				}
 			}
@@ -96,9 +90,7 @@ public class ProcessEventManager {
 	 * public final void removeAllListeners() { listenersMap.clear(); }
 	 */
 
-	public final void removeListener(
-			Class<? extends ProcessEvent> eventClass,
-			ProcessEventListener eventListener) {
+	public final void removeListener(Class<? extends ProcessEvent> eventClass, ProcessEventListener eventListener) {
 		EventListenerList listeners = listenersMap.get(eventClass);
 		if (listeners != null) {
 			listeners.remove(ProcessEventListener.class, eventListener);
@@ -106,8 +98,7 @@ public class ProcessEventManager {
 	}
 
 	public final void removeListener(ProcessEventListener eventListener) {
-		Collection<EventListenerList> listenersCollection = listenersMap
-				.values();
+		Collection<EventListenerList> listenersCollection = listenersMap.values();
 		for (EventListenerList listeners : listenersCollection) {
 			if (listeners != null) {
 				listeners.remove(ProcessEventListener.class, eventListener);
