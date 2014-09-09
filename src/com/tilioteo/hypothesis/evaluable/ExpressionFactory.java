@@ -258,6 +258,10 @@ public class ExpressionFactory {
 						if (classGroup != null)
 							classGroup.setEndPosition(j);	
 						break;
+					} else if (j == text.length()-1) {
+						if (classGroup != null)
+							classGroup.setEndPosition(j + 1);
+						break;
 					}
 				}
 				if (classGroup != null) {

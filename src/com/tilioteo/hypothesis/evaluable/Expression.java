@@ -42,7 +42,7 @@ public abstract class Expression extends Primitive {
 		Variable variable = variables.get(name);
 		if (variable != null) {
 			variable.setValue(value);
-			variable.setType(value.getClass());
+			variable.setType(variable.getType());
 		}
 	}
 	

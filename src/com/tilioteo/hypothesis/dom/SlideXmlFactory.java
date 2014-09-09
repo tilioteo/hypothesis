@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.dom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -174,7 +175,11 @@ public class SlideXmlFactory {
 	@SuppressWarnings("unchecked")
 	private static void mergeElements(Element destination, Element source) {
 		mergeElementAttributes(destination, source);
+		
+		destination.setText(source.getText());
 
+		List<Node> destSubNodes = new ArrayList<Node>();
+		
 		List<Node> sourceNodes = source.selectNodes("*");
 		for (Node sourceNode : sourceNodes) {
 			if (sourceNode instanceof Element) {
@@ -190,9 +195,14 @@ public class SlideXmlFactory {
 					destinationSubElement = XmlUtility.findElementByNameAndValue(false, destination, name, prefix, uri, SlideXmlConstants.ID, id);
 				} else {
 					destinationSubElement = XmlUtility.findElementByNameAndValue(false, destination, name, prefix, uri, null, null);
+					// if previously created element found then skip to avoid rewrite
+					if (destSubNodes.contains(destinationSubElement)) {
+						destinationSubElement = null;
+					}
 				}
 				if (destinationSubElement == null) {
 					destinationSubElement = destination.addElement(name);
+					destSubNodes.add(destinationSubElement);
 				}
 					//destination.add((Node) sourceNode.clone());
 				//} else {

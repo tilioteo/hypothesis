@@ -7,9 +7,10 @@ import static org.junit.Assert.*;
 
 import java.awt.Point;
 
-import org.hypothesis.common.expression.Expression;
-import org.hypothesis.common.expression.ExpressionFactory;
 import org.junit.Test;
+
+import com.tilioteo.hypothesis.evaluable.Expression;
+import com.tilioteo.hypothesis.evaluable.ExpressionFactory;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -36,22 +37,24 @@ public class ExpressionFactoryTest {
 		int i = 0;
 		i = i+i+i+i+1;
 		
-		Expression expression = ExpressionFactory.parseString("pocitadlo=pocitadlo+1");
+		//Expression expression = ExpressionFactory.parseString("pocitadlo=pocitadlo+1");
 		//Expression expression = ExpressionFactory.parseString("pocitadlo");
 		
-		expression.setVariableValue("pocitadlo", 1);
-		int value = expression.getInteger();
-		assertEquals(2, value, 0);
+		//expression.setVariableValue("pocitadlo", 1);
+		//int value = expression.getInteger();
+		//assertEquals(2, value, 0);
 		
-		//Point point = new Point();
-		//point.setLocation(1, 2);
+		Point point = new Point();
+		point.setLocation(1, 2);
 		
 		//Expression expression = ExpressionFactory.parseString("pocitadlo=obj->getX()");
 		//Expression expression = ExpressionFactory.parseString("obj->setLocation(3,4)");
-		//expression.setVariableValue("obj", point);
-		//Object val = expression.getValue();
+		//Expression expression = ExpressionFactory.parseString("x1=obj->x");
+		Expression expression = ExpressionFactory.parseString("x1=obj->getX()");
+		expression.setVariableValue("obj", point);
+		Object val = expression.getValue();
 
-		//assertEquals(3.0, point.getX(), 0.0);
+		assertEquals(1.0, point.x, 0.0);
 		//fail("Not yet implemented");
 	}
 
