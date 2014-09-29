@@ -78,6 +78,7 @@ public class ProcessManager implements ProcessEventListener {
 	
 	private PersistenceManager persistenceManager;
 	private TestManager testManager;
+	private com.tilioteo.hypothesis.persistence.BranchManager persistenceBranchManager;
 	private PermissionManager permissionManager;
 	private OutputManager outputManager;
 	
@@ -127,6 +128,7 @@ public class ProcessManager implements ProcessEventListener {
 		permissionManager = PermissionManager.newInstance();
 		testManager = permissionManager.getTestManager();
 		persistenceManager = PersistenceManager.newInstance();
+		persistenceBranchManager = com.tilioteo.hypothesis.persistence.BranchManager.newInstance();
 
 		outputManager = OutputManager.newInstance();
 	}
@@ -312,11 +314,11 @@ public class ProcessManager implements ProcessEventListener {
 
 		Branch current = persistenceManager.merge(branchManager.current());
 		if (current != null) {
-			BranchMap branchMap = current.getBranchMap();
+			BranchMap branchMap = persistenceBranchManager.getBranchMap(pack, current);
 			String key = branchManager.getNextBranchKey();
 
 			Branch nextBranch = null;
-			if (key != null) {
+			if (branchMap != null && key != null) {
 				nextBranch = branchMap.get(key);
 			}
 
@@ -489,8 +491,8 @@ public class ProcessManager implements ProcessEventListener {
 		log.debug("renderSlide::");
 		if (slideManager.getViewport() != null
 				&& slideManager.getViewport().getComponent() != null) {
-			processEventManager.fireEvent(new RenderContentEvent(slideManager
-					.getViewport(), slideManager.getTimers()));
+			processEventManager.fireEvent(
+					new RenderContentEvent(slideManager.getViewport(), slideManager.getTimers(), slideManager.getShortcutKeys()));
 		} else {
 			fireTestError();
 		}

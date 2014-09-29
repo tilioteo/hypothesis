@@ -32,8 +32,7 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
 @Table(name = EntityTableConstants.BRANCH_TREK_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
 		EntityFieldConstants.PACK_ID, EntityFieldConstants.KEY, EntityFieldConstants.BRANCH_ID }) })
 @org.hibernate.annotations.Table(appliesTo = EntityTableConstants.BRANCH_TREK_TABLE,
-indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = { EntityFieldConstants.PACK_ID, EntityFieldConstants.BRANCH_ID }),
-		@Index(name="IX_KEY", columnNames = {EntityFieldConstants.KEY}) })
+indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = { EntityFieldConstants.PACK_ID, EntityFieldConstants.BRANCH_ID }) })
 @Access(AccessType.PROPERTY)
 public final class BranchTrek extends SerializableIdObject {
 	/**
@@ -44,6 +43,7 @@ public final class BranchTrek extends SerializableIdObject {
 	private Pack pack;
 	private String key;
 	private Branch branch;
+	private Branch nextBranch;
 
 	protected BranchTrek() {
 		super();
@@ -94,6 +94,16 @@ public final class BranchTrek extends SerializableIdObject {
 		this.branch = branch;
 	}
 
+	@ManyToOne
+	@JoinColumn(name = EntityFieldConstants.NEXT_BRANCH_ID, nullable = false)
+	public final Branch getNextBranch() {
+		return nextBranch;
+	}
+
+	protected void setNextBranch(Branch branch) {
+		this.nextBranch = branch;
+	}
+
 	@Override
 	public final boolean equals(Object obj) {
 		if (this == obj) {
@@ -115,6 +125,8 @@ public final class BranchTrek extends SerializableIdObject {
 		String key2 = other.getKey();
 		Branch branch = getBranch();
 		Branch branch2 = other.getBranch();
+		Branch nextBranch = getNextBranch();
+		Branch nextBranch2 = other.getNextBranch();
 		
 		// if id of one instance is null then compare other properties
 		if (id != null && id2 != null && !id.equals(id2)) {
@@ -139,6 +151,12 @@ public final class BranchTrek extends SerializableIdObject {
 			return false;
 		}
 		
+		if (nextBranch != null && !nextBranch.equals(nextBranch2)) {
+			return false;
+		} else if (nextBranch2 != null) {
+			return false;
+		}
+		
 		return true;
 	}
 
@@ -148,6 +166,7 @@ public final class BranchTrek extends SerializableIdObject {
 		Pack pack = getPack();
 		String key = getKey();
 		Branch branch = getBranch();
+		Branch nextBranch = getNextBranch();
 
 		final int prime = 7;
 		int result = 1;
@@ -155,6 +174,7 @@ public final class BranchTrek extends SerializableIdObject {
 		result = prime * result	+ (pack != null ? pack.hashCode() : 0);
 		result = prime * result	+ (key != null ? key.hashCode() : 0);
 		result = prime * result	+ (branch != null ? branch.hashCode() : 0);
+		result = prime * result	+ (nextBranch != null ? nextBranch.hashCode() : 0);
 		return result;
 	}
 

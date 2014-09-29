@@ -31,6 +31,7 @@ public class EntityFieldConstants {
 
 	public static final String PACK_ID = "pack_id";
 	public static final String BRANCH_ID = "branch_id";
+	public static final String NEXT_BRANCH_ID = "next_branch_id";
 	public static final String BRANCH_TREK_ID = "branch_trek_id";
 	public static final String TASK_ID = "task_id";
 	public static final String SLIDE_ID = "slide_id";

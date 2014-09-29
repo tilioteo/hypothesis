@@ -46,7 +46,6 @@ public class PersistenceManager {
 			HibernateUtil.beginTransaction();
 			Branch branch = (Branch)HibernateUtil.getSession().merge(entity);
 			Hibernate.initialize(branch.getTasks());
-			Hibernate.initialize(branch.getBranchMap());
 			HibernateUtil.commitTransaction();
 		
 			return branch;

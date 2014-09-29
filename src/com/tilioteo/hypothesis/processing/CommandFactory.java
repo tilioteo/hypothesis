@@ -33,10 +33,6 @@ public class CommandFactory {
 
 	private static Logger log = Logger.getLogger(CommandFactory.class);
 
-	/*public static Command createActionCommand(final SlideManager slideManager, String actionId) {
-		return createActionCommand(slideManager, actionId, null);
-	}*/
-
 	public static Command createActionCommand(final SlideManager slideManager, String actionId, final AbstractComponentData<?> data) {
 		final AbstractBaseAction action = slideManager != null ? slideManager.getActions().get(actionId) : null;
 

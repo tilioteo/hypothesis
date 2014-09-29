@@ -3,10 +3,8 @@
  */
 package com.tilioteo.hypothesis.entity;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -64,19 +62,9 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	private List<Task> tasks = new LinkedList<Task>();
 
 	/**
-	 * set of branch treks associated with brach
-	 */
-	private Set<BranchTrek> branchTreks = new HashSet<BranchTrek>();
-
-	/**
 	 * parsed dom document from xml
 	 */
 	private transient Document document = null;
-
-	/**
-	 * specialized hash map for branches which can follow this one
-	 */
-	private transient BranchMap branchMap = new BranchMap();
 
 	@Override
 	@Id
@@ -119,18 +107,6 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 		this.tasks = list;
 	}
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = EntityTableConstants.BRANCH_BRANCH_TREK_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_TREK_ID))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.TRUE)
-	protected Set<BranchTrek> getBranchTreks() {
-		return branchTreks;
-	}
-
-	protected void setBranchTreks(Set<BranchTrek> branchTreks) {
-		this.branchTreks = branchTreks;
-	}
-
 	@Transient
 	public final Document getDocument() {
 		if (document == null) {
@@ -150,17 +126,6 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 				// throw new InvalidBranchXmlException();
 			}
 		}
-	}
-
-	@Transient
-	public BranchMap getBranchMap() {
-		branchMap.clear();
-		Set<BranchTrek> branchTreks = getBranchTreks();
-		for (BranchTrek branchTrek : branchTreks) {
-			branchMap.put(branchTrek.getKey(), branchTrek.getBranch());
-		}
-		
-		return branchMap;
 	}
 
 	@Transient
@@ -224,10 +189,6 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 			return false;
 		}
 		
-		if (!getBranchTreks().equals(other.getBranchTreks())) {
-			return false;
-		}
-		
 		return true;
 	}
 
@@ -243,7 +204,6 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 		result = prime * result	+ (note != null ? note.hashCode() : 0);
 		result = prime * result	+ (xmlData != null ? xmlData.hashCode() : 0);
 		result = prime * result + getTasks().hashCode();
-		result = prime * result	+ getBranchTreks().hashCode();
 		
 		return result;
 	}

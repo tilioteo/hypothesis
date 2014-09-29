@@ -1,26 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SlideContent TemplateUID="0269B8D8-8EE6-11E1-A2A0-A0FEBAE59B18">
+<SlideContent xmlns:maps="http://hypothesis.cz/xml/maps"
+	TemplateUID="E01DAC6E-EA48-4580-806C-9A7514A123E7">
 	<Bindings>
 		<Bind>
-			<Panel Id="ct001_ct001_ct001">
+			<Label Id="explanation">
 				<Properties>
-					<Caption Value="Co si myslíte?" />
+					<Caption
+						Value="&lt;center&gt;&lt;i&gt;&lt;font size='4'&gt;
+          Nakreslete čáru vedoucí z jeho horní hrany tak, aby měla stejnou &lt;b&gt;absolutní délku&lt;/b&gt;, jako čára v předchozím čtverci.&lt;br/&gt; 
+          Kreslit čáru začnete kliknutím myši na vyznačené místo na horní hraně čtverce a kresbu dokončíte současným stiskem tlačítka ALT a kliknutím myši.
+          &lt;/font&gt;&lt;/i&gt;&lt;/center&gt;" />
 				</Properties>
-			</Panel>
+			</Label>
 		</Bind>
 		<Bind>
-			<Panel Id="ct001_ct002_ct001_ct001_ct001">
+			<maps:Map Id="map1">
 				<Properties>
-					<Caption Value="Jaký máte názor na test?" />
+					<Width Value="833" />
+					<Height Value="625" />
 				</Properties>
-			</Panel>
-		</Bind>
-		<Bind>
-			<Panel Id="ct001_ct002_ct001_ct002_ct001">
-				<Properties>
-					<Caption Value="Jaký máte názor na aplikaci?" />
-				</Properties>
-			</Panel>
+
+				<Layers>
+					<ImageLayer Id="image_layer">
+						<Properties>
+							<Url Value="http://stampach.wz.cz/obr/TP1.png" />
+						</Properties>
+					</ImageLayer>
+
+					<FeatureLayer Id="feature_layer">
+						<Features>
+							<Feature Id="buffer">
+								<Properties>
+									<Hidden Value="false" />
+								</Properties>
+								<Geometry Value="POLYGON ((635 90,635 270,675 270,675 90,635 90))" />
+							</Feature>
+
+							<!-- pro testovaci ucely, potom ho cely zakomentuji -->
+							<Feature Id="start_point_visible">
+								<Properties>
+									<Hidden Value="false" />
+									<Style Value="point" />
+								</Properties>
+								<!--stred horni strany 655, 100 -->
+								<Geometry Value="POLYGON ((645 90,645 110,665 110,665 90,645 90))" />
+							</Feature>
+							<!-- tento je pro funkci kliknuti -->
+							<Feature Id="start_point">
+								<Properties>
+									<Hidden Value="true" />
+									<Style Value="point" />
+								</Properties>
+								<!--stred horni strany 655, 100 -->
+								<Geometry Value="POLYGON ((645 90,645 110,665 110,665 90,645 90))" />
+								<Handlers>
+									<Click>
+										<Expression>c=ComponentData->getCoordinate()</Expression>
+										<Expression>x1=c->x</Expression>
+										<Call Action="start_click" />
+									</Click>
+								</Handlers>
+							</Feature>
+						</Features>
+						<Handlers>
+							<Click>
+								<Call Action="click_count" />
+							</Click>
+						</Handlers>
+					</FeatureLayer>
+				</Layers>
+
+				<Styles>
+					<Style Id="point">
+						<StrokeColor Value="black" />
+						<StrokeWidth Value="3" />
+						<FillOpacity Value="0" />
+						<FontFamily Value="Arial" />
+						<FontSize Value="30" />
+						<TextColor Value="yellow" />
+					</Style>
+				</Styles>
+
+				<Controls>
+					<DrawPath Id="draw_path">
+						<Properties>
+							<LayerId Value="feature_layer" />
+						</Properties>
+						<Handlers>
+							<Draw>
+								<Call Action="draw_finished" />
+							</Draw>
+						</Handlers>
+					</DrawPath>
+				</Controls>
+			</maps:Map>
 		</Bind>
 	</Bindings>
 </SlideContent>

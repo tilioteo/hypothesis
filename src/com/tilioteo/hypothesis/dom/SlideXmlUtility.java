@@ -267,6 +267,10 @@ public class SlideXmlUtility {
 		return element.attributeValue(SlideXmlConstants.VALUE);
 	}
 
+	public static String getKey(Element element) {
+		return element.attributeValue(SlideXmlConstants.KEY);
+	}
+
 	public static String getValidatorMessage(Element element, String defaultMessage) {
 		Element messageElement = getMessageElement(element);
 		if (messageElement != null) {

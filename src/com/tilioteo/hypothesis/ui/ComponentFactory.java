@@ -10,6 +10,8 @@ import java.util.List;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.ShortcutUtility;
+import com.tilioteo.hypothesis.core.ShortcutUtility.ShortcutKeys;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -29,6 +31,8 @@ import com.tilioteo.hypothesis.extension.SlideComponentPlugin;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
+import com.tilioteo.hypothesis.ui.ShortcutKey.KeyPressEvent;
+import com.tilioteo.hypothesis.ui.ShortcutKey.KeyPressListener;
 import com.vaadin.ui.AbstractComponent;
 
 /**
@@ -196,14 +200,16 @@ public class ComponentFactory {
 				setViewportInitHandler(action, slideManager);
 			} else if (name.equals(SlideXmlConstants.SHOW)) {
 				setViewportShowHandler(action, slideManager);
+			} else if (name.equals(SlideXmlConstants.SHORTCUT)) {
+				String key = SlideXmlUtility.getKey(element);
+				setViewportShortcutHandler(action, key, slideManager);
 			}
 
 			// TODO add other event handlers
 		}
 	}
 
-	private static void setViewportInitHandler(String actionId,
-			SlideManager slideManager) {
+	private static void setViewportInitHandler(String actionId,	SlideManager slideManager) {
 		final Command action = CommandFactory.createActionCommand(slideManager, actionId, null);
 		slideManager.addViewportEventListener(SlideManager.InitEvent.class,
 				new ViewportEventListener() {
@@ -214,8 +220,7 @@ public class ComponentFactory {
 				});
 	}
 
-	private static void setViewportShowHandler(String actionId,
-			SlideManager slideManager) {
+	private static void setViewportShowHandler(String actionId,	SlideManager slideManager) {
 		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, null);
 		slideManager.addViewportEventListener(SlideManager.ShowEvent.class,
 				new ViewportEventListener() {
@@ -226,6 +231,23 @@ public class ComponentFactory {
 				});
 	}
 	
+	@SuppressWarnings("serial")
+	private static void setViewportShortcutHandler(String actionId, String key, SlideManager slideManager) {
+		ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);
+		if (shortcutKeys != null) { 
+			final Command action = CommandFactory.createActionCommand(slideManager,	actionId, null);
+			ShortcutKey shortcutKey = new ShortcutKey(shortcutKeys.getKeyCode(), shortcutKeys.getModifiers());
+			shortcutKey.addKeyPressListener(new KeyPressListener() {
+				@Override
+				public void keyPress(KeyPressEvent event) {
+					action.execute();
+				}
+			});
+			
+			slideManager.registerShortcutKey(shortcutKey);
+		}
+	}
+
 	public static EmptyValidator createEmptyValidator(Element element) {
 		// TODO add default validator message
 		String message = SlideXmlUtility.getValidatorMessage(element, "");

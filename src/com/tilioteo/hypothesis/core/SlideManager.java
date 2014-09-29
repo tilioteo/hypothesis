@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.core;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.dom4j.Document;
 
@@ -29,6 +30,7 @@ import com.tilioteo.hypothesis.processing.Variable;
 import com.tilioteo.hypothesis.processing.VariableMap;
 import com.tilioteo.hypothesis.processing.WindowMap;
 import com.tilioteo.hypothesis.ui.LayoutComponent;
+import com.tilioteo.hypothesis.ui.ShortcutKey;
 import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.tilioteo.hypothesis.ui.Timer;
 import com.tilioteo.hypothesis.ui.Window;
@@ -64,6 +66,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	private VariableMap variables = new VariableMap();
 	private ActionMap actions = new ActionMap();
 	private TimerMap timers = new TimerMap();
+	private HashSet<ShortcutKey> shortcuts = new HashSet<ShortcutKey>();
 
 	private Expression inputExpression = null;
 	private Expression outputExpression = null;
@@ -109,7 +112,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	private void clearListeners() {
 		viewportEventManager.removeAllListeners();
 	}
-
+	
 	private void clearSlideRelatives() {
 		this.slideXml = null;
 		this.viewport = null;
@@ -119,6 +122,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		this.variables.clear();
 		this.actions.clear();
 		this.timers.clear();
+		this.shortcuts.clear();
 		this.inputExpression = null;
 		this.outputExpression = null;
 		this.lastSlide = null;
@@ -246,6 +250,14 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	public final Collection<Timer> getTimers() {
 		return timers.values();
 	}
+	
+	public final void registerShortcutKey(ShortcutKey shortcutKey) {
+		shortcuts.add(shortcutKey);
+	}
+	
+	public Collection<ShortcutKey> getShortcutKeys() {
+		return shortcuts;
+	}
 
 	public final void registerWindow(String id, Window window) {
 		if (!Strings.isNullOrEmpty(id)) {
@@ -298,5 +310,5 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		}
 		
 	}
-	
+
 }

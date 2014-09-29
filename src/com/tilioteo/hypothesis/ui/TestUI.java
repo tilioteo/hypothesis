@@ -6,29 +6,18 @@ package com.tilioteo.hypothesis.ui;
 import javax.servlet.annotation.WebServlet;
 
 import org.vaadin.maps.ui.LayerLayout;
-import org.vaadin.maps.ui.control.DrawPathControl;
 import org.vaadin.maps.ui.feature.VectorFeature;
-import org.vaadin.maps.ui.feature.VectorFeature.DoubleClickEvent;
-import org.vaadin.maps.ui.feature.VectorFeature.DoubleClickListener;
 import org.vaadin.maps.ui.featurecontainer.VectorFeatureContainer;
-import org.vaadin.maps.ui.layer.ControlLayer;
-import org.vaadin.maps.ui.layer.ImageLayer;
 import org.vaadin.maps.ui.layer.ImageSequenceLayer;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 import org.vaadin.maps.ui.tile.ImageSequenceTile;
 import org.vaadin.maps.ui.tile.ImageSequenceTile.ChangeEvent;
 import org.vaadin.maps.ui.tile.ImageSequenceTile.LoadEvent;
-import org.vaadin.maps.ui.tile.ProxyTile;
-import org.vaadin.maps.ui.tile.ProxyTile.LoadListener;
 
-import com.tilioteo.hypothesis.ui.Media.CanPlayThroughEvent;
-import com.tilioteo.hypothesis.ui.Media.StartEvent;
-import com.tilioteo.hypothesis.ui.Media.StopEvent;
-import com.tilioteo.hypothesis.ui.Video.ClickEvent;
+import com.tilioteo.hypothesis.ui.ShortcutKey.KeyPressEvent;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.event.MouseEvents;
-import com.vaadin.server.ExternalResource;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Notification;
@@ -103,6 +92,8 @@ public class TestUI extends HUI {
 		
 		LayerLayout layerLayout = new LayerLayout();
 		verticalLayout.addComponent(layerLayout);
+		layerLayout.setWidth("80%");
+		layerLayout.setHeight("80%");
 		
 		/*
 		ImageLayer imageLayer = new ImageLayer("http://www.imagehosting.cz/images/mapaukol7.jpg");
@@ -179,12 +170,35 @@ public class TestUI extends HUI {
 			});
 			*/
 		 	vectorLayer.addComponent(feature);
+		 	
 		 			 	
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		ShortcutKey key1 = new ShortcutKey(ShortcutAction.KeyCode.ARROW_LEFT);
+		key1.addKeyPressListener(new ShortcutKey.KeyPressListener() {
+			@Override
+			public void keyPress(KeyPressEvent event) {
+				Notification.show("Prior key shortcut clicked");
+				int index = imageSequenceLayer.getTileIndex();
+				imageSequenceLayer.setTileIndex(--index);
+			}
+		});
+		addShortcutKey(key1);
+
+		ShortcutKey key2 = new ShortcutKey(ShortcutAction.KeyCode.ARROW_RIGHT);
+		key2.addKeyPressListener(new ShortcutKey.KeyPressListener() {
+			@Override
+			public void keyPress(KeyPressEvent event) {
+				Notification.show("Next key shortcut clicked");
+				int index = imageSequenceLayer.getTileIndex();
+				imageSequenceLayer.setTileIndex(++index);
+			}
+		});
+		addShortcutKey(key2);
+
 		/*
 		ControlLayer controlLayer = new ControlLayer();
 		layerLayout.addComponent(controlLayer);

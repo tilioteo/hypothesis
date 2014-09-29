@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.dom4j.Element;
 
-import com.google.gwt.thirdparty.guava.common.base.Strings;
 import com.tilioteo.hypothesis.common.StringMap;
+import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.ui.MultipleComponentPanel.Orientation;

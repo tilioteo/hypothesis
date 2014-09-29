@@ -46,8 +46,7 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 @PreserveOnRefresh
-public class ProcessUI extends HUI implements ProcessEventListener,
-		DetachListener {
+public class ProcessUI extends HUI implements ProcessEventListener,	DetachListener {
 
 	private static Logger log = Logger.getLogger(ProcessUI.class);
 
@@ -145,7 +144,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 		// Alignment is ignored here
 		if (content != null && content.getComponent() != null) {
 			Component component = content.getComponent();
-			setSlideContent(component, event.getTimers());
+			setSlideContent(component, event.getTimers(), event.getShortcutKeys());
 			processModel.fireAfterRender(content);
 		} else {
 			log.error("Error while rendering slide.");
@@ -199,6 +198,8 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 	public void clearContent(boolean animate, final Command nextCommand) {
 		log.debug("clearContent::");
 		removeAllTimers();
+		removeAllShortcutKeys();
+		
 		if (animate) {
 			Component content = getContent();
 			if (content instanceof ComponentContainer) {
@@ -225,11 +226,17 @@ public class ProcessUI extends HUI implements ProcessEventListener,
 		}
 	}
 
-	private void setSlideContent(Component component, Collection<Timer> timers) {
+	private void setSlideContent(Component component, Collection<Timer> timers, Collection<ShortcutKey> shortcutKeys) {
 		log.debug("setSlideContent::");
 		setContent(component);
+		
+		// add timers
 		for (Timer timer : timers) {
 			addTimer(timer);
+		}
+		// add shortcut keys
+		for (ShortcutKey shortcutKey : shortcutKeys) {
+			addShortcutKey(shortcutKey);
 		}
 	}
 

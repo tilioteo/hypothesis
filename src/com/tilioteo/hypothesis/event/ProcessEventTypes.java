@@ -58,6 +58,7 @@ public class ProcessEventTypes {
 	public static final String AudioLoad = "AUDIO_LOAD";
 	public static final String AudioStart = "AUDIO_START";
 	public static final String AudioStop = "AUDIO_STOP";
+	public static final String ShortcutKey = "SHORTCUT_KEY";
 
 	static {
 		registerEvent(StartTest); // 1
@@ -100,6 +101,7 @@ public class ProcessEventTypes {
 		registerEvent(AudioLoad); // 117
 		registerEvent(AudioStart); // 118
 		registerEvent(AudioStop); // 119
+		registerEvent(ShortcutKey); // 120
 		//nextId += 881; // plugin events begin from 1000
 	}
 

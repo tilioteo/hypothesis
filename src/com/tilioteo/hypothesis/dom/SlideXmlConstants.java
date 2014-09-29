@@ -83,6 +83,7 @@ public class SlideXmlConstants {
 	public static final String LOAD = "Load";
 	public static final String INIT = "Init";
 	public static final String SHOW = "Show";
+	public static final String SHORTCUT = "Shortcut";
 	public static final String OPEN = "Open";
 	public static final String CLOSE = "Close";
 	public static final String START = "Start";
@@ -112,6 +113,7 @@ public class SlideXmlConstants {
 	public static final String FLOAT = "Float";
 	public static final String STRING = "String";
 	public static final String OBJECT = "Object";
+	public static final String KEY = "Key";
 
 	public static final String UID = "UID";
 	public static final String TEMPLATE_UID = "TemplateUID";

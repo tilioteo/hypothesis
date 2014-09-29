@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SlideTemplate UID="0269B8D8-8EE6-11E1-A2A0-A0FEBAE59B18">
+<SlideTemplate xmlns:maps="http://hypothesis.cz/xml/maps"
+	UID="E01DAC6E-EA48-4580-806C-9A7514A123E7">
 	<Viewport>
 		<VerticalLayout Id="ct001">
 			<Properties>
@@ -7,31 +8,35 @@
 				<Height Value="100%" />
 			</Properties>
 			<Components>
-				<HorizontalLayout Id="ct001_ct001">
+
+				<HorizontalLayout Id="ct001_ct001">	<!--nadpis a zahlavi -->
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="6%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<VerticalLayout Id="ct001_ct001_ct001">
+							<Properties>
+								<Width Value="100%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+							<Components>
+								<Label Id="title">
+								</Label>
+							</Components>
+						</VerticalLayout>
+					</Components>
+				</HorizontalLayout>
+
+				<HorizontalLayout Id="ct001_ct002"> <!--vysvetlivky -->
 					<Properties>
 						<Width Value="100%" />
 						<Height Value="15%" />
-						<Alignment Value="mc" />
 					</Properties>
 					<Components>
-						<Panel Id="ct001_ct001_ct001">
-							<Properties>
-								<Border Value="True" />
-								<Width Value="80%" />
-								<Height Value="100%" />
-								<Caption Value="[SLIDE_TITLE]" />
-							</Properties>
-						</Panel>
-					</Components>
-				</HorizontalLayout>
-				<HorizontalLayout Id="ct001_ct002">
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="70%" />
-						<Alignment Value="mc" />
-					</Properties>
-					<Components>
-						<VerticalLayout Id="ct001_ct002_ct001">
+						<Panel Id="ct001_ct002_ct001">
 							<Properties>
 								<Width Value="100%" />
 								<Height Value="100%" />
@@ -40,116 +45,93 @@
 								<VerticalLayout Id="ct001_ct002_ct001_ct001">
 									<Properties>
 										<Width Value="100%" />
-										<Height Value="50%" />
+										<Height Value="100%" />
 									</Properties>
 									<Components>
-										<Panel Id="ct001_ct002_ct001_ct001_ct001">
+										<Label Id="explanation">
 											<Properties>
-												<Border Value="True" />
-												<Width Value="80%" />
-												<Height Value="20%" />
-												<Caption Value="[TITLE_1]" />
+												<Width Value="90%" />
 											</Properties>
-										</Panel>
-										<FormPanel Id="ct001_ct002_ct001_ct001_ct002">
-											<Properties>
-												<Border Value="True" />
-												<Width Value="80%" />
-												<Height Value="80%" />
-											</Properties>
-											<Components>
-												<TextArea Id="field_1">
-													<Properties>
-														<Width Value="99%" />
-													</Properties>
-												</TextArea>
-											</Components>
-										</FormPanel>
-									</Components>
-								</VerticalLayout>
-								<VerticalLayout Id="ct001_ct002_ct001_ct002">
-									<Properties>
-										<Width Value="100%" />
-										<Height Value="50%" />
-									</Properties>
-									<Components>
-										<Panel Id="ct001_ct002_ct001_ct002_ct001">
-											<Properties>
-												<Border Value="True" />
-												<Width Value="80%" />
-												<Height Value="20%" />
-												<Caption Value="[TITLE_2]" />
-											</Properties>
-										</Panel>
-										<FormPanel Id="ct001_ct002_ct001_ct002_ct002">
-											<Properties>
-												<Border Value="True" />
-												<Width Value="80%" />
-												<Height Value="80%" />
-											</Properties>
-											<Components>
-												<TextArea Id="field_2">
-													<Properties>
-														<Width Value="99%" />
-													</Properties>
-												</TextArea>
-											</Components>
-										</FormPanel>
+										</Label>
 									</Components>
 								</VerticalLayout>
 							</Components>
-						</VerticalLayout>
+						</Panel>
 					</Components>
 				</HorizontalLayout>
+
 				<HorizontalLayout Id="ct001_ct003">
 					<Properties>
 						<Width Value="100%" />
-						<Height Value="15%" />
+						<Height Value="73%" />
 						<Alignment Value="mc" />
 					</Properties>
 					<Components>
-						<Panel Id="ct001_ct003_ct001">
+						<maps:Map Id="map1">
 							<Properties>
-								<Border Value="False" />
-								<Width Value="20%" />
-								<Height Value="100%" />
+								<Width Value="80%" />
 							</Properties>
-						</Panel>
-						<Panel Id="ct001_ct003_ct002">
-							<Properties>
-								<Border Value="False" />
-								<Width Value="60%" />
-								<Height Value="100%" />
-							</Properties>
-						</Panel>
-						<Panel Id="ct001_ct003_ct003">
-							<Properties>
-								<Border Value="False" />
-								<Width Value="20%" />
-							</Properties>
-							<Components>
-								<Button Id="ct001_ct003_ct003_ct001">
-									<Properties>
-										<Width Value="100%" />
-										<Height Value="100%" />
-										<Caption Value="Další&gt;" />
-									</Properties>
-									<Handlers>
-										<Click>
-											<Call Action="nextSlide" />
-										</Click>
-									</Handlers>
-								</Button>
-							</Components>
-						</Panel>
+						</maps:Map>
 					</Components>
 				</HorizontalLayout>
+
+				<HorizontalLayout Id="ct001_ct004">	<!-- zapati -->
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="6%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<VerticalLayout Id="ct001_ct004_ct001">
+							<Properties>
+								<Width Value="100%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+						</VerticalLayout>
+					</Components>
+				</HorizontalLayout>
+
 			</Components>
 		</VerticalLayout>
 	</Viewport>
+
+	<Handlers>
+		<Show>
+			<!--<Call Action="activatePath" /> -->
+		</Show>
+	</Handlers>
+
+	<Variables>
+		<Variable Id="cara" Type="Object">
+			<Reference>
+				<Component Id="draw_path" />
+			</Reference>
+		</Variable>
+		<Variable Id="clickCounter" Type="Integer" Value="0" />
+		<Variable Id="vysledek" Type="Integer" Value="0" />
+		<Variable Id="started" Type="Boolean" Value="false" />
+	</Variables>
+
 	<Actions>
+		<Action Id="activatePath">
+			<Expression>cara->activate()</Expression>
+		</Action>
+		<Action Id="click_count">
+			<Expression>clickCounter=clickCounter+1</Expression>
+		</Action>
+		<Action Id="start_click">
+			<Expression>started=true</Expression>
+		</Action>
+		<Action Id="draw_finished">
+			<Call Action="nextSlide" />
+		</Action>
 		<Action Id="nextSlide">
 			<Expression>Navigator->next()</Expression>
 		</Action>
 	</Actions>
+
+	<OutputValue>
+		<Expression>clickCounter</Expression>
+	</OutputValue>
 </SlideTemplate>
