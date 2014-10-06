@@ -267,6 +267,10 @@ public class SlideXmlUtility {
 		return element.attributeValue(SlideXmlConstants.VALUE);
 	}
 
+	public static String getValues(Element element) {
+		return element.attributeValue(SlideXmlConstants.VALUES);
+	}
+
 	public static String getKey(Element element) {
 		return element.attributeValue(SlideXmlConstants.KEY);
 	}

@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.core;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -481,6 +482,7 @@ public class SlideFactory {
 			String id = SlideXmlUtility.getId(element);
 			String type = SlideXmlUtility.getType(element);
 			String value = SlideXmlUtility.getValue(element);
+			String values = SlideXmlUtility.getValues(element);
 			Variable<?> variable = null;
 
 			if (SlideXmlConstants.OBJECT.equalsIgnoreCase(type)) {
@@ -530,6 +532,24 @@ public class SlideFactory {
 				variable = new Variable<Double>(id, Double.parseDouble(value));
 			else if (SlideXmlConstants.STRING.equalsIgnoreCase(type))
 				variable = new Variable<String>(id, value);
+			
+			else if (SlideXmlConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
+				variable = new Variable<Object>(id);
+				ArrayList<Integer> array = new ArrayList<Integer>();
+				if (values != null) {
+					String[] strings = values.split(",");
+					for (String string : strings) {
+						Integer integer = null;
+						try {
+							integer = Integer.parseInt(string.trim());
+						} catch (NumberFormatException e) {
+						}
+						
+						array.add(integer);
+					}
+				}
+				variable.setRawValue(array);
+			}
 
 			return variable;
 		} else
