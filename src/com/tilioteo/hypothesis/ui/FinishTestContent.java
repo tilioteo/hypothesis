@@ -47,6 +47,7 @@ public class FinishTestContent extends VerticalLayout {
 		
 		addComponent(button);
 		setComponentAlignment(button, Alignment.MIDDLE_CENTER);
+		button.focus();
 	}
 
 }
