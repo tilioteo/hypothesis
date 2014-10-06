@@ -35,7 +35,7 @@ public class ShortcutUtility {
 	
 	public static ShortcutKeys parseShortcut(String shortcutKey) {
 		if (!Strings.isNullOrEmpty(shortcutKey)) {
-			String[] parts = shortcutKey.split("+");
+			String[] parts = shortcutKey.split("\\+");
 			
 			ArrayList<String> modifiers = new ArrayList<String>();
 			String key = null;
