@@ -93,8 +93,8 @@ public abstract class HUI extends UI {
     }
 
     public void removeAllTimers() {
-    	Iterator<Timer> iterator = timers.iterator();
-    	while (iterator.hasNext()) {
+    	Iterator<Timer> iterator;
+    	while ((iterator = timers.iterator()).hasNext()) {
     		Timer timer = iterator.next();
     		timer.stop(true);
     		timer.setParent(null);
@@ -156,8 +156,8 @@ public abstract class HUI extends UI {
     }
 
     public void removeAllShortcutKeys() {
-    	Iterator<ShortcutKey> iterator = shortcuts.iterator();
-    	while (iterator.hasNext()) {
+    	Iterator<ShortcutKey> iterator;
+    	while ((iterator = shortcuts.iterator()).hasNext()) {
     		ShortcutKey shortcutKey = iterator.next();
     		shortcutKey.setParent(null);
     		shortcuts.remove(shortcutKey);
