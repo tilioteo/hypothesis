@@ -238,6 +238,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 		for (ShortcutKey shortcutKey : shortcutKeys) {
 			addShortcutKey(shortcutKey);
 		}
+		focus();
 	}
 
 	@Override
