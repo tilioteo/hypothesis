@@ -72,8 +72,18 @@ public class VectorFeature extends AbstractFeature {
 	private void setGeometryCentroid() {
 		if (geometry != null) {
 			Point centroid = geometry.getCentroid();
-			getState().centroidX = centroid.getX();
-			getState().centroidY = centroid.getY();
+			double x = centroid.getX();
+			double y = centroid.getY();
+			if (Double.isNaN(x) || Double.isInfinite(x)) {
+				getState().centroidX = null;
+			} else {
+				getState().centroidX = x;
+			}
+			if (Double.isNaN(y) || Double.isInfinite(y)) {
+				getState().centroidY = null;
+			} else {
+				getState().centroidY = y;
+			}
 		} else {
 			getState().centroidX = null;
 			getState().centroidY = null;
