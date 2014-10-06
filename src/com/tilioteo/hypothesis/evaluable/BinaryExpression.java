@@ -153,30 +153,58 @@ public class BinaryExpression extends UnaryExpression {
 						}
 					}
 					
-					if (leftValue instanceof Double && rightValue instanceof Double) {
+					if (leftValue instanceof Double) {
 						double left = (Double)leftValue;
-						double right = (Double)rightValue;
-						switch (operator) {
-						case MINUS:
-							return left - right;
-						case PLUS:
-							return left + right;
-						case MULTIPLY:
-							return left * right;
-						case DIVIDE:
-							return left / right;
-						case EQUALS:
-							return left == right;
-						case NOT_EQUALS:
-							return left != right;
-						case GREATER:
-							return left > right;
-						case LESS:
-							return left < right;
-						case GREATER_OR_EQUAL:
-							return left >= right;
-						case LESS_OR_EQUAL:
-							return left <= right;
+						
+						if (rightValue instanceof Double) {
+							double right = (Double)rightValue;
+							
+							switch (operator) {
+							case MINUS:
+								return left - right;
+							case PLUS:
+								return left + right;
+							case MULTIPLY:
+								return left * right;
+							case DIVIDE:
+								return left / right;
+							case EQUALS:
+								return left == right;
+							case NOT_EQUALS:
+								return left != right;
+							case GREATER:
+								return left > right;
+							case LESS:
+								return left < right;
+							case GREATER_OR_EQUAL:
+								return left >= right;
+							case LESS_OR_EQUAL:
+								return left <= right;
+							}
+						} else if (rightValue instanceof Integer) {
+							int right = (Integer)rightValue;
+							switch (operator) {
+							case MINUS:
+								return left - right;
+							case PLUS:
+								return left + right;
+							case MULTIPLY:
+								return left * right;
+							case DIVIDE:
+								return left / right;
+							case EQUALS:
+								return left == right;
+							case NOT_EQUALS:
+								return left != right;
+							case GREATER:
+								return left > right;
+							case LESS:
+								return left < right;
+							case GREATER_OR_EQUAL:
+								return left >= right;
+							case LESS_OR_EQUAL:
+								return left <= right;
+							}
 						}
 					}
 					
