@@ -182,8 +182,7 @@ public class TestUI extends HUI {
 			@Override
 			public void keyPress(KeyPressEvent event) {
 				Notification.show("Prior key shortcut clicked");
-				int index = imageSequenceLayer.getTileIndex();
-				imageSequenceLayer.setTileIndex(--index);
+				imageSequenceLayer.priorTile();
 			}
 		});
 		addShortcutKey(key1);
@@ -193,8 +192,7 @@ public class TestUI extends HUI {
 			@Override
 			public void keyPress(KeyPressEvent event) {
 				Notification.show("Next key shortcut clicked");
-				int index = imageSequenceLayer.getTileIndex();
-				imageSequenceLayer.setTileIndex(++index);
+				imageSequenceLayer.nextTile();
 			}
 		});
 		addShortcutKey(key2);
