@@ -79,6 +79,26 @@ public class ImageSequenceLayer extends AbstractLayer<ImageSequenceTile> impleme
     public int getTileIndex() {
     	return tile.getIndex();
     }
+    
+    public int getTilesCount() {
+    	return tile.getTilesCount();
+    }
+    
+    public void nextTile() {
+    	int index = getTileIndex();
+
+    	if (index < getTilesCount() - 1) {
+    		setTileIndex(++index);
+    	}
+    }
+
+    public void priorTile() {
+    	int index = getTileIndex();
+
+    	if (index > 0) {
+    		setTileIndex(--index);
+    	}
+    }
 
 	/**
 	 * Adds the tile load listener.

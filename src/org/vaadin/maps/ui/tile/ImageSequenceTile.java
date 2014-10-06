@@ -95,6 +95,10 @@ public class ImageSequenceTile extends AbstractTile {
 	public void setIndex(int index) {
 		getState().index = index;
 	}
+	
+	public int getTilesCount() {
+		return resources.size();
+	}
 
 	/**
 	 * Load event. This event is thrown, when the image sequence is loaded.

@@ -72,7 +72,6 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 
 		// set ImageSequenceLayer specific properties
 		MapUtility.setImageSequenceLayerProperties(this, element, properties);
-		addTileUrl(properties.get(SlideXmlConstants.URL, ""));
 	}
 
 	private void setHandlers(Element element) {

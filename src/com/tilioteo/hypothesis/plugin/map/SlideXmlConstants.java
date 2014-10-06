@@ -75,7 +75,7 @@ public class SlideXmlConstants {
 	// public static final String ATTRIBUTE = "Attribute";
 
 	public static final StringSet VALID_LAYER_ELEMENTS = new StringSet(
-			new String[] { IMAGE_LAYER, FEATURE_LAYER });
+			new String[] { IMAGE_LAYER, FEATURE_LAYER, IMAGE_SEQUENCE_LAYER });
 
 	public static final StringSet VALID_CONTROL_ELEMENTS = new StringSet(
 			new String[] { DRAW_POINT, DRAW_PATH });
