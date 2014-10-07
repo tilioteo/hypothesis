@@ -32,7 +32,7 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
 @Table(name = EntityTableConstants.BRANCH_TREK_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
 		EntityFieldConstants.PACK_ID, EntityFieldConstants.KEY, EntityFieldConstants.BRANCH_ID }) })
 @org.hibernate.annotations.Table(appliesTo = EntityTableConstants.BRANCH_TREK_TABLE,
-indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = { EntityFieldConstants.PACK_ID, EntityFieldConstants.BRANCH_ID }) })
+		indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = { EntityFieldConstants.PACK_ID, EntityFieldConstants.BRANCH_ID }) })
 @Access(AccessType.PROPERTY)
 public final class BranchTrek extends SerializableIdObject {
 	/**
@@ -49,11 +49,12 @@ public final class BranchTrek extends SerializableIdObject {
 		super();
 	}
 
-	public BranchTrek(Pack pack, String key, Branch branch) {
+	public BranchTrek(Pack pack, Branch branch, String key, Branch nextBranch) {
 		this();
 		this.pack = pack;
 		this.key = key;
 		this.branch = branch;
+		this.nextBranch = nextBranch;
 	}
 
 	@Override

@@ -78,8 +78,8 @@ public final class Token extends SerializableUidObject {
 		return production;
 	}
 
-	public void setProduction(boolean production) {
-		this.production = production;
+	public void setProduction(Boolean production) {
+		this.production = production != null ? production : false;
 	}
 
 	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)

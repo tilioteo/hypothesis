@@ -27,7 +27,7 @@
 		<!-- Drop and re-create the database schema on startup <property name="hibernate.hbm2ddl.auto">create</property> 
 			Check the database schema on startup -->
 		<property name="hibernate.hbm2ddl.auto">validate</property>
-		<!-- <property name="hibernate.hbm2ddl.auto">update</property> -->
+		<!--<property name="hibernate.hbm2ddl.auto">update</property>-->
 		<mapping class="com.tilioteo.hypothesis.entity.SlideTemplate" />
 		<mapping class="com.tilioteo.hypothesis.entity.SlideContent" />
 		<mapping class="com.tilioteo.hypothesis.entity.Slide" />

@@ -138,8 +138,8 @@ public class Test extends SerializableIdObject {
 		return production;
 	}
 
-	public void setProduction(boolean production) {
-		this.production = production;
+	public void setProduction(Boolean production) {
+		this.production = production != null ? production : false;
 	}
 
 	@Column(name = EntityFieldConstants.CREATED, nullable = false)

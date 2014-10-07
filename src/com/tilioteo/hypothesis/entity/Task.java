@@ -85,8 +85,8 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 		return randomized;
 	}
 	
-	public final void setRandomized(boolean randomized) {
-		this.randomized = randomized;
+	public final void setRandomized(Boolean randomized) {
+		this.randomized = randomized != null ? randomized : false;
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
