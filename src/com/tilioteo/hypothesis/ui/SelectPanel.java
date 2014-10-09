@@ -76,6 +76,9 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 	protected void addChilds() {
 		int i = 1;
 		for (String caption : captions) {
+			if (null == caption) {
+				caption = "";
+			}
 			SelectButton selectButton = multiSelect ? new CheckBox(caption) : new RadioButton(caption);
 			selectButton.setLabelPosition(labelPosition);
 			selectButton

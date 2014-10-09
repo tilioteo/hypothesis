@@ -370,7 +370,7 @@ public class Timer extends AbstractComponent implements SlideComponent {
 			} else if (name.equals(SlideXmlConstants.STOP)) {
 				setStopHandler(action);
 			} else if (name.equals(SlideXmlConstants.UPDATE)) {
-				setUpdateHandler(action, SlideUtility.getIntegerValue((element.attributeValue(SlideXmlConstants.INTERVAL))));
+				setUpdateHandler(action, Strings.toInteger((element.attributeValue(SlideXmlConstants.INTERVAL))));
 			}
 			// TODO add other event handlers
 		}

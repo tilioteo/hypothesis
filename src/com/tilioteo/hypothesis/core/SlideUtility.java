@@ -57,18 +57,6 @@ public class SlideUtility {
 		return map;
 	}
 	
-	public static Integer getIntegerValue(String valueString) {
-		try {
-			return Integer.parseInt(valueString);
-		} catch (NumberFormatException e) {}
-		return null;
-	}
-
-	public static int getInteger(String valueString, int defaultValue) {
-		Integer value = getIntegerValue(valueString);
-		return value != null ? value : defaultValue;
-	}
-
 
 	/*
 	 * public static StringMap getHandlersMap(Element component) { StringMap map

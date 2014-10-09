@@ -11,6 +11,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Element;
 import org.vaadin.maps.shared.ui.Style;
 
+import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlEvent;
@@ -161,13 +162,13 @@ public class MapComponentFactory {
 								if (value.isEmpty()) {
 									field.set(style, 0);
 								} else {
-									field.set(style, Integer.parseInt(value));
+									field.set(style, Strings.toInteger(value));
 								}
 							} else if (typeName.contains("double")) {
 								if (value.isEmpty()) {
 									field.set(style, 0.0);
 								} else {
-									field.set(style, Double.parseDouble(value));
+									field.set(style, Strings.toDouble(value));
 								}
 							}
 						} catch (Exception e) {

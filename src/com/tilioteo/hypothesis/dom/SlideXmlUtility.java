@@ -3,8 +3,6 @@
  */
 package com.tilioteo.hypothesis.dom;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -288,21 +286,10 @@ public class SlideXmlUtility {
 		return defaultMessage;
 	}
 	
-	private static Double stringToDouble(String string) {
-		if (!Strings.isNullOrEmpty(string)) {
-			try {
-				Double value = Double.parseDouble(string);
-				return value;
-			} catch (Exception e) {
-			}
-		}
-		return null;
-	}
-
 	public static Double getNumberValidatorMinValue(Element element) {
 		Element subElement = getMinElement(element);
 		if (subElement != null) {
-			return stringToDouble(subElement.attributeValue(SlideXmlConstants.VALUE));
+			return Strings.toDouble(subElement.attributeValue(SlideXmlConstants.VALUE));
 		}
 		
 		return null;
@@ -311,21 +298,9 @@ public class SlideXmlUtility {
 	public static Double getNumberValidatorMaxValue(Element element) {
 		Element subElement = getMaxElement(element);
 		if (subElement != null) {
-			return stringToDouble(subElement.attributeValue(SlideXmlConstants.VALUE));
+			return Strings.toDouble(subElement.attributeValue(SlideXmlConstants.VALUE));
 		}
 		
-		return null;
-	}
-
-	private static Date stringToDate(String string, String format) {
-		if (!Strings.isNullOrEmpty(string) && !Strings.isNullOrEmpty(format)) {
-			try {
-				DateFormat formatter = new SimpleDateFormat(format);
-				Date value = formatter.parse(string);
-				return value;
-			} catch (Exception e) {
-			}
-		}
 		return null;
 	}
 
@@ -336,7 +311,7 @@ public class SlideXmlUtility {
 			if (Strings.isNullOrEmpty(format)) {
 				format = defaultFormat;
 			}
-			return stringToDate(subElement.attributeValue(SlideXmlConstants.VALUE), format);
+			return Strings.toDate(subElement.attributeValue(SlideXmlConstants.VALUE), format);
 		}
 		
 		return null;
@@ -349,7 +324,7 @@ public class SlideXmlUtility {
 			if (Strings.isNullOrEmpty(format)) {
 				format = defaultFormat;
 			}
-			return stringToDate(subElement.attributeValue(SlideXmlConstants.VALUE), format);
+			return Strings.toDate(subElement.attributeValue(SlideXmlConstants.VALUE), format);
 		}
 		
 		return null;

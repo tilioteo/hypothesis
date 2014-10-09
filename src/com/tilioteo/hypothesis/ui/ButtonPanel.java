@@ -54,6 +54,9 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 	protected void addChilds() {
 		int i = 1;
 		for (String caption : captions) {
+			if (null == caption) {
+				caption = "";
+			}
 			Button button = new Button();
 			button.setCaption(caption);
 			button.setData(String.format("%s_%d",

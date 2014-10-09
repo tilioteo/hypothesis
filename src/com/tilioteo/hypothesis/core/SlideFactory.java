@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.tilioteo.hypothesis.common.StringConstants;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
@@ -525,31 +526,52 @@ public class SlideFactory {
 					}
 				}
 			} else if (SlideXmlConstants.INTEGER.equalsIgnoreCase(type))
-				variable = new Variable<Integer>(id, Integer.parseInt(value));
+				variable = new Variable<Integer>(id, Strings.toInteger(value));
 			else if (SlideXmlConstants.BOOLEAN.equalsIgnoreCase(type))
 				variable = new Variable<Boolean>(id, Boolean.parseBoolean(value));
 			else if (SlideXmlConstants.FLOAT.equalsIgnoreCase(type))
-				variable = new Variable<Double>(id, Double.parseDouble(value));
+				variable = new Variable<Double>(id, Strings.toDouble(value));
 			else if (SlideXmlConstants.STRING.equalsIgnoreCase(type))
 				variable = new Variable<String>(id, value);
 			
 			else if (SlideXmlConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
 				variable = new Variable<Object>(id);
 				ArrayList<Integer> array = new ArrayList<Integer>();
-				if (values != null) {
-					String[] strings = values.split(",");
-					for (String string : strings) {
-						Integer integer = null;
-						try {
-							integer = Integer.parseInt(string.trim());
-						} catch (NumberFormatException e) {
+				Integer[] integers = Strings.toIntegerArray(values, StringConstants.STR_COMMA);
+				if (integers != null) {
+					for (Integer integer : integers) {
+						if (integer != null) {
+							array.add(integer);
 						}
-						
-						array.add(integer);
+					}
+				}
+				variable.setRawValue(array);
+			} else if (SlideXmlConstants.FLOAT_ARRAY.equalsIgnoreCase(type)) {
+				variable = new Variable<Object>(id);
+				ArrayList<Double> array = new ArrayList<Double>();
+				Double[] doubles = Strings.toDoubleArray(values, StringConstants.STR_COMMA);
+				if (doubles != null) {
+					for (Double dbl : doubles) {
+						if (dbl != null) {
+							array.add(dbl);
+						}
+					}
+				}
+				variable.setRawValue(array);
+			} else if (SlideXmlConstants.STRING_ARRAY.equalsIgnoreCase(type)) {
+				variable = new Variable<Object>(id);
+				ArrayList<String> array = new ArrayList<String>();
+				String[] strings = Strings.toStringArray(values, StringConstants.STR_COMMA, StringConstants.STR_QUOTED_STRING_SPLIT_PATTERN);
+				if (strings != null) {
+					for (String string : strings) {
+						if (string != null) {
+							array.add(string);
+						}
 					}
 				}
 				variable.setRawValue(array);
 			}
+
 
 			return variable;
 		} else
