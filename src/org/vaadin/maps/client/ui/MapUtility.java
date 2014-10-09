@@ -10,7 +10,6 @@ import org.vaadin.maps.shared.ui.Style;
 import com.gwtent.reflection.client.ClassType;
 import com.gwtent.reflection.client.Field;
 import com.gwtent.reflection.client.TypeOracle;
-import com.tilioteo.hypothesis.common.Strings;
 
 /**
  * @author kamil
@@ -35,17 +34,21 @@ public class MapUtility {
 						if (typeName.contains("string")) {
 							field.setFieldValue(style, value);
 						} else if (typeName.contains("int")) {
-							if (value.isEmpty()) {
-								field.setFieldValue(style, 0);
-							} else {
-								field.setFieldValue(style, Strings.toInteger(value));
+							int intValue = 0;
+							if (!value.isEmpty()) {
+								try {
+									intValue = Integer.parseInt(value);
+								} catch (NumberFormatException e) {}
 							}
+							field.setFieldValue(style, intValue);
 						} else if (typeName.contains("double")) {
-							if (value.isEmpty()) {
-								field.setFieldValue(style, 0.0);
-							} else {
-								field.setFieldValue(style, Strings.toDouble(value));
+							double doubleValue = 0.0;
+							if (!value.isEmpty()) {
+								try {
+									doubleValue = Double.parseDouble(value);
+								} catch (NumberFormatException e) {}
 							}
+							field.setFieldValue(style, doubleValue);
 						}
 					} catch (Exception e) {
 						e.getMessage();
