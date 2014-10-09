@@ -47,14 +47,15 @@
 					<Components>
 						<maps:Map Id="map">
 							<Properties>
-								<Width Value="990px" />
-								<Height Value="585px" />
+								<Width Value="675px" />
+								<Height Value="675px" />
 							</Properties>
 							<Layers>
 								<ImageSequenceLayer Id="sequence_layer">
 									<Handlers>
-										<!--Load>
-										</Load-->
+										<Load>
+											<Expression>map->unmask()</Expression>
+										</Load>
 										<Change>
 											<Call Action="tile_change" />
 										</Change>
@@ -106,6 +107,7 @@
 	</Viewport>
 	<Handlers>
 		<Init>
+			<Expression>map->mask()</Expression>
 			<Expression>tilesCount=seqLayer->getTilesCount()</Expression>
 		</Init>
 		<Shortcut Key="Left">
@@ -163,6 +165,11 @@
 		<Variable Id="seqLayer" Type="Object">
 			<Reference>
 				<Component Id="sequence_layer" />
+			</Reference>
+		</Variable>
+		<Variable Id="map" Type="Object">
+			<Reference>
+				<Component Id="map" />
 			</Reference>
 		</Variable>
 		<Variable Id="answerKeys" Type="IntegerArray" />

@@ -41,7 +41,7 @@ import com.vaadin.util.ReflectTools;
  *
  */
 @SuppressWarnings("serial")
-public class Video extends com.vaadin.ui.Video implements SlideComponent {
+public class Video extends com.vaadin.ui.Video implements SlideComponent, Maskable {
 	
 	protected VideoServerRpc rpc = new VideoServerRpc() {
 		@Override
@@ -67,6 +67,7 @@ public class Video extends com.vaadin.ui.Video implements SlideComponent {
 
 	protected SlideManager slideManager;
 	private ParentAlignment parentAlignment;
+	private Mask mask = null;
 
 
     @Override
@@ -310,5 +311,20 @@ public class Video extends com.vaadin.ui.Video implements SlideComponent {
 		removeListener(StopEvent.EVENT_ID, StopEvent.class, listener);
 	}
 
+	@Override
+	public void mask() {
+		if (null == mask) {
+			mask = Mask.addToComponent(this);
+		}
+		mask.show();
+	}
+
+	@Override
+	public void unmask() {
+		if (mask != null) {
+			mask.hide();
+		}
+	}
+	
 }
 

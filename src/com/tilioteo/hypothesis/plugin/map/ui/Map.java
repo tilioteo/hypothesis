@@ -21,6 +21,8 @@ import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlUtility;
 import com.tilioteo.hypothesis.ui.ComponentUtility;
+import com.tilioteo.hypothesis.ui.Mask;
+import com.tilioteo.hypothesis.ui.Maskable;
 import com.tilioteo.hypothesis.ui.ParentAlignment;
 import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.Alignment;
@@ -30,10 +32,11 @@ import com.vaadin.ui.Alignment;
  *
  */
 @SuppressWarnings("serial")
-public class Map extends LayerLayout implements SlideComponent {
+public class Map extends LayerLayout implements SlideComponent, Maskable {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
+	private Mask mask = null;
 	
 	private HashMap<String, Style> styles = new HashMap<String, Style>();
 	
@@ -122,4 +125,20 @@ public class Map extends LayerLayout implements SlideComponent {
 	public Style getStyle(String name) {
 		return styles.get(name);
 	}
+
+	@Override
+	public void mask() {
+		if (null == mask) {
+			mask = Mask.addToComponent(this);
+		}
+		mask.show();
+	}
+
+	@Override
+	public void unmask() {
+		if (mask != null) {
+			mask.hide();
+		}
+	}
+	
 }

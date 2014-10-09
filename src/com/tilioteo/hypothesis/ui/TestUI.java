@@ -14,10 +14,17 @@ import org.vaadin.maps.ui.tile.ImageSequenceTile;
 import org.vaadin.maps.ui.tile.ImageSequenceTile.ChangeEvent;
 import org.vaadin.maps.ui.tile.ImageSequenceTile.LoadEvent;
 
+import com.tilioteo.hypothesis.plugin.map.ui.Map;
+import com.tilioteo.hypothesis.ui.Image.LoadListener;
+import com.tilioteo.hypothesis.ui.Media.CanPlayThroughEvent;
+import com.tilioteo.hypothesis.ui.Media.StartEvent;
+import com.tilioteo.hypothesis.ui.Media.StopEvent;
 import com.tilioteo.hypothesis.ui.ShortcutKey.KeyPressEvent;
+import com.tilioteo.hypothesis.ui.Video.ClickEvent;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Notification;
@@ -54,6 +61,20 @@ public class TestUI extends HUI {
 		verticalLayout.setSizeFull();
 		setContent(verticalLayout);
 		
+		final Image image = new Image();
+		image.setSource(new ExternalResource("http://hypothesis.cz/gallery/albums/userpics/10001/02a.png"));
+		image.setWidth("80%");
+		image.setHeight("80%");
+		image.addLoadListener(new LoadListener() {
+			@Override
+			public void load(com.tilioteo.hypothesis.ui.Image.LoadEvent event) {
+				image.unmask();
+			}
+		});
+		
+		verticalLayout.addComponent(image);
+		image.mask();
+		
 		/*
 		Video video = new Video();
 		video.setSource(new ExternalResource("http://media.w3.org/2010/05/sintel/trailer.ogv"));
@@ -88,13 +109,15 @@ public class TestUI extends HUI {
 		});
 		
 		verticalLayout.addComponent(video);
+		video.mask();
 		*/
 		
-		LayerLayout layerLayout = new LayerLayout();
-		verticalLayout.addComponent(layerLayout);
-		layerLayout.setWidth("80%");
-		layerLayout.setHeight("80%");
-		
+/*		final Map map = new Map();
+		verticalLayout.addComponent(map);
+		map.setWidth("80%");
+		map.setHeight("80%");
+		map.mask();
+*/		
 		/*
 		ImageLayer imageLayer = new ImageLayer("http://www.imagehosting.cz/images/mapaukol7.jpg");
 		imageLayer.addClickListener(new MouseEvents.ClickListener() {
@@ -112,7 +135,7 @@ public class TestUI extends HUI {
 		layerLayout.addComponent(imageLayer);
 		*/
 		
-		final ImageSequenceLayer imageSequenceLayer = new ImageSequenceLayer();
+/*		final ImageSequenceLayer imageSequenceLayer = new ImageSequenceLayer();
 		imageSequenceLayer.addTileUrl("http://hypothesis.cz/gallery/albums/userpics/10001/02a.png");
 		imageSequenceLayer.addTileUrl("http://hypothesis.cz/gallery/albums/userpics/10001/03a.png");
 		imageSequenceLayer.addTileUrl("http://hypothesis.cz/gallery/albums/userpics/10001/04a.png");
@@ -126,6 +149,7 @@ public class TestUI extends HUI {
 		imageSequenceLayer.addLoadListener(new ImageSequenceTile.LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
+				map.unmask();
 				Notification.show("Image sequence loaded");
 			}
 		});
@@ -137,7 +161,7 @@ public class TestUI extends HUI {
 			}
 		});
 		
-		layerLayout.addComponent(imageSequenceLayer);
+		map.addComponent(imageSequenceLayer);
 		
 		VectorFeatureLayer vectorLayer = new VectorFeatureLayer();
 		vectorLayer.addClickListener(new VectorFeatureContainer.ClickListener() {
@@ -148,7 +172,7 @@ public class TestUI extends HUI {
 				imageSequenceLayer.setTileIndex(++index);
 			}
 		});
-		layerLayout.addComponent(vectorLayer);
+		map.addComponent(vectorLayer);
 
 		WKTReader wktReader = new WKTReader();
 		try {
@@ -161,7 +185,7 @@ public class TestUI extends HUI {
 					Notification.show("Feature clicked");
 				}
 			});
-		 	/*
+*/		 	/*
 		 	feature.addDoubleClickListener(new DoubleClickListener() {
 				@Override
 				public void doubleClick(DoubleClickEvent event) {
@@ -169,7 +193,7 @@ public class TestUI extends HUI {
 				}
 			});
 			*/
-		 	vectorLayer.addComponent(feature);
+/*		 	vectorLayer.addComponent(feature);
 		 	
 		 			 	
 		} catch (ParseException e) {
@@ -197,6 +221,24 @@ public class TestUI extends HUI {
 		});
 		addShortcutKey(key2);
 
+		ShortcutKey key3 = new ShortcutKey(ShortcutAction.KeyCode.ARROW_UP);
+		key3.addKeyPressListener(new ShortcutKey.KeyPressListener() {
+			@Override
+			public void keyPress(KeyPressEvent event) {
+				map.mask();
+			}
+		});
+		addShortcutKey(key3);
+
+		ShortcutKey key4 = new ShortcutKey(ShortcutAction.KeyCode.ARROW_DOWN);
+		key4.addKeyPressListener(new ShortcutKey.KeyPressListener() {
+			@Override
+			public void keyPress(KeyPressEvent event) {
+				map.unmask();
+			}
+		});
+		addShortcutKey(key4);
+*/
 		/*
 		ControlLayer controlLayer = new ControlLayer();
 		layerLayout.addComponent(controlLayer);

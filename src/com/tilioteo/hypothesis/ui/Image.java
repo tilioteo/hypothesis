@@ -36,10 +36,11 @@ import com.vaadin.util.ReflectTools;
  * 
  */
 @SuppressWarnings("serial")
-public class Image extends com.vaadin.ui.Image implements SlideComponent {
+public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskable {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
+	private Mask mask = null;
 	
     /**
      * Class for holding information about a image load event. A
@@ -311,4 +312,19 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 		this.slideManager = slideManager;
 	}
 
+	@Override
+	public void mask() {
+		if (null == mask) {
+			mask = Mask.addToComponent(this);
+		}
+		mask.show();
+	}
+
+	@Override
+	public void unmask() {
+		if (mask != null) {
+			mask.hide();
+		}
+	}
+	
 }

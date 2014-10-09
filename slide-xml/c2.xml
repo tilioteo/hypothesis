@@ -11,16 +11,18 @@
 		<Bind>
 			<ImageSequenceLayer Id="sequence_layer">
 				<Images>
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/01a.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/02a.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/03a.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/04a.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/05a.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_cervena.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_modra.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_zelena.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_dole.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_nahore.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_dole_tlacitko.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_nahore_tlacitko.png" />
 				</Images>
 			</ImageSequenceLayer>
 		</Bind>
 		<Bind>
-			<Variable Id="answerKeys" Values="1,2,3,4,1" />
+			<Variable Id="answerKeys" Values="1,2,3,4,3,4,3" />
 		</Bind>
 	</Bindings>
 </SlideContent>
