@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SlideTemplate UID="719A7938-8EDA-11E1-91B4-31F1BAE59B18">
+<SlideTemplate xmlns:maps="http://hypothesis.cz/xml/maps"
+	UID="9C0BA521-4748-4305-80B2-93058EE00196">
+	<!-- dva obrazky, timer -->
 	<Viewport>
 		<VerticalLayout Id="ct001">
 			<Properties>
@@ -7,99 +9,212 @@
 				<Height Value="100%" />
 			</Properties>
 			<Components>
-				<HorizontalLayout Id="ct001_ct001">
+
+				<HorizontalLayout Id="ct001_ct001">	<!--nadpis a zahlavi -->
 					<Properties>
 						<Width Value="100%" />
-						<Height Value="15%" />
+						<Height Value="6%" />
 						<Alignment Value="mc" />
 					</Properties>
 					<Components>
-						<Panel Id="ct001_ct001_ct001">
+						<VerticalLayout Id="ct001_ct001_ct001">
 							<Properties>
-								<Border Value="True" />
-								<Width Value="80%" />
-								<Height Value="100%" />
-								<Caption Value="[SLIDE_TITLE]" />
-							</Properties>
-						</Panel>
-					</Components>
-				</HorizontalLayout>
-				<HorizontalLayout Id="ct001_ct002">
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="70%" />
-						<Alignment Value="mc" />
-					</Properties>
-					<Components>
-						<Image Id="ct001_ct002_ct001">
-							<Properties>
-								<Width Value="80%" />
-							</Properties>
-						</Image>
-					</Components>
-				</HorizontalLayout>
-				<HorizontalLayout Id="ct001_ct003">
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="15%" />
-						<Alignment Value="mc" />
-					</Properties>
-					<Components>
-						<Panel Id="ct001_ct003_ct001">
-							<Properties>
-								<Border Value="False" />
-								<Width Value="20%" />
-								<Height Value="100%" />
-							</Properties>
-						</Panel>
-						<HorizontalLayout Id="ct001_ct003_ct002">
-							<Properties>
-								<Width Value="60%" />
+								<Width Value="100%" />
 								<Height Value="100%" />
 								<Alignment Value="mc" />
 							</Properties>
 							<Components>
-								<Button Id="ct001_ct003_ct002_ct001">
-									<Properties>
-										<Width Value="80%" />
-										<Height Value="80%" />
-										<Caption Value="[BUTTON_1]" />
-									</Properties>
-									<Handlers>
-										<Click>
-											<Call Action="nextSlide" />
-										</Click>
-									</Handlers>
-								</Button>
-								<Button Id="ct001_ct003_ct002_ct002">
-									<Properties>
-										<Width Value="80%" />
-										<Height Value="80%" />
-										<Caption Value="[BUTTON_2]" />
-									</Properties>
-									<Handlers>
-										<Click>
-											<Call Action="nextSlide" />
-										</Click>
-									</Handlers>
-								</Button>
+								<Label Id="title">
+								</Label>
 							</Components>
-						</HorizontalLayout>
-						<Panel Id="ct001_ct003_ct003">
+						</VerticalLayout>
+					</Components>
+				</HorizontalLayout>
+
+				<HorizontalLayout Id="ct001_ct002"> <!--vysvetlivky -->
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="15%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct002_ct001">
 							<Properties>
 								<Border Value="False" />
-								<Width Value="20%" />
+								<Width Value="80%" />
 								<Height Value="100%" />
 							</Properties>
+							<Components>
+								<VerticalLayout Id="ct001_ct002_ct001_ct001">
+									<Properties>
+										<Width Value="100%" />
+										<Height Value="100%" />
+										<Alignment Value="mc" />
+									</Properties>
+									<Components>
+										<Label Id="text1">
+										</Label>
+									</Components>
+								</VerticalLayout>
+							</Components>
 						</Panel>
 					</Components>
 				</HorizontalLayout>
+
+				<HorizontalLayout Id="ct001_ct003"> <!--obrazky -->
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="73%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<VerticalLayout Id="ct001_ct003_ct001">
+							<Properties>
+								<Width Value="50%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+							<Components>
+								<HorizontalLayout Id="ct001_ct003_ct001_ct001">
+									<Components>
+										<Image Id="image1">
+										</Image>
+									</Components>
+								</HorizontalLayout>
+							</Components>
+						</VerticalLayout>
+
+						<VerticalLayout Id="ct001_ct003_ct002">
+							<Properties>
+								<Width Value="50%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+							<Components>
+								<HorizontalLayout Id="ct001_ct003_ct002_ct002">
+									<Components>
+
+										<maps:Map Id="map">
+											<Properties> <!--musi byt definovana velikost, aby se dala v content prepsat, jinak se 
+													obrazek nezobrazi -->
+												<Width Value="10" />
+												<Height Value="10" />
+											</Properties>
+
+											<Layers>
+												<ImageLayer Id="image2">
+												</ImageLayer>
+
+												<FeatureLayer Id="feature_layer">
+													<Properties>
+														<Style Value="red" />
+													</Properties>
+												</FeatureLayer>
+											</Layers>
+											<Controls>
+												<DrawPoint Id="draw_point">
+													<Properties>
+														<LayerId Value="feature_layer" />
+														<CursorStyle Value="cursor" />
+													</Properties>
+												</DrawPoint>
+											</Controls>
+											<Styles>
+												<Style Id="cursor"> <!-- pod sipkou mysi nebude zadne kolecko pri
+																		aktivovanem kresleni -->
+													<PointRadius Value="0" />
+													<StrokeWidth Value="0" />
+													<StrokeOpacity Value="0" />
+													<FillOpacity Value="0" />
+												</Style>
+												<Style Id="red"> <!-- cervene se bude malovat kliknuty bod -->
+													<PointRadius Value="8" />
+													<StrokeColor Value="red" />
+													<StrokeWidth Value="1" />
+													<FillColor Value="red" />
+													<FillOpacity Value="1" />
+												</Style>
+											</Styles>
+										</maps:Map>
+
+									</Components>
+								</HorizontalLayout>
+							</Components>
+						</VerticalLayout>
+					</Components>
+				</HorizontalLayout>
+
+				<HorizontalLayout Id="ct001_ct004">	<!-- zapati - volný prostor na konci stranky -->
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="6%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<VerticalLayout Id="ct001_ct004_ct001">
+							<Properties>
+								<Width Value="100%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+						</VerticalLayout>
+					</Components>
+				</HorizontalLayout>
+
 			</Components>
 		</VerticalLayout>
 	</Viewport>
+
+	<Handlers>
+		<Show>
+			<Call Action="activatePoint" />
+			<Call Action="startTimer" />
+		</Show>
+	</Handlers>
+	<Timers>
+		<Timer Id="odpocet">
+			<Properties>
+				<Time Value="30000" />
+				<Direction Value="down" />
+			</Properties>
+			<Handlers>
+				<Stop>
+					<Call Action="nextSlide" />
+				</Stop>
+			</Handlers>
+		</Timer>
+	</Timers>
+
+	<Variables>
+		<Variable Id="spravne" Type="Integer" Value="0" />
+		<Variable Id="odpocet" Type="Object">
+			<Reference>
+				<Timer Id="odpocet" />
+			</Reference>
+		</Variable>
+		<Variable Id="drawPoint" Type="Object">
+			<Reference>
+				<Component Id="draw_point" />
+			</Reference>
+		</Variable>
+	</Variables>
+
 	<Actions>
+		<Action Id="spravna_odpoved">
+			<Expression>spravne=spravne+1</Expression>
+		</Action>
 		<Action Id="nextSlide">
 			<Expression>Navigator->next()</Expression>
 		</Action>
+		<Action Id="startTimer">
+			<Expression>odpocet->start()</Expression>
+		</Action>
+		<Action Id="activatePoint">
+			<Expression>drawPoint->activate()</Expression>
+		</Action>
 	</Actions>
+
+	<OutputValue>
+		<Expression>spravne</Expression>
+	</OutputValue>
 </SlideTemplate>

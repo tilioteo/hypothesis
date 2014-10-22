@@ -9,39 +9,10 @@
 				<Height Value="100%" />
 			</Properties>
 			<Components>
-				<HorizontalLayout Id="ct001_ct001">
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="15%" />
-						<Alignment Value="mc" />
-					</Properties>
-					<Components>
-						<Panel Id="ct001_ct001_ct001">
-							<Properties>
-								<Border Value="True" />
-								<Width Value="80%" />
-								<Height Value="100%" />
-							</Properties>
-							<Components>
-								<VerticalLayout Id="ct001_ct001_ct001_ct001">
-									<Properties>
-										<Width Value="100%" />
-										<Height Value="100%" />
-										<Alignment Value="mc" />
-									</Properties>
-									<Components>
-										<Label Id="title">
-										</Label>
-									</Components>
-								</VerticalLayout>
-							</Components>
-						</Panel>
-					</Components>
-				</HorizontalLayout>
 				<HorizontalLayout Id="ct001_ct002">
 					<Properties>
 						<Width Value="100%" />
-						<Height Value="70%" />
+						<Height Value="100%" />
 						<Alignment Value="mc" />
 					</Properties>
 					<Components>
@@ -95,13 +66,6 @@
 						</maps:Map>
 					</Components>
 				</HorizontalLayout>
-				<HorizontalLayout Id="ct001_ct003">
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="15%" />
-						<Alignment Value="mc" />
-					</Properties>
-				</HorizontalLayout>
 			</Components>
 		</VerticalLayout>
 	</Viewport>
@@ -146,7 +110,7 @@
 		<Variable Id="index" Type="Integer" Value="0" />
 		<Variable Id="key" Type="Integer" Value="0" />
 		<Variable Id="answerKey" Type="Integer" Value="0" />
-		<Variable Id="keysDisabled" Type="Boolean" Value="false" />
+		<Variable Id="keysDisabled" Type="Boolean" Value="true" />
 		<Variable Id="markerTimer" Type="Object">
 			<Reference>
 				<Timer Id="marker_timer" />

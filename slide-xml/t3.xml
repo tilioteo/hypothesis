@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SlideTemplate UID="3E42107E-8ED9-11E1-B333-CDEFBAE59B18">
+<SlideTemplate
+	xmlns:maps="http://hypothesis.cz/xml/maps"
+	UID="CF440686-3CC7-4656-9C7A-3D990545251A">
 	<Viewport>
 		<VerticalLayout Id="ct001">
 			<Properties>
@@ -7,55 +9,200 @@
 				<Height Value="100%" />
 			</Properties>
 			<Components>
-				<HorizontalLayout Id="ct001_ct001">
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="15%" />
-						<Alignment Value="mc" />
-					</Properties>
-					<Components>
-						<Panel Id="ct001_ct001_ct001">
-							<Properties>
-								<Border Value="True" />
-								<Width Value="80%" />
-								<Height Value="100%" />
-								<Caption Value="[SLIDE_TITLE]" />
-							</Properties>
-						</Panel>
-					</Components>
-				</HorizontalLayout>
 				<HorizontalLayout Id="ct001_ct002">
 					<Properties>
 						<Width Value="100%" />
-						<Height Value="70%" />
+						<Height Value="100%" />
 						<Alignment Value="mc" />
 					</Properties>
 					<Components>
-						<Image Id="ct001_ct002_ct001">
+						<maps:Map Id="map">
 							<Properties>
-								<Width Value="80%" />
+								<Width Value="675px" />
+								<Height Value="675px" />
 							</Properties>
-							<Handlers>
-								<Click>
-									<Call Action="nextSlide" />
-								</Click>
-							</Handlers>
-						</Image>
+							<Layers>
+								<ImageSequenceLayer Id="sequence_layer">
+									<Handlers>
+										<Load>
+											<Expression>map->unmask()</Expression>
+										</Load>
+										<Change>
+											<Call Action="tile_change" />
+										</Change>
+									</Handlers>
+								</ImageSequenceLayer>
+								<FeatureLayer Id="feature_layer">
+									<Features>
+										<Feature Id="ok_sign">
+											<Geometry Value="LINESTRING (100 100,150 150,250 50)" />
+											<Properties>
+												<Hidden Value="true" />
+												<Style Value="ok_style" />
+											</Properties>
+										</Feature>
+										<Feature Id="fail_sign">
+											<Geometry Value="MULTILINESTRING ((100 100,150 150),(100 150,150 100))" />
+											<Properties>
+												<Hidden Value="true" />
+												<Style Value="fail_style" />
+											</Properties>
+										</Feature>
+									</Features>
+								</FeatureLayer>
+							</Layers>
+							<Styles>
+								<Style Id="ok_style">
+									<StrokeColor Value="#00ff00" />
+									<StrokeWidth Value="5" />
+									<FillOpacity Value="0" />
+								</Style>
+								<Style Id="fail_style">
+									<StrokeColor Value="red" />
+									<StrokeWidth Value="5" />
+									<FillOpacity Value="0" />
+								</Style>
+							</Styles>
+						</maps:Map>
 					</Components>
-				</HorizontalLayout>
-				<HorizontalLayout Id="ct001_ct003">
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="15%" />
-						<Alignment Value="mc" />
-					</Properties>
 				</HorizontalLayout>
 			</Components>
 		</VerticalLayout>
 	</Viewport>
+	<Handlers>
+		<Init>
+			<Expression>map->mask()</Expression>
+			<Expression>tilesCount=seqLayer->getTilesCount()</Expression>
+		</Init>
+		<Shortcut Key="Left">
+			<Expression>key=1</Expression>
+			<Call Action="key_press" />
+		</Shortcut>
+		<Shortcut Key="Right">
+			<Expression>key=2</Expression>
+			<Call Action="key_press" />
+		</Shortcut>
+		<Shortcut Key="Up">
+			<Expression>key=3</Expression>
+			<Call Action="key_press" />
+		</Shortcut>
+		<Shortcut Key="Down">
+			<Expression>key=4</Expression>
+			<Call Action="key_press" />
+		</Shortcut>
+	</Handlers>
+	<Timers>
+		<Timer Id="tile_timer">
+			<Properties>
+				<Time Value="5000" />
+			</Properties>
+			<Handlers>
+				<Stop>
+					<Call Action="next_tile" />
+				</Stop>
+			</Handlers>
+		</Timer>
+	</Timers>
+	<Variables>
+		<Variable Id="result" Type="Float" Value="0" />
+		<Variable Id="rightCount" Type="Float" Value="0" />
+		<Variable Id="tilesCount" Type="Integer" Value="0" />
+		<Variable Id="index" Type="Integer" Value="0" />
+		<Variable Id="key" Type="Integer" Value="0" />
+		<Variable Id="answerKey" Type="Integer" Value="0" />
+		<Variable Id="keysDisabled" Type="Boolean" Value="true" />
+		<Variable Id="tileTimer" Type="Object">
+			<Reference>
+				<Timer Id="tile_timer" />
+			</Reference>
+		</Variable>
+		<Variable Id="okMarker" Type="Object">
+			<Reference>
+				<Component Id="ok_sign" />
+			</Reference>
+		</Variable>
+		<Variable Id="failMarker" Type="Object">
+			<Reference>
+				<Component Id="fail_sign" />
+			</Reference>
+		</Variable>
+		<Variable Id="seqLayer" Type="Object">
+			<Reference>
+				<Component Id="sequence_layer" />
+			</Reference>
+		</Variable>
+		<Variable Id="map" Type="Object">
+			<Reference>
+				<Component Id="map" />
+			</Reference>
+		</Variable>
+		<Variable Id="answerKeys" Type="IntegerArray" />
+	</Variables>
 	<Actions>
 		<Action Id="nextSlide">
 			<Expression>Navigator->next()</Expression>
 		</Action>
+		<Action Id="calc_result">
+			<Expression>result=rightCount/tilesCount</Expression>
+		</Action>
+		<Action Id="hide_markers">
+			<Expression>okMarker->setHidden(true)</Expression>
+			<Expression>failMarker->setHidden(true)</Expression>
+		</Action>
+		<Action Id="disable_keys">
+			<Expression>keysDisabled=true</Expression>
+		</Action>
+		<Action Id="enable_keys">
+			<Expression>keysDisabled=false</Expression>
+		</Action>
+		<Action Id="show_ok_marker">
+			<Expression>okMarker->setHidden(false)</Expression>
+		</Action>
+		<Action Id="show_fail_marker">
+			<Expression>failMarker->setHidden(false)</Expression>
+		</Action>
+		<Action Id="start_tile_timer">
+			<Expression>tileTimer->start()</Expression>
+		</Action>
+		<Action Id="tile_change">
+			<Call Action="enable_keys" />
+			<Expression>index=seqLayer->getTileIndex()</Expression>
+			<Expression>answerKey=answerKeys->get(index)</Expression>
+			<Call Action="start_tile_timer" />
+		</Action>
+		<Action Id="key_press">
+			<If>
+				<Expression>!keysDisabled</Expression>
+				<True>
+					<Call Action="disable_keys" />
+					<If>
+						<Expression>answerKey==key</Expression>
+						<True>
+							<Expression>rightCount=rightCount+1</Expression>
+							<Call Action="show_ok_marker" />
+						</True>
+						<False>
+							<Call Action="show_fail_marker" />
+						</False>
+					</If>
+				</True>
+			</If>
+		</Action>
+		<Action Id="next_tile">
+			<Call Action="hide_markers" />
+			<If>
+				<Expression>index&lt;tilesCount-1</Expression>
+				<True>
+					<Expression>seqLayer->nextTile()</Expression>
+				</True>
+				<False>
+					<Call Action="calc_result" />
+					<Call Action="nextSlide" />
+				</False>
+			</If>
+		</Action>
 	</Actions>
+	<OutputValue>
+		<Expression>result</Expression>
+	</OutputValue>
 </SlideTemplate>

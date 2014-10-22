@@ -2,13 +2,6 @@
 <SlideContent TemplateUID="2C2A3A99-12E2-4373-8B31-114B7306D50A">
 	<Bindings>
 		<Bind>
-			<Label Id="title">
-				<Properties>
-					<Caption Value="&lt;h2&gt;Vyzkoušejte si zácvičný úkol:&lt;/h2&gt;" />
-				</Properties>
-			</Label>
-		</Bind>
-		<Bind>
 			<ImageSequenceLayer Id="sequence_layer">
 				<Images>
 					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_cervena.png" />
