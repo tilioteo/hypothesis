@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.ui.SelectPanel;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -16,7 +17,11 @@ public abstract class SelectPanelEvent extends
 	public static class Click extends SelectPanelEvent {
 
 		public Click(SelectPanelData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public Click(SelectPanelData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override
@@ -26,7 +31,7 @@ public abstract class SelectPanelEvent extends
 
 	}
 
-	protected SelectPanelEvent(SelectPanelData data) {
-		super(data);
+	protected SelectPanelEvent(SelectPanelData data, ErrorHandler errorHandler) {
+		super(data, errorHandler);
 	}
 }

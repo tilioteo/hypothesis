@@ -9,6 +9,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -69,8 +70,7 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -91,8 +91,8 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 			@Override
 			public void click(ClickEvent event) {
 				data.setXY(event.getRelativeX(), event.getRelativeY());
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}

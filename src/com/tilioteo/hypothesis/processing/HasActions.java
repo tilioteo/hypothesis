@@ -12,6 +12,7 @@ package com.tilioteo.hypothesis.processing;
  */
 public interface HasActions {
 
-	ActionMap getActions();
+	void setAction(String id, AbstractBaseAction action);
+	AbstractBaseAction getAction(String id);
 
 }

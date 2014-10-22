@@ -11,6 +11,7 @@ import org.vaadin.maps.ui.handler.FeatureHandler.GeometryEvent;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -69,8 +70,7 @@ public class DrawPathControl extends org.vaadin.maps.ui.control.DrawPathControl 
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -91,8 +91,9 @@ public class DrawPathControl extends org.vaadin.maps.ui.control.DrawPathControl 
 			@Override
 			public void geometry(GeometryEvent event) {
 				data.setGeometry(event.getGeometry());
-				componentEvent.execute();
-				action.execute();
+				//Command.Executor.execute(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}

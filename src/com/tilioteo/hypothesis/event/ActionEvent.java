@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author kamil
@@ -13,7 +14,11 @@ import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 public class ActionEvent extends AbstractRunningEvent {
 
 	public ActionEvent(AbstractBaseAction source) {
-		super(source);
+		this(source, null);
+	}
+
+	public ActionEvent(AbstractBaseAction source, ErrorHandler errorHandler) {
+		super(source, errorHandler);
 	}
 
 	@Override

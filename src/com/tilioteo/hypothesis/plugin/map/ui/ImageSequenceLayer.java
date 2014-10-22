@@ -16,6 +16,7 @@ import org.vaadin.maps.ui.tile.ImageSequenceTile.LoadListener;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -85,7 +86,7 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce().createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -113,8 +114,8 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 				data.setXY(event.getRelativeX(), event.getRelativeY());
 				data.setImageIndex(event.getIndex());
 				data.setImageTag(imageTags.get(event.getIndex()));
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}
@@ -127,8 +128,8 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 		addLoadListener(new LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}
@@ -143,8 +144,8 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 			public void change(ChangeEvent event) {
 				data.setImageIndex(event.getIndex());
 				data.setImageTag(imageTags.get(event.getIndex()));
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}

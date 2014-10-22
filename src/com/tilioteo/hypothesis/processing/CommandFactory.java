@@ -16,6 +16,7 @@ import com.tilioteo.hypothesis.event.ButtonPanelData;
 import com.tilioteo.hypothesis.event.ButtonPanelEvent;
 import com.tilioteo.hypothesis.event.ImageData;
 import com.tilioteo.hypothesis.event.ImageEvent;
+import com.tilioteo.hypothesis.event.ProcessEventManager;
 import com.tilioteo.hypothesis.event.SelectPanelData;
 import com.tilioteo.hypothesis.event.SelectPanelEvent;
 import com.tilioteo.hypothesis.event.TimerData;
@@ -33,8 +34,8 @@ public class CommandFactory {
 
 	private static Logger log = Logger.getLogger(CommandFactory.class);
 
-	public static Command createActionCommand(final SlideManager slideManager, String actionId, final AbstractComponentData<?> data) {
-		final AbstractBaseAction action = slideManager != null ? slideManager.getActions().get(actionId) : null;
+	public static Command createActionCommand(final SlideManager slideManager, final String actionId, final AbstractComponentData<?> data) {
+		final AbstractBaseAction action = slideManager != null ? slideManager.getAction(actionId) : null;
 
 		return new Command() {
 			public void execute() {
@@ -43,6 +44,8 @@ public class CommandFactory {
 					slideManager.addComponentDataVariable(data);
 					action.execute();
 					slideManager.clearComponentDataVariable();
+				} else {
+					log.error("Action " + actionId + " IS NULL!");
 				}
 			}
 		};
@@ -52,7 +55,23 @@ public class CommandFactory {
 		return new Command() {
 			public void execute() {
 				log.debug("Execute component event command.");
-				event.getComponentData().getSlideManager().getEventManager().fireEvent(event);
+				AbstractComponentData<?> data = event.getComponentData();
+				if (data != null) {
+					SlideManager slideManager = data.getSlideManager();
+					if (slideManager != null) {
+						ProcessEventManager eventManager = slideManager.getEventManager();
+						if (eventManager != null) {
+							log.debug("Fire component event.");
+							eventManager.fireEvent(event);
+						} else {
+							log.error("Event manager IS NULL!");
+						}
+					} else {
+						log.error("Event slide manager IS NULL!");
+					}
+				} else {
+					log.error("Event component data IS NULL!");
+				}
 			}
 		};
 	}

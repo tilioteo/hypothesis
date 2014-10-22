@@ -112,12 +112,13 @@ public class TestManager {
 	}
 
 	public void updateTest(SimpleTest test) {
-		log.debug("updateTest");
+		log.debug(String.format("updateTest, test id = %s", test.getId() != null ? test.getId() : "NULL"));
 		if (test != null) {
 			try {
 				testDao.beginTransaction();
 				testDao.makePersistent(test);
 				testDao.commit();
+				log.debug("test update finished");
 			} catch (Throwable e) {
 				log.error(e.getMessage());
 				testDao.rollback();
@@ -126,7 +127,7 @@ public class TestManager {
 	}
 	
 	public void saveEvent(Event event, SimpleTest test) {
-		log.debug("saveEvent");
+		log.debug(String.format("saveEvent, test id = %s, event id = %s", test.getId() != null ? test.getId() : "NULL", event.getId() != null ? event.getId() : "NULL"));
 		if (event != null && test != null) {
 			try {
 				eventDao.beginTransaction();
@@ -137,6 +138,7 @@ public class TestManager {
 				saveTestEventJoin(test, event, ++rank);
 				
 				eventDao.commit();
+				log.debug("event save finished");
 			} catch (Throwable e) {
 				log.error(e.getMessage());
 				eventDao.rollback();

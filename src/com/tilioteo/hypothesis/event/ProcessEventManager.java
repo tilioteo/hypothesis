@@ -81,12 +81,6 @@ public class ProcessEventManager {
 	}
 
 	/*
-	 * public final void removeAllListeners(Class<? extends
-	 * ProcessEvent> eventClass) { EventListenerList listeners =
-	 * listenersMap.get(eventClass); if (listeners != null) {
-	 * listeners.remove(ProcessEventListener.class, eventListener); }
-	 * listenersMap.remove(eventClass); }
-	 * 
 	 * public final void removeAllListeners() { listenersMap.clear(); }
 	 */
 

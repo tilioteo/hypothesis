@@ -8,6 +8,7 @@ import java.util.Collection;
 import com.tilioteo.hypothesis.ui.LayoutComponent;
 import com.tilioteo.hypothesis.ui.ShortcutKey;
 import com.tilioteo.hypothesis.ui.Timer;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -20,7 +21,11 @@ public class RenderContentEvent extends AbstractContentEvent {
 	Collection<ShortcutKey> shortcutKeys;
 	
 	public RenderContentEvent(LayoutComponent content, Collection<Timer> timers, Collection<ShortcutKey> shortcutKeys) {
-		super(content);
+		this(content, timers, shortcutKeys, null);
+	}
+
+	public RenderContentEvent(LayoutComponent content, Collection<Timer> timers, Collection<ShortcutKey> shortcutKeys, ErrorHandler errorHandler) {
+		super(content, errorHandler);
 		this.timers = timers;
 		this.shortcutKeys = shortcutKeys;
 	}

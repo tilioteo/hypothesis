@@ -19,7 +19,7 @@ public class CallAction implements Evaluable {
 
 	public void evaluate() {
 		if (actions != null) {
-			AbstractBaseAction action = actions.getActions().get(actionId);
+			AbstractBaseAction action = actions.getAction(actionId);
 			if (action != null)
 				action.execute();
 		}

@@ -109,7 +109,7 @@ public class MapComponentFactory {
 	}
 
 	public static Command createImageSequenceLayerChangeEventCommand(ImageSequenceLayerData data) {
-		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Click(data);
+		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Change(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}

@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Status;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -14,7 +15,11 @@ import com.tilioteo.hypothesis.entity.Status;
 public class FinishTestEvent extends AbstractTestEvent {
 
 	public FinishTestEvent(SimpleTest test) {
-		super(test);
+		this(test, null);
+	}
+
+	public FinishTestEvent(SimpleTest test, ErrorHandler errorHandler) {
+		super(test, errorHandler);
 	}
 
 	@Override

@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.ui.Window;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author kamil
@@ -15,7 +16,11 @@ public abstract class WindowEvent extends AbstractComponentEvent<Window> {
 	public static class Init extends WindowEvent {
 
 		public Init(WindowData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public Init(WindowData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override
@@ -28,7 +33,11 @@ public abstract class WindowEvent extends AbstractComponentEvent<Window> {
 	public static class Open extends WindowEvent {
 
 		public Open(WindowData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public Open(WindowData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override
@@ -41,7 +50,11 @@ public abstract class WindowEvent extends AbstractComponentEvent<Window> {
 	public static class Close extends WindowEvent {
 
 		public Close(WindowData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public Close(WindowData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override
@@ -51,8 +64,8 @@ public abstract class WindowEvent extends AbstractComponentEvent<Window> {
 		
 	}
 
-	protected WindowEvent(WindowData data) {
-		super(data);
+	protected WindowEvent(WindowData data, ErrorHandler errorHandler) {
+		super(data, errorHandler);
 	}
 
 }

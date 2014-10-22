@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Status;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -13,12 +14,15 @@ import com.tilioteo.hypothesis.entity.Status;
 @SuppressWarnings("serial")
 public class ErrorTestEvent extends AbstractTestEvent {
 
+	// TODO add reason
 	// private String reason;
 
 	public ErrorTestEvent(SimpleTest test) {
-		super(test);
-		
-		// TODO add reason
+		this(test, null);
+	}
+
+	public ErrorTestEvent(SimpleTest test, ErrorHandler errorHandler) {
+		super(test, errorHandler);
 	}
 
 	@Override

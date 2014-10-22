@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -24,19 +25,26 @@ import com.tilioteo.hypothesis.processing.Pattern;
  */
 public class BranchFactory {
 
-	private static BranchFactory instance = null;
-
-	public static BranchFactory getInstance() {
-		if (instance == null)
-			instance = new BranchFactory();
-
-		return instance;
+	private static HashMap<BranchManager, BranchFactory> instances = new HashMap<BranchManager, BranchFactory>();
+	
+	public static BranchFactory getInstance(BranchManager branchManager) {
+		BranchFactory branchFactory = instances.get(branchManager);
+		
+		if (null == branchFactory) {
+			branchFactory = new BranchFactory(branchManager);
+			instances.put(branchManager, branchFactory);
+		}
+		return branchFactory;
+	}
+	
+	public static void remove(BranchManager branchManager) {
+		instances.remove(branchManager);
 	}
 
 	private BranchManager branchManager = null;
 
-	private BranchFactory() {
-		super();
+	private BranchFactory(BranchManager branchManager) {
+		this.branchManager = branchManager;
 	}
 
 	private AbstractBasePath createAbstractBasePath(Element pathElement) {

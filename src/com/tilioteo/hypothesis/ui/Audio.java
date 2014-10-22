@@ -9,6 +9,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -122,8 +123,7 @@ public class Audio extends com.vaadin.ui.Audio implements SlideComponent {
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -141,16 +141,15 @@ public class Audio extends com.vaadin.ui.Audio implements SlideComponent {
 
 	private void setLoadHandler(String actionId) {
 		final AudioData data = new AudioData(this, slideManager);
-		final Command componentEvent = CommandFactory
-				.createAudioLoadEventCommand(data);
+		final Command componentEvent = CommandFactory.createAudioLoadEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
 				actionId, data);
 
 		addCanPlayThroughListener(new CanPlayThroughListener() {
 			@Override
 			public void canPlayThrough(CanPlayThroughEvent event) {
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}
@@ -164,8 +163,8 @@ public class Audio extends com.vaadin.ui.Audio implements SlideComponent {
 			@Override
 			public void start(StartEvent event) {
 				data.setTime(event.getTime());
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}
@@ -179,8 +178,8 @@ public class Audio extends com.vaadin.ui.Audio implements SlideComponent {
 			@Override
 			public void stop(StopEvent event) {
 				data.setTime(event.getTime());
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}

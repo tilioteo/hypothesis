@@ -14,6 +14,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.Field;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
@@ -141,8 +142,7 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 
 	private void setClickHandler(String actionId) {
 		final SelectPanelData data = new SelectPanelData(this, slideManager);
-		final Command componentEvent = CommandFactory
-				.createSelectPanelClickEventCommand(data);
+		final Command componentEvent = CommandFactory.createSelectPanelClickEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
 				actionId, data);
 
@@ -150,8 +150,8 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 			@Override
 			public void buttonClick(ClickEvent event) {
 				data.setButton((SelectButton) event.getSource());
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}
@@ -159,8 +159,7 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -190,7 +189,9 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 				@Override
 				public void buttonClick(ClickEvent event) {
 					data.setButton((SelectButton) event.getSource());
-					componentEvent.execute();
+					CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+					//slideManager.scheduleCommand(action);
+
 				}
 			});
 		}

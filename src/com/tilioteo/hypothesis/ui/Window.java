@@ -12,6 +12,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -268,8 +269,8 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		addCloseListener(new CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}
@@ -290,8 +291,7 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -323,8 +323,8 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		addInitListener(new InitListener() {
 			@Override
 			public void initWindow(InitEvent event) {
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}
@@ -346,8 +346,8 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		addOpenListener(new OpenListener() {
 			@Override
 			public void openWindow(OpenEvent e) {
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}

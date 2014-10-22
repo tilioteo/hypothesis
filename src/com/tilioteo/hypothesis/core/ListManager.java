@@ -16,46 +16,65 @@ import com.tilioteo.hypothesis.entity.HasList;
 public class ListManager<T extends HasList<E>, E> {
 
 	private LinkedList<E> list = new LinkedList<E>();
+	private int index = -1;
 
 	private E element = null;
 	
 	private Random randomGenerator;
+	
+	private E getByInternalIndex() {
+		if (index >= 0 && index < list.size()) {
+			element = list.get(index);
+		} else {
+			element = null;
+		}
+		return element;
+	}
 
 	public E current() {
-		return element;
+		return getByInternalIndex();
+	}
+	
+	public E get(int index) {
+		if (index >= 0 && index < list.size()) {
+			this.index = index;
+		} else {
+			this.index = -1;
+		}
+		return getByInternalIndex();
 	}
 
 	public E find(E item) {
-		if (item == element)
-			return current();
-
-		int index = list.indexOf(item);
-		if (index >= 0) {
-			for (int i = 0; i < index; ++i)
-				list.remove();
-		} else {
-			list.clear();
-			element = null;
-		}
-		return next();
+		index = list.indexOf(item);
+		return getByInternalIndex();
 	}
 
 	public E next() {
-		element = list.poll();
-		return element;
+		if (index < list.size()) {
+			++index;
+		}
+		return getByInternalIndex();
+	}
+	
+	public E prior() {
+		if (index >= 0) {
+			--index;
+		}
+		return getByInternalIndex();
 	}
 
-	/**
+	/*
 	 * set current element - for test purpose only
 	 * 
 	 * @param element
 	 */
-	public void setCurrent(E element) {
+	/*public void setCurrent(E element) {
 		this.element = element;
-	}
+	}*/
 
-	public void setListParent(T parent) {
+	public void setListFromParent(T parent) {
 		list.clear();
+		index = -1;
 		randomGenerator = new Random();
 		if (parent != null) {
 			for (E item : parent.getList()) {
@@ -63,8 +82,12 @@ public class ListManager<T extends HasList<E>, E> {
 					list.add(item);
 				}
 			}
+			
+			if (list.size() > 0) {
+				index = 0;
+				getByInternalIndex();
+			}
 		}
-		next();
 	}
 	
 	public List<Integer> createRandomOrder() {
@@ -76,9 +99,6 @@ public class ListManager<T extends HasList<E>, E> {
 				order.add(random);
 			}
 		}
-		/*for (int i = 0; i < list.size(); ++i) {
-			order.add();
-		}*/
 		
 		return order;
 	}
@@ -98,6 +118,7 @@ public class ListManager<T extends HasList<E>, E> {
 			
 			this.list = tempList;
 		}
+		index = 0;
 	}
 	
 }

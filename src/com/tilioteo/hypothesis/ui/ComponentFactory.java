@@ -12,6 +12,7 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.ShortcutUtility;
 import com.tilioteo.hypothesis.core.ShortcutUtility.ShortcutKeys;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -41,8 +42,7 @@ import com.vaadin.ui.AbstractComponent;
  */
 public class ComponentFactory {
 
-	public static LayoutComponent createComponentFromElement(Element element,
-			SlideManager slideManager) {
+	public static LayoutComponent createComponentFromElement(Element element, SlideManager slideManager) {
 		if (element != null) {
 			String name = element.getName();
 			SlideComponent component = null;
@@ -121,8 +121,7 @@ public class ComponentFactory {
 		return null;
 	}
 
-	private static SlideComponent createPluginComponent(Element element,
-			SlideManager slideManager) {
+	private static SlideComponent createPluginComponent(Element element, SlideManager slideManager) {
 		
 		String namespace = element.getNamespacePrefix();
 		if (namespace != null && !"".equals(namespace.trim())) {
@@ -137,16 +136,14 @@ public class ComponentFactory {
 		return null;
 	}
 
-	private static void createViewportHandlers(Element rootElement,
-			SlideManager slideManager) {
+	private static void createViewportHandlers(Element rootElement, SlideManager slideManager) {
 		List<Element> elements = SlideUtility.getHandlerElements(rootElement);
 		for (Element handler : elements) {
 			setViewportHandler(handler, slideManager);
 		}
 	}
 
-	public static void createViewportComponent(Element rootElement,
-			SlideManager slideManager) {
+	public static void createViewportComponent(Element rootElement, SlideManager slideManager) {
 		Element componentElement = SlideXmlUtility.getViewportInnerComponent(rootElement);
 		LayoutComponent component = createComponentFromElement(componentElement, slideManager);
 
@@ -155,8 +152,7 @@ public class ComponentFactory {
 		slideManager.setViewport(component);
 	}
 
-	public static void createWindows(Element rootElement,
-			SlideManager slideManager) {
+	public static void createWindows(Element rootElement, SlideManager slideManager) {
 		List<Element> elements = SlideXmlUtility.getWindowsElements(rootElement);
 		for (Element windowElement : elements) {
 			String id = SlideXmlUtility.getId(windowElement);
@@ -171,8 +167,7 @@ public class ComponentFactory {
 		}
 	}
 
-	public static void createTimers(Element rootElement,
-			SlideManager slideManager) {
+	public static void createTimers(Element rootElement, SlideManager slideManager) {
 		List<Element> elements = SlideXmlUtility.getTimersElements(rootElement);
 		for (Element element : elements) {
 			String id = SlideXmlUtility.getId(element);
@@ -186,12 +181,10 @@ public class ComponentFactory {
 		}
 	}
 
-	private static void setViewportHandler(Element element,
-			SlideManager slideManager) {
+	private static void setViewportHandler(Element element,	SlideManager slideManager) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -209,30 +202,32 @@ public class ComponentFactory {
 		}
 	}
 
-	private static void setViewportInitHandler(String actionId,	SlideManager slideManager) {
+	private static void setViewportInitHandler(String actionId,	final SlideManager slideManager) {
 		final Command action = CommandFactory.createActionCommand(slideManager, actionId, null);
 		slideManager.addViewportEventListener(SlideManager.InitEvent.class,
 				new ViewportEventListener() {
 					@Override
 					public void handleEvent(ViewportEvent event) {
-						action.execute();
+						//Command.Executor.execute(componentEvent);
+						CommandScheduler.Scheduler.scheduleCommand(action);
 					}
 				});
 	}
 
-	private static void setViewportShowHandler(String actionId,	SlideManager slideManager) {
+	private static void setViewportShowHandler(String actionId,	final SlideManager slideManager) {
 		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, null);
 		slideManager.addViewportEventListener(SlideManager.ShowEvent.class,
 				new ViewportEventListener() {
 					@Override
 					public void handleEvent(ViewportEvent event) {
-						action.execute();
+						//Command.Executor.execute(componentEvent);
+						CommandScheduler.Scheduler.scheduleCommand(action);
 					}
 				});
 	}
 	
 	@SuppressWarnings("serial")
-	private static void setViewportShortcutHandler(String actionId, String key, SlideManager slideManager) {
+	private static void setViewportShortcutHandler(String actionId, String key, final SlideManager slideManager) {
 		ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);
 		if (shortcutKeys != null) { 
 			final Command action = CommandFactory.createActionCommand(slideManager,	actionId, null);
@@ -240,7 +235,8 @@ public class ComponentFactory {
 			shortcutKey.addKeyPressListener(new KeyPressListener() {
 				@Override
 				public void keyPress(KeyPressEvent event) {
-					action.execute();
+					//Command.Executor.execute(componentEvent);
+					CommandScheduler.Scheduler.scheduleCommand(action);
 				}
 			});
 			

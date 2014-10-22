@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.ui.Timer;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author kamil
@@ -15,7 +16,11 @@ public abstract class TimerEvent extends AbstractComponentEvent<Timer> {
 	public static class Start extends TimerEvent {
 
 		public Start(TimerData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public Start(TimerData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override
@@ -28,7 +33,11 @@ public abstract class TimerEvent extends AbstractComponentEvent<Timer> {
 	public static class Stop extends TimerEvent {
 
 		public Stop(TimerData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public Stop(TimerData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override
@@ -41,7 +50,11 @@ public abstract class TimerEvent extends AbstractComponentEvent<Timer> {
 	public static class Update extends TimerEvent {
 
 		public Update(TimerData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public Update(TimerData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override
@@ -51,8 +64,8 @@ public abstract class TimerEvent extends AbstractComponentEvent<Timer> {
 
 	}
 
-	protected TimerEvent(TimerData data) {
-		super(data);
+	protected TimerEvent(TimerData data, ErrorHandler errorHandler) {
+		super(data, errorHandler);
 	}
 
 }

@@ -21,7 +21,7 @@ public abstract class AbstractNotificationEvent extends AbstractProcessEvent {
 	}
 
 	protected AbstractNotificationEvent(SimpleTest test, String caption, String description) {
-		super(test);
+		super(test, null);
 		this.caption = caption;
 		this.description = description;
 	}

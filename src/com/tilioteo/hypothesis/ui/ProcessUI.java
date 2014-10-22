@@ -12,6 +12,8 @@ import org.vaadin.jouni.animator.AnimatorProxy;
 import org.vaadin.jouni.animator.AnimatorProxy.AnimationEvent;
 import org.vaadin.jouni.animator.shared.AnimType;
 
+import com.tilioteo.hypothesis.core.CommandQueue;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.event.AbstractNotificationEvent;
 import com.tilioteo.hypothesis.event.AfterFinishSlideEvent;
 import com.tilioteo.hypothesis.event.AfterPrepareTestEvent;
@@ -26,6 +28,7 @@ import com.tilioteo.hypothesis.model.ProcessModel;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.servlet.ProcessServlet;
 import com.vaadin.annotations.PreserveOnRefresh;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
@@ -46,7 +49,8 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 @PreserveOnRefresh
-public class ProcessUI extends HUI implements ProcessEventListener,	DetachListener {
+@Push
+public class ProcessUI extends HUI implements ProcessEventListener,	DetachListener, CommandScheduler {
 
 	private static Logger log = Logger.getLogger(ProcessUI.class);
 
@@ -61,16 +65,19 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 	public static class Servlet extends ProcessServlet {
 	}
 
-	private final ProcessModel processModel = new ProcessModel(this);
+	private ProcessModel processModel;
 	private VerticalLayout clearLayout = new VerticalLayout();
 	private boolean requestFullscreen = false;
 	private boolean requestBack = false;
 	private boolean animate = true;
 	
+	private CommandQueue commandQueue = new CommandQueue();
+	
 	@Override
 	protected void init(VaadinRequest request) {
 		log.debug("ProcessUI initialization");
 		addDetachListener(this);
+		processModel = new ProcessModel(this);
 		
 		PluginManager.get().registerPlugins();
 		
@@ -96,6 +103,16 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 			log.debug(TOKEN_PARAMETER + "=(null)");
 			
 			processModel.fireError(ERROR_INVALID_ACCESS);
+		}
+	}
+	
+	public void scheduleCommand(Command command) {
+		if (command != null) {
+			try {
+				commandQueue.put(command);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -208,10 +225,8 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 					@Override
 					public void onAnimation(AnimationEvent event) {
 						setContent(clearLayout);
-
-						if (nextCommand != null) {
-							nextCommand.execute();
-						}
+						scheduleCommand(nextCommand);
+						//Command.Executor.execute(nextCommand);
 					}
 				});
 				((ComponentContainer)content).addComponent(animator);
@@ -219,10 +234,8 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 			}
 		} else {
 			setContent(clearLayout);
-			
-			if (nextCommand != null) {
-				nextCommand.execute();
-			}
+			scheduleCommand(nextCommand);
+			//Command.Executor.execute(nextCommand);
 		}
 	}
 
@@ -246,6 +259,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 		log.debug("ProcessUI detached.");
 		
 		processModel.requestBreak();
+		processModel.purgeFactories();
 	}
 
 	@Override

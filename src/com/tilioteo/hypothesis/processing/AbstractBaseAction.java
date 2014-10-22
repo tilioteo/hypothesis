@@ -24,9 +24,7 @@ public abstract class AbstractBaseAction extends AbstractVariableContainer {
 	}
 
 	public void execute() {
-		if (executeCommand != null) {
-			executeCommand.execute();
-		}
+		Command.Executor.execute(executeCommand);
 	}
 
 	public String getId() {

@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.ui.Button;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -15,7 +16,11 @@ public abstract class ButtonEvent extends AbstractComponentEvent<Button> {
 	public static class Click extends ButtonEvent {
 
 		public Click(ButtonData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public Click(ButtonData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override
@@ -24,7 +29,7 @@ public abstract class ButtonEvent extends AbstractComponentEvent<Button> {
 		}
 	}
 
-	protected ButtonEvent(ButtonData data) {
-		super(data);
+	protected ButtonEvent(ButtonData data, ErrorHandler errorHandler) {
+		super(data, errorHandler);
 	}
 }

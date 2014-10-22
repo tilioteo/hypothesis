@@ -15,7 +15,7 @@ public class PrepareTestEvent extends AbstractProcessEvent {
 	private boolean startAllowed;
 
 	public PrepareTestEvent(Token token, boolean startAllowed) {
-		super(token);
+		super(token, null);
 		this.startAllowed = startAllowed;
 	}
 

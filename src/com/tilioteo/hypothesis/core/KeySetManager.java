@@ -18,37 +18,54 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> {
 
 	private LinkedHashMap<K, E> keyset = new LinkedHashMap<K, E>();
 
+	private K key = null;
 	private E element = null;
 
-	public E current() {
-		return element;
-	}
-
-	public E find(E item) {
-		if (keyset.containsValue(item)) {
-			element = item;
+	private E getByInternalKey() {
+		if (key != null) {
+			element = keyset.get(key);
 		} else {
 			element = null;
 		}
 		return element;
 	}
 
-	public E get(K key) {
-		element = keyset.get(key);
+	public E current() {
+		return getByInternalKey();
+	}
+	
+	public E find(E item) {
+		key = null;
+		element = null;
+		
+		for (K k : keyset.keySet()) {
+			E e = keyset.get(k);
+			if (e == item) {
+				key = k;
+				element = e;
+				break;
+			}
+		}
 		return element;
 	}
 
-	/**
+	public E get(K key) {
+		this.key = key;
+		return getByInternalKey();
+	}
+	
+	/*
 	 * set current element - for test purpose only
 	 * 
 	 * @param element
 	 */
-	protected void setCurrent(E element) {
+	/*protected void setCurrent(E element) {
 		this.element = element;
-	}
+	}*/
 
-	public void setListParent(T parent) {
+	public void setListFromParent(T parent) {
 		keyset.clear();
+		key = null;
 		if (parent != null) {
 			for (E item : parent.getList()) {
 				if (item != null) {
@@ -57,7 +74,7 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> {
 			}
 			if (keyset.size() > 0) {
 				List<E> list = new ArrayList<E>(keyset.values());
-				element = list.get(0);
+				find(list.get(0));
 			} else {
 				element = null;
 			}

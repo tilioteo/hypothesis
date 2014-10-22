@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.core;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -50,13 +51,26 @@ import com.tilioteo.hypothesis.ui.SlideComponent;
  */
 public class SlideFactory {
 
-	private static SlideFactory instance = null;
+	private static HashMap<SlideManager, SlideFactory> instances = new HashMap<SlideManager, SlideFactory>();
+	
+	public static SlideFactory getInstance(SlideManager slideManager) {
+		SlideFactory slideFactory = instances.get(slideManager);
+		
+		if (null == slideFactory) {
+			slideFactory = new SlideFactory(slideManager);
+			instances.put(slideManager, slideFactory);
+		}
+		return slideFactory;
+	}
+	
+	public static void remove(SlideManager slideManager) {
+		instances.remove(slideManager);
+	}
 
-	public static SlideFactory getInstatnce() {
-		if (instance == null)
-			instance = new SlideFactory();
+	private SlideManager slideManager = null;
 
-		return instance;
+	private SlideFactory(SlideManager slideManager) {
+		this.slideManager = slideManager;
 	}
 
 	public static void writeButtonData(Element sourceElement, ButtonData buttonData) {
@@ -188,12 +202,6 @@ public class SlideFactory {
 		componentData.writeDataToElement(sourceElement);
 	}
 
-	private SlideManager slideManager = null;
-
-	private SlideFactory() {
-		super();
-	}
-
 	private void writeFieldsData(Element element, FieldList fields) {
 		Element fieldsElement = element.addElement(SlideXmlConstants.FIELDS);
 		for (Field field : fields) {
@@ -259,7 +267,7 @@ public class SlideFactory {
 		return null;
 	}
 
-	private void createActions(Element rootElement, final SlideManager slideManager) {
+	private void createActions(Element rootElement) {
 		List<Element> actions = SlideXmlUtility.getActionsElements(rootElement);
 		for (Element actionElement : actions) {
 			String id = SlideXmlUtility.getId(actionElement);
@@ -272,7 +280,7 @@ public class SlideFactory {
 							slideManager.getEventManager().fireEvent(new ActionEvent(action));
 						}
 					});
-					slideManager.getActions().put(id, action);
+					slideManager.setAction(id, action);
 				}
 			}
 		}
@@ -283,7 +291,7 @@ public class SlideFactory {
 			String id = UUID.randomUUID().toString();
 			AbstractBaseAction action = createInnerAction(element, id);
 			if (action != null)
-				slideManager.getActions().put(id, action);
+				slideManager.setAction(id, action);
 			return action;
 		}
 		return null;
@@ -387,36 +395,29 @@ public class SlideFactory {
 	}
 
 	private void createOutputValue(Element rootElement) {
-		Element outputElement = SlideXmlUtility
-				.getOutputValueElement(rootElement);
-		Expression expression = createExpression(SlideXmlUtility
-				.getExpressionElement(outputElement));
+		Element outputElement = SlideXmlUtility.getOutputValueElement(rootElement);
+		Expression expression = createExpression(SlideXmlUtility.getExpressionElement(outputElement));
 		slideManager.setOutputExpression(expression);
 	}
 
-	public void createSlideControls(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void createSlideControls() {
+		Document doc = slideManager.getSlideXml();
+		if (SlideXmlUtility.isValidSlideXml(doc)) {
+			Element rootElement = doc.getRootElement(); 
+			createActions(rootElement);
+			ComponentFactory.createTimers(rootElement, slideManager);
 
-		if (slideManager != null) {
-			Document doc = slideManager.getSlideXml();
+			createInputValue(rootElement);
+			createOutputValue(rootElement);
 
-			if (SlideXmlUtility.isValidSlideXml(doc)) {
-				Element rootElement = doc.getRootElement(); 
-				createActions(rootElement, slideManager);
-				ComponentFactory.createTimers(rootElement, slideManager);
+			ComponentFactory.createWindows(rootElement,	slideManager);
+			ComponentFactory.createViewportComponent(rootElement, slideManager);
 
-				createInputValue(rootElement);
-				createOutputValue(rootElement);
-
-				ComponentFactory.createWindows(rootElement,	slideManager);
-				ComponentFactory.createViewportComponent(rootElement, slideManager);
-
-				createVariables(rootElement, slideManager);
-			}
+			createVariables(rootElement);
 		}
 	}
 
-	public Document createSlideData(SlideManager slideManager) {
+	public Document createSlideData() {
 		Document doc = SlideXmlFactory.createSlideDataXml();
 		Element root = doc.getRootElement();
 		// add fields data
@@ -430,7 +431,7 @@ public class SlideFactory {
 		return doc;
 	}
 
-	public Document createSlideOutput(SlideManager slideManager) {
+	public Document createSlideOutput() {
 		Document doc = SlideXmlFactory.createSlideOutputXml();
 		Element root = doc.getRootElement();
 		// add output value
@@ -477,8 +478,7 @@ public class SlideFactory {
 		return null;
 	}
 
-	private Variable<?> createVariable(Element element,
-			SlideManager slideManager) {
+	private Variable<?> createVariable(Element element) {
 		if (element.getName().equals(SlideXmlConstants.VARIABLE)) {
 			String id = SlideXmlUtility.getId(element);
 			String type = SlideXmlUtility.getType(element);
@@ -578,24 +578,23 @@ public class SlideFactory {
 			return null;
 	}
 
-	private void createVariables(Element rootElement, SlideManager slideManager) {
+	private void createVariables(Element rootElement) {
 		List<Element> variables = SlideXmlUtility
 				.getVariablesElements(rootElement);
 		for (Element variableElement : variables) {
 			String id = SlideXmlUtility.getId(variableElement);
 			if (!Strings.isNullOrEmpty(id)) {
-				Variable<?> variable = createVariable(variableElement,
-						slideManager);
+				Variable<?> variable = createVariable(variableElement);
 				if (variable != null)
 					slideManager.getVariables().put(variable);
 			}
 		}
 		// create and add Navigator object variable
-		slideManager.getVariables().put(createNavigatorObject(slideManager));
+		slideManager.getVariables().put(createNavigatorObject());
 
 	}
 
-	private Variable<Object> createNavigatorObject(SlideManager slideManager) {
+	private Variable<Object> createNavigatorObject() {
 		// TODO invent naming for system objects and mark navigator like a
 		// system object
 		Variable<Object> variable = new Variable<Object>(SlideXmlConstants.NAVIGATOR);

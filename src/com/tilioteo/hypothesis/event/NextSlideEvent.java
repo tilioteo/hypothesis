@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.entity.Slide;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -13,7 +14,11 @@ import com.tilioteo.hypothesis.entity.Slide;
 public class NextSlideEvent extends AbstractRunningEvent {
 
 	public NextSlideEvent(Slide slide) {
-		super(slide);
+		this(slide, null);
+	}
+
+	public NextSlideEvent(Slide slide, ErrorHandler errorHandler) {
+		super(slide, errorHandler);
 	}
 
 	@Override

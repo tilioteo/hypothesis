@@ -10,6 +10,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -239,8 +240,7 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskab
 
 	private void setClickHandler(String actionId) {
 		final ImageData data = new ImageData(this, slideManager);
-		final Command componentEvent = CommandFactory
-				.createImageClickEventCommand(data);
+		final Command componentEvent = CommandFactory.createImageClickEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
 				actionId, data);
 
@@ -248,8 +248,8 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskab
 			@Override
 			public void click(MouseEvents.ClickEvent event) {
 				data.setXY(event.getRelativeX(), event.getRelativeY());
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}
@@ -257,8 +257,7 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskab
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -282,16 +281,15 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskab
 
 	private void setLoadHandler(String actionId) {
 		final ImageData data = new ImageData(this, slideManager);
-		final Command componentEvent = CommandFactory
-				.createImageLoadEventCommand(data);
+		final Command componentEvent = CommandFactory.createImageLoadEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
 				actionId, data);
 
 		addLoadListener(new LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}

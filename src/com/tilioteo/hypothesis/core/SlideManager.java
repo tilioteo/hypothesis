@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.core;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Document;
 
 import com.tilioteo.hypothesis.common.Strings;
@@ -19,6 +20,7 @@ import com.tilioteo.hypothesis.event.ProcessEventManager;
 import com.tilioteo.hypothesis.event.ViewportEvent;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
 import com.tilioteo.hypothesis.event.ViewportEventManager;
+import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.ActionMap;
 import com.tilioteo.hypothesis.processing.ComponentMap;
 import com.tilioteo.hypothesis.processing.Expression;
@@ -41,6 +43,8 @@ import com.tilioteo.hypothesis.ui.Window;
  */
 public class SlideManager extends ListManager<Task, Slide> implements
 		HasVariables, HasActions {
+	
+	private static Logger log = Logger.getLogger(SlideManager.class);
 
 	@SuppressWarnings("serial")
 	public static class InitEvent extends ViewportEvent {
@@ -55,57 +59,46 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		}
 	}
 
+	private ViewportEventManager viewportEventManager = new ViewportEventManager();
+
 	private ProcessEventManager eventManager;
 	private SlideFactory slideFactory;
 
-	private Document slideXml = null;
-	private Slide lastSlide = null;
-	private LayoutComponent viewport = null;
+	private FieldList fields = new FieldList();
+	private ComponentMap components = new ComponentMap();
 	private WindowMap windows = new WindowMap();
-
+	private TimerMap timers = new TimerMap();
 	private VariableMap variables = new VariableMap();
 	private ActionMap actions = new ActionMap();
-	private TimerMap timers = new TimerMap();
 	private HashSet<ShortcutKey> shortcuts = new HashSet<ShortcutKey>();
 
 	private Expression inputExpression = null;
 	private Expression outputExpression = null;
 
 	private Object nextInputValue = null;
-	private ComponentMap components = new ComponentMap();
 
-	private FieldList fields = new FieldList();
+	private Document slideXml = null;
+	private Slide current = null;
+	private LayoutComponent viewport = null;
 
-	ViewportEventManager viewportEventManager = new ViewportEventManager();
 
 	public SlideManager(ProcessEventManager eventManager) {
-		slideFactory = SlideFactory.getInstatnce();
+		slideFactory = SlideFactory.getInstance(this);
 		this.eventManager = eventManager;
 	}
 
-	public void addViewportEventListener(
-			Class<? extends ViewportEvent> eventClass,
-			ViewportEventListener listener) {
+	public void addViewportEventListener(Class<? extends ViewportEvent> eventClass,	ViewportEventListener listener) {
 		viewportEventManager.addListener(eventClass, listener);
 	}
 	
-	
-
-	@Override
-	public void setListParent(Task parent) {
-		super.setListParent(parent);
-	}
-
 	private void buildSlide() {
-		Slide slide = super.current();
-		if (lastSlide != slide) {
-			if (slide != null) {
-				this.slideXml = SlideXmlFactory.buildSlideXml(slide);
-				slideFactory.createSlideControls(this);
-				setInputValue(this.nextInputValue);
-				fireEvent(new InitEvent(slide));
-			}
-			lastSlide = slide;
+		log.debug("buildSlide");
+		clearSlideRelatives();
+		if (current != null) {
+			slideXml = SlideXmlFactory.buildSlideXml(current);
+			slideFactory.createSlideControls();
+			setInputValue(nextInputValue);
+			fireEvent(new InitEvent(current));
 		}
 	}
 
@@ -114,33 +107,53 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	}
 	
 	private void clearSlideRelatives() {
-		this.slideXml = null;
-		this.viewport = null;
-		this.components.clear();
-		this.windows.clear();
-		this.fields.clear();
-		this.variables.clear();
-		this.actions.clear();
-		this.timers.clear();
-		this.shortcuts.clear();
-		this.inputExpression = null;
-		this.outputExpression = null;
-		this.lastSlide = null;
+		log.debug("clearSlideRelatives");
+		
+		slideXml = null;
+		viewport = null;
+		
+		components.clear();
+		windows.clear();
+		fields.clear();
+		variables.clear();
+		actions.clear();
+		timers.clear();
+		shortcuts.clear();
+		
+		inputExpression = null;
+		outputExpression = null;
+		
 		clearListeners();
 	}
 
 	@Override
 	public Slide current() {
-		buildSlide();
-		return super.current();
+		Slide slide = super.current();
+		if (current != slide) {
+			current = slide;
+
+			buildSlide();
+		}
+		
+		return current;
 	}
 
 	public void fireEvent(ViewportEvent event) {
 		viewportEventManager.fireEvent(event);
 	}
 
-	public final ActionMap getActions() {
+	/*public final ActionMap getActions() {
 		return actions;
+	}*/
+	
+	@Override
+	public final void setAction(String id, AbstractBaseAction action) {
+		actions.put(id, action);
+	}
+	
+	@Override
+	public final AbstractBaseAction getAction(String id) {
+		return actions.get(id);
 	}
 
 	public final ProcessEventManager getEventManager() {
@@ -160,12 +173,12 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	}
 
 	public String getSerializedData() {
-		Document doc = SlideFactory.getInstatnce().createSlideData(this);
+		Document doc = slideFactory.createSlideData();
 		return XmlUtility.writeString(doc);
 	}
 
 	public String getSerializedOutputValue() {
-		Document doc = SlideFactory.getInstatnce().createSlideOutput(this);
+		Document doc = slideFactory.createSlideOutput();
 		return XmlUtility.writeString(doc);
 	}
 
@@ -180,16 +193,15 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	public final LayoutComponent getViewport() {
 		return viewport;
 	}
-
+	
 	@Override
 	public Slide next() {
 		// save output value for next slide
 		nextInputValue = getOutputValue();
-		clearSlideRelatives();
-		Slide nextSlide = super.next();
+		Slide next = super.next();
 
-		// there is not next slide, then clear nextInputValue
-		if (nextSlide == null)
+		// there is not another next slide, then clear nextInputValue
+		if (next == null)
 			nextInputValue = null;
 
 		return current();
@@ -310,5 +322,4 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		}
 		
 	}
-
 }

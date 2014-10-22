@@ -26,7 +26,7 @@ public class PluginManager {
 		MapPlugin.class
 	};
 	
-	public static PluginManager instance = null;
+	private static PluginManager instance = null;
 	
 	public static PluginManager get() {
 		if (null == instance) {
@@ -39,6 +39,7 @@ public class PluginManager {
 	private HashSet<SlideComponentPlugin> componentPlugins = new HashSet<SlideComponentPlugin>();
 	private HashMap<String, SlideComponentPlugin> namespacePluginMap = new HashMap<String, SlideComponentPlugin>();
 	private HashMap<String, Set<String>> namespaceElementMap = new HashMap<String, Set<String>>();
+	private HashSet<Class<? extends Plugin>> registeredClasses = new HashSet<Class<? extends Plugin>>();
 	
 	protected PluginManager() {
 		
@@ -49,7 +50,7 @@ public class PluginManager {
 	 */
 	public void registerPlugins() {
 		for (Class<?> clazz : PLUGINS) {
-			if (isPluginClass(clazz)) {
+			if (isPluginClass(clazz) && !isRegisteredClass(clazz)) {
 				registerPluginClass(clazz);
 			}
 		}
@@ -61,6 +62,10 @@ public class PluginManager {
 	
 	private boolean isSlideComponentPluginClass(Class<?> clazz) {
 		return SlideComponentPlugin.class.isAssignableFrom(clazz);
+	}
+	
+	private boolean isRegisteredClass(Class<?> clazz) {
+		return registeredClasses.contains(clazz);
 	}
 	
 	private void registerPluginClass(Class<?> clazz) {
@@ -115,6 +120,7 @@ public class PluginManager {
 				ProcessEventTypes.registerPluginEvents(plugin.getEventTypes());
 				
 				componentPlugins.add(plugin);
+				registeredClasses.add(plugin.getClass());
 			} else {
 				// TODO throw exception
 			}

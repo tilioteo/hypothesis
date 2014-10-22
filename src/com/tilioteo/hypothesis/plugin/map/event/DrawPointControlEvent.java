@@ -3,9 +3,9 @@
  */
 package com.tilioteo.hypothesis.plugin.map.event;
 
-import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPointControl;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author kamil
@@ -14,14 +14,18 @@ import com.tilioteo.hypothesis.plugin.map.ui.DrawPointControl;
 @SuppressWarnings("serial")
 public abstract class DrawPointControlEvent extends AbstractComponentEvent<DrawPointControl> {
 
-	protected DrawPointControlEvent(AbstractComponentData<DrawPointControl> componentData) {
-		super(componentData);
+	protected DrawPointControlEvent(DrawPointControlData componentData, ErrorHandler errorHandler) {
+		super(componentData, errorHandler);
 	}
 
 	public static class DrawPoint extends DrawPointControlEvent {
 		
 		public DrawPoint(DrawPointControlData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public DrawPoint(DrawPointControlData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override

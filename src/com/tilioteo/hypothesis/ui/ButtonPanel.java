@@ -10,6 +10,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -90,8 +91,7 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 
 	private void setClickHandler(String actionId) {
 		final ButtonPanelData data = new ButtonPanelData(this, slideManager);
-		final Command componentEvent = CommandFactory
-				.createButtonPanelClickEventCommand(data);
+		final Command componentEvent = CommandFactory.createButtonPanelClickEventCommand(data);
 		final Command action = CommandFactory.createActionCommand(slideManager,
 				actionId, data);
 
@@ -99,8 +99,8 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				data.setButton((Button) event.getSource());
-				componentEvent.execute();
-				action.execute();
+				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+				CommandScheduler.Scheduler.scheduleCommand(action);
 			}
 		});
 	}
@@ -108,8 +108,7 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 

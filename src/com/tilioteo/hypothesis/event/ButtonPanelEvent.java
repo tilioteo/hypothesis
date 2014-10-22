@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.ui.ButtonPanel;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -16,7 +17,11 @@ public abstract class ButtonPanelEvent extends
 	public static class Click extends ButtonPanelEvent {
 
 		public Click(ButtonPanelData data) {
-			super(data);
+			this(data, null);
+		}
+
+		public Click(ButtonPanelData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
 		}
 
 		@Override
@@ -25,7 +30,7 @@ public abstract class ButtonPanelEvent extends
 		}
 	}
 
-	protected ButtonPanelEvent(ButtonPanelData data) {
-		super(data);
+	protected ButtonPanelEvent(ButtonPanelData data, ErrorHandler errorHandler) {
+		super(data, errorHandler);
 	}
 }

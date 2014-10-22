@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import com.vaadin.server.ErrorHandler;
 import com.vaadin.ui.AbstractComponent;
 
 /**
@@ -13,8 +14,8 @@ import com.vaadin.ui.AbstractComponent;
 public abstract class AbstractComponentEvent<T extends AbstractComponent>
 		extends AbstractRunningEvent implements HasComponentData<T> {
 
-	protected AbstractComponentEvent(AbstractComponentData<T> componentData) {
-		super(componentData);
+	protected AbstractComponentEvent(AbstractComponentData<T> componentData, ErrorHandler errorHandler) {
+		super(componentData, errorHandler);
 	}
 
 	@SuppressWarnings("unchecked")

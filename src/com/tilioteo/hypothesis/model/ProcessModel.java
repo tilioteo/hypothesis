@@ -73,4 +73,8 @@ public class ProcessModel {
 	public void processSlideFollowing(Slide slide, Direction direction) {
 		processManager.processSlideFollowing(slide, direction);
 	}
+	
+	public void purgeFactories() {
+		processManager.purgeFactories();
+	}
 }

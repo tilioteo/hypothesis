@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.entity.Slide;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -17,7 +18,11 @@ public class FinishSlideEvent extends AbstractRunningEvent {
 	private Direction direction;
 	
 	public FinishSlideEvent(Slide slide, Direction direction) {
-		super(slide);
+		this(slide, direction, null);
+	}
+
+	public FinishSlideEvent(Slide slide, Direction direction, ErrorHandler errorHandler) {
+		super(slide, errorHandler);
 		this.direction = direction;
 	}
 
