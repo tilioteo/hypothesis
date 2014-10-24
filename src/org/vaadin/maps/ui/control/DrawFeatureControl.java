@@ -135,5 +135,9 @@ public abstract class DrawFeatureControl<H extends FeatureHandler> extends Abstr
 			handlerInstance.removeGeometryListener(listener);
 		}
 	}
+	
+	public H getHandler() {
+		return handlerInstance;
+	}
 
 }

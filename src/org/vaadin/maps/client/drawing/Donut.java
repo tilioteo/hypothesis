@@ -45,7 +45,7 @@ public class Donut extends Path {
 		a21 = new Arc(false, r2, r2, 0, false, true, x, b2);
 		a22 = new Arc(false, r2, r2, 0, false, true, x, t2);
 		
-		setFillEventOdd();
+		setFillEvenOdd();
 		addStep(mt1);
 		addStep(a11);
 		addStep(a12);

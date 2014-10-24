@@ -40,7 +40,8 @@ public class MapPlugin implements SlideComponentPlugin {
 			MapEventTypes.LayerClick,
 			MapEventTypes.FeatureClick,
 			MapEventTypes.DrawPoint,
-			MapEventTypes.DrawPath
+			MapEventTypes.DrawPath,
+			MapEventTypes.DrawPolygon
 			);
 	
 	private Map<String, Set<ValidParentGroup>> elementParentGroups = new HashMap<String, Set<ValidParentGroup>>();

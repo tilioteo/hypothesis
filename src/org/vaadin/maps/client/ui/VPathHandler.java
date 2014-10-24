@@ -12,6 +12,7 @@ import org.vaadin.maps.client.drawing.Utils;
 import org.vaadin.maps.client.geometry.LineString;
 import org.vaadin.maps.shared.ui.Style;
 
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 
@@ -20,8 +21,15 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
  *
  */
 public class VPathHandler extends VPointHandler {
+	
+	public enum FinishStrategy {
+		AltClick,
+		DoubleClick
+	}
 
 	public static final String CLASSNAME = "v-pathhandler";
+	
+	protected static final int DOUBLE_CLICK_THRESHOLD = 400; // milliseconds
 	
 	/**
 	 * Representation of line start point, 
@@ -37,6 +45,9 @@ public class VPathHandler extends VPointHandler {
 	
 	protected Path line = null;
 	protected Style lineStyle = Style.DEFAULT_DRAW_LINE;
+	
+	protected FinishStrategy strategy = FinishStrategy.AltClick;
+	protected Duration clickDuration = null;
 	
 	/**
 	 * line actually drawn
@@ -60,7 +71,6 @@ public class VPathHandler extends VPointHandler {
 		}
 	}
 
-
 	private void removeStartPoint() {
 		container.remove(startPoint);
 		startPoint = null;
@@ -68,6 +78,7 @@ public class VPathHandler extends VPointHandler {
 	
 	private void addLine(int x, int y) {
 		line = new Path(x, y);
+		line.setFillAllowed(false);
 		line.lineTo(x, y);
 		updateLineStyle();
 		container.add(line);
@@ -91,7 +102,7 @@ public class VPathHandler extends VPointHandler {
 		vertices.add(vertex);
 		container.add(vertex);
 	}
-
+	
 	private void updateDrawVertexStyle(Circle vertex) {
 		if (vertex != null && vertexStyle != null) {
 			Utils.updateDrawingStyle(vertex, vertexStyle);
@@ -109,6 +120,17 @@ public class VPathHandler extends VPointHandler {
 			Circle vertex = vertices.pop();
 			container.remove(vertex);
 		}
+	}
+
+	protected void removeLastVertex() {
+		if (!vertices.isEmpty()) {
+			Circle vertex = vertices.pop();
+			container.remove(vertex);
+		}
+	}
+
+	protected void removeLastLineStringVertex() {
+		lineString.getCoordinateSequence().removeLast();
 	}
 
 	protected void addLineSegment(int x, int y) {
@@ -139,9 +161,9 @@ public class VPathHandler extends VPointHandler {
 		lineString = new LineString(createWorldCoordinate(xy));
 	}
 	
-	private void finishLineString(int[] xy) {
+	/*private void finishLineString(int[] xy) {
 		lineString.getCoordinateSequence().add(createWorldCoordinate(xy));
-	}
+	}*/
 	
 	protected void closeLineString() {
 		lineString.close();
@@ -204,9 +226,26 @@ public class VPathHandler extends VPointHandler {
 		if (!active) {
 			return;
 		}
-
+		
 		boolean finish = false;
+		boolean isDoubleClick = false;
+		
+		if (null == clickDuration) {
+			clickDuration = new Duration();
+			
+		} else {
+			if (clickDuration.elapsedMillis() <= DOUBLE_CLICK_THRESHOLD) {
+				isDoubleClick = true;
+				clickDuration = null;
+			} else {
+				clickDuration = new Duration();
+			}
+		}
 
+		if (isDoubleClick && !FinishStrategy.DoubleClick.equals(strategy)) {
+			return;
+		}
+		
 		int[] xy = getMouseEventXY(event);
 
 		// first click
@@ -216,22 +255,27 @@ public class VPathHandler extends VPointHandler {
 			prepareDrawing(xy[0], xy[1]);
 			prepareLineString(xy);
 		} else {
-			if (event.isAltKeyDown()) {
-				// finish drawing if alt key has been pressed
-				finish = true;
-				// append last vertex
-				finishLineString(xy);
-				
-			} else if (event.isShiftKeyDown()) {
+			if (event.isShiftKeyDown() && (FinishStrategy.AltClick.equals(strategy) || isDoubleClick)) {
 				// finish drawing with closing line if shift key has been pressed
 				// and the click is in start point's circle
-				if (isWithinCircle(startPoint.getX(), startPoint.getY(), startPoint.getRadius(),
-						xy[0], xy[1])) {
+				if (isWithinCircle(startPoint.getX(), startPoint.getY(), startPoint.getRadius(), xy[0], xy[1])) {
 					finish = true;
-					
+					if (isDoubleClick) {
+						// remove last vertex from everywhere
+						removeLastLineStringVertex();
+						removeLastVertex();
+					}
 					// close line
 					closeLineString();
 				}
+			} else if ((FinishStrategy.AltClick.equals(strategy) && event.isAltKeyDown())) {
+				// finish drawing when strategy conditions pass
+				finish = true;
+				// append last vertex
+				addLineStringVertex(xy);
+
+			} else if (FinishStrategy.DoubleClick.equals(strategy) && isDoubleClick) {
+				finish = true;
 			}
 			
 			if (finish) {
@@ -267,4 +311,13 @@ public class VPathHandler extends VPointHandler {
 		updateLineSegment(xy[0], xy[1]);
 	}
 
+	public void setStrategyFromCode(int code) {
+		for (FinishStrategy finishStrategy : FinishStrategy.values()) {
+			if (code == finishStrategy.ordinal()) {
+				strategy = finishStrategy;
+				return;
+			}
+		}
+		strategy = FinishStrategy.AltClick;
+	}
 }

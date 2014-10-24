@@ -64,6 +64,12 @@ public class VectorFeatureConnector extends AbstractComponentConnector {
 	public void onStateChanged(StateChangeEvent stateChangeEvent) {
 		super.onStateChanged(stateChangeEvent);
 		
+		if (stateChangeEvent.hasPropertyChanged("style")) {
+			getWidget().setStyle(MapUtility.getStyleFromMap(getState().style, Style.DEFAULT));
+		}
+		if (stateChangeEvent.hasPropertyChanged("hoverStyle")) {
+			getWidget().setHoverStyle(MapUtility.getStyleFromMap(getState().hoverStyle, null));
+		}
 		if (stateChangeEvent.hasPropertyChanged("hidden")) {
 			getWidget().setHidden(getState().hidden);
 		}
@@ -77,12 +83,6 @@ public class VectorFeatureConnector extends AbstractComponentConnector {
 		if (stateChangeEvent.hasPropertyChanged("centroidX") ||
 				stateChangeEvent.hasPropertyChanged("centroidY")) {
 			getWidget().setCentroid(getState().centroidX, getState().centroidY);
-		}
-		if (stateChangeEvent.hasPropertyChanged("style")) {
-			getWidget().setStyle(MapUtility.getStyleFromMap(getState().style, Style.DEFAULT));
-		}
-		if (stateChangeEvent.hasPropertyChanged("hoverStyle")) {
-			getWidget().setHoverStyle(MapUtility.getStyleFromMap(getState().hoverStyle, null));
 		}
 		if (stateChangeEvent.hasPropertyChanged("offsetX") ||
 				stateChangeEvent.hasPropertyChanged("offsetY")) {

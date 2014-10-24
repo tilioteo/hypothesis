@@ -79,6 +79,9 @@ public class Path extends Shape implements Cloneable {
 	 * Defines if deffered redraw was issued.
 	 */
 	private boolean deferredDrawPending = false;
+	
+	private boolean fillAllowed = true;
+	private double lastFillOpacity = 1.0;
 
 	protected final List<PathStep> steps;
 
@@ -386,7 +389,7 @@ public class Path extends Shape implements Cloneable {
 	}
 
 	/**
-	 * Draws a cubic BŽzier curve.
+	 * Draws a cubic Bï¿½zier curve.
 	 * 
 	 * @param x1
 	 * @param y1
@@ -424,8 +427,8 @@ public class Path extends Shape implements Cloneable {
 		getImpl().drawPath(getElement(), steps);
 	}
 	
-	public void setFillEventOdd() {
-		getImpl().setPathFillEventOdd(getElement());
+	public void setFillEvenOdd() {
+		getImpl().setPathFillEvenOdd(getElement());
 	}
 
 	private void drawPathDeferred() {
@@ -456,4 +459,31 @@ public class Path extends Shape implements Cloneable {
 			drawPath();
 		}
 	}
+
+	public boolean isFillAllowed() {
+		return fillAllowed;
+	}
+
+	public void setFillAllowed(boolean fillAllowed) {
+		if (fillAllowed != this.fillAllowed) {
+			this.fillAllowed = fillAllowed;
+			if (!fillAllowed) {
+				super.setFillOpacity(0.0);
+			} else {
+				super.setFillOpacity(lastFillOpacity);
+			}
+		}
+	}
+
+	@Override
+	public void setFillOpacity(double opacity) {
+		lastFillOpacity = opacity;
+		if (fillAllowed) {
+			super.setFillOpacity(opacity);
+		}
+	}
+	
+	
+	
+	
 }

@@ -11,8 +11,12 @@ import org.vaadin.gwtgraphics.client.Shape;
 import org.vaadin.gwtgraphics.client.Strokeable;
 import org.vaadin.gwtgraphics.client.shape.Circle;
 import org.vaadin.gwtgraphics.client.shape.Path;
+import org.vaadin.gwtgraphics.client.shape.Rectangle;
 import org.vaadin.gwtgraphics.client.shape.Text;
+import org.vaadin.gwtgraphics.client.shape.Path.RedrawType;
 import org.vaadin.gwtgraphics.client.shape.path.Arc;
+import org.vaadin.gwtgraphics.client.shape.path.LineTo;
+import org.vaadin.gwtgraphics.client.shape.path.MoveTo;
 import org.vaadin.maps.client.geometry.Coordinate;
 import org.vaadin.maps.client.geometry.Geometry;
 import org.vaadin.maps.client.geometry.GeometryCollection;
@@ -34,6 +38,18 @@ import org.vaadin.maps.shared.ui.Style;
  */
 public class Utils {
 	
+	public enum PointShape {
+		Circle,
+		Square,
+		Cross,
+		XCross,
+		Asterisk,
+		TriangleUp,
+		TriangleDown,
+		Diamond//,
+		//Star
+	}
+	
 	public static Geometry hexWKBToGeometry(String wkb) throws ParseException {
 		if ( wkb != null) {
 			WKBReader wkbReader = new WKBReader();
@@ -54,11 +70,143 @@ public class Utils {
 		return null;
 	}
 
-	public static Circle drawPoint(Point point) {
+	private static Circle drawPoint(Point point) {
 		Circle circle = new Circle(Math.round((float) point.getX()),
 				Math.round((float) point.getY()), 5);   // TODO radius from
 		circle.setFillOpacity(0.3);						// feature styling
 		return circle;
+	}
+
+	public static Shape drawPoint(Point point, PointShape pointShape, double scale) {
+		switch (pointShape) {
+		case Circle:
+			return drawPoint(point);
+		case Square:
+			return drawSquare(point, scale);
+		case Cross:
+			return drawCross(point, scale);
+		case XCross:
+			return drawXCross(point, scale);
+		case Asterisk:
+			return drawAsterisk(point, scale);
+		case TriangleUp:
+			return drawTriangle(point, false, scale);
+		case TriangleDown:
+			return drawTriangle(point, true, scale);
+		case Diamond:
+			return drawDiamond(point, scale);
+
+		default:
+			break;
+		}
+		return null;
+	}
+
+	private static Shape drawDiamond(Point point, double scale) {
+		int d = Math.round((float)(1 * scale));
+		if (d < 1) {
+			d = 1;
+		}
+		
+		Path path = new Path(Math.round((float)point.getX())-d, Math.round((float)point.getY()));
+		path.setRedrawingType(RedrawType.MANUAL);
+		path.addStep(new LineTo(true, d, d));
+		path.addStep(new LineTo(true, d, -d));
+		path.addStep(new LineTo(true, -d, -d));
+		path.addStep(new LineTo(true, -d, d));
+		path.close();
+		path.issueRedraw(true);
+		return path;
+	}
+
+	private static Shape drawTriangle(Point point, boolean down, double scale) {
+		int a = Math.round((float)(1 * scale));
+		if (a < 1) {
+			a = 1;
+		}
+		int b = Math.round((float)(2 * scale));
+		if (b < 2) {
+			b = 2;
+		}
+		int c = Math.round((float)((a+1)*Math.sqrt(3))) - 1;
+		if (c < 2) {
+			c = 2;
+		}
+		
+		Path path = new Path(Math.round((float)point.getX()), Math.round((float)point.getY())+ (down ? b : -b));
+		path.setRedrawingType(RedrawType.MANUAL);
+		path.addStep(new LineTo(true, c, down ? -a-b: a+b));
+		path.addStep(new LineTo(true, -2*c, 0));
+		path.addStep(new LineTo(true, c, down ? a+b: -a-b));
+		path.close();
+		path.issueRedraw(true);
+		return path;
+	}
+
+	private static Shape drawAsterisk(Point point, double scale) {
+		int d = Math.round((float)(1 * scale));
+		if (d < 1) {
+			d = 1;
+		}
+		int e = Math.round((float)Math.sqrt((2*Math.pow(1*scale + 1, 2))))-1;
+		if (e < 1) {
+			e = 1;
+		}
+		
+		Path path = new Path(Math.round((float)point.getX())-d, Math.round((float)point.getY())-d);
+		path.setFillAllowed(false);
+		path.setRedrawingType(RedrawType.MANUAL);
+		path.addStep(new LineTo(true, 2*d, 2*d));
+		path.addStep(new MoveTo(true, -2*d, 0));
+		path.addStep(new LineTo(true, 2*d, -2*d));
+		
+		path.addStep(new MoveTo(false, Math.round((float)point.getX())-e, Math.round((float)point.getY())));
+		path.addStep(new LineTo(true, 2*e, 0));
+		path.addStep(new MoveTo(true, -e, e));
+		path.addStep(new LineTo(true, 0, -2*e));
+
+		path.issueRedraw(true);
+		return path;
+	}
+
+	private static Shape drawXCross(Point point, double scale) {
+		int d = Math.round((float)(1 * scale));
+		if (d < 1) {
+			d = 1;
+		}
+		
+		Path path = new Path(Math.round((float)point.getX())-d, Math.round((float)point.getY())-d);
+		path.setFillAllowed(false);
+		path.setRedrawingType(RedrawType.MANUAL);
+		path.addStep(new LineTo(true, 2*d, 2*d));
+		path.addStep(new MoveTo(true, -2*d, 0));
+		path.addStep(new LineTo(true, 2*d, -2*d));
+		path.issueRedraw(true);
+		return path;
+	}
+
+	private static Shape drawCross(Point point, double scale) {
+		int d = Math.round((float)(1 * scale));
+		if (d < 1) {
+			d = 1;
+		}
+		
+		Path path = new Path(Math.round((float)point.getX())-d, Math.round((float)point.getY()));
+		path.setFillAllowed(false);
+		path.setRedrawingType(RedrawType.MANUAL);
+		path.addStep(new LineTo(true, 2*d, 0));
+		path.addStep(new MoveTo(true, -d, d));
+		path.addStep(new LineTo(true, 0, -2*d));
+		path.issueRedraw(true);
+		return path;
+	}
+
+	private static Rectangle drawSquare(Point point, double scale) {
+		int d = Math.round((float)(1 * scale));
+		if (d < 1) {
+			d = 1;
+		}
+		return new Rectangle(Math.round((float)point.getX())-d, Math.round((float)point.getY())-d, 2*d+1, 2*d+1);
 	}
 
 	public static Path drawLineString(LineString lineString) {
@@ -69,9 +217,8 @@ public class Utils {
 				path.lineTo(Math.round((float) coordinate.x),
 						Math.round((float) coordinate.y));
 			} else {
-				path = new Path(Math.round((float) coordinate.x),
-						Math.round((float) coordinate.y));
-				path.setFillOpacity(0);
+				path = new Path(Math.round((float) coordinate.x), Math.round((float) coordinate.y));
+				path.setFillAllowed(false);
 			}
 		}
 
@@ -83,9 +230,10 @@ public class Utils {
 
 		if (linearRing.getNumPoints() > 3) {
 			path = drawLineString(linearRing);
+			path.setFillAllowed(true);
 
 			if (filled) {
-				path.setFillEventOdd();
+				path.setFillEvenOdd();
 			}
 
 			path.close();
@@ -138,12 +286,12 @@ public class Utils {
 		}
 	}
 
-	public static Group drawMultiPoint(MultiPoint multiPoint) {
+	public static Group drawMultiPoint(MultiPoint multiPoint, PointShape pointShape, double scale) {
 		Group group = new Group();
 
 		for (Iterator<Geometry> iterator = multiPoint.iterator(); iterator.hasNext();) {
 			Point point = (Point) iterator.next();
-			group.add(drawPoint(point));
+			group.add(drawPoint(point, pointShape, scale));
 		}
 
 		return group;
@@ -171,28 +319,25 @@ public class Utils {
 		return group;
 	}
 
-	public static Group drawGeometryCollection(
-			GeometryCollection geometryCollection) {
+	public static Group drawGeometryCollection(GeometryCollection geometryCollection, PointShape pointShape, double scale) {
 		Group group = new Group();
-
-		for (Geometry geometry = (Geometry) geometryCollection.iterator(); geometryCollection
-				.iterator().hasNext();) {
-
-			group.add(drawGeometry(geometry));
+		for (Iterator<Geometry> iterator = geometryCollection.iterator(); iterator.hasNext();) {
+			Geometry geometry = iterator.next();
+			group.add(drawGeometry(geometry, pointShape, scale));
 		}
 
 		return group;
 	}
 
-	public static AbstractDrawing drawGeometry(Geometry geometry) {
+	public static AbstractDrawing drawGeometry(Geometry geometry, PointShape pointShape, double scale) {
 		if (geometry instanceof MultiPolygon) {
 			return drawMultiPolygon((MultiPolygon) geometry);
 		} else if (geometry instanceof MultiLineString) {
 			return drawMultiLineString((MultiLineString) geometry);
 		} else if (geometry instanceof MultiPoint) {
-			return drawMultiPoint((MultiPoint) geometry);
+			return drawMultiPoint((MultiPoint) geometry, pointShape, scale);
 		} else if (geometry instanceof GeometryCollection) {
-			return drawGeometryCollection((GeometryCollection) geometry);
+			return drawGeometryCollection((GeometryCollection) geometry, pointShape, scale);
 		} else if (geometry instanceof Polygon) {
 			return drawPolygon((Polygon) geometry);
 		} else if (geometry instanceof LinearRing) {
@@ -200,7 +345,7 @@ public class Utils {
 		} else if (geometry instanceof LineString) {
 			return drawLineString((LineString) geometry);
 		} else if (geometry instanceof Point) {
-			return drawPoint((Point) geometry);
+			return drawPoint((Point) geometry, pointShape, scale);
 		}
 
 		return null;
@@ -208,7 +353,7 @@ public class Utils {
 	
 	public static Path drawDonut(double x, double y, double r1, double r2) {
 		Path path = new Path(Math.round((float)x), Math.round((float)(y-r1)));
-		path.setFillEventOdd();
+		path.setFillEvenOdd();
 		path.addStep(new Arc(false, Math.round((float)r1), Math.round((float)r1), 0, false, true, Math.round((float)x), Math.round((float)(y+r1))));
 		path.addStep(new Arc(false, Math.round((float)r1), Math.round((float)r1), 0, false, true, Math.round((float)x), Math.round((float)(y-r1))));
 		path.close();

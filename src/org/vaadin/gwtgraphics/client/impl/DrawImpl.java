@@ -179,5 +179,5 @@ public abstract class DrawImpl {
 		return measurement;
 	}
 
-	public abstract void setPathFillEventOdd(Element element);
+	public abstract void setPathFillEvenOdd(Element element);
 }

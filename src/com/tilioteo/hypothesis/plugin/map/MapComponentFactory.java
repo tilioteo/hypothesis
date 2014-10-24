@@ -17,6 +17,8 @@ import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlEvent;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlEvent;
+import com.tilioteo.hypothesis.plugin.map.event.DrawPolygonControlData;
+import com.tilioteo.hypothesis.plugin.map.event.DrawPolygonControlEvent;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerEvent;
 import com.tilioteo.hypothesis.plugin.map.event.ImageSequenceLayerData;
@@ -134,6 +136,12 @@ public class MapComponentFactory {
 
 	public static Command createDrawPathControlEventCommand(DrawPathControlData data) {
 		final DrawPathControlEvent event = new DrawPathControlEvent.DrawPath(data);
+
+		return CommandFactory.createComponentEventCommand(event);
+	}
+
+	public static Command createDrawPolygonControlEventCommand(DrawPolygonControlData data) {
+		final DrawPolygonControlEvent event = new DrawPolygonControlEvent.DrawPolygon(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}

@@ -695,7 +695,7 @@ public class VMLImpl extends DrawImpl {
 	}
 
 	@Override
-	public void setPathFillEventOdd(Element element) {
+	public void setPathFillEvenOdd(Element element) {
 		// VML implementation does nothing
 	}
 }

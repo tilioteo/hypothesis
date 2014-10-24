@@ -63,6 +63,8 @@ public class Style implements Serializable {
 		textStrokeWidth = 0;
 		textOpacity = 1.0;
 		textFillOpacity = 1.0;
+		pointShape = "Circle";
+		pointShapeScale = 5.0;
 	}
 	
 	public double opacity;
@@ -79,5 +81,7 @@ public class Style implements Serializable {
 	public int textStrokeWidth;
 	public double textOpacity;
 	public double textFillOpacity;
+	public String pointShape;
+	public double pointShapeScale;
 	
 }

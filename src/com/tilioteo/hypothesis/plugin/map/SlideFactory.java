@@ -9,6 +9,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlData;
+import com.tilioteo.hypothesis.plugin.map.event.DrawPolygonControlData;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.ImageSequenceLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureData;
@@ -88,6 +89,15 @@ public class SlideFactory {
 	public static void writeDrawPathControlData(Element sourceElement, DrawPathControlData data) {
 		String id = data.getComponentId();
 		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.DRAW_PATH);
+		if (id != null)
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		Element subElement = sourceElement.addElement(SlideXmlConstants.GEOMETRY);
+		subElement.addText(data.getGeometry().toText());
+	}
+	
+	public static void writeDrawPolygonControlData(Element sourceElement, DrawPolygonControlData data) {
+		String id = data.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.DRAW_POLYGON);
 		if (id != null)
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
 		Element subElement = sourceElement.addElement(SlideXmlConstants.GEOMETRY);

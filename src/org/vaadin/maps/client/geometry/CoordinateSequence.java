@@ -89,6 +89,12 @@ public class CoordinateSequence implements Iterable<Coordinate> {
 	public void add(Coordinate coordinate) {
 		coordinates.add(coordinate);
 	}
+	
+	public void removeLast() {
+		if (coordinates.size() > 0) {
+			coordinates.remove(coordinates.size()-1);
+		}
+	}
 
 	/**
 	 * Returns (possibly a copy of) the i'th coordinate in this sequence.

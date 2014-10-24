@@ -6,6 +6,7 @@ package org.vaadin.maps.ui.control;
 import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.control.DrawPathControlState;
 import org.vaadin.maps.ui.handler.PathHandler;
+import org.vaadin.maps.ui.handler.PathHandler.FinishStrategy;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
@@ -17,9 +18,9 @@ import com.tilioteo.hypothesis.plugin.map.MapUtility;
 @SuppressWarnings("serial")
 public class DrawPathControl extends DrawFeatureControl<PathHandler> {
 	
-	protected Style startPointStyle = null;
-	protected Style lineStyle = null;
-	protected Style vertexStyle = null;
+	private Style startPointStyle = null;
+	private Style lineStyle = null;
+	private Style vertexStyle = null;
 
 	public DrawPathControl(VectorFeatureLayer layer) {
 		super(layer);
@@ -63,4 +64,13 @@ public class DrawPathControl extends DrawFeatureControl<PathHandler> {
 		markAsDirty();
 	}
 	
+	public FinishStrategy getStrategy() {
+		return getHandler() != null ? getHandler().getStrategy() : null;
+	}
+	
+	public void setStrategy(FinishStrategy finishStrategy) {
+		if (getHandler() != null) {
+			getHandler().setStrategy(finishStrategy);
+		}
+	}
 }

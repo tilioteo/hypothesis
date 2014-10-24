@@ -20,6 +20,7 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
+import com.tilioteo.hypothesis.plugin.map.ui.DrawPolygonControl;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageSequenceLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
 import com.tilioteo.hypothesis.ui.SlideComponent;
@@ -97,6 +98,14 @@ public class MapUtility {
 		setVertexStyle(control, properties);
 	}
 
+	public static void setDrawPolygonControlProperties(DrawPolygonControl control, Element element,
+			StringMap properties, SlideManager slideManager) {
+		
+		setStartPointStyle(control, properties);
+		setLineStyle(control, properties);
+		setVertexStyle(control, properties);
+	}
+
 	private static void setCursorStyle(DrawFeatureControl<?> control, StringMap properties) {
 		String styleId = properties.get(SlideXmlConstants.CURSOR_STYLE);
 		if (styleId != null && map != null) {
@@ -121,6 +130,30 @@ public class MapUtility {
 		control.setStartPointStyle(Style.DEFAULT_DRAW_START_POINT);
 	}
 	
+	private static void setStartPointStyle(DrawPolygonControl control, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.START_POINT_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setStartPointStyle(style);
+				return;
+			}
+		}
+		control.setStartPointStyle(Style.DEFAULT_DRAW_START_POINT);
+	}
+	
+	private static void setVertexStyle(DrawPolygonControl control, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.VERTEX_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setVertexStyle(style);
+				return;
+			}
+		}
+		control.setVertexStyle(Style.DEFAULT_DRAW_VERTEX);
+	}
+	
 	private static void setVertexStyle(DrawPathControl control, StringMap properties) {
 		String styleId = properties.get(SlideXmlConstants.VERTEX_STYLE);
 		if (styleId != null && map != null) {
@@ -134,6 +167,18 @@ public class MapUtility {
 	}
 	
 	private static void setLineStyle(DrawPathControl control, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.LINE_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setLineStyle(style);
+				return;
+			}
+		}
+		control.setLineStyle(Style.DEFAULT_DRAW_LINE);
+	}
+	
+	private static void setLineStyle(DrawPolygonControl control, StringMap properties) {
 		String styleId = properties.get(SlideXmlConstants.LINE_STYLE);
 		if (styleId != null && map != null) {
 			Style style = map.getStyle(styleId);

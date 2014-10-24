@@ -557,7 +557,7 @@ public class SVGImpl extends DrawImpl {
 	}
 
 	@Override
-	public void setPathFillEventOdd(Element element) {
+	public void setPathFillEvenOdd(Element element) {
 		element.setAttribute("fill-rule", "evenodd");
 	}
 }

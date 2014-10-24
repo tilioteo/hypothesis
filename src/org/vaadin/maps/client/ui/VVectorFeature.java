@@ -8,6 +8,7 @@ import org.vaadin.gwtgraphics.client.AbstractDrawingContainer;
 import org.vaadin.gwtgraphics.client.Group;
 import org.vaadin.gwtgraphics.client.shape.Text;
 import org.vaadin.maps.client.drawing.Utils;
+import org.vaadin.maps.client.drawing.Utils.PointShape;
 import org.vaadin.maps.client.geometry.Coordinate;
 import org.vaadin.maps.client.geometry.Geometry;
 import org.vaadin.maps.shared.ui.Style;
@@ -36,6 +37,9 @@ public class VVectorFeature extends AbstractDrawingContainer {
 	private Coordinate centroid = null;
 	private Coordinate textOffset = new Coordinate();
 	private boolean hidden = false;
+	
+	private PointShape pointShape = PointShape.Circle;
+	private double pointShapeScale = 1.0;
 	
 	private HandlerRegistration mouseOverHandler = null;
 	private HandlerRegistration mouseOutHandler = null;
@@ -83,10 +87,28 @@ public class VVectorFeature extends AbstractDrawingContainer {
 	
 	public void setStyle(Style style) {
 		this.style = style;
+		
+		setPointShape();
+		
 		updateDrawingStyle();
 		updateTextStyle();
 	}
 	
+	private void setPointShape() {
+		if (style != null) {
+			try {
+				pointShape = PointShape.valueOf(style.pointShape);
+			} catch (Exception e) {
+				pointShape = PointShape.Circle;
+			}
+		
+			pointShapeScale = style.pointShapeScale;
+		} else {
+			pointShape = PointShape.Circle;
+			pointShapeScale = 1.0;
+		}
+	}
+
 	public Style getHoverStyle() {
 		return hoverStyle;
 	}
@@ -177,7 +199,7 @@ public class VVectorFeature extends AbstractDrawingContainer {
 	}
 
 	private void drawGeometry(Geometry geometry) {
-		drawing = Utils.drawGeometry(geometry);
+		drawing = Utils.drawGeometry(geometry, pointShape, pointShapeScale);
 		updateDrawingStyle();
 		updateHoverStyle();
 		add(drawing);
