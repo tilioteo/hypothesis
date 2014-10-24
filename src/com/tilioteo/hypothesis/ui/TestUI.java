@@ -5,9 +5,16 @@ package com.tilioteo.hypothesis.ui;
 
 import javax.servlet.annotation.WebServlet;
 
+import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.ui.LayerLayout;
+import org.vaadin.maps.ui.control.DrawPathControl;
+import org.vaadin.maps.ui.control.DrawPointControl;
+import org.vaadin.maps.ui.control.DrawPolygonControl;
 import org.vaadin.maps.ui.feature.VectorFeature;
 import org.vaadin.maps.ui.featurecontainer.VectorFeatureContainer;
+import org.vaadin.maps.ui.handler.PathHandler.FinishStrategy;
+import org.vaadin.maps.ui.layer.ControlLayer;
+import org.vaadin.maps.ui.layer.ImageLayer;
 import org.vaadin.maps.ui.layer.ImageSequenceLayer;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 import org.vaadin.maps.ui.tile.ImageSequenceTile;
@@ -61,6 +68,7 @@ public class TestUI extends HUI {
 		verticalLayout.setSizeFull();
 		setContent(verticalLayout);
 		
+		/*
 		final Image image = new Image();
 		image.setSource(new ExternalResource("http://hypothesis.cz/gallery/albums/userpics/10001/02a.png"));
 		image.setWidth("80%");
@@ -112,15 +120,15 @@ public class TestUI extends HUI {
 		video.mask();
 		*/
 		
-/*		final Map map = new Map();
+		final Map map = new Map();
 		verticalLayout.addComponent(map);
 		map.setWidth("80%");
 		map.setHeight("80%");
-		map.mask();
-*/		
-		/*
+		//map.mask();
+		
+		
 		ImageLayer imageLayer = new ImageLayer("http://www.imagehosting.cz/images/mapaukol7.jpg");
-		imageLayer.addClickListener(new MouseEvents.ClickListener() {
+		/*imageLayer.addClickListener(new MouseEvents.ClickListener() {
 			@Override
 			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
 				Notification.show("Image tile clicked");
@@ -132,8 +140,9 @@ public class TestUI extends HUI {
 				Notification.show("Image tile loaded");
 			}
 		});
-		layerLayout.addComponent(imageLayer);
-		*/
+		layerLayout.addComponent(imageLayer);*/
+		map.addComponent(imageLayer);
+		
 		
 /*		final ImageSequenceLayer imageSequenceLayer = new ImageSequenceLayer();
 		imageSequenceLayer.addTileUrl("http://hypothesis.cz/gallery/albums/userpics/10001/02a.png");
@@ -162,18 +171,20 @@ public class TestUI extends HUI {
 		});
 		
 		map.addComponent(imageSequenceLayer);
+		*/
 		
 		VectorFeatureLayer vectorLayer = new VectorFeatureLayer();
-		vectorLayer.addClickListener(new VectorFeatureContainer.ClickListener() {
+		/*vectorLayer.addClickListener(new VectorFeatureContainer.ClickListener() {
 			@Override
 			public void click(VectorFeatureContainer.ClickEvent event) {
 				Notification.show("Vector layer container clicked");
 				int index = imageSequenceLayer.getTileIndex();
 				imageSequenceLayer.setTileIndex(++index);
 			}
-		});
+		});*/
 		map.addComponent(vectorLayer);
 
+		/*
 		WKTReader wktReader = new WKTReader();
 		try {
 		 	Geometry geometry = wktReader.read("POLYGON ((50 50,200 50,200 200,50 200,50 50),(100 100,150 100,150 150,100 150,100 100))");
@@ -239,15 +250,27 @@ public class TestUI extends HUI {
 		});
 		addShortcutKey(key4);
 */
-		/*
-		ControlLayer controlLayer = new ControlLayer();
-		layerLayout.addComponent(controlLayer);
 		
-		DrawPathControl drawControl = new DrawPathControl(vectorLayer);
-		//DrawPointControl drawControl = new DrawPointControl(vectorLayer);
+		ControlLayer controlLayer = new ControlLayer();
+		map.addComponent(controlLayer);
+		
+		Style style = new Style();
+		style.pointShape = "TriangleUp";
+		style.fillColor = "red";
+		style.fillOpacity = 0.3;
+		style.strokeColor = "red";
+		style.strokeWidth = 2;
+		
+		/*DrawPathControl drawControl = new DrawPathControl(vectorLayer);
+		drawControl.setStrategy(FinishStrategy.DoubleClick);
+		DrawPointControl drawControl = new DrawPointControl(vectorLayer);*/
+		DrawPolygonControl drawControl = new DrawPolygonControl(vectorLayer);
+		drawControl.setStrategy(FinishStrategy.DoubleClick);
+		vectorLayer.setStyle(style);
+		//drawControl.setCursorStyle(style);
 		controlLayer.addComponent(drawControl);
 		drawControl.activate();
-		*/
+		
 
 	}
 
