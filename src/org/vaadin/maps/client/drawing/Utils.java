@@ -50,6 +50,17 @@ public class Utils {
 		//Star
 	}
 	
+	public static PointShape pointShapeFromString(String string) {
+		if (string != null) {
+			for (PointShape pointShape : PointShape.values()) {
+				if (pointShape.name().equalsIgnoreCase(string)) {
+					return pointShape;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public static Geometry hexWKBToGeometry(String wkb) throws ParseException {
 		if ( wkb != null) {
 			WKBReader wkbReader = new WKBReader();
@@ -243,14 +254,6 @@ public class Utils {
 	}
 
 	public static Path drawPolygon(Polygon polygon) {
-		/*
-		 * public static Group drawPolygon(Polygon polygon) { Group group = new
-		 * Group();
-		 * 
-		 * group.add(drawPolygonInternal(polygon));
-		 * 
-		 * return group;
-		 */
 		return drawPolygonInternal(polygon);
 	}
 

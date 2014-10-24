@@ -10,8 +10,8 @@ import org.vaadin.maps.geometry.Utils;
 import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.feature.FeatureServerRpc;
 import org.vaadin.maps.shared.ui.feature.VectorFeatureState;
+import org.vaadin.maps.ui.StyleUtility;
 
-import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.Component;
 import com.vaadin.util.ReflectTools;
@@ -97,7 +97,7 @@ public class VectorFeature extends AbstractFeature {
 	public void setStyle(Style style) {
 		this.style = style;
 		
-		getState().style = MapUtility.getStyleMap(this.style != null ? this.style : inheritedStyle);
+		getState().style = StyleUtility.getStyleMap(this.style != null ? this.style : inheritedStyle);
 		markAsDirty();
 	}
 	
@@ -108,7 +108,7 @@ public class VectorFeature extends AbstractFeature {
 	public void setHoverStyle(Style style) {
 		hoverStyle = style;
 		
-		getState().hoverStyle = MapUtility.getStyleMap(hoverStyle != null ? hoverStyle : style);
+		getState().hoverStyle = StyleUtility.getStyleMap(hoverStyle != null ? hoverStyle : style);
 		markAsDirty();
 	}
 	
@@ -120,7 +120,7 @@ public class VectorFeature extends AbstractFeature {
 		inheritedStyle = style;
 		
 		if (null == this.style) {
-			getState().style = MapUtility.getStyleMap(inheritedStyle);
+			getState().style = StyleUtility.getStyleMap(inheritedStyle);
 		}
 	}
 	
@@ -132,7 +132,7 @@ public class VectorFeature extends AbstractFeature {
 		inheritedHoverStyle = style;
 		
 		if (null == hoverStyle) {
-			getState().hoverStyle = MapUtility.getStyleMap(inheritedHoverStyle);
+			getState().hoverStyle = StyleUtility.getStyleMap(inheritedHoverStyle);
 		}
 	}
 	

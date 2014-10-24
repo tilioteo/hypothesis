@@ -11,12 +11,11 @@ import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.control.DrawFeatureControlState;
 import org.vaadin.maps.ui.CanCancel;
 import org.vaadin.maps.ui.CanUndoRedo;
+import org.vaadin.maps.ui.StyleUtility;
 import org.vaadin.maps.ui.handler.FeatureHandler;
 import org.vaadin.maps.ui.handler.FeatureHandler.GeometryListener;
 import org.vaadin.maps.ui.handler.RequiresVectorFeatureLayer;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
-
-import com.tilioteo.hypothesis.plugin.map.MapUtility;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -104,7 +103,7 @@ public abstract class DrawFeatureControl<H extends FeatureHandler> extends Abstr
 	
 	public void setCursorStyle(Style style) {
 		this.cursorStyle = style;
-		getState().cursorStyle = MapUtility.getStyleMap(style);
+		getState().cursorStyle = StyleUtility.getStyleMap(style);
 		markAsDirty();
 	}
 	

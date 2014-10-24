@@ -58,8 +58,10 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
-
-		MapUtility.setLayerProperties(this, element, properties);
+		MapUtility utility = MapUtility.getInstance(slideManager);
+		if (utility != null) {
+			utility.setLayerProperties(this, element, properties);
+		}
 
 		// set ImageLayer specific properties
 		setTileUrl(properties.get(SlideXmlConstants.URL, ""));

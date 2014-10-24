@@ -48,7 +48,7 @@ public class Map extends LayerLayout implements SlideComponent, Maskable {
 	
 	public Map(SlideManager slideManager) {
 		this();
-		this.slideManager = slideManager;
+		setSlideManager(slideManager);
 	}
 
 	@Override
@@ -109,12 +109,14 @@ public class Map extends LayerLayout implements SlideComponent, Maskable {
 
 	@Override
 	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+		if (this.slideManager != slideManager) {
+			MapUtility.remove(this.slideManager);
+			this.slideManager = slideManager;
+			MapUtility.newInstance(slideManager, this);
+		}
 	}
 
 	protected void setProperties(Element element) {
-		MapUtility.setMap(this);
-
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
 		
 		ComponentUtility.setCommonProperties(this, element, properties, parentAlignment);
@@ -140,5 +142,13 @@ public class Map extends LayerLayout implements SlideComponent, Maskable {
 			mask.hide();
 		}
 	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		MapUtility.remove(slideManager);
+		
+		super.finalize();
+	}
+	
 	
 }

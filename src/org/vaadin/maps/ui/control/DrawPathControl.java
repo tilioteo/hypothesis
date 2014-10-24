@@ -5,11 +5,10 @@ package org.vaadin.maps.ui.control;
 
 import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.control.DrawPathControlState;
+import org.vaadin.maps.ui.StyleUtility;
 import org.vaadin.maps.ui.handler.PathHandler;
 import org.vaadin.maps.ui.handler.PathHandler.FinishStrategy;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
-
-import com.tilioteo.hypothesis.plugin.map.MapUtility;
 
 /**
  * @author kamil
@@ -40,7 +39,7 @@ public class DrawPathControl extends DrawFeatureControl<PathHandler> {
 	
 	public void setStartPointStyle(Style style) {
 		this.startPointStyle = style;
-		getState().startPointStyle = MapUtility.getStyleMap(style);
+		getState().startPointStyle = StyleUtility.getStyleMap(style);
 		markAsDirty();
 	}
 	
@@ -50,7 +49,7 @@ public class DrawPathControl extends DrawFeatureControl<PathHandler> {
 	
 	public void setLineStyle(Style style) {
 		this.lineStyle = style;
-		getState().lineStyle = MapUtility.getStyleMap(style);
+		getState().lineStyle = StyleUtility.getStyleMap(style);
 		markAsDirty();
 	}
 	
@@ -60,7 +59,7 @@ public class DrawPathControl extends DrawFeatureControl<PathHandler> {
 	
 	public void setVertexStyle(Style style) {
 		this.vertexStyle = style;
-		getState().vertexStyle = MapUtility.getStyleMap(style);
+		getState().vertexStyle = StyleUtility.getStyleMap(style);
 		markAsDirty();
 	}
 	

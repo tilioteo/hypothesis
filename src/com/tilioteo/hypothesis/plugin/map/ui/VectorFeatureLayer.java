@@ -68,11 +68,13 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		MapUtility utility = MapUtility.getInstance(slideManager);
+		if (utility != null) {
+			utility.setLayerProperties(this, element, properties);
 
-		MapUtility.setLayerProperties(this, element, properties);
-
-		// set VectorFeatureLayer specific properties
-		MapUtility.setFeatureLayerProperties(this, element, properties);
+			// set VectorFeatureLayer specific properties
+			utility.setFeatureLayerProperties(this, element, properties);
+		}
 	}
 
 	private void setHandlers(Element element) {

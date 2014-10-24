@@ -51,12 +51,18 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
-		MapUtility.setFeatureProperties(this, element, properties);
+		MapUtility utility = MapUtility.getInstance(slideManager);
+		if (utility != null) {
+			utility.setFeatureProperties(this, element, properties);
+		}
 
 	}
 
 	private void setTextProperties(Element element) {
-		MapUtility.setFeatureText(this, element);
+		MapUtility utility = MapUtility.getInstance(slideManager);
+		if (utility != null) {
+			utility.setFeatureText(this, element);
+		}
 	}
 
 	private void setHandlers(Element element) {

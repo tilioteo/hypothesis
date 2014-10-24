@@ -68,11 +68,13 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		MapUtility utility = MapUtility.getInstance(slideManager);
+		if (utility != null) {
+			utility.setLayerProperties(this, element, properties);
 
-		MapUtility.setLayerProperties(this, element, properties);
-
-		// set ImageSequenceLayer specific properties
-		MapUtility.setImageSequenceLayerProperties(this, element, properties);
+			// set ImageSequenceLayer specific properties
+			utility.setImageSequenceLayerProperties(this, element, properties);
+		}
 	}
 
 	private void setHandlers(Element element) {

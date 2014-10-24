@@ -96,9 +96,8 @@ public class VVectorFeature extends AbstractDrawingContainer {
 	
 	private void setPointShape() {
 		if (style != null) {
-			try {
-				pointShape = PointShape.valueOf(style.pointShape);
-			} catch (Exception e) {
+			pointShape = Utils.pointShapeFromString(style.pointShape);
+			if (null == pointShape) {
 				pointShape = PointShape.Circle;
 			}
 		

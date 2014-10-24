@@ -255,17 +255,17 @@ public class TestUI extends HUI {
 		map.addComponent(controlLayer);
 		
 		Style style = new Style();
-		style.pointShape = "TriangleUp";
+		style.pointShape = "square";
 		style.fillColor = "red";
 		style.fillOpacity = 0.3;
 		style.strokeColor = "red";
 		style.strokeWidth = 2;
 		
 		/*DrawPathControl drawControl = new DrawPathControl(vectorLayer);
-		drawControl.setStrategy(FinishStrategy.DoubleClick);
-		DrawPointControl drawControl = new DrawPointControl(vectorLayer);*/
-		DrawPolygonControl drawControl = new DrawPolygonControl(vectorLayer);
-		drawControl.setStrategy(FinishStrategy.DoubleClick);
+		drawControl.setStrategy(FinishStrategy.DoubleClick);*/
+		DrawPointControl drawControl = new DrawPointControl(vectorLayer);
+		/*DrawPolygonControl drawControl = new DrawPolygonControl(vectorLayer);
+		drawControl.setStrategy(FinishStrategy.DoubleClick);*/
 		vectorLayer.setStyle(style);
 		//drawControl.setCursorStyle(style);
 		controlLayer.addComponent(drawControl);

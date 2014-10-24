@@ -52,11 +52,13 @@ public class DrawPolygonControl extends org.vaadin.maps.ui.control.DrawPolygonCo
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
-
-		MapUtility.setDrawFeatureControlProperties(this, element, properties, slideManager);
+		MapUtility utility = MapUtility.getInstance(slideManager);
+		if (utility != null) {
+			utility.setDrawFeatureControlProperties(this, element, properties, slideManager);
 		
-		// set DrawPolygonControl specific properties
-		MapUtility.setDrawPolygonControlProperties(this, element, properties, slideManager);
+			// set DrawPolygonControl specific properties
+			utility.setDrawPolygonControlProperties(this, element, properties, slideManager);
+		}
 	}
 
 	private void setHandlers(Element element) {

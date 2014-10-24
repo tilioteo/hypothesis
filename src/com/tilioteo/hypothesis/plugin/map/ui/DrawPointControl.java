@@ -52,10 +52,12 @@ public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointContro
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		MapUtility utility = MapUtility.getInstance(slideManager);
+		if (utility != null) {
+			utility.setDrawFeatureControlProperties(this, element, properties, slideManager);
 
-		MapUtility.setDrawFeatureControlProperties(this, element, properties, slideManager);
-
-		// set DrawPointControl specific properties
+			// set DrawPointControl specific properties
+		}
 	}
 
 	private void setHandlers(Element element) {
