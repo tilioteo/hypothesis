@@ -47,7 +47,7 @@ public class Method extends Primitive implements HasReference {
 						
 						for (int i = 0; i < arguments.length; ++i) {
 							args[i] = arguments[i].getValue();
-							argTypes[i] = getPrimitiveType(args[i]);
+							argTypes[i] = getValueType(args[i]);
 						}
 					} else {
 						argTypes = new Class<?>[] {};
@@ -187,7 +187,7 @@ public class Method extends Primitive implements HasReference {
 		return list.toArray(new java.lang.reflect.Method[] {});
 	}
 	
-	private	Class<?> getPrimitiveType(Object value) {
+	private	Class<?> getValueType(Object value) {
 		if (value == null)
 			return Object.class;
 		else if (value instanceof Integer || value.getClass() == int.class)
@@ -199,7 +199,7 @@ public class Method extends Primitive implements HasReference {
 		else if (value instanceof String)
 			return String.class;
 		else
-			return Object.class;
+			return value.getClass();
 	}
 
 	

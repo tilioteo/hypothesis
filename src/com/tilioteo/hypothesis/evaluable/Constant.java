@@ -23,6 +23,7 @@ public class Constant extends Primitive {
 				value.endsWith(StringConstants.STR_DOUBLE_QUOTE)) {
 			setValue(value.substring(1, value.length()-1));
 			type = String.class;
+			parsed = true;
 			
 		} else if (value.indexOf(StringConstants.STR_DOT) >= 0) {
 			try {
