@@ -56,6 +56,8 @@ public class ImageTileConnector extends ProxyTileConnector implements LoadHandle
 	@Override
 	public void onLoad(LoadEvent event) {
         getLayoutManager().setNeedsMeasure(ImageTileConnector.this);
+        VImageTile widget = getWidget();
+        getRpcProxy(ProxyTileServerRpc.class).updateClippedSize(widget.getWidth(), widget.getHeight());;
         getRpcProxy(ProxyTileServerRpc.class).load();
 	}
 

@@ -61,24 +61,24 @@ public class WMSResource extends ExternalResource implements TileResource {
 			builder.append("?");
 		}
 		builder.append(WMSConstants.PARAM_SERVICE_WMS);
-		builder.append("&" + WMSConstants.PARAM_VERSION + version);
-		builder.append("&" + WMSConstants.PARAM_LAYERS + layers);
-		builder.append("&" + WMSConstants.PARAM_REQUEST + WMSConstants.GET_MAP);
+		builder.append("&" + WMSConstants.PARAM_VERSION + "=" + version);
+		builder.append("&" + WMSConstants.PARAM_LAYERS + "=" + layers);
+		builder.append("&" + WMSConstants.PARAM_REQUEST + "=" + WMSConstants.GET_MAP);
 		
 		if (version.startsWith("1.1")) {
 			builder.append("&" + WMSConstants.PARAM_SRS);
 		} else {
 			builder.append("&" + WMSConstants.PARAM_CRS);
 		}
-		builder.append(srs);
-		builder.append("&" + WMSConstants.PARAM_BBOX + bbox);
-		builder.append("&" + WMSConstants.PARAM_WIDTH + width);
-		builder.append("&" + WMSConstants.PARAM_HEIGHT + height);
-		builder.append("&" + WMSConstants.PARAM_FORMAT + format);
-		builder.append("&" + WMSConstants.PARAM_STYLES + styles);
+		builder.append("=" + srs);
+		builder.append("&" + WMSConstants.PARAM_BBOX + "=" + bbox);
+		builder.append("&" + WMSConstants.PARAM_WIDTH + "=" + width);
+		builder.append("&" + WMSConstants.PARAM_HEIGHT + "=" + height);
+		builder.append("&" + WMSConstants.PARAM_FORMAT + "=" + format);
+		builder.append("&" + WMSConstants.PARAM_STYLES + "=" + styles);
 		
 		if (transparent) {
-			builder.append("&" + WMSConstants.PARAM_TRANSPARENT + "TRUE");
+			builder.append("&" + WMSConstants.PARAM_TRANSPARENT + "=" + "TRUE");
 		}
 		
 		return builder.toString();

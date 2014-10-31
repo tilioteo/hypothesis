@@ -12,5 +12,7 @@ import com.vaadin.shared.ui.ClickRpc;
  *
  */
 public interface ProxyTileServerRpc extends ClickRpc, LoadRpc {
+	
+	public void updateClippedSize(int width, int height);
 
 }

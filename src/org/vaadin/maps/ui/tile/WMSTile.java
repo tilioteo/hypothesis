@@ -10,7 +10,7 @@ import org.vaadin.maps.server.WMSResource;
  *
  */
 @SuppressWarnings("serial")
-public class WMSTile extends ProxyTile<WMSResource> {
+public class WMSTile extends AbstractProxyTile<WMSResource> {
 	
 	private WMSResource resource;
 	
@@ -102,5 +102,11 @@ public class WMSTile extends ProxyTile<WMSResource> {
 	
 	public String getBaseUrl() {
 		return resource.getBaseUrl();
+	}
+
+	@Override
+	protected void clippedSizeChanged(int oldWidth, int oldHeight) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -38,8 +38,7 @@ public class SlideXmlUtility {
 	@SuppressWarnings("unchecked")
 	public static List<Element> getActionsElements(Element documentRoot) {
 		if (documentRoot != null) {
-			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS
-					.contains(documentRoot.getName())) {
+			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
 				return null;
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
@@ -126,8 +125,7 @@ public class SlideXmlUtility {
 
 	public static Element getExpressionElement(Element element) {
 		if (element != null) {
-			return (Element) element
-					.selectSingleNode(SlideXmlConstants.EXPRESSION);
+			return (Element) element.selectSingleNode(SlideXmlConstants.EXPRESSION);
 		}
 
 		return null;

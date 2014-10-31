@@ -92,6 +92,7 @@ public class MapUtility {
 			layer.addSource(url, tag);
 		}
 	}
+	
 	public void setControlProperties(Control control, Element element, StringMap properties) {
 		setCommonProperties(control, element, properties);
 	}

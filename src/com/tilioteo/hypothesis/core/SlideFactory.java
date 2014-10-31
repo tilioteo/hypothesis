@@ -350,8 +350,7 @@ public class SlideFactory {
 
 	private IfStatement createIfStatement(Element element) {
 		if (element != null && element.getName().equals(SlideXmlConstants.IF)) {
-			Element expressionElement = SlideXmlUtility
-					.getExpressionElement(element);
+			Element expressionElement = SlideXmlUtility.getExpressionElement(element);
 			Element trueElement = SlideXmlUtility.getTrueElement(element);
 			Element falseElement = SlideXmlUtility.getFalseElement(element);
 			Expression expression = createExpression(expressionElement);

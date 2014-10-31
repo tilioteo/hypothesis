@@ -9,8 +9,8 @@ import org.vaadin.maps.server.ImageResource;
 import org.vaadin.maps.shared.ui.layer.ImageLayerServerRpc;
 import org.vaadin.maps.shared.ui.layer.ImageLayerState;
 import org.vaadin.maps.ui.tile.ImageTile;
-import org.vaadin.maps.ui.tile.ProxyTile.ErrorListener;
-import org.vaadin.maps.ui.tile.ProxyTile.LoadListener;
+import org.vaadin.maps.ui.tile.AbstractProxyTile.ErrorListener;
+import org.vaadin.maps.ui.tile.AbstractProxyTile.LoadListener;
 
 import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.ui.Component.Focusable;

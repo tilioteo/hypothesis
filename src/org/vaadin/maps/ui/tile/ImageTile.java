@@ -12,7 +12,7 @@ import org.vaadin.maps.server.ImageResource;
  *
  */
 @SuppressWarnings("serial")
-public class ImageTile extends ProxyTile<ImageResource> {
+public class ImageTile extends AbstractProxyTile<ImageResource> {
 	
 	public ImageTile() {
 		super();
@@ -32,5 +32,11 @@ public class ImageTile extends ProxyTile<ImageResource> {
 
 	public void setImageUrl(String imageURL) {
 		setSource(new ImageResource(imageURL));
+	}
+
+	@Override
+	protected void clippedSizeChanged(int oldWidth, int oldHeight) {
+		// TODO Auto-generated method stub
+		
 	}
 }
