@@ -60,4 +60,20 @@ public class IfStatement implements Evaluable {
 		}*/
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("if (" + expression.toString() + ") {\n");
+		for (Evaluable evaluable : trueBlock) {
+			builder.append("\t" + evaluable.toString() + ";\n");
+		}
+		builder.append("}");
+		if (!falseBlock.isEmpty()) {
+			builder.append(" else {\n");
+			for (Evaluable evaluable : falseBlock) {
+				builder.append("\t" + evaluable.toString() + ";\n");
+			}
+			builder.append("}");
+		}
+		return builder.toString();
+	}
 }

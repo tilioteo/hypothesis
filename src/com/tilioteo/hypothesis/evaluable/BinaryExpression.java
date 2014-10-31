@@ -234,4 +234,9 @@ public class BinaryExpression extends UnaryExpression {
 		
 		return null;
 	}
+
+	@Override
+	public String toString() {
+		return "(" + leftSide.toString() + operator.toString() + rightSide.toString() + ")";
+	}
 }

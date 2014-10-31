@@ -33,4 +33,8 @@ public class CallAction implements Evaluable {
 		// nothing
 	}
 
+	@Override
+	public String toString() {
+		return "->" + actionId + "()";
+	}
 }

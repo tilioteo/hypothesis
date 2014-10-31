@@ -211,4 +211,20 @@ public class Method extends Primitive implements HasReference {
 		this.reference = reference;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(name);
+		builder.append("(");
+		boolean first = true;
+		for (Primitive argument : arguments) {
+			if (!first) {
+				builder.append(", ");
+			} else {
+				first = false;
+			}
+			builder.append(argument.toString());
+		}
+		builder.append(")");
+		return builder.toString();
+	}
 }

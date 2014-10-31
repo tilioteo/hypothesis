@@ -60,4 +60,18 @@ public class SwitchStatement implements Evaluable {
 		}
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder("switch (" + expression.toString() + ") {\n");
+		for (Object value : caseMap.keySet()) {
+			builder.append("\tcase " + value.toString() + " : {\n");
+			List<Evaluable> evaluables = caseMap.get(value);
+			for (Evaluable evaluable : evaluables) {
+				builder.append("\t\t" + evaluable.toString() + ";\n");
+			}
+			builder.append("\t}\n");
+		}
+		builder.append("}");
+		return builder.toString();
+	}
 }

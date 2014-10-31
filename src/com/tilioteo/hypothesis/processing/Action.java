@@ -37,4 +37,14 @@ public class Action extends AbstractBaseAction {
 				evaluable.updateVariables(variables);
 		}
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder(getId() + "() {\n");
+		for (Evaluable evaluable : evaluables) {
+			builder.append("\t" + evaluable.toString() + ";\n");
+		}
+		builder.append("}");
+		return builder.toString();
+	}
 }

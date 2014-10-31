@@ -69,4 +69,8 @@ public class Expression implements Evaluable {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return internalExpression != null ? internalExpression.toString() : "<null>";
+	}
 }

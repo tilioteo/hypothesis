@@ -81,4 +81,9 @@ public class Variable extends Primitive {
 			super.setValue(null);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

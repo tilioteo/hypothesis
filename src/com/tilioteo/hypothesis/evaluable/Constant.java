@@ -51,4 +51,16 @@ public class Constant extends Primitive {
 			type = Boolean.class;
 		}
 	}
+	
+	@Override
+	public String toString() {
+		Object value = getValue();
+		if (type == String.class) {
+			return value != null ? StringConstants.STR_DOUBLE_QUOTE + value + StringConstants.STR_DOUBLE_QUOTE : "<null>";
+		} else if (Number.class.isAssignableFrom(type)) {
+			return value != null ? value.toString() : "<NaN>"; 
+		} else {
+			return getValue() != null ? value.toString() : "<null>";
+		}
+	}
 }
