@@ -22,29 +22,41 @@ import com.vaadin.util.ReflectTools;
  * 
  */
 @SuppressWarnings("serial")
-public class ProxyTile<T extends TileResource> extends AbstractTile {
+public abstract class AbstractProxyTile<T extends TileResource> extends AbstractTile {
 
 	protected ProxyTileServerRpc rpc = new ProxyTileServerRpc() {
 		@Override
 		public void load() {
-			fireEvent(new LoadEvent(ProxyTile.this));
+			fireEvent(new LoadEvent(AbstractProxyTile.this));
 		}
 
 		@Override
 		public void error() {
-			fireEvent(new ErrorEvent(ProxyTile.this));
+			fireEvent(new ErrorEvent(AbstractProxyTile.this));
 		}
 
 		@Override
 		public void click(MouseEventDetails mouseDetails) {
-			fireEvent(new ClickEvent(ProxyTile.this, mouseDetails));
+			fireEvent(new ClickEvent(AbstractProxyTile.this, mouseDetails));
+		}
+
+		@Override
+		public void updateClippedSize(int width, int height) {
+			int oldWidth = AbstractProxyTile.this.clippedWidth;
+			int oldHeight = AbstractProxyTile.this.clippedHeight;
+			AbstractProxyTile.this.clippedWidth = width;
+			AbstractProxyTile.this.clippedHeight = height;
+			clippedSizeChanged(oldWidth, oldHeight);
 		}
 	};
+	
+	private int clippedWidth = 0;
+	private int clippedHeight = 0;
 
 	/**
 	 * Creates a new empty Tile.
 	 */
-	public ProxyTile() {
+	public AbstractProxyTile() {
 		registerRpc(rpc);
 	}
 
@@ -55,7 +67,7 @@ public class ProxyTile<T extends TileResource> extends AbstractTile {
 	 * @param source
 	 *            the Source of the embedded object.
 	 */
-	public ProxyTile(T source) {
+	public AbstractProxyTile(T source) {
 		this();
 		setSource(source);
 	}
@@ -86,6 +98,16 @@ public class ProxyTile<T extends TileResource> extends AbstractTile {
 		return (T) getTileResource();
 	}
 
+	protected int getClippedWidth() {
+		return clippedWidth;
+	}
+
+	protected int getClippedHeight() {
+		return clippedHeight;
+	}
+	
+	protected abstract void clippedSizeChanged(int oldWidth, int oldHeight);
+
 	/**
 	 * Load event. This event is thrown, when the tile is loaded.
 	 * 
@@ -98,7 +120,7 @@ public class ProxyTile<T extends TileResource> extends AbstractTile {
 		 * @param source
 		 *            the Source of the event.
 		 */
-		public LoadEvent(ProxyTile<?> source) {
+		public LoadEvent(AbstractProxyTile<?> source) {
 			super(source);
 		}
 
@@ -107,15 +129,15 @@ public class ProxyTile<T extends TileResource> extends AbstractTile {
 		 * 
 		 * @return the Source of the event.
 		 */
-		public ProxyTile<?> getTile() {
-			return (ProxyTile<?>) getSource();
+		public AbstractProxyTile<?> getTile() {
+			return (AbstractProxyTile<?>) getSource();
 		}
 
 	}
 
 	/**
 	 * Interface for listening for a {@link LoadEvent} fired by a
-	 * {@link ProxyTile}.
+	 * {@link AbstractProxyTile}.
 	 * 
 	 */
 	public interface LoadListener extends Serializable {
@@ -146,7 +168,7 @@ public class ProxyTile<T extends TileResource> extends AbstractTile {
 		 * @param source
 		 *            the Source of the event.
 		 */
-		public ErrorEvent(ProxyTile<?> source) {
+		public ErrorEvent(AbstractProxyTile<?> source) {
 			super(source);
 		}
 
@@ -155,15 +177,15 @@ public class ProxyTile<T extends TileResource> extends AbstractTile {
 		 * 
 		 * @return the Source of the event.
 		 */
-		public ProxyTile<?> getTile() {
-			return (ProxyTile<?>) getSource();
+		public AbstractProxyTile<?> getTile() {
+			return (AbstractProxyTile<?>) getSource();
 		}
 
 	}
 
 	/**
 	 * Interface for listening for a {@link ErrorEvent} fired by a
-	 * {@link ProxyTile}.
+	 * {@link AbstractProxyTile}.
 	 * 
 	 */
 	public interface ErrorListener extends Serializable {
@@ -172,7 +194,7 @@ public class ProxyTile<T extends TileResource> extends AbstractTile {
 				.findMethod(ErrorListener.class, "error", ErrorEvent.class);
 
 		/**
-		 * Called when a {@link ProxyTile} loading failed. A reference to the
+		 * Called when a {@link AbstractProxyTile} loading failed. A reference to the
 		 * tile is given by {@link ErrorEvent#getTile()}.
 		 * 
 		 * @param event

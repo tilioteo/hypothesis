@@ -6,8 +6,8 @@ package com.tilioteo.hypothesis.plugin.map.ui;
 import java.util.List;
 
 import org.dom4j.Element;
-import org.vaadin.maps.ui.tile.ProxyTile.LoadEvent;
-import org.vaadin.maps.ui.tile.ProxyTile.LoadListener;
+import org.vaadin.maps.ui.tile.AbstractProxyTile.LoadEvent;
+import org.vaadin.maps.ui.tile.AbstractProxyTile.LoadListener;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
