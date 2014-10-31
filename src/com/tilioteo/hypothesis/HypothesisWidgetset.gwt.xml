@@ -5,6 +5,7 @@
 	<inherits name="org.vaadin.maps.VaadinMapsWidgetset" />
 	<inherits name="org.google.gwt.user.DOM" />
 	<inherits name="org.vaadin.jouni.animator.AnimatorWidgetset" />
+	<inherits name="org.vaadin.tltv.vprocjs.ProcessingJsWidgetset" />
 
 	<source path="client" />
 	<source path="shared" />

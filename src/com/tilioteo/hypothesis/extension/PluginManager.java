@@ -14,6 +14,7 @@ import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.event.ProcessEventTypes;
 import com.tilioteo.hypothesis.extension.SlideComponentPlugin.ValidParentGroup;
 import com.tilioteo.hypothesis.plugin.map.MapPlugin;
+import com.tilioteo.hypothesis.plugin.processing.ProcessingPlugin;
 
 /**
  * @author kamil
@@ -23,7 +24,8 @@ public class PluginManager {
 	
 	// TODO make configuration
 	public static final Class<?>[] PLUGINS = new Class<?>[] {
-		MapPlugin.class
+		MapPlugin.class,
+		ProcessingPlugin.class
 	};
 	
 	private static PluginManager instance = null;
