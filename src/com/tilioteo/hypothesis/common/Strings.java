@@ -77,6 +77,18 @@ public class Strings {
 		return null;
 	}
 
+	public static Boolean toBoolean(String string) {
+		if (!Strings.isNullOrEmpty(string)) {
+			string = string.trim();
+			if ("true".equalsIgnoreCase(string) || "1".equals(string)) {
+				return Boolean.TRUE;
+			} else if ("false".equalsIgnoreCase(string) || "0".equals(string)) {
+				return Boolean.FALSE;
+			}
+		}
+		return null;
+	}
+
 	public static String[] toStringArray(String string, String separator, String surroundPattern) {
 		if (string != null) {
 			int count = 0;
