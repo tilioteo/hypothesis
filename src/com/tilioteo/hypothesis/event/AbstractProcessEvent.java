@@ -37,4 +37,8 @@ public abstract class AbstractProcessEvent extends EventObject implements
 	public void setErrorHandler(ErrorHandler errorHandler) {
 		this.errorHandler = errorHandler;
 	}
+	
+	public void updateTimestamp() {
+		timestamp = new Date();
+	}
 }

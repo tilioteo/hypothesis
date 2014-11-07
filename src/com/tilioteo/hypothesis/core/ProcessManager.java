@@ -599,6 +599,7 @@ public class ProcessManager implements ProcessEventListener {
 
 	private void saveComponentEvent(AbstractComponentEvent<?> componentEvent) {
 		log.debug(String.format("saveComponentEvent: name = %s", componentEvent.getName()));
+		componentEvent.updateTimestamp();
 		saveTestProcessEvent(componentEvent);
 	}
 	
