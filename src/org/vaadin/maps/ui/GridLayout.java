@@ -556,11 +556,9 @@ public class GridLayout<C extends Component> extends AbstractLayout<C> implement
 
 		// Checks for overlaps
 		if (getColumns() > columns) {
-			for (Entry<Connector, ChildComponentData> entry : getState().childData
-					.entrySet()) {
+			for (Entry<Connector, ChildComponentData> entry : getState().childData.entrySet()) {
 				if (entry.getValue().column2 >= columns) {
-					throw new OutOfBoundsException(new Area(entry.getValue(),
-							(C) entry.getKey()));
+					throw new OutOfBoundsException(new Area(entry.getValue(), (C) entry.getKey()));
 				}
 			}
 		}
@@ -601,8 +599,7 @@ public class GridLayout<C extends Component> extends AbstractLayout<C> implement
 
 		// Checks for overlaps
 		if (getRows() > rows) {
-			for (Entry<Connector, ChildComponentData> entry : getState().childData
-					.entrySet()) {
+			for (Entry<Connector, ChildComponentData> entry : getState().childData.entrySet()) {
 				if (entry.getValue().row2 >= rows) {
 					throw new OutOfBoundsException(new Area(entry.getValue(),
 							(C) entry.getKey()));
@@ -831,8 +828,7 @@ public class GridLayout<C extends Component> extends AbstractLayout<C> implement
 	 *         the grid
 	 */
 	public Area getComponentArea(C component) {
-		ChildComponentData childComponentData = getState().childData
-				.get(component);
+		ChildComponentData childComponentData = getState().childData.get(component);
 		if (childComponentData == null) {
 			return null;
 		} else {

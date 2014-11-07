@@ -38,10 +38,18 @@ public class LayerLayout extends AbstractLayout<Layer> implements
 			fireEvent(LayoutClickEvent.createEvent(LayerLayout.this,
 					mouseDetails, clickedConnector));
 		}
+
+		@Override
+		public void updateMeasuredSize(int newWidth, int newHeight) {
+			LayerLayout.this.updateMeasuredSize(newWidth, newHeight);
+		}
 	};
 
 	// Maps each layer to a position
 	private LinkedHashMap<Layer, LayerOrder> layerToOrder = new LinkedHashMap<Layer, LayerOrder>();
+	
+	private int measuredWidth = -1;
+	private int measuredHeight = -1;
 
 	/**
 	 * Creates an LayerLayout with full size.
@@ -160,8 +168,7 @@ public class LayerLayout extends AbstractLayout<Layer> implements
 		Map<String, String> connectorToPosition = new HashMap<String, String>();
 		for (Iterator<Layer> li = typedIterator(); li.hasNext();) {
 			Layer l = li.next();
-			connectorToPosition.put(l.getConnectorId(), getOrder(l)
-					.getCSSString());
+			connectorToPosition.put(l.getConnectorId(), getOrder(l).getCSSString());
 		}
 		getState().connectorToCssPosition = connectorToPosition;
 
@@ -227,6 +234,29 @@ public class LayerLayout extends AbstractLayout<Layer> implements
 		
 		layerToOrder.put(layer, order);
 		markAsDirty();
+	}
+	
+	private void updateMeasuredSize(int newWidth, int newHeight) {
+		int oldWidth = this.measuredWidth;
+		int oldHeight = this.measuredHeight;
+		
+		this.measuredWidth = newWidth;
+		this.measuredHeight = newHeight;
+		Iterator<Component> iterator = iterator();
+		while (iterator.hasNext()) {
+			Component layer = iterator.next();
+			if (layer instanceof MeasuredSizeHandler) {
+				((MeasuredSizeHandler)layer).sizeChanged(oldWidth, oldHeight, newWidth, newHeight);
+			}
+		}
+	}
+
+	protected int getMeasuredWidth() {
+		return measuredWidth;
+	}
+
+	protected int getMeasuredHeight() {
+		return measuredHeight;
 	}
 
 	/**

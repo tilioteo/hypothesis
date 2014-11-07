@@ -17,9 +17,11 @@ import org.vaadin.maps.ui.layer.ControlLayer;
 import org.vaadin.maps.ui.layer.ImageLayer;
 import org.vaadin.maps.ui.layer.ImageSequenceLayer;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
+import org.vaadin.maps.ui.layer.WMSLayer;
 import org.vaadin.maps.ui.tile.ImageSequenceTile;
 import org.vaadin.maps.ui.tile.ImageSequenceTile.ChangeEvent;
 import org.vaadin.maps.ui.tile.ImageSequenceTile.LoadEvent;
+import org.vaadin.maps.ui.tile.WMSTile;
 import org.vaadin.tltv.vprocjs.ui.Processing;
 
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
@@ -1022,7 +1024,6 @@ public class TestUI extends HUI {
 		video.mask();
 		*/
 		
-		/*
 		final Map map = new Map();
 		verticalLayout.addComponent(map);
 		map.setWidth("80%");
@@ -1030,7 +1031,7 @@ public class TestUI extends HUI {
 		//map.mask();
 
 		
-		ImageLayer imageLayer = new ImageLayer("http://www.imagehosting.cz/images/mapaukol7.jpg");
+		/*ImageLayer imageLayer = new ImageLayer("http://www.imagehosting.cz/images/mapaukol7.jpg");
 		*/
 		/*imageLayer.addClickListener(new MouseEvents.ClickListener() {
 			@Override
@@ -1177,10 +1178,30 @@ public class TestUI extends HUI {
 		drawControl.activate();
 */
 		
-		Processing processing = new Processing();
+		/*Processing processing = new Processing();
 		//processing.setSizeFull();
 		processing.setProcessingCode(CODE2);
-		verticalLayout.addComponent(processing);
+		verticalLayout.addComponent(processing);*/
+		
+		
+		/*WMSTile tile = new WMSTile("http://giswebservices.massgis.state.ma.us/geoserver/wms");
+		tile.setLayers("massgis:GISDATA.TOWNS_POLYM,massgis:GISDATA.NAVTEQRDS_ARC,massgis:GISDATA.NAVTEQRDS_ARC_INT");
+		tile.setSRS("EPSG:26986");
+		tile.setBBox("232325.38526025353,898705.3447384972,238934.49648710093,903749.1401484597");
+		tile.setWidth(570);
+		tile.setHeight(435);
+		tile.setFormat("image/png");
+		tile.setStyles("Black_Lines,GISDATA.NAVTEQRDS_ARC::ForOrthos,GISDATA.NAVTEQRDS_ARC_INT::Default");
+		tile.setTransparent(true);
+		
+		verticalLayout.addComponent(tile);*/
+		
+		WMSLayer wmsLayer = new WMSLayer("http://giswebservices.massgis.state.ma.us/geoserver/wms");
+		wmsLayer.setLayers("massgis:GISDATA.TOWNS_POLYM,massgis:GISDATA.NAVTEQRDS_ARC,massgis:GISDATA.NAVTEQRDS_ARC_INT");
+		wmsLayer.setSRS("EPSG:26986");
+		wmsLayer.setBBox("232325.38526025353,898705.3447384972,238934.49648710093,903749.1401484597");
+		
+		map.addComponent(wmsLayer);
 	}
 
 }

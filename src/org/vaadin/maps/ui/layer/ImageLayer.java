@@ -8,6 +8,7 @@ import java.net.URL;
 import org.vaadin.maps.server.ImageResource;
 import org.vaadin.maps.shared.ui.layer.ImageLayerServerRpc;
 import org.vaadin.maps.shared.ui.layer.ImageLayerState;
+import org.vaadin.maps.ui.MeasuredSizeHandler;
 import org.vaadin.maps.ui.tile.ImageTile;
 import org.vaadin.maps.ui.tile.AbstractProxyTile.ErrorListener;
 import org.vaadin.maps.ui.tile.AbstractProxyTile.LoadListener;
@@ -20,7 +21,7 @@ import com.vaadin.ui.Component.Focusable;
  *
  */
 @SuppressWarnings("serial")
-public class ImageLayer extends AbstractLayer<ImageTile> implements Focusable {
+public class ImageLayer extends AbstractLayer<ImageTile> implements Focusable, MeasuredSizeHandler {
 	
 	private ImageLayerServerRpc rpc = new ImageLayerServerRpc() {
 		/*@Override
@@ -144,6 +145,11 @@ public class ImageLayer extends AbstractLayer<ImageTile> implements Focusable {
 	 */
 	public void removeErrorListener(ErrorListener listener) {
 		getContent().removeErrorListener(listener);
+	}
+
+	@Override
+	public void sizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+		
 	}
 
 }

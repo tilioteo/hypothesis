@@ -14,10 +14,13 @@ import org.vaadin.maps.ui.LayerLayout;
 import com.google.gwt.user.client.Element;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.client.LayoutManager;
 import com.vaadin.client.Util;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.communication.StateChangeEvent.StateChangeHandler;
 import com.vaadin.client.ui.LayoutClickEventHandler;
+import com.vaadin.client.ui.layout.ElementResizeEvent;
+import com.vaadin.client.ui.layout.ElementResizeListener;
 import com.vaadin.shared.ui.Connect;
 import com.vaadin.shared.ui.LayoutClickRpc;
 
@@ -27,7 +30,7 @@ import com.vaadin.shared.ui.LayoutClickRpc;
  */
 @SuppressWarnings("serial")
 @Connect(LayerLayout.class)
-public class LayerLayoutConnector extends AbstractLayoutConnector {
+public class LayerLayoutConnector extends AbstractLayoutConnector implements ElementResizeListener {
 
     private LayoutClickEventHandler clickEventHandler = new LayoutClickEventHandler(
             this) {
@@ -65,6 +68,8 @@ public class LayerLayoutConnector extends AbstractLayoutConnector {
     @Override
     protected void init() {
         super.init();
+        getWidget().setLayoutManager(getLayoutManager());
+        getLayoutManager().addElementResizeListener(getWidget().getElement(), this);
     }
 
     /**
@@ -160,5 +165,13 @@ public class LayerLayoutConnector extends AbstractLayoutConnector {
 
         getWidget().cleanupWrappers();
     }
+
+	@Override
+	public void onElementResize(ElementResizeEvent e) {
+		LayoutManager layoutManager = getLayoutManager();
+		int newWidth = layoutManager.getOuterWidth(e.getElement());
+		int newHeight = layoutManager.getOuterHeight(e.getElement());
+		getRpcProxy(LayerLayoutServerRpc.class).updateMeasuredSize(newWidth, newHeight);
+	}
 
 }

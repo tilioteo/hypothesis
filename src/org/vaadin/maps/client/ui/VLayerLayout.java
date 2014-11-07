@@ -17,6 +17,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
+import com.vaadin.client.LayoutManager;
 import com.vaadin.client.StyleConstants;
 
 /**
@@ -31,6 +32,8 @@ public class VLayerLayout extends ComplexPanel {
 	protected final Element container = DOM.createDiv();
 
 	protected Map<Widget, LayoutWrapper> widgetLayoutWrappers = new HashMap<Widget, LayoutWrapper>();
+	
+    private LayoutManager layoutManager;
 
 	/**
 	 * Default constructor
@@ -234,6 +237,25 @@ public class VLayerLayout extends ComplexPanel {
 		}
 	}
 
+    /**
+     * Set the layout manager for the layout
+     * 
+     * @param manager
+     *            The layout manager to use
+     */
+    public void setLayoutManager(LayoutManager manager) {
+        layoutManager = manager;
+    }
+
+    /**
+     * Get the layout manager used by this layout
+     * 
+     */
+    public LayoutManager getLayoutManager() {
+        return layoutManager;
+    }
+
+
 	/**
 	 * Cleanup old wrappers which have been left empty by other inner layouts
 	 * moving the widget from the wrapper into their own hierarchy. This usually
@@ -277,7 +299,7 @@ public class VLayerLayout extends ComplexPanel {
 	/**
 	 * Internal wrapper for wrapping widgets in the Layer layout
 	 */
-	protected class LayoutWrapper /*extends SimplePanel*/ {
+	protected class LayoutWrapper {
 		private Widget widget;
 
 		private String css;
@@ -333,7 +355,7 @@ public class VLayerLayout extends ComplexPanel {
 						}
 					}
 				}
-				// ensure ne values
+				// ensure new values
 				Style style = widget.getElement().getStyle();
 				/*
 				 * IE8 dies when nulling zIndex, even in IE7 mode. All other css

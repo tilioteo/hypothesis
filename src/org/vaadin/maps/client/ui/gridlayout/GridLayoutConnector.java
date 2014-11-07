@@ -27,10 +27,22 @@ public class GridLayoutConnector extends AbstractLayoutConnector {
 	}
 
 	@Override
-	public void onConnectorHierarchyChange(
-			ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent) {
-		// TODO Auto-generated method stub
-		
+	public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
+        for (ComponentConnector child : getChildComponents()) {
+            if (!getWidget().contains(child.getWidget())) {
+                getWidget().add(child.getWidget());
+                //child.addStateChangeHandler(childStateChangeHandler);
+                //setChildWidgetPosition(child);
+            }
+        }
+        for (ComponentConnector oldChild : event.getOldChildren()) {
+            if (oldChild.getParent() != this) {
+                getWidget().remove(oldChild.getWidget());
+                //oldChild.removeStateChangeHandler(childStateChangeHandler);
+            }
+        }
+
+        getWidget().cleanupWrappers();
 	}
 
     /*
