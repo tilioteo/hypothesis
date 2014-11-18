@@ -10,6 +10,7 @@ import org.vaadin.maps.ui.LayerLayout;
 import org.vaadin.maps.ui.control.DrawPathControl;
 import org.vaadin.maps.ui.control.DrawPointControl;
 import org.vaadin.maps.ui.control.DrawPolygonControl;
+import org.vaadin.maps.ui.control.PanControl;
 import org.vaadin.maps.ui.feature.VectorFeature;
 import org.vaadin.maps.ui.featurecontainer.VectorFeatureContainer;
 import org.vaadin.maps.ui.handler.PathHandler.FinishStrategy;
@@ -23,6 +24,10 @@ import org.vaadin.maps.ui.tile.ImageSequenceTile.ChangeEvent;
 import org.vaadin.maps.ui.tile.ImageSequenceTile.LoadEvent;
 import org.vaadin.maps.ui.tile.WMSTile;
 import org.vaadin.tltv.vprocjs.ui.Processing;
+import org.vaadin.websocket.ui.WebSocket;
+import org.vaadin.websocket.ui.WebSocket.CloseEvent;
+import org.vaadin.websocket.ui.WebSocket.MessageEvent;
+import org.vaadin.websocket.ui.WebSocket.OpenEvent;
 
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
 import com.tilioteo.hypothesis.ui.Image.LoadListener;
@@ -37,6 +42,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -1157,10 +1163,10 @@ public class TestUI extends HUI {
 		addShortcutKey(key4);
 */
 		
-/*		ControlLayer controlLayer = new ControlLayer();
+		ControlLayer controlLayer = new ControlLayer();
 		map.addComponent(controlLayer);
 		
-		Style style = new Style();
+/*		Style style = new Style();
 		style.pointShape = "square";
 		style.fillColor = "red";
 		style.fillOpacity = 0.3;
@@ -1202,6 +1208,49 @@ public class TestUI extends HUI {
 		wmsLayer.setBBox("232325.38526025353,898705.3447384972,238934.49648710093,903749.1401484597");
 		
 		map.addComponent(wmsLayer);
-	}
+		
+		PanControl panControl = new PanControl(map);
+		controlLayer.addComponent(panControl);
+		panControl.activate();
+
+	
+		/*final WebSocket socket = new WebSocket("ws://localhost:9876/app/service/");
+		socket.addOpenListener(new WebSocket.OpenListener() {
+			@Override
+			public void open(OpenEvent event) {
+				Notification.show("Web socket connected");
+			}
+		});
+		socket.addCloseListener(new WebSocket.CloseListener() {
+			@Override
+			public void close(CloseEvent event) {
+				Notification.show("Web socket disconnected");
+			}
+		});
+		socket.addMessageListener(new WebSocket.MessageListener() {
+			@Override
+			public void message(MessageEvent event) {
+				Notification.show("Message from server received");
+			}
+		});
+		
+		com.vaadin.ui.Button buttonSend = new Button("Send", new Button.ClickListener() {
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				socket.send("Message to client");
+			}
+		}); 
+
+		com.vaadin.ui.Button buttonClose = new Button("Close", new Button.ClickListener() {
+			@Override
+			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				socket.close();
+			}
+		});
+		
+		verticalLayout.addComponent(buttonSend);
+		verticalLayout.addComponent(buttonClose);
+		verticalLayout.addComponent(socket);*/
+}
 
 }
