@@ -16,7 +16,6 @@ import com.vaadin.client.MouseEventDetailsBuilder;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.communication.StateChangeEvent.StateChangeHandler;
 import com.vaadin.client.ui.AbstractFieldConnector;
-import com.vaadin.client.ui.Icon;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.communication.FieldRpc.FocusAndBlurServerRpc;
 
@@ -62,14 +61,14 @@ public abstract class SelectButtonConnector extends AbstractFieldConnector imple
             @Override
             public void onStateChanged(StateChangeEvent stateChangeEvent) {
                 if (getIcon() != null) {
-                    if (getWidget().icon == null) {
+                    /*if (getWidget().icon == null) {
                         getWidget().icon = new Icon(getConnection());
                         getWidget().wrapper.insertBefore(
                                 getWidget().icon.getElement(),
                                 getWidget().captionElement);
                     }
                     getWidget().icon.setUri(getIcon());
-                    getWidget().icon.setAlternateText(getState().iconAltText);
+                    getWidget().icon.setAlternateText(getState().iconAltText);*/
                 } else {
                     if (getWidget().icon != null) {
                         getWidget().wrapper.removeChild(getWidget().icon
