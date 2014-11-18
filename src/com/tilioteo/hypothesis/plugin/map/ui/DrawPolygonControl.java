@@ -11,7 +11,6 @@ import org.vaadin.maps.ui.handler.FeatureHandler.GeometryEvent;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -93,9 +92,8 @@ public class DrawPolygonControl extends org.vaadin.maps.ui.control.DrawPolygonCo
 			@Override
 			public void geometry(GeometryEvent event) {
 				data.setGeometry(event.getGeometry());
-				//Command.Executor.execute(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(action);
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}

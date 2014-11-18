@@ -126,8 +126,6 @@ public class PacksModel implements ReadyCheckedListener {
 		//String url = String.format("%s/process/?gwt.codesvr=127.0.0.1:9997&%s=%s%s", contextUrl, "token", token.getUid(), "&fs&bk=true");
 		String url = String.format("%s/process/?%s=%s%s", contextUrl, "token", token.getUid(), "&fs&bk=true");
 		Page.getCurrent().setLocation(url);
-		/*JavaScript javaScript = Page.getCurrent().getJavaScript();
-		javaScript.execute("window.location.href=\"" + url + "\"");*/
 		token = null;
 	}
 

@@ -13,7 +13,6 @@ import com.tilioteo.hypothesis.annotation.ExpressionScope;
 import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -36,7 +35,7 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.util.ReflectTools;
 
 @SuppressWarnings("serial")
-public class Timer extends AbstractComponent implements SlideComponent {
+public class Timer extends AbstractComponent implements SlideComponent, NonVisualComponent {
 
 	private static Logger log = Logger.getLogger(Timer.class);
 
@@ -106,7 +105,7 @@ public class Timer extends AbstractComponent implements SlideComponent {
 	public interface StartListener extends Serializable {
 
 		public static final Method TIMER_START_METHOD = ReflectTools
-				.findMethod(StartListener.class, "start", StartEvent.class);
+				.findMethod(StartListener.class, StartEvent.EVENT_ID, StartEvent.class);
 
 		/**
 		 * Called when a {@link Timer} has been started. A reference to the
@@ -139,7 +138,7 @@ public class Timer extends AbstractComponent implements SlideComponent {
 	public interface StopListener extends Serializable {
 
 		public static final Method TIMER_STOP_METHOD = ReflectTools.findMethod(
-				StopListener.class, "stop", StopEvent.class);
+				StopListener.class, StopEvent.EVENT_ID, StopEvent.class);
 
 		/**
 		 * Called when a {@link Timer} has been stopped. A reference to the
@@ -171,7 +170,7 @@ public class Timer extends AbstractComponent implements SlideComponent {
 	public interface UpdateListener extends Serializable {
 
 		public static final Method TIMER_UPDATE_METHOD = ReflectTools
-				.findMethod(UpdateListener.class, "update", UpdateEvent.class);
+				.findMethod(UpdateListener.class, UpdateEvent.EVENT_ID, UpdateEvent.class);
 
 		/**
 		 * Called when a {@link Timer} has been updated. A reference to the
@@ -388,8 +387,8 @@ public class Timer extends AbstractComponent implements SlideComponent {
 			@Override
 			public void start(StartEvent event) {
 				data.setTime(event.getTime());
-				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(action);
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -403,8 +402,8 @@ public class Timer extends AbstractComponent implements SlideComponent {
 			@Override
 			public void stop(StopEvent event) {
 				data.setTime(event.getTime());
-				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(action);
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -419,8 +418,8 @@ public class Timer extends AbstractComponent implements SlideComponent {
 				@Override
 				public void update(UpdateEvent event) {
 					data.setTime(event.getTime());
-					CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-					CommandScheduler.Scheduler.scheduleCommand(action);
+					Command.Executor.execute(componentEvent);
+					Command.Executor.execute(action);
 				}
 			});
 		}

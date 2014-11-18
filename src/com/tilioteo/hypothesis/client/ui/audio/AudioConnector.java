@@ -3,7 +3,6 @@
  */
 package com.tilioteo.hypothesis.client.ui.audio;
 
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.CanPlayThroughEvent;
 import com.google.gwt.event.dom.client.CanPlayThroughHandler;
 import com.google.gwt.event.dom.client.EndedEvent;

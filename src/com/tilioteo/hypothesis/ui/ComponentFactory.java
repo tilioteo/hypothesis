@@ -12,7 +12,6 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.ShortcutUtility;
 import com.tilioteo.hypothesis.core.ShortcutUtility.ShortcutKeys;
-import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -209,7 +208,7 @@ public class ComponentFactory {
 					@Override
 					public void handleEvent(ViewportEvent event) {
 						//Command.Executor.execute(componentEvent);
-						CommandScheduler.Scheduler.scheduleCommand(action);
+						Command.Executor.execute(action);
 					}
 				});
 	}
@@ -221,7 +220,7 @@ public class ComponentFactory {
 					@Override
 					public void handleEvent(ViewportEvent event) {
 						//Command.Executor.execute(componentEvent);
-						CommandScheduler.Scheduler.scheduleCommand(action);
+						Command.Executor.execute(action);
 					}
 				});
 	}
@@ -236,7 +235,7 @@ public class ComponentFactory {
 				@Override
 				public void keyPress(KeyPressEvent event) {
 					//Command.Executor.execute(componentEvent);
-					CommandScheduler.Scheduler.scheduleCommand(action);
+					Command.Executor.execute(action);
 				}
 			});
 			

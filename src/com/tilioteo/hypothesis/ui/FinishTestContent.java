@@ -3,7 +3,6 @@
  */
 package com.tilioteo.hypothesis.ui;
 
-import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.processing.Command;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -42,7 +41,7 @@ public class FinishTestContent extends VerticalLayout {
 				@Override
 				public void buttonClick(ClickEvent event) {
 					//Command.Executor.execute(nextCommand);
-					CommandScheduler.Scheduler.scheduleCommand(nextCommand);
+					Command.Executor.execute(nextCommand);
 				}
 			});
 		}

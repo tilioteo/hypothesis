@@ -14,7 +14,6 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.Field;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
@@ -150,8 +149,8 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 			@Override
 			public void buttonClick(ClickEvent event) {
 				data.setButton((SelectButton) event.getSource());
-				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(action);
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -189,7 +188,7 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 				@Override
 				public void buttonClick(ClickEvent event) {
 					data.setButton((SelectButton) event.getSource());
-					CommandScheduler.Scheduler.scheduleCommand(componentEvent);
+					Command.Executor.execute(componentEvent);
 					//slideManager.scheduleCommand(action);
 
 				}

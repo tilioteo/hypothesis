@@ -10,7 +10,6 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -99,8 +98,8 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
 				data.setButton((Button) event.getSource());
-				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(action);
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}

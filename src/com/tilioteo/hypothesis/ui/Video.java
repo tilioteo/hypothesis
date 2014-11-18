@@ -10,7 +10,6 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -164,8 +163,8 @@ public class Video extends com.vaadin.ui.Video implements SlideComponent, Maskab
 			public void click(Video.ClickEvent event) {
 				data.setXY(event.getRelativeX(), event.getRelativeY());
 				data.setTime(event.getTime());
-				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(action);
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -178,8 +177,8 @@ public class Video extends com.vaadin.ui.Video implements SlideComponent, Maskab
 		addCanPlayThroughListener(new CanPlayThroughListener() {
 			@Override
 			public void canPlayThrough(CanPlayThroughEvent event) {
-				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(action);
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -193,8 +192,8 @@ public class Video extends com.vaadin.ui.Video implements SlideComponent, Maskab
 			@Override
 			public void start(StartEvent event) {
 				data.setTime(event.getTime());
-				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(action);
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -208,8 +207,8 @@ public class Video extends com.vaadin.ui.Video implements SlideComponent, Maskab
 			@Override
 			public void stop(StopEvent event) {
 				data.setTime(event.getTime());
-				CommandScheduler.Scheduler.scheduleCommand(componentEvent);
-				CommandScheduler.Scheduler.scheduleCommand(action);
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
