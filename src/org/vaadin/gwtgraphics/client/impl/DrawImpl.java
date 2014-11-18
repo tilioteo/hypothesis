@@ -12,6 +12,10 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Style.Visibility;
+import com.google.gwt.dom.client.Style.WhiteSpace;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -161,11 +165,12 @@ public abstract class DrawImpl {
 
 		DivElement measureElement = Document.get().createDivElement();
 		Style style = measureElement.getStyle();
-		style.setProperty("visibility", "hidden");
-		style.setProperty("display", "inline");
-		style.setProperty("whiteSpace", "nowrap");
+		style.setVisibility(Visibility.HIDDEN);
+		style.setDisplay(Display.INLINE);
+		style.setWhiteSpace(WhiteSpace.NOWRAP);
 		style.setProperty("fontFamily", getTextFontFamily(element));
-		style.setPropertyPx("fontSize", getTextFontSize(element));
+		style.setFontSize(getTextFontSize(element), Unit.PX);
+		//style.setPropertyPx("fontSize", getTextFontSize(element));
 		measureElement.setInnerText(text);
 		RootPanel.getBodyElement().appendChild(measureElement);
 		int measurement;
@@ -178,6 +183,6 @@ public abstract class DrawImpl {
 
 		return measurement;
 	}
-
+	
 	public abstract void setPathFillEvenOdd(Element element);
 }

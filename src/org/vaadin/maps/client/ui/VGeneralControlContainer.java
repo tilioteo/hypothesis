@@ -3,7 +3,7 @@
  */
 package org.vaadin.maps.client.ui;
 
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -17,7 +17,7 @@ public class VGeneralControlContainer extends ComplexPanel {
 	
 	public VGeneralControlContainer() {
 		super();
-		setElement(DOM.createDiv());
+		setElement(Document.get().createDivElement());
 		setStyleName(CLASSNAME);
 		setVisible(false);
 		//setSize("0px", "0px");

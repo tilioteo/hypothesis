@@ -3,9 +3,11 @@
  */
 package com.tilioteo.hypothesis.client.ui.mask;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Widget;
 import com.tilioteo.hypothesis.shared.ui.mask.MaskClientRpc;
 import com.vaadin.client.ComponentConnector;
@@ -49,15 +51,16 @@ public class MaskConnector extends AbstractExtensionConnector {
 	protected void mask() {
 		if (null == maskElement && widget != null) {
 			Element parentElement = widget.getElement();
-			maskElement = DOM.createDiv();
+			maskElement = Document.get().createDivElement();
 			parentElement.appendChild(maskElement);
-			DOM.setStyleAttribute(maskElement, "position", "absolute");
-			DOM.setStyleAttribute(maskElement, "zIndex", "1000000000");
-			DOM.setStyleAttribute(maskElement, "top", "0px");
-			DOM.setStyleAttribute(maskElement, "left", "0px");
-			DOM.setStyleAttribute(maskElement, "width", "100%");
-			DOM.setStyleAttribute(maskElement, "height", "100%");
-			DOM.setStyleAttribute(maskElement, "backgroundColor", "#808080");
+			Style style = maskElement.getStyle();
+			style.setPosition(Position.ABSOLUTE);
+			style.setZIndex(1000000000);
+			style.setTop(0, Unit.PX);
+			style.setLeft(0, Unit.PX);
+			style.setWidth(100, Unit.PCT);
+			style.setHeight(100, Unit.PCT);
+			style.setBackgroundColor("#808080");
 			
 			if (null == position || position.isEmpty()) {
 				widget.getElement().getStyle().setPosition(Style.Position.RELATIVE);

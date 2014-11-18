@@ -11,7 +11,7 @@ import org.vaadin.maps.shared.ui.layerlayout.LayerLayoutServerRpc;
 import org.vaadin.maps.shared.ui.layerlayout.LayerLayoutState;
 import org.vaadin.maps.ui.LayerLayout;
 
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.LayoutManager;
@@ -36,7 +36,7 @@ public class LayerLayoutConnector extends AbstractLayoutConnector implements Ele
             this) {
 
         @Override
-        protected ComponentConnector getChildComponent(Element element) {
+        protected ComponentConnector getChildComponent(com.google.gwt.user.client.Element element) {
             return getConnectorForElement(element);
         }
 

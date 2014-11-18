@@ -270,4 +270,9 @@ public abstract class AbstractDrawing extends Widget implements
 		 * "This widget's parent does not implement HasWidgets"); }
 		 */
 	}
+	
+	@Override
+	public String getStylePrimaryName() {
+		return "";
+	}
 }

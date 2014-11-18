@@ -3,7 +3,7 @@
  */
 package org.vaadin.maps.client.ui;
 
-import com.google.gwt.user.client.DOM;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -21,7 +21,7 @@ public abstract class AbstractHandler extends Widget {
 
 	public AbstractHandler() {
 		super();
-		setElement(DOM.createDiv());
+		setElement(Document.get().createDivElement());
 		setStyleName(CLASSNAME);
 		setVisible(false);
 	}

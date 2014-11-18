@@ -20,7 +20,7 @@ import com.vaadin.util.ReflectTools;
  *
  */
 @SuppressWarnings("serial")
-public class ShortcutKey extends AbstractComponent implements Action.ShortcutNotifier {
+public class ShortcutKey extends AbstractComponent implements Action.ShortcutNotifier, NonVisualComponent {
 
 	public ShortcutKey(int keyCode, int... modifiers) {
 		super();

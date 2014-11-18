@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.client.ui;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.SourceElement;
 import com.google.gwt.dom.client.Text;
@@ -15,7 +16,6 @@ import com.google.gwt.event.dom.client.EndedEvent;
 import com.google.gwt.event.dom.client.EndedHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.tilioteo.hypothesis.client.MediaEvents.PauseEvent;
 import com.tilioteo.hypothesis.client.MediaEvents.PauseHandler;
@@ -36,7 +36,7 @@ public class VVideo extends Widget {
     private Element container;
 
     public VVideo() {
-    	container = DOM.createDiv();
+    	container = Document.get().createDivElement();
     	setElement(container);
         video = Document.get().createVideoElement();
         container.appendChild(video);

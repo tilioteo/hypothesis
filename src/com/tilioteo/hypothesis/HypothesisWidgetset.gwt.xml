@@ -3,7 +3,6 @@
 <module>
 	<inherits name="com.vaadin.DefaultWidgetSet" />
 	<inherits name="org.vaadin.maps.VaadinMapsWidgetset" />
-	<inherits name="org.google.gwt.user.DOM" />
 	<inherits name="org.vaadin.jouni.animator.AnimatorWidgetset" />
 	<inherits name="org.vaadin.tltv.vprocjs.ProcessingJsWidgetset" />
 
@@ -23,4 +22,5 @@
 	<!-- To enable SuperDevMode, uncomment this line. See https://vaadin.com/wiki/-/wiki/Main/Using%20SuperDevMode 
 		for more information and instructions. -->
 	<!-- <set-configuration-property name="devModeRedirectEnabled" value="true" /> -->
+
 </module>

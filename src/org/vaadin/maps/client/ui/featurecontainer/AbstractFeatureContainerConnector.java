@@ -18,7 +18,6 @@ public abstract class AbstractFeatureContainerConnector extends
 
 	@Override
 	public AbstractFeatureContainerState getState() {
-		// TODO Auto-generated method stub
 		return (AbstractFeatureContainerState) super.getState();
 	}
 

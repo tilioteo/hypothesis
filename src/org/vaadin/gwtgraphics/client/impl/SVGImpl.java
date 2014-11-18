@@ -104,7 +104,7 @@ public class SVGImpl extends DrawImpl {
 		} else if (type == Group.class) {
 			element = SVGUtil.createSVGElementNS("g");
 		}
-
+		
 		return element;
 	}
 

@@ -5,15 +5,22 @@ package org.vaadin.maps.client.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
@@ -24,12 +31,12 @@ import com.vaadin.client.StyleConstants;
  * @author morong
  * 
  */
-public class VLayerLayout extends ComplexPanel {
+public class VLayerLayout extends ComplexPanel implements PanHandler {
 
 	/** Class name, prefix in styling */
 	public static final String CLASSNAME = "v-layerlayout";
 
-	protected final Element container = DOM.createDiv();
+	protected final Element container = Document.get().createDivElement();
 
 	protected Map<Widget, LayoutWrapper> widgetLayoutWrappers = new HashMap<Widget, LayoutWrapper>();
 	
@@ -296,6 +303,18 @@ public class VLayerLayout extends ComplexPanel {
 		wrapper.setWrapperStyleNames(stylenames);
 	}
 	
+	public HandlerRegistration addMouseDownHandler(MouseDownHandler handler) {
+		return addDomHandler(handler, MouseDownEvent.getType());
+	}
+
+	public HandlerRegistration addMouseMoveHandler(MouseMoveHandler handler) {
+		return addDomHandler(handler, MouseMoveEvent.getType());
+	}
+
+	public HandlerRegistration addMouseUpHandler(MouseUpHandler handler) {
+		return addDomHandler(handler, MouseUpEvent.getType());
+	}
+
 	/**
 	 * Internal wrapper for wrapping widgets in the Layer layout
 	 */
@@ -397,6 +416,28 @@ public class VLayerLayout extends ComplexPanel {
 				for (String stylename : extraStyleNames) {
 					widget.addStyleDependentName(stylename);
 				}
+			}
+		}
+	}
+
+	@Override
+	public void onPanStep(int dX, int dY) {
+		Iterator<Widget> iterator = iterator();
+		while (iterator.hasNext()) {
+			Widget widget = iterator.next();
+			if (widget instanceof PanHandler) {
+				((PanHandler)widget).onPanStep(dX, dY);
+			}
+		}
+	}
+
+	@Override
+	public void onPanEnd(int totalX, int totalY) {
+		Iterator<Widget> iterator = iterator();
+		while (iterator.hasNext()) {
+			Widget widget = iterator.next();
+			if (widget instanceof PanHandler) {
+				((PanHandler)widget).onPanEnd(totalX, totalY);
 			}
 		}
 	}

@@ -3,7 +3,7 @@
  */
 package com.tilioteo.hypothesis.client.ui;
 
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.vaadin.client.ui.VButton;
 
 /**

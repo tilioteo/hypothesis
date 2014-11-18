@@ -28,16 +28,27 @@ public abstract class HUI extends UI {
 
     @Override
 	public void setContent(Component content) {
-        if (content instanceof Timer) {
+        if (content instanceof NonVisualComponent) {
             throw new IllegalArgumentException(
-                    "A Timer cannot be added using setContent. Use addTimer(Timer timer) instead");
+                    "A non visual component cannot be added using setContent. Use attachNonVisualComponent(NonVisualComponent) instead");
         }
-        if (content instanceof ShortcutKey) {
-            throw new IllegalArgumentException(
-                    "A ShortcutKey cannot be added using setContent. Use addShortcutKey(ShortcutKey shortcutKey) instead");
-        }
+
         super.setContent(content);
 	}
+    
+    protected void attachNonVisualComponent(NonVisualComponent component, boolean markAsDirty) {
+    	component.setParent(this);
+    	if (markAsDirty) {
+    		markAsDirty();
+    	}
+    }
+
+    protected void detachNonVisualComponent(NonVisualComponent component, boolean markAsDirty) {
+    	component.setParent(null);
+    	if (markAsDirty) {
+    		markAsDirty();
+    	}
+    }
 
     /**
      * Adds a timer as inside this UI.
@@ -69,8 +80,7 @@ public abstract class HUI extends UI {
      */
     private void attachTimer(Timer timer) {
         timers.add(timer);
-        timer.setParent(this);
-        markAsDirty();
+        attachNonVisualComponent(timer, true);
     }
 
     /**
@@ -86,8 +96,7 @@ public abstract class HUI extends UI {
             return false;
         }
         timer.stop(true);
-        timer.setParent(null);
-        markAsDirty();
+        detachNonVisualComponent(timer, true);
 
         return true;
     }
@@ -97,7 +106,7 @@ public abstract class HUI extends UI {
     	while ((iterator = timers.iterator()).hasNext()) {
     		Timer timer = iterator.next();
     		timer.stop(true);
-    		timer.setParent(null);
+    		detachNonVisualComponent(timer, false);
     		timers.remove(timer);
     	}
     	markAsDirty();
@@ -133,8 +142,7 @@ public abstract class HUI extends UI {
      */
     private void attachShortcutKey(ShortcutKey shortcutKey) {
         shortcuts.add(shortcutKey);
-        shortcutKey.setParent(this);
-        markAsDirty();
+        attachNonVisualComponent(shortcutKey, true);
     }
 
     /**
@@ -149,8 +157,7 @@ public abstract class HUI extends UI {
             // ShortcutKey shortcutKey is not in this UI.
             return false;
         }
-        shortcutKey.setParent(null);
-        markAsDirty();
+        detachNonVisualComponent(shortcutKey, true);
 
         return true;
     }
@@ -159,7 +166,7 @@ public abstract class HUI extends UI {
     	Iterator<ShortcutKey> iterator;
     	while ((iterator = shortcuts.iterator()).hasNext()) {
     		ShortcutKey shortcutKey = iterator.next();
-    		shortcutKey.setParent(null);
+    		detachNonVisualComponent(shortcutKey, false);
     		shortcuts.remove(shortcutKey);
     	}
     	markAsDirty();

@@ -8,12 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
@@ -28,7 +26,7 @@ public class VGridLayout extends ComplexPanel {
 	/** Class name, prefix in styling */
 	public static final String CLASSNAME = "v-gridlayout";
 
-	protected final Element container = DOM.createDiv();
+	protected final Element container = Document.get().createDivElement();
 	
 	protected Map<Widget, GridWrapper> widgetGridWrappers = new HashMap<Widget, GridWrapper>();
 
@@ -66,7 +64,7 @@ public class VGridLayout extends ComplexPanel {
 	@Override
 	public void add(Widget child) {
 		GridWrapper wrapper = new GridWrapper(child);
-		wrapper.updateStyleNames();
+		//wrapper.updateStyleNames();
 		widgetGridWrappers.put(child, wrapper);
 		super.add(wrapper.getWidget(), container);
 	}
@@ -166,10 +164,10 @@ public class VGridLayout extends ComplexPanel {
 	 * @param position
 	 *            The position string
 	 */
-	public void setWidgetPosition(Widget child, String position) {
+	public void setWidgetPosition(Widget child, int left, int top) {
 		GridWrapper wrapper = getChildWrapper(child);
 		if (wrapper != null) {
-			wrapper.setPosition(position);
+			wrapper.setPosition(left, top);
 		}
 	}
 
@@ -225,9 +223,9 @@ public class VGridLayout extends ComplexPanel {
 		super.setStylePrimaryName(primaryStyleName);
 		container.setClassName(getStylePrimaryName() + "-container");
 
-		for (GridWrapper wrapper : widgetGridWrappers.values()) {
+		/*for (GridWrapper wrapper : widgetGridWrappers.values()) {
 			wrapper.updateStyleNames();
-		}
+		}*/
 	}
 
 	/**
@@ -258,12 +256,15 @@ public class VGridLayout extends ComplexPanel {
 	 */
 	protected class GridWrapper {
 		private Widget widget;
+		
+		private int left;
+		private int top;
 
-		private String css;
+		/*private String css;
 		private String left;
 		private String top;
 
-		private String[] extraStyleNames;
+		private String[] extraStyleNames;*/
 
 		/**
 		 * Constructor
@@ -273,6 +274,9 @@ public class VGridLayout extends ComplexPanel {
 		 */
 		public GridWrapper(Widget child) {
 			setWidget(child);
+			
+			left = 0;
+			top = 0;
 		}
 
 		public void setWidget(Widget w) {
@@ -294,8 +298,8 @@ public class VGridLayout extends ComplexPanel {
 		 * @param position
 		 *            The position string
 		 */
-		public void setPosition(String position) {
-			if (css == null || !css.equals(position)) {
+		public void setPosition(int left, int top) {
+			/*if (css == null || !css.equals(position)) {
 				css = position;
 				top = left = null;
 				if (!css.equals("")) {
@@ -319,29 +323,39 @@ public class VGridLayout extends ComplexPanel {
 				// width and height by tile size
 				//style.setWidth(100, Unit.PCT);
 				//style.setHeight(100, Unit.PCT);
-			}
+			}*/
+			
+			this.left = left;
+			this.top = top;
+			// ensure new values
+			Style style = widget.getElement().getStyle();
+			style.setLeft(left, Unit.PX);
+			style.setTop(top, Unit.PX);
+
+			// tiles must be positioned absolutely
+			style.setPosition(Position.ABSOLUTE);
 		}
 
-		/**
+		/*/**
 		 * Sets the style names of the wrapper.
 		 * 
 		 * @param stylenames
 		 *            The wrapper style names
 		 */
-		public void setWrapperStyleNames(String... stylenames) {
+		/*public void setWrapperStyleNames(String... stylenames) {
 			extraStyleNames = stylenames;
 			updateStyleNames();
-		}
+		}*/
 
-		/**
+		/*/**
 		 * Updates the style names using the primary style name as prefix
 		 */
-		protected void updateStyleNames() {
+		/*protected void updateStyleNames() {
 			if (extraStyleNames != null) {
 				for (String stylename : extraStyleNames) {
 					widget.addStyleDependentName(stylename);
 				}
 			}
-		}
+		}*/
 	}
 }

@@ -40,6 +40,10 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Overflow;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 
@@ -103,8 +107,8 @@ public class VMLImpl extends DrawImpl {
 					VMLUtil.VML_ELEMENT_CLASSNAME);
 
 			element = Document.get().createDivElement();
-			element.getStyle().setProperty("position", "absolute");
-			element.getStyle().setProperty("overflow", "hidden");
+			element.getStyle().setPosition(Position.ABSOLUTE);
+			element.getStyle().setOverflow(Overflow.HIDDEN);
 			// element.getStyle().setPropertyPx("width", width);
 			// element.getStyle().setPropertyPx("height", height);
 
@@ -140,6 +144,7 @@ public class VMLImpl extends DrawImpl {
 			element = VMLUtil.createVMLElement("group");
 			setDefaultSize(element);
 		}
+
 		return element;
 	}
 
@@ -275,7 +280,7 @@ public class VMLImpl extends DrawImpl {
 			element = element.getParentElement();
 		}
 		return NumberUtil.parseIntValue(
-				element.getStyle().getProperty("width"), 0);
+				element.getStyle().getWidth(), 0);
 	}
 
 	@Override
@@ -283,9 +288,9 @@ public class VMLImpl extends DrawImpl {
 		if (VMLUtil.getTagName(element).equals("group")) {
 			// DrawingArea's root element
 			element = element.getParentElement();
-			element.getParentElement().getStyle().setPropertyPx("width", width);
+			element.getParentElement().getStyle().setWidth(width, Unit.PX);
 		}
-		element.getStyle().setPropertyPx("width", width);
+		element.getStyle().setWidth(width, Unit.PX);
 	}
 
 	@Override
@@ -301,8 +306,7 @@ public class VMLImpl extends DrawImpl {
 			// DrawingArea's root element
 			element = element.getParentElement();
 		}
-		return NumberUtil.parseIntValue(element.getStyle()
-				.getProperty("height"), 0);
+		return NumberUtil.parseIntValue(element.getStyle().getHeight(), 0);
 	}
 
 	@Override
@@ -310,10 +314,9 @@ public class VMLImpl extends DrawImpl {
 		if (VMLUtil.getTagName(element).equals("group")) {
 			// DrawingArea's root element
 			element = element.getParentElement();
-			element.getParentElement().getStyle()
-					.setPropertyPx("height", height);
+			element.getParentElement().getStyle().setHeight(height, Unit.PX);
 		}
-		element.getStyle().setPropertyPx("height", height);
+		element.getStyle().setHeight(height, Unit.PX);
 	}
 
 	@Override
@@ -411,8 +414,8 @@ public class VMLImpl extends DrawImpl {
 	}
 
 	private void setSize(Element element, int width, int height) {
-		element.getStyle().setPropertyPx("width", width);
-		element.getStyle().setPropertyPx("height", height);
+		element.getStyle().setWidth(width, Unit.PX);
+		element.getStyle().setHeight(height, Unit.PX);
 		element.setPropertyString("coordorigin", "0 0");
 		element.setPropertyString("coordsize", width + " " + height);
 	}
@@ -421,12 +424,12 @@ public class VMLImpl extends DrawImpl {
 		if (!attached) {
 			return;
 		}
-		element.getStyle().setProperty("visibility", "hidden");
+		element.getStyle().setVisibility(Visibility.HIDDEN);
 		Scheduler.get().scheduleDeferred(new ScheduledCommand() {
 			public void execute() {
 				setX(element, getX(element), attached);
 				setY(element, getY(element), attached);
-				element.getStyle().setProperty("visibility", "visible");
+				element.getStyle().setVisibility(Visibility.VISIBLE);
 			}
 		});
 	}
@@ -536,9 +539,7 @@ public class VMLImpl extends DrawImpl {
 
 	private void setTextFont(Element element, boolean attached) {
 		VMLUtil.getOrCreateChildElementWithTagName(element, "textpath")
-				.getStyle()
-				.setProperty(
-						"font",
+				.getStyle().setProperty("font",
 						element.getPropertyInt("_fontsize") + "px "
 								+ element.getPropertyString("_fontfamily"));
 		fixTextPosition(element, attached);
@@ -687,10 +688,10 @@ public class VMLImpl extends DrawImpl {
 
 	@Override
 	public void initCanvasSize(Element element, int width, int height) {
-		// element.getStyle().setProperty("position", "relative");
-		// element.getStyle().setProperty("overflow", "hidden");
-		element.getStyle().setPropertyPx("width", width);
-		element.getStyle().setPropertyPx("height", height);
+		//element.getStyle().setPosition(Position.RELATIVE);
+		//element.getStyle().setOverflow(Overflow.HIDDEN);
+		element.getStyle().setWidth(width, Unit.PX);
+		element.getStyle().setHeight(height, Unit.PX);
 		disableSelection(element);
 	}
 

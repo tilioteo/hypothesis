@@ -47,7 +47,9 @@ public class DecimalFormat extends NumberFormat {
   // Used to keep track of prefix/suffix monetary flags separately;
   // since they are set separately, we wouldn't be able to clear
   // the monetary flag otherwise.
+  @SuppressWarnings("unused")
   private boolean monetaryPrefix;
+  @SuppressWarnings("unused")
   private boolean monetarySuffix;
 
   public DecimalFormat() {
@@ -334,7 +336,8 @@ public class DecimalFormat extends NumberFormat {
     result.append(exponentDigits);
   }
  
-  private int getDigit(char ch) {
+  @SuppressWarnings("unused")
+private int getDigit(char ch) {
     char zero = formatSymbols.getZeroDigit();
     if (ch >= zero && ch <= zero + 9) {
       return ch - zero;
