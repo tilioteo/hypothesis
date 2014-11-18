@@ -13,6 +13,7 @@ import org.vaadin.maps.server.WMSResource;
 public class WMSTile extends AbstractProxyTile<WMSResource> {
 	
 	private WMSResource resource;
+	private ClippedSizeHandler sizeHandler = null;
 	
 	public WMSTile(String baseURL) {
 		super();
@@ -103,10 +104,19 @@ public class WMSTile extends AbstractProxyTile<WMSResource> {
 	public String getBaseUrl() {
 		return resource.getBaseUrl();
 	}
+	
+	public ClippedSizeHandler getSizeHandler() {
+		return sizeHandler;
+	}
+
+	public void setSizeHandler(ClippedSizeHandler sizeHandler) {
+		this.sizeHandler = sizeHandler;
+	}
 
 	@Override
-	protected void clippedSizeChanged(int oldWidth, int oldHeight) {
-		// TODO Auto-generated method stub
-		
+	protected void clippedSizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight) {
+		if (sizeHandler != null) {
+			sizeHandler.onSizeChange(oldWidth, oldHeight, newWidth, newHeight);
+		}
 	}
 }

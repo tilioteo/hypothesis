@@ -35,7 +35,7 @@ public class ImageTile extends AbstractProxyTile<ImageResource> {
 	}
 
 	@Override
-	protected void clippedSizeChanged(int oldWidth, int oldHeight) {
+	protected void clippedSizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight) {
 		// TODO Auto-generated method stub
 		
 	}

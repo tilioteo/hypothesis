@@ -9,6 +9,7 @@ import org.vaadin.maps.shared.ui.layer.VectorFeatureLayerState;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -27,6 +28,15 @@ public class VectorFeatureLayerConnector extends AbstractLayerConnector {
 	@Override
 	public VectorFeatureLayerState getState() {
 		return (VectorFeatureLayerState) super.getState();
+	}
+
+	@Override
+	public void onStateChanged(StateChangeEvent stateChangeEvent) {
+		super.onStateChanged(stateChangeEvent);
+		
+		if (stateChangeEvent.hasPropertyChanged("fixed")) {
+			getWidget().setFixed(getState().fixed);
+		}
 	}
 
 	@Override

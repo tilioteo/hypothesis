@@ -12,4 +12,7 @@ import com.vaadin.shared.AbstractComponentState;
 @SuppressWarnings("serial")
 public class AbstractLayerState extends AbstractComponentState {
 
+	public boolean base = false;
+	public boolean fixed = false;
+	
 }

@@ -6,10 +6,12 @@ package org.vaadin.maps.client.ui.gridlayout;
 import org.vaadin.maps.client.ui.AbstractLayoutConnector;
 import org.vaadin.maps.client.ui.VGridLayout;
 import org.vaadin.maps.shared.ui.gridlayout.GridLayoutState;
+import org.vaadin.maps.shared.ui.gridlayout.GridLayoutState.ChildComponentData;
 import org.vaadin.maps.ui.GridLayout;
 
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -26,13 +28,27 @@ public class GridLayoutConnector extends AbstractLayoutConnector {
 		
 	}
 
+    @Override
+    public void onStateChanged(StateChangeEvent stateChangeEvent) {
+        super.onStateChanged(stateChangeEvent);
+
+        for (ComponentConnector child : getChildComponents()) {
+            setChildWidgetPosition(child);
+        }
+    }
+
+    private void setChildWidgetPosition(ComponentConnector child) {
+    	ChildComponentData childComponentData = getState().childData.get(child);
+        getWidget().setWidgetPosition(child.getWidget(), childComponentData.left, childComponentData.top);
+    };
+
 	@Override
 	public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
         for (ComponentConnector child : getChildComponents()) {
             if (!getWidget().contains(child.getWidget())) {
                 getWidget().add(child.getWidget());
                 //child.addStateChangeHandler(childStateChangeHandler);
-                //setChildWidgetPosition(child);
+                setChildWidgetPosition(child);
             }
         }
         for (ComponentConnector oldChild : event.getOldChildren()) {

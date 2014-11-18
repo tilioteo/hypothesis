@@ -27,6 +27,11 @@ public class ControlLayer extends AbstractLayer<GeneralControlContainer> {
 		return false;
 	}
 
+	@Override
+	public boolean isFixed() {
+		return true;
+	}
+
     /**
      * Add a control into this layer.
      * 

@@ -29,5 +29,8 @@ public class GridLayoutState extends AbstractLayoutState {
         public int row1;
         public int column2;
         public int row2;
+        
+        public int left = 0;
+        public int top = 0;
     }
 }

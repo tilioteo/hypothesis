@@ -5,5 +5,5 @@ import com.vaadin.ui.Component;
 public interface Layer extends Component {
 
 	public boolean isBase();
-	
+	public boolean isFixed();
 }

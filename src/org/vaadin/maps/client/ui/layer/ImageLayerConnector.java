@@ -9,6 +9,7 @@ import org.vaadin.maps.shared.ui.layer.ImageLayerState;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -32,6 +33,15 @@ public class ImageLayerConnector extends AbstractLayerConnector {
 	@Override
 	public ImageLayerState getState() {
 		return (ImageLayerState) super.getState();
+	}
+
+	@Override
+	public void onStateChanged(StateChangeEvent stateChangeEvent) {
+		super.onStateChanged(stateChangeEvent);
+		
+		if (stateChangeEvent.hasPropertyChanged("fixed")) {
+			getWidget().setFixed(getState().fixed);
+		}
 	}
 
 	@Override

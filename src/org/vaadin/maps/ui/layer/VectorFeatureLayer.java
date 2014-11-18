@@ -52,6 +52,15 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
 		return false;
 	}
 
+	public void setFixed(boolean fixed) {
+		getState().fixed = fixed;
+	}
+	
+	@Override
+	public boolean isFixed() {
+		return getState().fixed;
+	}
+
 	@Override
 	public int getTabIndex() {
         return getState().tabIndex;

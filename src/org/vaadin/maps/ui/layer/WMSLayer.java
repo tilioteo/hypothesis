@@ -4,6 +4,9 @@
 package org.vaadin.maps.ui.layer;
 
 import org.vaadin.maps.server.WMSConstants;
+import org.vaadin.maps.shared.ui.gridlayout.GridLayoutState.ChildComponentData;
+import org.vaadin.maps.ui.GridLayout;
+import org.vaadin.maps.ui.tile.ClippedSizeHandler;
 import org.vaadin.maps.ui.tile.WMSTile;
 
 import com.tilioteo.hypothesis.common.Strings;
@@ -30,6 +33,23 @@ public class WMSLayer extends GridLayer<WMSTile> {
 	
 	private boolean singleTile = true;
 	
+	// TODO change
+	// used in single tile mode only
+	private ClippedSizeHandler sizeHandler = new ClippedSizeHandler() {
+		@Override
+		public void onSizeChange(int oldWidth, int oldHeight, int newWidth,	int newHeight) {
+			// center overlapping tile
+			int dx = (visibleWidth - newWidth) / 2;
+			int dy = (visibleHeight - newHeight) /2;
+			
+			WMSTile tile = (WMSTile) getGrid().getComponent(0, 0);
+			GridLayout<WMSTile>.Area tileArea = getGrid().getComponentArea(tile);
+			ChildComponentData data = tileArea.getChildData();
+			data.left = dx;
+			data.top = dy;
+		}
+	};
+	
 	public WMSLayer() {
 		super();
 	}
@@ -42,6 +62,11 @@ public class WMSLayer extends GridLayer<WMSTile> {
 	@Override
 	public boolean isBase() {
 		return true;
+	}
+
+	@Override
+	public boolean isFixed() {
+		return false;
 	}
 
 	public String getBaseUrl() {
@@ -107,7 +132,7 @@ public class WMSLayer extends GridLayer<WMSTile> {
 				
 				getGrid().addComponent(tile);
 			} else {
-				// TODO 
+				// TODO implement grid arrangement
 			}
 		}
 	}
@@ -121,6 +146,8 @@ public class WMSLayer extends GridLayer<WMSTile> {
 		tile.setStyles(styles);
 		tile.setBBox(bbox);
 		tile.setFormat(format);
+		
+		tile.setSizeHandler(sizeHandler);
 		
 		return tile;
 	}
@@ -143,6 +170,5 @@ public class WMSLayer extends GridLayer<WMSTile> {
 		
 		rebuildTiles();
 	}
-
 	
 }

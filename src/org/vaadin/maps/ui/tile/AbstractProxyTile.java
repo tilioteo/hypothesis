@@ -46,7 +46,7 @@ public abstract class AbstractProxyTile<T extends TileResource> extends Abstract
 			int oldHeight = AbstractProxyTile.this.clippedHeight;
 			AbstractProxyTile.this.clippedWidth = width;
 			AbstractProxyTile.this.clippedHeight = height;
-			clippedSizeChanged(oldWidth, oldHeight);
+			clippedSizeChanged(oldWidth, oldHeight, width, height);
 		}
 	};
 	
@@ -106,7 +106,7 @@ public abstract class AbstractProxyTile<T extends TileResource> extends Abstract
 		return clippedHeight;
 	}
 	
-	protected abstract void clippedSizeChanged(int oldWidth, int oldHeight);
+	protected abstract void clippedSizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight);
 
 	/**
 	 * Load event. This event is thrown, when the tile is loaded.

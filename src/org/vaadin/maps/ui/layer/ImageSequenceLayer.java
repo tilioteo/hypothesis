@@ -41,6 +41,11 @@ public class ImageSequenceLayer extends AbstractLayer<ImageSequenceTile> impleme
 	}
 
 	@Override
+	public boolean isFixed() {
+		return true;
+	}
+
+	@Override
 	protected ImageSequenceLayerState getState() {
 		return (ImageSequenceLayerState) super.getState();
 	}

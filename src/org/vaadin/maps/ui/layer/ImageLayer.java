@@ -35,6 +35,8 @@ public class ImageLayer extends AbstractLayer<ImageTile> implements Focusable, M
 	public ImageLayer() {
 		registerRpc(rpc);
 		getState().tabIndex = -1;
+		getState().base = true;
+		
 		initTile();
 	}
 	
@@ -57,6 +59,15 @@ public class ImageLayer extends AbstractLayer<ImageTile> implements Focusable, M
 	@Override
 	public boolean isBase() {
 		return true;
+	}
+
+	@Override
+	public boolean isFixed() {
+		return getState().fixed;
+	}
+	
+	public void setFixed(boolean fixed) {
+		getState().fixed = fixed;
 	}
 
 	@Override
