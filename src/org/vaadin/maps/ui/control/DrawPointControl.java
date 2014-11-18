@@ -3,6 +3,7 @@
  */
 package org.vaadin.maps.ui.control;
 
+import org.vaadin.maps.shared.ui.control.DrawPointControlState;
 import org.vaadin.maps.ui.handler.PointHandler;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 
@@ -17,4 +18,8 @@ public class DrawPointControl extends DrawFeatureControl<PointHandler> {
 		super(layer);
 	}
 
+	@Override
+	protected DrawPointControlState getState() {
+		return (DrawPointControlState) super.getState();
+	}
 }

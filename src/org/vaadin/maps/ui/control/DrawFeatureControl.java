@@ -4,9 +4,8 @@
 package org.vaadin.maps.ui.control;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
+import org.vaadin.maps.server.ClassUtility;
 import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.control.DrawFeatureControlState;
 import org.vaadin.maps.ui.CanCancel;
@@ -32,6 +31,7 @@ public abstract class DrawFeatureControl<H extends FeatureHandler> extends Abstr
 	
 	public DrawFeatureControl(VectorFeatureLayer layer) {
 		super();
+		controlType = ControlType.TOOL;
 		
 		this.handlerClass = getGenericHandlerTypeClass();
 		
@@ -42,14 +42,7 @@ public abstract class DrawFeatureControl<H extends FeatureHandler> extends Abstr
 	
 	@SuppressWarnings("unchecked")
 	private Class<H> getGenericHandlerTypeClass() {
-		Class<?> superClass = this.getClass().getSuperclass();
-		Type genericSuperClass = this.getClass().getGenericSuperclass();
-		while (!(genericSuperClass instanceof ParameterizedType)) {
-			genericSuperClass = superClass.getGenericSuperclass();
-			superClass = superClass.getSuperclass();
-		}
-
-		return (Class<H>) ((ParameterizedType) genericSuperClass).getActualTypeArguments()[0];
+		return (Class<H>) ClassUtility.getGenericTypeClass(this.getClass(), 0);
 	}
 
 	private void initHandler() {
