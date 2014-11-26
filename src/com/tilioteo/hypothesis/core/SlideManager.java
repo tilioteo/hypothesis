@@ -320,6 +320,9 @@ public class SlideManager extends ListManager<Task, Slide> implements
 			window.removeAllCloseListeners();
 			window.close();
 		}
-		
+	}
+	
+	public Slide getSlide() {
+		return current;
 	}
 }

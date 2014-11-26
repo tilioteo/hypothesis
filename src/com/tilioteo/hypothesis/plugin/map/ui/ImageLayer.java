@@ -91,29 +91,30 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 		}
 	}
 
-	private void setClickHandler(String actionId) {
-		final ImageLayerData data = new ImageLayerData(this, slideManager);
-		final Command componentEvent = MapComponentFactory.createImageLayerClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setClickHandler(final String actionId) {
 		addClickListener(new ClickListener() {
 			@Override
 			public void click(ClickEvent event) {
+				ImageLayerData data = new ImageLayerData(ImageLayer.this, slideManager);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
+
+				Command componentEvent = MapComponentFactory.createImageLayerClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setLoadHandler(String actionId) {
-		final ImageLayerData data = new ImageLayerData(this, slideManager);
-		final Command componentEvent = MapComponentFactory.createImageLayerLoadEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-		
+	private void setLoadHandler(final String actionId) {
 		addLoadListener(new LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
+				ImageLayerData data = new ImageLayerData(ImageLayer.this, slideManager);
+				Command componentEvent = MapComponentFactory.createImageLayerLoadEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}

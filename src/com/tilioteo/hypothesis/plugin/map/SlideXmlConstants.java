@@ -64,6 +64,8 @@ public class SlideXmlConstants {
 	public static final String FILL_COLOR = "FillColor";
 	public static final String FILL_OPACITY = "FillOpacity";
 	public static final String POINT_RADIUS = "PointRadius";
+	public static final String POINT_SHAPE = "PointShape";
+	public static final String POINT_SHAPE_SCALE = "PointShapeScale";
 	public static final String FONT_FAMILY = "FontFamily";
 	public static final String FONT_SIZE = "FontSize";
 	public static final String TEXT_COLOR = "TextColor";
@@ -79,13 +81,13 @@ public class SlideXmlConstants {
 			new String[] { IMAGE_LAYER, FEATURE_LAYER, IMAGE_SEQUENCE_LAYER });
 
 	public static final StringSet VALID_CONTROL_ELEMENTS = new StringSet(
-			new String[] { DRAW_POINT, DRAW_PATH });
+			new String[] { DRAW_POINT, DRAW_PATH, DRAW_POLYGON });
 
 	public static final StringSet VALID_FEATURE_ELEMENTS = new StringSet(
 			new String[] { FEATURE });
 	
 	public static final StringSet STYLE_ATTRIBUTES = new StringSet(
 			new String[] { OPACITY, STROKE_COLOR, STROKE_WIDTH, STROKE_OPACITY, FILL_COLOR, FILL_OPACITY,
-					POINT_RADIUS, FONT_FAMILY, FONT_SIZE, TEXT_COLOR, TEXT_STROKE_COLOR,
+					POINT_RADIUS, POINT_SHAPE, POINT_SHAPE_SCALE, FONT_FAMILY, FONT_SIZE, TEXT_COLOR, TEXT_STROKE_COLOR,
 					TEXT_STROKE_WIDTH, TEXT_OPACITY, TEXT_FILL_OPACITY });
 }

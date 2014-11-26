@@ -29,6 +29,7 @@ import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerEvent;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPointControl;
+import com.tilioteo.hypothesis.plugin.map.ui.DrawPolygonControl;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageSequenceLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeature;
@@ -61,17 +62,17 @@ public class MapComponentFactory {
 				component = ComponentFactory.<ImageSequenceLayer> createFromElement(
 						ImageSequenceLayer.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.FEATURE_LAYER))
-				component = ComponentFactory
-						.<VectorFeatureLayer> createFromElement(
+				component = ComponentFactory.<VectorFeatureLayer> createFromElement(
 								VectorFeatureLayer.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.DRAW_POINT))
-				component = ComponentFactory
-						.<DrawPointControl> createFromElement(
+				component = ComponentFactory.<DrawPointControl> createFromElement(
 								DrawPointControl.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.DRAW_PATH))
-				component = ComponentFactory
-						.<DrawPathControl> createFromElement(
+				component = ComponentFactory.<DrawPathControl> createFromElement(
 								DrawPathControl.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.DRAW_POLYGON))
+				component = ComponentFactory.<DrawPolygonControl> createFromElement(
+								DrawPolygonControl.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.FEATURE))
 				component = ComponentFactory.<VectorFeature> createFromElement(
 						VectorFeature.class, element, slideManager);
@@ -87,61 +88,61 @@ public class MapComponentFactory {
 	}
 
 	public static Command createImageLayerClickEventCommand(ImageLayerData data) {
-		final ImageLayerEvent event = new ImageLayerEvent.Click(data);
+		ImageLayerEvent event = new ImageLayerEvent.Click(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createImageLayerLoadEventCommand(ImageLayerData data) {
-		final ImageLayerEvent event = new ImageLayerEvent.Load(data);
+		ImageLayerEvent event = new ImageLayerEvent.Load(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createImageSequenceLayerClickEventCommand(ImageSequenceLayerData data) {
-		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Click(data);
+		ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Click(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createImageSequenceLayerLoadEventCommand(ImageSequenceLayerData data) {
-		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Load(data);
+		ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Load(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createImageSequenceLayerChangeEventCommand(ImageSequenceLayerData data) {
-		final ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Change(data);
+		ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Change(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createVectorFeatureLayerClickEventCommand(VectorFeatureLayerData data) {
-		final VectorFeatureLayerEvent event = new VectorFeatureLayerEvent.Click(data);
+		VectorFeatureLayerEvent event = new VectorFeatureLayerEvent.Click(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createVectorFeatureClickEventCommand(VectorFeatureData data) {
-		final VectorFeatureEvent event = new VectorFeatureEvent.Click(data);
+		VectorFeatureEvent event = new VectorFeatureEvent.Click(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createDrawPointControlEventCommand(DrawPointControlData data) {
-		final DrawPointControlEvent event = new DrawPointControlEvent.DrawPoint(data);
+		DrawPointControlEvent event = new DrawPointControlEvent.DrawPoint(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createDrawPathControlEventCommand(DrawPathControlData data) {
-		final DrawPathControlEvent event = new DrawPathControlEvent.DrawPath(data);
+		DrawPathControlEvent event = new DrawPathControlEvent.DrawPath(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createDrawPolygonControlEventCommand(DrawPolygonControlData data) {
-		final DrawPolygonControlEvent event = new DrawPolygonControlEvent.DrawPolygon(data);
+		DrawPolygonControlEvent event = new DrawPolygonControlEvent.DrawPolygon(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}

@@ -83,15 +83,16 @@ public class DrawPathControl extends org.vaadin.maps.ui.control.DrawPathControl 
 		}
 	}
 
-	private void setDrawHandler(String actionId) {
-		final DrawPathControlData data = new DrawPathControlData(this, slideManager);
-		final Command componentEvent = MapComponentFactory.createDrawPathControlEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setDrawHandler(final String actionId) {
 		addGeomertyListener(new FeatureHandler.GeometryListener() {
 			@Override
 			public void geometry(GeometryEvent event) {
+				DrawPathControlData data = new DrawPathControlData(DrawPathControl.this, slideManager);
 				data.setGeometry(event.getGeometry());
+
+				Command componentEvent = MapComponentFactory.createDrawPathControlEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}

@@ -52,15 +52,14 @@ public class Button extends com.vaadin.ui.NativeButton implements
 
 	}
 
-	private void setClickHandler(String actionId) {
-		final ButtonData data = new ButtonData(this, slideManager);
-		final Command componentEvent = CommandFactory.createButtonClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId, data);
-
+	private void setClickHandler(final String actionId) {
 		addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
+				ButtonData data = new ButtonData(Button.this, slideManager);
+				Command componentEvent = CommandFactory.createButtonClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}

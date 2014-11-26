@@ -139,16 +139,15 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 		addChilds();
 	}
 
-	private void setClickHandler(String actionId) {
-		final SelectPanelData data = new SelectPanelData(this, slideManager);
-		final Command componentEvent = CommandFactory.createSelectPanelClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId, data);
-
+	private void setClickHandler(final String actionId) {
 		addButtonClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
+				SelectPanelData data = new SelectPanelData(SelectPanel.this, slideManager);
 				data.setButton((SelectButton) event.getSource());
+				Command componentEvent = CommandFactory.createSelectPanelClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
@@ -182,15 +181,14 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 
 	private void setDefaultButtonClickListener() {
 		if (clickListeners.isEmpty()) {
-			final SelectPanelData data = new SelectPanelData(this, slideManager);
-			final Command componentEvent = CommandFactory.createSelectPanelClickEventCommand(data);
 			addButtonClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
+					SelectPanelData data = new SelectPanelData(SelectPanel.this, slideManager);
 					data.setButton((SelectButton) event.getSource());
-					Command.Executor.execute(componentEvent);
-					//slideManager.scheduleCommand(action);
 
+					Command componentEvent = CommandFactory.createSelectPanelClickEventCommand(data);
+					Command.Executor.execute(componentEvent);
 				}
 			});
 		}

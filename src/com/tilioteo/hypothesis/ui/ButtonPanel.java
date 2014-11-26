@@ -88,16 +88,16 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 		addChilds();
 	}
 
-	private void setClickHandler(String actionId) {
-		final ButtonPanelData data = new ButtonPanelData(this, slideManager);
-		final Command componentEvent = CommandFactory.createButtonPanelClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId, data);
-
+	private void setClickHandler(final String actionId) {
 		addButtonClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
+				ButtonPanelData data = new ButtonPanelData(ButtonPanel.this, slideManager);
 				data.setButton((Button) event.getSource());
+				
+				Command componentEvent = CommandFactory.createButtonPanelClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}

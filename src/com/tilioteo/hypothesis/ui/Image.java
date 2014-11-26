@@ -237,16 +237,16 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskab
 
 	}
 
-	private void setClickHandler(String actionId) {
-		final ImageData data = new ImageData(this, slideManager);
-		final Command componentEvent = CommandFactory.createImageClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId, data);
-
+	private void setClickHandler(final String actionId) {
 		addClickListener(new MouseEvents.ClickListener() {
 			@Override
 			public void click(MouseEvents.ClickEvent event) {
+				ImageData data = new ImageData(Image.this, slideManager);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
+				
+				Command componentEvent = CommandFactory.createImageClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
@@ -278,15 +278,14 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskab
 		}
 	}
 
-	private void setLoadHandler(String actionId) {
-		final ImageData data = new ImageData(this, slideManager);
-		final Command componentEvent = CommandFactory.createImageLoadEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId, data);
-
+	private void setLoadHandler(final String actionId) {
 		addLoadListener(new LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
+				ImageData data = new ImageData(Image.this, slideManager);
+				Command componentEvent = CommandFactory.createImageLoadEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}

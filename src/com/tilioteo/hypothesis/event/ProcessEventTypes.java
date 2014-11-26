@@ -58,6 +58,8 @@ public class ProcessEventTypes {
 	public static final String AudioLoad = "AUDIO_LOAD";
 	public static final String AudioStart = "AUDIO_START";
 	public static final String AudioStop = "AUDIO_STOP";
+	public static final String SlideInit = "SLIDE_INIT";
+	public static final String SlideShow = "SLIDE_SHOW";
 	public static final String ShortcutKey = "SHORTCUT_KEY";
 
 	static {
@@ -78,7 +80,11 @@ public class ProcessEventTypes {
 		nextId += 9;
 		registerEvent(RenderSlide); // 30
 		registerEvent(AfterRender); // 31
-		nextId += 18;
+
+		registerEvent(SlideInit); // 32
+		registerEvent(SlideShow); // 33
+		registerEvent(ShortcutKey); // 34
+		nextId += 15;
 		registerEvent(Action); // 50
 		nextId += 49;
 		registerEvent(ButtonClick); // 100
@@ -101,7 +107,6 @@ public class ProcessEventTypes {
 		registerEvent(AudioLoad); // 117
 		registerEvent(AudioStart); // 118
 		registerEvent(AudioStop); // 119
-		registerEvent(ShortcutKey); // 120
 		//nextId += 881; // plugin events begin from 1000
 	}
 

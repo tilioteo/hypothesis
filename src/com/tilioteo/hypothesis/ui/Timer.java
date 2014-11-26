@@ -378,46 +378,49 @@ public class Timer extends AbstractComponent implements SlideComponent, NonVisua
 		}
 	}
 
-	private void setStartHandler(String actionId) {
-		final TimerData data = new TimerData(this, slideManager);
-		final Command componentEvent = CommandFactory.createTimerStartEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setStartHandler(final String actionId) {
 		addStartListener(new StartListener() {
 			@Override
 			public void start(StartEvent event) {
+				TimerData data = new TimerData(Timer.this, slideManager);
 				data.setTime(event.getTime());
+				
+				Command componentEvent = CommandFactory.createTimerStartEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setStopHandler(String actionId) {
-		final TimerData data = new TimerData(this, slideManager);
-		final Command componentEvent = CommandFactory.createTimerStopEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setStopHandler(final String actionId) {
 		addStopListener(new StopListener() {
 			@Override
 			public void stop(StopEvent event) {
+				TimerData data = new TimerData(Timer.this, slideManager);
 				data.setTime(event.getTime());
+
+				Command componentEvent = CommandFactory.createTimerStopEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setUpdateHandler(String actionId, Integer interval) {
+	private void setUpdateHandler(final String actionId, Integer interval) {
 		if (interval != null) {
-			final TimerData data = new TimerData(this, slideManager);
-			final Command componentEvent = CommandFactory.createTimerUpdateEventCommand(data);
-			final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
 			addUpdateListener(interval, new UpdateListener() {
 				@Override
 				public void update(UpdateEvent event) {
+					TimerData data = new TimerData(Timer.this, slideManager);
 					data.setTime(event.getTime());
+
+					Command componentEvent = CommandFactory.createTimerUpdateEventCommand(data);
+					Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 					Command.Executor.execute(componentEvent);
 					Command.Executor.execute(action);
 				}

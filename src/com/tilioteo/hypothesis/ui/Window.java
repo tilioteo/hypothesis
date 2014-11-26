@@ -261,13 +261,14 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		fireOpen();
 	}
 
-	private void setCloseHandler(String actionId) {
-		final WindowData data = new WindowData(this, slideManager);
-		final Command componentEvent = CommandFactory.createWindowCloseEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
+	private void setCloseHandler(final String actionId) {
 		addCloseListener(new CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
+				WindowData data = new WindowData(Window.this, slideManager);
+				Command componentEvent = CommandFactory.createWindowCloseEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
@@ -315,13 +316,14 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		}
 	}
 
-	private void setInitHandler(String actionId) {
-		final WindowData data = new WindowData(this, slideManager);
-		final Command componentEvent = CommandFactory.createWindowInitEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
+	private void setInitHandler(final String actionId) {
 		addInitListener(new InitListener() {
 			@Override
 			public void initWindow(InitEvent event) {
+				WindowData data = new WindowData(Window.this, slideManager);
+				Command componentEvent = CommandFactory.createWindowInitEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
@@ -338,13 +340,14 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		// TODO in future set dynamic css
 	}
 
-	private void setOpenHandler(String actionId) {
-		final WindowData data = new WindowData(this, slideManager);
-		final Command componentEvent = CommandFactory.createWindowOpenEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
+	private void setOpenHandler(final String actionId) {
 		addOpenListener(new OpenListener() {
 			@Override
 			public void openWindow(OpenEvent e) {
+				WindowData data = new WindowData(Window.this, slideManager);
+				Command componentEvent = CommandFactory.createWindowOpenEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}

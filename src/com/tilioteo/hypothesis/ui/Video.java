@@ -152,61 +152,63 @@ public class Video extends com.vaadin.ui.Video implements SlideComponent, Maskab
 		}
 	}
 
-	private void setClickHandler(String actionId) {
-		final VideoData data = new VideoData(this, slideManager);
-		final Command componentEvent = CommandFactory.createVideoClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId, data);
-
+	private void setClickHandler(final String actionId) {
 		addClickListener(new Video.ClickListener() {
 			@Override
 			public void click(Video.ClickEvent event) {
+				VideoData data = new VideoData(Video.this, slideManager);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
 				data.setTime(event.getTime());
+
+				Command componentEvent = CommandFactory.createVideoClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setLoadHandler(String actionId) {
-		final VideoData data = new VideoData(this, slideManager);
-		final Command componentEvent = CommandFactory.createVideoLoadEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setLoadHandler(final String actionId) {
 		addCanPlayThroughListener(new CanPlayThroughListener() {
 			@Override
 			public void canPlayThrough(CanPlayThroughEvent event) {
+				VideoData data = new VideoData(Video.this, slideManager);
+				Command componentEvent = CommandFactory.createVideoLoadEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setStartHandler(String actionId) {
-		final VideoData data = new VideoData(this, slideManager);
-		final Command componentEvent = CommandFactory.createVideoStartEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setStartHandler(final String actionId) {
 		addStartListener(new StartListener() {
 			@Override
 			public void start(StartEvent event) {
+				VideoData data = new VideoData(Video.this, slideManager);
 				data.setTime(event.getTime());
+
+				Command componentEvent = CommandFactory.createVideoStartEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setStopHandler(String actionId) {
-		final VideoData data = new VideoData(this, slideManager);
-		final Command componentEvent = CommandFactory.createVideoStopEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setStopHandler(final String actionId) {
 		addStopListener(new StopListener() {
 			@Override
 			public void stop(StopEvent event) {
+				VideoData data = new VideoData(Video.this, slideManager);
 				data.setTime(event.getTime());
+
+				Command componentEvent = CommandFactory.createVideoStopEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}

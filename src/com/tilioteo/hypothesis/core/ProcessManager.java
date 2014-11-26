@@ -52,6 +52,7 @@ import com.tilioteo.hypothesis.event.ProcessEventManager;
 import com.tilioteo.hypothesis.event.ProcessEventType;
 import com.tilioteo.hypothesis.event.ProcessEventTypes;
 import com.tilioteo.hypothesis.event.RenderContentEvent;
+import com.tilioteo.hypothesis.event.SlideEvent;
 import com.tilioteo.hypothesis.event.StartTestEvent;
 import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.OutputManager;
@@ -111,6 +112,7 @@ public class ProcessManager implements ProcessEventListener {
 
 				ErrorTestEvent.class,
 				AbstractComponentEvent.class,
+				SlideEvent.class,
 				ActionEvent.class
 		);
 		if (listener != null) {
@@ -177,6 +179,8 @@ public class ProcessManager implements ProcessEventListener {
 			processError((ErrorTestEvent) event);
 		} else if (event instanceof AbstractComponentEvent<?>) {
 			processComponentEvent((AbstractComponentEvent<?>) event);
+		} else if (event instanceof SlideEvent) {
+			processSlideEvent((SlideEvent) event);
 		} else if (event instanceof ActionEvent) {
 			processActionEvent((ActionEvent) event);
 		}
@@ -224,6 +228,11 @@ public class ProcessManager implements ProcessEventListener {
 	private void processComponentEvent(AbstractComponentEvent<?> event) {
 		log.debug(String.format("processComponentEvent: component id = %s", event.getComponentData() != null ? event.getComponentData().getComponentId() : "NULL"));
 		saveComponentEvent(event);
+	}
+
+	private void processSlideEvent(SlideEvent event) {
+		log.debug(String.format("processSlideEvent: slide id = %s", event.getComponentData() != null ? event.getComponentData().getComponentId() : "NULL"));
+		saveSlideEvent(event);
 	}
 
 	private void processContinueTest(ContinueTestEvent eventObj) {
@@ -603,6 +612,12 @@ public class ProcessManager implements ProcessEventListener {
 		saveTestProcessEvent(componentEvent);
 	}
 	
+	private void saveSlideEvent(SlideEvent slideEvent) {
+		log.debug(String.format("saveSlideEvent: name = %s", slideEvent.getName()));
+		slideEvent.updateTimestamp();
+		saveTestProcessEvent(slideEvent);
+	}
+	
 	private void saveTestProcessEvent(ProcessEvent processEvent) {
 		log.debug(String.format("saveTestProcessEvent: name = %s", processEvent.getName()));
 		if (currentTest != null) {
@@ -612,6 +627,8 @@ public class ProcessManager implements ProcessEventListener {
 					updateActionEventData(event, (ActionEvent)processEvent);
 				} else if (processEvent instanceof AbstractComponentEvent) {
 					updateComponentEventData(event, (AbstractComponentEvent<?>)processEvent);
+				} else if (processEvent instanceof SlideEvent) {
+					updateSlideEventData(event, (SlideEvent)processEvent);
 				}
 				updateEvent(event);
 				updateTest(currentTest, processEvent.getTimestamp());
@@ -672,6 +689,13 @@ public class ProcessManager implements ProcessEventListener {
 		log.debug("updateComponentEventData::");
 		Document doc = SlideXmlFactory.createEventDataXml();
 		SlideFactory.writeComponentData(doc.getRootElement(), componentEvent);
+		event.setXmlData(XmlUtility.writeString(doc));
+	}
+	
+	private void updateSlideEventData(Event event, SlideEvent slideEvent) {
+		log.debug("updateComponentEventData::");
+		Document doc = SlideXmlFactory.createEventDataXml();
+		SlideFactory.writeSlideEventData(doc.getRootElement(), slideEvent);
 		event.setXmlData(XmlUtility.writeString(doc));
 	}
 	

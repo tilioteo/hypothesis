@@ -5,7 +5,10 @@ package com.tilioteo.hypothesis.ui;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import com.tilioteo.hypothesis.core.ShortcutConstants;
 import com.vaadin.event.Action;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -21,6 +24,9 @@ import com.vaadin.util.ReflectTools;
  */
 @SuppressWarnings("serial")
 public class ShortcutKey extends AbstractComponent implements Action.ShortcutNotifier, NonVisualComponent {
+	
+	private int keyCode;
+	private int[] modifiers;
 
 	public ShortcutKey(int keyCode, int... modifiers) {
 		super();
@@ -248,7 +254,11 @@ public class ShortcutKey extends AbstractComponent implements Action.ShortcutNot
         if (shortcut != null) {
             removeShortcutListener(shortcut);
         }
+        this.keyCode = keyCode;
+        this.modifiers = modifiers;
+        
         shortcut = new Shortcut(this, keyCode, modifiers);
+        
         addShortcutListener(shortcut);
     }
 
@@ -324,4 +334,38 @@ public class ShortcutKey extends AbstractComponent implements Action.ShortcutNot
         }
     }
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		
+		if (modifiers != null) {
+			for (int modifier : modifiers) {
+				switch (modifier) {
+				case ShortcutAction.ModifierKey.SHIFT:
+					builder.append("Shift+");
+					break;
+				case ShortcutAction.ModifierKey.CTRL:
+					builder.append("Ctrl+");
+					break;
+				case ShortcutAction.ModifierKey.ALT:
+					builder.append("Alt+");
+					break;
+				case ShortcutAction.ModifierKey.META:
+					builder.append("Meta+");
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		
+		Set<Entry<String, Integer>> entries = ShortcutConstants.SHORTCUT_MAP.entrySet();
+		for (Entry<String, Integer> entry : entries) {
+			if (keyCode == entry.getValue()) {
+				builder.append(entry.getKey());
+			}
+		}
+
+		return builder.toString();
+	}
 }

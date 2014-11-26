@@ -245,7 +245,7 @@ public class VProcessing extends SimplePanel {
 
 	native private static void initProcessingJsWithCode(VProcessing vprocessing, String canvasClass, Element root,
 			String processingCode, String canvasid) /*-{
-		var targetcanvas = @org.vaadin.tltv.vprocjs.client.ui.VProcessing::getCanvas(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/user/client/Element;)(canvasid, canvasClass, root);
+		var targetcanvas = @org.vaadin.tltv.vprocjs.client.ui.VProcessing::getCanvas(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/dom/client/Element;)(canvasid, canvasClass, root);
 		if (targetcanvas) {
 			targetcanvas.getContext('2d').clearRect(0, 0, targetcanvas.width, targetcanvas.height);
 			
@@ -267,7 +267,7 @@ public class VProcessing extends SimplePanel {
 
 	native private static void initProcessingJs(VProcessing vprocessing, String canvasClass, Element root,
 			String canvasid) /*-{
-		var targetcanvas = @org.vaadin.tltv.vprocjs.client.ui.VProcessing::getCanvas(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/user/client/Element;)(canvasid, canvasClass, root);
+		var targetcanvas = @org.vaadin.tltv.vprocjs.client.ui.VProcessing::getCanvas(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/dom/client/Element;)(canvasid, canvasClass, root);
 		
 		if (targetcanvas) {
 			var p = vprocessing.@org.vaadin.tltv.vprocjs.client.ui.VProcessing::proJsObj;

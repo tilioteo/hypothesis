@@ -24,6 +24,7 @@ import com.tilioteo.hypothesis.data.SelectPanelEmptyValidator;
 import com.tilioteo.hypothesis.data.Validator;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.event.SlideData;
 import com.tilioteo.hypothesis.event.ViewportEvent;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
 import com.tilioteo.hypothesis.extension.PluginManager;
@@ -201,40 +202,49 @@ public class ComponentFactory {
 		}
 	}
 
-	private static void setViewportInitHandler(String actionId,	final SlideManager slideManager) {
-		final Command action = CommandFactory.createActionCommand(slideManager, actionId, null);
-		slideManager.addViewportEventListener(SlideManager.InitEvent.class,
-				new ViewportEventListener() {
-					@Override
-					public void handleEvent(ViewportEvent event) {
-						//Command.Executor.execute(componentEvent);
-						Command.Executor.execute(action);
-					}
-				});
+	private static void setViewportInitHandler(final String actionId, final SlideManager slideManager) {
+		slideManager.addViewportEventListener(SlideManager.InitEvent.class, new ViewportEventListener() {
+			@Override
+			public void handleEvent(ViewportEvent event) {
+				SlideData data = new SlideData(slideManager.getSlide(), slideManager);
+				Command componentEvent = CommandFactory.createSlideInitEventCommand(data);
+				Command action = CommandFactory.createSlideActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
+			}
+		});
 	}
 
-	private static void setViewportShowHandler(String actionId,	final SlideManager slideManager) {
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, null);
-		slideManager.addViewportEventListener(SlideManager.ShowEvent.class,
-				new ViewportEventListener() {
-					@Override
-					public void handleEvent(ViewportEvent event) {
-						//Command.Executor.execute(componentEvent);
-						Command.Executor.execute(action);
-					}
-				});
+	private static void setViewportShowHandler(final String actionId, final SlideManager slideManager) {
+		slideManager.addViewportEventListener(SlideManager.ShowEvent.class,	new ViewportEventListener() {
+			@Override
+			public void handleEvent(ViewportEvent event) {
+				SlideData data = new SlideData(slideManager.getSlide(), slideManager);
+				Command componentEvent = CommandFactory.createSlideShowEventCommand(data);
+				Command action = CommandFactory.createSlideActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
+			}
+		});
 	}
 	
 	@SuppressWarnings("serial")
-	private static void setViewportShortcutHandler(String actionId, String key, final SlideManager slideManager) {
+	private static void setViewportShortcutHandler(final String actionId, String key, final SlideManager slideManager) {
 		ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);
 		if (shortcutKeys != null) { 
-			final Command action = CommandFactory.createActionCommand(slideManager,	actionId, null);
 			ShortcutKey shortcutKey = new ShortcutKey(shortcutKeys.getKeyCode(), shortcutKeys.getModifiers());
+			final String shortcut = shortcutKey.toString();
 			shortcutKey.addKeyPressListener(new KeyPressListener() {
 				@Override
 				public void keyPress(KeyPressEvent event) {
-					//Command.Executor.execute(componentEvent);
+					SlideData data = new SlideData(slideManager.getSlide(), slideManager);
+					data.setShortcutKey(shortcut);
+					Command componentEvent = CommandFactory.createSlideShortcutKeyEventCommand(data);
+					Command action = CommandFactory.createSlideActionCommand(slideManager, actionId, data);
+
+					Command.Executor.execute(componentEvent);
 					Command.Executor.execute(action);
 				}
 			});

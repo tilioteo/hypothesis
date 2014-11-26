@@ -27,6 +27,8 @@ import com.tilioteo.hypothesis.event.ButtonData;
 import com.tilioteo.hypothesis.event.ButtonPanelData;
 import com.tilioteo.hypothesis.event.ImageData;
 import com.tilioteo.hypothesis.event.SelectPanelData;
+import com.tilioteo.hypothesis.event.SlideData;
+import com.tilioteo.hypothesis.event.SlideEvent;
 import com.tilioteo.hypothesis.event.TimerData;
 import com.tilioteo.hypothesis.event.VideoData;
 import com.tilioteo.hypothesis.event.WindowData;
@@ -108,6 +110,11 @@ public class SlideFactory {
 		writeSourceData(sourceElement, componentEvent);
 	}
 
+	public static void writeSlideEventData(Element element, SlideEvent slideEvent) {
+		Element sourceElement = element.addElement(SlideXmlConstants.SOURCE);
+		writeSourceData(sourceElement, slideEvent);
+	}
+
 	public static void writeImageData(Element sourceElement, ImageData imageData) {
 		String id = imageData.getComponentId();
 		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.IMAGE);
@@ -187,6 +194,20 @@ public class SlideFactory {
 			selectedElement.addText(selectPanelData.getButton().getCaption());
 		}
 	}
+	
+	public static void writeSlideData(Element sourceElement, SlideData slideData) {
+		String id = slideData.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.SLIDE);
+		if (id != null) {
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		}
+		
+		String shortcutKey = slideData.getShortcutKey();
+		if (shortcutKey != null) {
+			Element subElement = sourceElement.addElement(SlideXmlConstants.SHORTCUT);
+			subElement.addAttribute(SlideXmlConstants.KEY, shortcutKey);
+		}
+	}
 
 	private static void writeSourceData(Element sourceElement, ActionEvent actionEvent) {
 		AbstractBaseAction action = actionEvent.getAction();
@@ -200,6 +221,11 @@ public class SlideFactory {
 	private static void writeSourceData(Element sourceElement, AbstractComponentEvent<?> componentEvent) {
 		AbstractComponentData<?> componentData = componentEvent.getComponentData();
 		componentData.writeDataToElement(sourceElement);
+	}
+
+	private static void writeSourceData(Element sourceElement, SlideEvent slideEvent) {
+		SlideData slideData = slideEvent.getComponentData();
+		slideData.writeDataToElement(sourceElement);
 	}
 
 	private void writeFieldsData(Element element, FieldList fields) {

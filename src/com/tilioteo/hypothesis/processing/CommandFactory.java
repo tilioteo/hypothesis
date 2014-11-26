@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.processing;
 
 import org.apache.log4j.Logger;
 
+import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;
@@ -19,6 +20,8 @@ import com.tilioteo.hypothesis.event.ImageEvent;
 import com.tilioteo.hypothesis.event.ProcessEventManager;
 import com.tilioteo.hypothesis.event.SelectPanelData;
 import com.tilioteo.hypothesis.event.SelectPanelEvent;
+import com.tilioteo.hypothesis.event.SlideData;
+import com.tilioteo.hypothesis.event.SlideEvent;
 import com.tilioteo.hypothesis.event.TimerData;
 import com.tilioteo.hypothesis.event.TimerEvent;
 import com.tilioteo.hypothesis.event.VideoData;
@@ -35,20 +38,53 @@ public class CommandFactory {
 	private static Logger log = Logger.getLogger(CommandFactory.class);
 
 	public static Command createActionCommand(final SlideManager slideManager, final String actionId, final AbstractComponentData<?> data) {
-		final AbstractBaseAction action = slideManager != null ? slideManager.getAction(actionId) : null;
-
-		return new Command() {
-			public void execute() {
-				if (action != null) {
-					log.debug("Execute action command.");
-					slideManager.addComponentDataVariable(data);
-					action.execute();
-					slideManager.clearComponentDataVariable();
-				} else {
-					log.error("Action " + actionId + " IS NULL!");
-				}
+		if (slideManager != null) {
+			if (!Strings.isNullOrEmpty(actionId)) {
+				return new Command() {
+					public void execute() {
+						AbstractBaseAction action = slideManager.getAction(actionId);
+						if (action != null) {
+							log.debug("Execute action command.");
+							slideManager.addComponentDataVariable(data);
+							action.execute();
+							slideManager.clearComponentDataVariable();
+						} else {
+							log.error("Action " + actionId + " IS NULL!");
+						}
+					}
+				};
+			} else {
+				log.error("createActionCommand: actionId IS NULL OR EMPTY!");
 			}
-		};
+		} else {
+			log.error("createActionCommand: slideManager IS NULL!");
+		}
+		
+		return null;
+	}
+
+	public static Command createSlideActionCommand(final SlideManager slideManager, final String actionId, final SlideData data) {
+		if (slideManager != null) {
+			if (!Strings.isNullOrEmpty(actionId)) {
+				return new Command() {
+					public void execute() {
+						AbstractBaseAction action = slideManager.getAction(actionId);
+						if (action != null) {
+							log.debug("Execute action command.");
+							action.execute();
+						} else {
+							log.error("Action " + actionId + " IS NULL!");
+						}
+					}
+				};
+			} else {
+				log.error("createActionCommand: actionId IS NULL OR EMPTY!");
+			}
+		} else {
+			log.error("createActionCommand: slideManager IS NULL!");
+		}
+		
+		return null;
 	}
 
 	public static Command createComponentEventCommand(final AbstractComponentEvent<?> event) {
@@ -56,6 +92,31 @@ public class CommandFactory {
 			public void execute() {
 				log.debug("Execute component event command.");
 				AbstractComponentData<?> data = event.getComponentData();
+				if (data != null) {
+					SlideManager slideManager = data.getSlideManager();
+					if (slideManager != null) {
+						ProcessEventManager eventManager = slideManager.getEventManager();
+						if (eventManager != null) {
+							log.debug("Fire component event.");
+							eventManager.fireEvent(event);
+						} else {
+							log.error("Event manager IS NULL!");
+						}
+					} else {
+						log.error("Event slide manager IS NULL!");
+					}
+				} else {
+					log.error("Event component data IS NULL!");
+				}
+			}
+		};
+	}
+
+	public static Command createSlideEventCommand(final SlideEvent event) {
+		return new Command() {
+			public void execute() {
+				log.debug("Execute slide event command.");
+				SlideData data = event.getComponentData();
 				if (data != null) {
 					SlideManager slideManager = data.getSlideManager();
 					if (slideManager != null) {
@@ -182,6 +243,24 @@ public class CommandFactory {
 		WindowEvent event = new WindowEvent.Close(data);
 
 		return createComponentEventCommand(event);
+	}
+
+	public static Command createSlideInitEventCommand(SlideData data) {
+		SlideEvent event = new SlideEvent.Init(data);
+
+		return createSlideEventCommand(event);
+	}
+
+	public static Command createSlideShowEventCommand(SlideData data) {
+		SlideEvent event = new SlideEvent.Show(data);
+
+		return createSlideEventCommand(event);
+	}
+
+	public static Command createSlideShortcutKeyEventCommand(SlideData data) {
+		SlideEvent event = new SlideEvent.ShortcutKey(data);
+
+		return createSlideEventCommand(event);
 	}
 
 }

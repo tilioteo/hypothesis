@@ -138,45 +138,46 @@ public class Audio extends com.vaadin.ui.Audio implements SlideComponent {
 		}
 	}
 
-	private void setLoadHandler(String actionId) {
-		final AudioData data = new AudioData(this, slideManager);
-		final Command componentEvent = CommandFactory.createAudioLoadEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId, data);
-
+	private void setLoadHandler(final String actionId) {
 		addCanPlayThroughListener(new CanPlayThroughListener() {
 			@Override
 			public void canPlayThrough(CanPlayThroughEvent event) {
+				AudioData data = new AudioData(Audio.this, slideManager);
+				Command componentEvent = CommandFactory.createAudioLoadEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setStartHandler(String actionId) {
-		final AudioData data = new AudioData(this, slideManager);
-		final Command componentEvent = CommandFactory.createAudioStartEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setStartHandler(final String actionId) {
 		addStartListener(new StartListener() {
 			@Override
 			public void start(StartEvent event) {
+				AudioData data = new AudioData(Audio.this, slideManager);
 				data.setTime(event.getTime());
+
+				Command componentEvent = CommandFactory.createAudioStartEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setStopHandler(String actionId) {
-		final AudioData data = new AudioData(this, slideManager);
-		final Command componentEvent = CommandFactory.createAudioStopEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setStopHandler(final String actionId) {
 		addStopListener(new StopListener() {
 			@Override
 			public void stop(StopEvent event) {
+				AudioData data = new AudioData(Audio.this, slideManager);
 				data.setTime(event.getTime());
+
+				Command componentEvent = CommandFactory.createAudioStopEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}

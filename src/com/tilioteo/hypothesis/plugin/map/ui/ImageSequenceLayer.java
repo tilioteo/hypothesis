@@ -103,48 +103,50 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 		}
 	}
 
-	private void setClickHandler(String actionId) {
-		final ImageSequenceLayerData data = new ImageSequenceLayerData(this, slideManager);
-		final Command componentEvent = MapComponentFactory.createImageSequenceLayerClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setClickHandler(final String actionId) {
 		addClickListener(new ClickListener() {
 			
 			@Override
 			public void click(ClickEvent event) {
+				ImageSequenceLayerData data = new ImageSequenceLayerData(ImageSequenceLayer.this, slideManager);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
 				data.setImageIndex(event.getIndex());
 				data.setImageTag(imageTags.get(event.getIndex()));
+
+				Command componentEvent = MapComponentFactory.createImageSequenceLayerClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setLoadHandler(String actionId) {
-		final ImageSequenceLayerData data = new ImageSequenceLayerData(this, slideManager);
-		final Command componentEvent = MapComponentFactory.createImageSequenceLayerLoadEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-		
+	private void setLoadHandler(final String actionId) {
 		addLoadListener(new LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
+				ImageSequenceLayerData data = new ImageSequenceLayerData(ImageSequenceLayer.this, slideManager);
+				Command componentEvent = MapComponentFactory.createImageSequenceLayerLoadEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
 		});
 	}
 
-	private void setChangeHandler(String actionId) {
-		final ImageSequenceLayerData data = new ImageSequenceLayerData(this, slideManager);
-		final Command componentEvent = MapComponentFactory.createImageSequenceLayerChangeEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-		
+	private void setChangeHandler(final String actionId) {
 		addChangeListener(new ChangeListener() {
 			@Override
 			public void change(ChangeEvent event) {
+				ImageSequenceLayerData data = new ImageSequenceLayerData(ImageSequenceLayer.this, slideManager);
 				data.setImageIndex(event.getIndex());
 				data.setImageTag(imageTags.get(event.getIndex()));
+
+				Command componentEvent = MapComponentFactory.createImageSequenceLayerChangeEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}

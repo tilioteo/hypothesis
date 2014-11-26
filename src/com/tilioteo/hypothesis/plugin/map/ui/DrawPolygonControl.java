@@ -83,15 +83,16 @@ public class DrawPolygonControl extends org.vaadin.maps.ui.control.DrawPolygonCo
 		}
 	}
 
-	private void setDrawHandler(String actionId) {
-		final DrawPolygonControlData data = new DrawPolygonControlData(this, slideManager);
-		final Command componentEvent = MapComponentFactory.createDrawPolygonControlEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,	actionId, data);
-
+	private void setDrawHandler(final String actionId) {
 		addGeomertyListener(new FeatureHandler.GeometryListener() {
 			@Override
 			public void geometry(GeometryEvent event) {
+				DrawPolygonControlData data = new DrawPolygonControlData(DrawPolygonControl.this, slideManager);
 				data.setGeometry(event.getGeometry());
+
+				Command componentEvent = MapComponentFactory.createDrawPolygonControlEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
 			}
