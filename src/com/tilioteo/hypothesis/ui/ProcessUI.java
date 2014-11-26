@@ -71,6 +71,8 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 	private boolean requestBack = false;
 	private boolean animate = true;
 	
+	private String lastToken = null;
+	
 	private CommandQueue commandQueue = new CommandQueue();
 	
 	@Override
@@ -93,11 +95,12 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 			requestBack = true;
 		}
 
+		// TODO try to set token by uri fragment and implement UriFragmentChangeListener
 		String token = request.getParameter(TOKEN_PARAMETER);
 
 		if (token != null) {
 			log.debug(TOKEN_PARAMETER + token);
-
+			lastToken = token;
 			processModel.followToken(token);
 		} else {
 			log.debug(TOKEN_PARAMETER + "=(null)");
@@ -106,6 +109,20 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 		}
 	}
 	
+	@Override
+	protected void refresh(VaadinRequest request) {
+		super.refresh(request);
+		
+		// NOTE
+		// browser refresh does not enter here, not know why
+		
+		String newToken = request.getParameter(TOKEN_PARAMETER);
+		
+		if (newToken != lastToken) {
+			
+		}
+	}
+
 	public void scheduleCommand(Command command) {
 		if (command != null) {
 			try {
