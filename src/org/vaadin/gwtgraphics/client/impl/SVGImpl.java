@@ -156,7 +156,7 @@ public class SVGImpl extends DrawImpl {
 			sb.append(")");
 			RegExp p = RegExp.compile("translate\\(.+\\)");
 			String xform = element.getAttribute("transform");
-			if (xform != null) {
+			if (xform != null && xform.length() > 0) {
 				sb.append(" ");
 				MatchResult r = p.exec(xform);
 				if (r.getGroupCount() > 0) {
@@ -166,7 +166,7 @@ public class SVGImpl extends DrawImpl {
 				}
 
 			}
-			element.setAttribute("transform", sb.toString());
+			element.setAttribute("transform", sb.toString().trim());
 		} else {
 			final int rotation = getRotation(element);
 			final String posAttr = getPosAttribute(element, x);
@@ -202,7 +202,7 @@ public class SVGImpl extends DrawImpl {
 	private MatchResult getTranslation(Element e) {
 		String xform = e.getAttribute("transform");
 		return xform != null ? RegExp.compile(
-				"translate\\(\\s*(\\d+)\\s*(,\\s*(\\d+))?\\s*\\)", "i").exec(
+				"translate\\(\\s*([-+]?\\d+)\\s*(,\\s*([-+]?\\d+))?\\s*\\)", "i").exec(
 				xform) : null;
 	}
 
