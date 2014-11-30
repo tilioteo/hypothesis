@@ -1039,6 +1039,8 @@ public class TestUI extends HUI {
 		
 		/*ImageLayer imageLayer = new ImageLayer("http://www.imagehosting.cz/images/mapaukol7.jpg");
 		*/
+		/*ImageLayer imageLayer = new ImageLayer("http://hypothesis.cz/gallery/albums/userpics/10001/map.jpg");
+		*/
 		/*imageLayer.addClickListener(new MouseEvents.ClickListener() {
 			@Override
 			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
@@ -1052,7 +1054,7 @@ public class TestUI extends HUI {
 			}
 		});
 		layerLayout.addComponent(imageLayer);*/
-/*		map.addComponent(imageLayer);
+		/*map.addComponent(imageLayer);
 		*/
 		
 /*		final ImageSequenceLayer imageSequenceLayer = new ImageSequenceLayer();
@@ -1084,8 +1086,14 @@ public class TestUI extends HUI {
 		map.addComponent(imageSequenceLayer);
 		*/
 		
-/*		VectorFeatureLayer vectorLayer = new VectorFeatureLayer();
-*/		/*vectorLayer.addClickListener(new VectorFeatureContainer.ClickListener() {
+		WMSLayer wmsLayer = new WMSLayer("http://giswebservices.massgis.state.ma.us/geoserver/wms");
+		wmsLayer.setLayers("massgis:GISDATA.TOWNS_POLYM,massgis:GISDATA.NAVTEQRDS_ARC,massgis:GISDATA.NAVTEQRDS_ARC_INT");
+		wmsLayer.setSRS("EPSG:26986");
+		wmsLayer.setBBox("232325.38526025353,898705.3447384972,238934.49648710093,903749.1401484597");
+		map.addComponent(wmsLayer);
+
+		VectorFeatureLayer vectorLayer = new VectorFeatureLayer();
+		/*vectorLayer.addClickListener(new VectorFeatureContainer.ClickListener() {
 			@Override
 			public void click(VectorFeatureContainer.ClickEvent event) {
 				Notification.show("Vector layer container clicked");
@@ -1094,15 +1102,15 @@ public class TestUI extends HUI {
 			}
 		});*/
 		
-/*		map.addComponent(vectorLayer);
-*/
-		/*
+		map.addComponent(vectorLayer);
+
+		
 		WKTReader wktReader = new WKTReader();
 		try {
 		 	Geometry geometry = wktReader.read("POLYGON ((50 50,200 50,200 200,50 200,50 50),(100 100,150 100,150 150,100 150,100 100))");
 		 	
 		 	VectorFeature feature = new VectorFeature(geometry);
-		 	feature.addClickListener(new org.vaadin.maps.ui.feature.VectorFeature.ClickListener() {
+/*		 	feature.addClickListener(new org.vaadin.maps.ui.feature.VectorFeature.ClickListener() {
 				@Override
 				public void click(org.vaadin.maps.ui.feature.VectorFeature.ClickEvent event) {
 					Notification.show("Feature clicked");
@@ -1116,7 +1124,7 @@ public class TestUI extends HUI {
 				}
 			});
 			*/
-/*		 	vectorLayer.addComponent(feature);
+		 	vectorLayer.addComponent(feature);
 		 	
 		 			 	
 		} catch (ParseException e) {
@@ -1124,7 +1132,7 @@ public class TestUI extends HUI {
 			e.printStackTrace();
 		}
 		
-		ShortcutKey key1 = new ShortcutKey(ShortcutAction.KeyCode.ARROW_LEFT);
+/*		ShortcutKey key1 = new ShortcutKey(ShortcutAction.KeyCode.ARROW_LEFT);
 		key1.addKeyPressListener(new ShortcutKey.KeyPressListener() {
 			@Override
 			public void keyPress(KeyPressEvent event) {
@@ -1201,13 +1209,6 @@ public class TestUI extends HUI {
 		tile.setTransparent(true);
 		
 		verticalLayout.addComponent(tile);*/
-		
-		WMSLayer wmsLayer = new WMSLayer("http://giswebservices.massgis.state.ma.us/geoserver/wms");
-		wmsLayer.setLayers("massgis:GISDATA.TOWNS_POLYM,massgis:GISDATA.NAVTEQRDS_ARC,massgis:GISDATA.NAVTEQRDS_ARC_INT");
-		wmsLayer.setSRS("EPSG:26986");
-		wmsLayer.setBBox("232325.38526025353,898705.3447384972,238934.49648710093,903749.1401484597");
-		
-		map.addComponent(wmsLayer);
 		
 		PanControl panControl = new PanControl(map);
 		controlLayer.addComponent(panControl);

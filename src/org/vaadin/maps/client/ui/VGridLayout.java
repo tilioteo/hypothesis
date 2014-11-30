@@ -175,7 +175,7 @@ public class VGridLayout extends ComplexPanel implements CanShift {
 			wrapper.setPosition(left, top);
 		}
 	}
-
+	
 	/**
 	 * Get the wrapper for a widget
 	 * 
@@ -183,12 +183,9 @@ public class VGridLayout extends ComplexPanel implements CanShift {
 	 *            The child to get the wrapper for
 	 * @return
 	 */
-	protected GridWrapper getChildWrapper(Widget child) {
-		for (Widget w : getChildren()) {
-			if (w == child) {
-				GridWrapper wrapper = widgetGridWrappers.get(child);
-				return wrapper;
-			}
+	public GridWrapper getChildWrapper(Widget child) {
+		if (getChildren().contains(child)) {
+			return widgetGridWrappers.get(child);
 		}
 		return null;
 	}
@@ -372,6 +369,15 @@ public class VGridLayout extends ComplexPanel implements CanShift {
 			// tiles must be positioned absolutely
 			style.setPosition(Position.ABSOLUTE);
 		}
+
+		public int getLeft() {
+			return left;
+		}
+
+		public int getTop() {
+			return top;
+		}
+
 
 		/*/**
 		 * Sets the style names of the wrapper.
