@@ -7,7 +7,7 @@ package org.vaadin.maps.client.ui;
  * @author kamil
  *
  */
-public class VControlLayer extends VAbstractLayer {
+public class VControlLayer extends AbstractLayer {
 
 	/** Class name, prefix in styling */
 	public static final String CLASSNAME = "v-controllayer";

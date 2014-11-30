@@ -24,7 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author kamil
  *
  */
-public class VVectorFeature extends AbstractDrawingContainer {
+public class VVectorFeature extends AbstractDrawingContainer implements CanShift {
 	
 	public static final String CLASSNAME = "v-vectorfeature";
 	
@@ -43,6 +43,9 @@ public class VVectorFeature extends AbstractDrawingContainer {
 	
 	private HandlerRegistration mouseOverHandler = null;
 	private HandlerRegistration mouseOutHandler = null;
+	
+	private int shiftX = 0;
+	private int shiftY = 0;
 	
 	public VVectorFeature() {
 		super();
@@ -247,6 +250,23 @@ public class VVectorFeature extends AbstractDrawingContainer {
 	@Override
 	protected Class<? extends AbstractDrawing> getType() {
 		return Group.class;
+	}
+
+	public int getShiftX() {
+		return shiftX;
+	}
+
+	public int getShiftY() {
+		return shiftY;
+	}
+
+	@Override
+	public void setShift(int x, int y) {
+		shiftX = x;
+		shiftY = y;
+		
+		getImpl().setX(getElement(), x, isAttached());
+		getImpl().setY(getElement(), y, isAttached());
 	}
 
 }

@@ -42,7 +42,7 @@ public class ImageLayer extends AbstractLayer<ImageTile> implements Focusable, M
 	
 	private void initTile() {
 		tile = new ImageTile();
-		tile.setSizeFull();
+		//tile.setSizeFull();
 		setContent(tile);
 	}
 

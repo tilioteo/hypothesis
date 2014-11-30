@@ -21,7 +21,7 @@ import com.vaadin.client.StyleConstants;
  * @author morong
  *
  */
-public class VGridLayout extends ComplexPanel {
+public class VGridLayout extends ComplexPanel implements CanShift {
 
 	/** Class name, prefix in styling */
 	public static final String CLASSNAME = "v-gridlayout";
@@ -29,6 +29,12 @@ public class VGridLayout extends ComplexPanel {
 	protected final Element container = Document.get().createDivElement();
 	
 	protected Map<Widget, GridWrapper> widgetGridWrappers = new HashMap<Widget, GridWrapper>();
+	
+	private int shiftX = 0;
+	private int shiftY = 0;
+	
+	private int measuredWidth = 0;
+	private int measuredHeight = 0;
 
 	public VGridLayout() {
 		setElement(Document.get().createDivElement());
@@ -41,7 +47,6 @@ public class VGridLayout extends ComplexPanel {
 	private void setupElement() {
 		Style style = getElement().getStyle();
 		style.setPosition(Position.RELATIVE);
-		//style.setOverflow(Overflow.HIDDEN);
 		setStyleName(CLASSNAME);
 	}
 
@@ -250,7 +255,39 @@ public class VGridLayout extends ComplexPanel {
 			widgetGridWrappers.remove(w);
 		}
 	}
+	
+	public int getMeasuredWidth() {
+		return measuredWidth;
+	}
 
+	public int getMeasuredHeight() {
+		return measuredHeight;
+	}
+
+	public void setMeasuredSize(int width, int height) {
+		this.measuredWidth = width;
+		this.measuredHeight = height;
+	}
+
+	public int getShiftX() {
+		return shiftX;
+	}
+
+	public int getShiftY() {
+		return shiftY;
+	}
+
+	@Override
+	public void setShift(int x, int y) {
+		shiftX = x;
+		shiftY = y;
+		
+		Style style = getElement().getStyle();
+		style.setLeft(x, Unit.PX);
+		style.setTop(y, Unit.PX);
+	}
+
+	
 	/**
 	 * Internal wrapper for wrapping widgets in the Grid layout
 	 */

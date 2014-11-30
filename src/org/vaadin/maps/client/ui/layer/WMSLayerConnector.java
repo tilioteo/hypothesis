@@ -9,6 +9,7 @@ import org.vaadin.maps.shared.ui.layer.WMSLayerState;
 
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -27,6 +28,16 @@ public class WMSLayerConnector extends AbstractLayerConnector {
 	@Override
 	public WMSLayerState getState() {
 		return (WMSLayerState) super.getState();
+	}
+
+
+	@Override
+	public void onStateChanged(StateChangeEvent stateChangeEvent) {
+		super.onStateChanged(stateChangeEvent);
+		
+		if (stateChangeEvent.hasPropertyChanged("singleTile")) {
+			getWidget().setSingleTile(getState().singleTile);
+		}
 	}
 
 	@Override

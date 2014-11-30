@@ -4,7 +4,10 @@
 package org.vaadin.maps.client.ui.gridlayout;
 
 import org.vaadin.maps.client.ui.AbstractLayoutConnector;
+import org.vaadin.maps.client.ui.Tile;
+import org.vaadin.maps.client.ui.Tile.SizeChangeHandler;
 import org.vaadin.maps.client.ui.VGridLayout;
+import org.vaadin.maps.client.ui.tile.ImageTileConnector;
 import org.vaadin.maps.shared.ui.gridlayout.GridLayoutState;
 import org.vaadin.maps.shared.ui.gridlayout.GridLayoutState.ChildComponentData;
 import org.vaadin.maps.ui.GridLayout;
@@ -21,7 +24,23 @@ import com.vaadin.shared.ui.Connect;
 @SuppressWarnings("serial")
 @Connect(GridLayout.class)
 public class GridLayoutConnector extends AbstractLayoutConnector {
-
+	
+	private SizeChangeHandler sizeChangeHandler = new SizeChangeHandler() {
+		@Override
+		public void onSizeChange(Tile tile, int oldWidth, int oldHeight, int newWidth, int newHeight) {
+			VGridLayout gridLayout = getWidget();
+			
+			if (gridLayout.getWidgetCount() == 1) {
+				// center tile
+				int dx = (getWidget().getMeasuredWidth() - newWidth) / 2;
+				int dy = (getWidget().getMeasuredHeight() - newHeight) / 2;
+				gridLayout.setWidgetPosition(tile.asWidget(), dx, dy);
+			} else {
+				
+			}
+		}
+	};
+	
 	@Override
 	public void updateCaption(ComponentConnector connector) {
 		// nop
@@ -46,6 +65,9 @@ public class GridLayoutConnector extends AbstractLayoutConnector {
 	public void onConnectorHierarchyChange(ConnectorHierarchyChangeEvent event) {
         for (ComponentConnector child : getChildComponents()) {
             if (!getWidget().contains(child.getWidget())) {
+            	if (child instanceof ImageTileConnector) {
+            		((ImageTileConnector)child).setSizeChangeHandler(sizeChangeHandler);
+            	}
                 getWidget().add(child.getWidget());
                 //child.addStateChangeHandler(childStateChangeHandler);
                 setChildWidgetPosition(child);
@@ -55,6 +77,9 @@ public class GridLayoutConnector extends AbstractLayoutConnector {
             if (oldChild.getParent() != this) {
                 getWidget().remove(oldChild.getWidget());
                 //oldChild.removeStateChangeHandler(childStateChangeHandler);
+            	if (oldChild instanceof ImageTileConnector) {
+            		((ImageTileConnector)oldChild).setSizeChangeHandler(null);
+            	}
             }
         }
 

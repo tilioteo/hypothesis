@@ -7,38 +7,25 @@ package org.vaadin.maps.client.ui;
  * @author kamil
  * 
  */
-public class VVectorFeatureLayer extends VAbstractLayer implements PanHandler {
+public class VVectorFeatureLayer extends InteractiveLayer {
 
 	/** Class name, prefix in styling */
 	public static final String CLASSNAME = "v-vectorfeaturelayer";
-
-    protected boolean fixed = false; 
 
 	public VVectorFeatureLayer() {
 		super();
 		setStylePrimaryName(CLASSNAME);
 	}
 
-	public boolean isFixed() {
-		return fixed;
-	}
-
+	@Override
 	public void setFixed(boolean fixed) {
-		this.fixed = fixed;
+		super.setFixed(fixed);
 	}
 
 	@Override
-	public void onPanStep(int dX, int dY) {
-		if (!fixed) {
-			
-		}
-	}
-
-	@Override
-	public void onPanEnd(int totalX, int totalY) {
-		if (!fixed) {
-			
-		}
+	public void onSizeChange(int oldWidth, int oldHeight, int newWidth,	int newHeight) {
+		// TODO
+		
 	}
 
 }

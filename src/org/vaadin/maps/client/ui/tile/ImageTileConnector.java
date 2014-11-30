@@ -3,6 +3,7 @@
  */
 package org.vaadin.maps.client.ui.tile;
 
+import org.vaadin.maps.client.ui.Tile.SizeChangeHandler;
 import org.vaadin.maps.client.ui.VImageTile;
 import org.vaadin.maps.shared.ui.tile.ImageTileState;
 import org.vaadin.maps.shared.ui.tile.ProxyTileServerRpc;
@@ -22,6 +23,10 @@ import com.vaadin.shared.ui.Connect;
 @SuppressWarnings("serial")
 @Connect(org.vaadin.maps.ui.tile.ImageTile.class)
 public class ImageTileConnector extends ProxyTileConnector implements LoadHandler, ErrorHandler {
+	
+	private SizeChangeHandler sizeChangeHandler;
+	int width = 0;
+	int height = 0;
     
 	@Override
     protected void init() {
@@ -53,12 +58,21 @@ public class ImageTileConnector extends ProxyTileConnector implements LoadHandle
         getRpcProxy(ProxyTileServerRpc.class).error();
 	}
 
+	public void setSizeChangeHandler(SizeChangeHandler sizeChangeHandler) {
+		this.sizeChangeHandler = sizeChangeHandler;
+	}
+
 	@Override
 	public void onLoad(LoadEvent event) {
         getLayoutManager().setNeedsMeasure(ImageTileConnector.this);
         VImageTile widget = getWidget();
-        getRpcProxy(ProxyTileServerRpc.class).updateClippedSize(widget.getWidth(), widget.getHeight());;
+        int newWidth = widget.getWidth();
+        int newHeight = widget.getHeight();
+        if (sizeChangeHandler != null) {
+        	sizeChangeHandler.onSizeChange(getWidget(), width, height, newWidth, newHeight);
+        }
+        getRpcProxy(ProxyTileServerRpc.class).updateClippedSize(newWidth, newHeight);
         getRpcProxy(ProxyTileServerRpc.class).load();
 	}
-
+	
 }

@@ -3,6 +3,8 @@
  */
 package org.vaadin.maps.client.ui;
 
+import java.util.Iterator;
+
 import org.vaadin.gwtgraphics.client.AbstractDrawing;
 import org.vaadin.gwtgraphics.client.DrawingArea;
 import org.vaadin.gwtgraphics.client.Group;
@@ -14,13 +16,16 @@ import com.google.gwt.user.client.Window;
  * @author kamil
  *
  */
-public class VVectorFeatureContainer extends DrawingArea {
+public class VVectorFeatureContainer extends DrawingArea implements CanShift {
 	
 	public static final String CLASSNAME = "v-vectorfeaturecontainer";
 	
 	private Group container = new Group();
 	private Group hiddenContainer = new Group();
 	private Path ieTridentPath = null;
+
+	private int shiftX = 0;
+	private int shiftY = 0;
 
 	public VVectorFeatureContainer() {
 		super(1, 1);
@@ -83,6 +88,41 @@ public class VVectorFeatureContainer extends DrawingArea {
 			ieTridentPath.setStrokeWidth(0);
 			
 			super.add(ieTridentPath);
+		}
+	}
+
+	@Override
+	public int getShiftX() {
+		return shiftX;
+	}
+
+	@Override
+	public int getShiftY() {
+		return shiftY;
+	}
+
+	@Override
+	public void setShift(int x, int y) {
+		shiftX = x;
+		shiftY = y;
+		
+		setChildrenShift();
+	}
+
+	private void setChildrenShift() {
+		Iterator<AbstractDrawing> iterator;
+		for (iterator = container.iterator(); iterator.hasNext();) {
+			AbstractDrawing drawing = iterator.next();
+			if (drawing instanceof CanShift) {
+				((CanShift)drawing).setShift(shiftX, shiftY);
+			}
+		}
+
+		for (iterator = hiddenContainer.iterator(); iterator.hasNext();) {
+			AbstractDrawing drawing = iterator.next();
+			if (drawing instanceof CanShift) {
+				((CanShift)drawing).setShift(shiftX, shiftY);
+			}
 		}
 	}
 

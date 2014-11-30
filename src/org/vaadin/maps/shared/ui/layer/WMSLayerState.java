@@ -15,4 +15,5 @@ public class WMSLayerState extends AbstractLayerState {
         primaryStyleName = "v-wmslayer";
     }
     
+    public boolean singleTile = true;
 }

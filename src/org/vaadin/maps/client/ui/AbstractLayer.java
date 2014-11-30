@@ -9,9 +9,9 @@ import com.google.gwt.user.client.ui.SimplePanel;
  * @author kamil
  *
  */
-public class VAbstractLayer extends SimplePanel implements Layer/*, Focusable*/ {
+public class AbstractLayer extends SimplePanel implements Layer/*, Focusable*/ {
 	
-	public VAbstractLayer() {
+	public AbstractLayer() {
 		super();
 	}
 

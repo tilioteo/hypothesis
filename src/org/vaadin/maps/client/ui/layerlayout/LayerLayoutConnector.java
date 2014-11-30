@@ -3,15 +3,18 @@
  */
 package org.vaadin.maps.client.ui.layerlayout;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.vaadin.maps.client.ui.AbstractLayoutConnector;
+import org.vaadin.maps.client.ui.SizeChangeHandler;
 import org.vaadin.maps.client.ui.VLayerLayout;
 import org.vaadin.maps.shared.ui.layerlayout.LayerLayoutServerRpc;
 import org.vaadin.maps.shared.ui.layerlayout.LayerLayoutState;
 import org.vaadin.maps.ui.LayerLayout;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.LayoutManager;
@@ -59,6 +62,9 @@ public class LayerLayoutConnector extends AbstractLayoutConnector implements Ele
             }
         }
     };
+    
+    private int width = 0;
+    private int height = 0;
 
     /*
      * (non-Javadoc)
@@ -171,6 +177,19 @@ public class LayerLayoutConnector extends AbstractLayoutConnector implements Ele
 		LayoutManager layoutManager = getLayoutManager();
 		int newWidth = layoutManager.getOuterWidth(e.getElement());
 		int newHeight = layoutManager.getOuterHeight(e.getElement());
+		
+		// inform layers of size changed
+		Iterator<Widget> iterator;
+		for (iterator = getWidget().iterator(); iterator.hasNext();) {
+			Widget child = iterator.next();
+			if (child instanceof SizeChangeHandler) {
+				((SizeChangeHandler)child).onSizeChange(width, height, newWidth, newHeight);
+			}
+		}
+		
+		width = newWidth;
+		height = newHeight;
+		
 		getRpcProxy(LayerLayoutServerRpc.class).updateMeasuredSize(newWidth, newHeight);
 	}
 
