@@ -28,7 +28,6 @@ import com.tilioteo.hypothesis.model.ProcessModel;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.servlet.ProcessServlet;
 import com.vaadin.annotations.PreserveOnRefresh;
-import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
@@ -49,7 +48,7 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 @PreserveOnRefresh
-@Push
+//@Push
 public class ProcessUI extends HUI implements ProcessEventListener,	DetachListener, CommandScheduler {
 
 	private static Logger log = Logger.getLogger(ProcessUI.class);
@@ -242,8 +241,8 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 					@Override
 					public void onAnimation(AnimationEvent event) {
 						setContent(clearLayout);
-						scheduleCommand(nextCommand);
-						//Command.Executor.execute(nextCommand);
+						//scheduleCommand(nextCommand);
+						Command.Executor.execute(nextCommand);
 					}
 				});
 				((ComponentContainer)content).addComponent(animator);
@@ -251,8 +250,8 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 			}
 		} else {
 			setContent(clearLayout);
-			scheduleCommand(nextCommand);
-			//Command.Executor.execute(nextCommand);
+			//scheduleCommand(nextCommand);
+			Command.Executor.execute(nextCommand);
 		}
 	}
 
