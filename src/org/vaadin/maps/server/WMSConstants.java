@@ -25,7 +25,7 @@ public class WMSConstants {
 
 	public static final String DEFAULT_VERSION = "1.1.1";
 	public static final String DEFAULT_FORMAT = "image/jpeg";
-	public static final String DEFAULT_SRS = "EPSG:4326";
+	public static final String DEFAULT_CRS = "EPSG:4326";
 	public static final int DEFAULT_WIDTH = 255;
 	public static final int DEFAULT_HEIGHT = 255;
 	

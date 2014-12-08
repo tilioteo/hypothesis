@@ -19,7 +19,7 @@ public class WMSResource extends ExternalResource implements TileResource {
 	private String format = WMSConstants.DEFAULT_FORMAT;
 	private String layers = "";
 	private String styles = "";
-	private String srs = WMSConstants.DEFAULT_SRS;
+	private String srs = WMSConstants.DEFAULT_CRS;
 	private String bbox = "";
 	private boolean transparent = false;
 	
@@ -177,7 +177,7 @@ public class WMSResource extends ExternalResource implements TileResource {
 			if (srs != null && !srs.isEmpty()) {
 				this.srs = srs;
 			} else {
-				this.srs = WMSConstants.DEFAULT_SRS;
+				this.srs = WMSConstants.DEFAULT_CRS;
 			}
 		}
 	}

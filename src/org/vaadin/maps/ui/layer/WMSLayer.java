@@ -5,6 +5,7 @@ package org.vaadin.maps.ui.layer;
 
 import org.vaadin.maps.server.WMSConstants;
 import org.vaadin.maps.shared.ui.layer.WMSLayerState;
+import org.vaadin.maps.ui.CRSUtility;
 import org.vaadin.maps.ui.tile.WMSTile;
 
 import com.tilioteo.hypothesis.common.Strings;
@@ -19,7 +20,7 @@ public class WMSLayer extends GridLayer<WMSTile> {
 	private String baseUrl = "";
 	private int tileWidth = WMSConstants.DEFAULT_WIDTH;
 	private int tileHeight = WMSConstants.DEFAULT_HEIGHT;
-	private String srs = WMSConstants.DEFAULT_SRS;
+	private String crs = WMSConstants.DEFAULT_CRS;
 	private String format = WMSConstants.DEFAULT_FORMAT;
 	private String styles = "";
 	private String bbox = "";
@@ -64,12 +65,14 @@ public class WMSLayer extends GridLayer<WMSTile> {
 		}
 	}
 
-	public String getSRS() {
-		return srs;
+	public String getCRS() {
+		return crs;
 	}
 
-	public void setSRS(String srs) {
-		this.srs = srs;
+	public void setCRS(String crs) {
+		if (CRSUtility.checkCRS(crs)) {
+			this.crs = crs;
+		}
 	}
 
 	public String getFormat() {
@@ -130,7 +133,7 @@ public class WMSLayer extends GridLayer<WMSTile> {
 		tile.setLayers(layers);
 		tile.setWidth(tileWidth);
 		tile.setHeight(tileHeight);
-		tile.setSRS(srs);
+		tile.setSRS(crs);
 		tile.setStyles(styles);
 		tile.setBBox(bbox);
 		tile.setFormat(format);
