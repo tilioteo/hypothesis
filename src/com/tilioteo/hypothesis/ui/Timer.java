@@ -3,8 +3,10 @@ package com.tilioteo.hypothesis.ui;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -42,28 +44,43 @@ public class Timer extends AbstractComponent implements SlideComponent, NonVisua
 	private TimerServerRpc rpc = new TimerServerRpc() {
 
 		@Override
-		public void start(long time, String direction, boolean resumed) {
-			fireEvent(new StartEvent(Timer.this, time, Direction.valueOf(direction), resumed));
+		public void started(long time, String direction, boolean resumed) {
+			log.debug("TimerServerRpc: started()");
+			clientStarted();
+			//fireEvent(new StartEvent(Timer.this, time, Direction.valueOf(direction), resumed));
 		}
 
 		@Override
-		public void stop(long time, String direction, boolean paused) {
-			fireEvent(new StopEvent(Timer.this, time, Direction.valueOf(direction), paused));
+		public void stopped(long time, String direction, boolean paused) {
+			log.debug("TimerServerRpc: stopped()");
+			clientStopped();
+			//fireEvent(new StopEvent(Timer.this, time, Direction.valueOf(direction), paused));
 		}
 
-		@Override
+		/*@Override
 		public void update(long time, String direction, long interval) {
 			EventRouter eventRouter = eventRouterMap.get(interval);
 			if (eventRouter != null) {
+				log.debug("TimerServerRpc: update() interval:" + interval);
 				eventRouter.fireEvent(new UpdateEvent(Timer.this, time, Direction.valueOf(direction), interval));
 			}
-		}
+		}*/
 
 	};
 	
 	private TimerClientRpc clientRpc;
 	
 	private HashMap<Long, EventRouter> eventRouterMap = new HashMap<Long, EventRouter>();
+	
+	private long startCounter = 0;
+	private long counter = 0;
+	private boolean running = false;
+	private long elapsed = 0;
+	private Date startTime;
+	private boolean infinite = false;
+	private long time = 0;
+	
+	private java.util.Timer internalTimer;
 
 	public abstract class TimerEvent extends Component.Event {
 
@@ -188,6 +205,12 @@ public class Timer extends AbstractComponent implements SlideComponent, NonVisua
 		clientRpc = getRpcProxy(TimerClientRpc.class);
 	}
 
+	protected void clientStopped() {
+	}
+
+	protected void clientStarted() {
+	}
+
 	@ExpressionScope(Scope.PRIVATE)
 	@Override
 	public TimerState getState() {
@@ -196,21 +219,145 @@ public class Timer extends AbstractComponent implements SlideComponent, NonVisua
 
 	@ExpressionScope(Scope.PRIVATE)
 	public void start(long time) {
-		clientRpc.start(time);
+		setTime(time);
+		
+		if (time < 0) {
+			setInfinite(true);
+		}
+		
+		elapsed = 0;
+
+		if (time >= TimerState.TIMER_TICK) {
+			startCounter = time;
+			
+			if (Direction.UP.equals(getState().direction)) {
+				counter = 0;
+			} else {
+				counter = startCounter;
+			}
+
+			resume(true);
+			
+		} else {
+			startCounter = 0;
+		}
 	}
+	
+	protected void resume(boolean started) {
+		if (!running) {
+			running = true;
+			clientRpc.start(time);
+			
+			fireEvent(new StartEvent(Timer.this, counter, getState().direction, !started));
+			startTime = new Date();
+			internalTimer = new java.util.Timer();
+			internalTimer.scheduleAtFixedRate(new TimerTask() {
+				@Override
+				public void run() {
+					setElapsed();
+				}
+			}, TimerState.TIMER_TICK, TimerState.TIMER_TICK);
+			
+		}
+	}
+
+	protected void setElapsed() {
+		elapsed = new Date().getTime() - startTime.getTime();
+		updateCounter(elapsed);
+
+		// stop timer when the time passed 
+		if (!infinite && elapsed >= startCounter) {
+			running = false;
+			internalTimer.cancel();
+			
+			getUI().access/*Synchronously*/(new Runnable() {
+				@Override
+				public void run() {
+					fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+				}
+			});
+
+		} else {
+			signalTimeSlices(elapsed);
+		}
+	}
+
+	private void updateCounter(long elapsed) {
+		if (Direction.UP.equals(getState().direction)) {
+			counter = elapsed;
+		} else {
+			counter = startCounter - elapsed;
+			if (counter < 0) {
+				counter = 0;
+			}
+		}
+	}
+	
+	private void signalTimeSlices(long elapsed) {
+		for (final Long timeSlice : eventRouterMap.keySet()) {
+			// modulo for time slices passed in elapsed time
+			long rest = elapsed % timeSlice; 
+			// if rest passes into first timer tick interval then fire update event
+			// for this time slice
+			if (rest >= 0 && rest < TimerState.TIMER_TICK) {
+				getUI().access/*Synchronously*/(new Runnable() {
+					@Override
+					public void run() {
+						eventRouterMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, getState().direction, timeSlice));
+					}
+				});
+			}
+		}
+	}
+
+	public boolean isInfinite() {
+		return infinite;
+	}
+
+	protected void setInfinite(boolean infinite) {
+		this.infinite = infinite;
+		if (infinite) {
+			getState().direction = Direction.UP;
+		}
+	}
+
 
 	public void stop() {
 		stop(false);
 	}
 	
+	private void stop(boolean pause, boolean silent) {
+		if (running) {
+			running = false;
+			internalTimer.cancel();
+			setElapsed();
+
+			if (pause) {
+				clientRpc.pause();
+			} else {
+				clientRpc.stop(false);
+			}
+			
+			if (!silent) {
+				getUI().access/*Synchronously*/(new Runnable() {
+					@Override
+					public void run() {
+						fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+					}
+				});
+			}
+			if (!pause) {
+				startCounter = 0;
+			}
+		}
+	}
+
 	public void stop(boolean silent) {
-		clientRpc.stop(silent);
+		stop(false, silent);
 	}
 
 	public boolean isRunning() {
-		// TODO takhle to zrejme nejde
-		clientRpc.getRunning();
-		return getState().running;
+		return running;
 	}
 
 	public Direction getDirection() {
@@ -294,9 +441,9 @@ public class Timer extends AbstractComponent implements SlideComponent, NonVisua
         	ComponentStateUtil.removeRegisteredEventListener(getState(), UpdateEvent.EVENT_ID);
 	}
 	
+	
 	// SlideComponent
 	private SlideManager slideManager;
-	private long time;
 	
 	public Timer(SlideManager slideManager) {
 		this();
@@ -317,9 +464,7 @@ public class Timer extends AbstractComponent implements SlideComponent, NonVisua
 	}
 
 	public void start() {
-		if (time > 0) {
-			start(time);
-		}
+		start(time);
 	}
 
 	@Override
@@ -348,7 +493,7 @@ public class Timer extends AbstractComponent implements SlideComponent, NonVisua
 	}
 	
 	protected void setTime(long time) {
-		this.time = time;
+		this.time = time < 0 ? -1 : time;
 	}
 	
 	private void setHandlers(Element element) {

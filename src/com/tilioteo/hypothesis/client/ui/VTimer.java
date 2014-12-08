@@ -2,6 +2,7 @@ package com.tilioteo.hypothesis.client.ui;
 
 import java.util.Set;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.Widget;
 import com.tilioteo.hypothesis.client.Timer;
@@ -23,16 +24,7 @@ public class VTimer extends Widget {
 		timer = new Timer();
 	}
 
-	// @Override
-	// protected void onLoad() {
-	// RootPanel rootPanel = RootPanel.get();
-	// if (rootPanel != getParent()) {
-	// removeFromParent();
-	// rootPanel.add(this);
-	// }
-	// }
-
-	public void start(long time) {
+	public void start(final long time) {
 		timer.start(time);
 	}
 

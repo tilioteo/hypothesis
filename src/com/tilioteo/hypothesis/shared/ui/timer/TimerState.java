@@ -8,6 +8,11 @@ import com.vaadin.shared.AbstractComponentState;
 @SuppressWarnings("serial")
 public class TimerState extends AbstractComponentState {
 
+	/**
+	 * tick of timer
+	 */
+	public static final int TIMER_TICK = 10;
+
 	public enum Direction {UP, DOWN};
 	
 	public Direction direction = Direction.UP;

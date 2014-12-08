@@ -6,6 +6,7 @@ package org.vaadin.maps.ui.feature;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import org.apache.log4j.Logger;
 import org.vaadin.maps.geometry.Utils;
 import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.feature.FeatureServerRpc;
@@ -26,14 +27,18 @@ import com.vividsolutions.jts.geom.Point;
 @SuppressWarnings("serial")
 public class VectorFeature extends AbstractFeature {
 
+	private static Logger log = Logger.getLogger(VectorFeature.class);
+
 	private FeatureServerRpc rpc = new FeatureServerRpc() {
 		@Override
 		public void click(MouseEventDetails mouseDetails) {
+			log.debug("FeatureServerRpc: click()");
 			fireEvent(new ClickEvent(VectorFeature.this, mouseDetails));
 		}
 
 		@Override
 		public void doubleClick(MouseEventDetails mouseDetails) {
+			log.debug("FeatureServerRpc: doubleClick()");
 			fireEvent(new DoubleClickEvent(VectorFeature.this, mouseDetails));
 		}
 	};

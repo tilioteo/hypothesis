@@ -6,6 +6,7 @@ package org.vaadin.maps.ui.handler;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import org.apache.log4j.Logger;
 import org.vaadin.maps.geometry.Utils;
 import org.vaadin.maps.shared.ui.handler.PointHandlerServerRpc;
 import org.vaadin.maps.shared.ui.handler.PointHandlerState;
@@ -26,11 +27,14 @@ import com.vividsolutions.jts.io.ParseException;
 @SuppressWarnings("serial")
 public class PointHandler extends FeatureHandler {
 
+	private static Logger log = Logger.getLogger(PointHandler.class);
+
 	private PointHandlerServerRpc rpc = new PointHandlerServerRpc() {
 
 		@Override
 		public void click(double x, double y, String buttonName, boolean altKey, boolean ctrlKey,
 				boolean metaKey, boolean shiftKey, boolean doubleClick) {
+			log.debug("PointHandlerServerRpc: click()");
 			fireEvent(new ClickEvent(PointHandler.this, new Coordinate(x, y), buttonName, altKey,
 					ctrlKey, metaKey, shiftKey, doubleClick));
 		}

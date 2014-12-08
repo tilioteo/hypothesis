@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.vaadin.maps.shared.ui.tile.ImageSequenceTileServerRpc;
 import org.vaadin.maps.shared.ui.tile.ImageSequenceTileState;
 
@@ -30,24 +31,30 @@ import com.vaadin.util.ReflectTools;
 @SuppressWarnings("serial")
 public class ImageSequenceTile extends AbstractTile {
 	
+	private static Logger log = Logger.getLogger(ImageSequenceTile.class);
+
 	protected ImageSequenceTileServerRpc rpc = new ImageSequenceTileServerRpc() {
 		@Override
 		public void load() {
+			log.debug("ImageSequenceTileServerRpc: load()");
 			fireEvent(new LoadEvent(ImageSequenceTile.this));
 		}
 		
 		@Override
 		public void error() {
+			log.debug("ImageSequenceTileServerRpc: error()");
 			fireEvent(new ErrorEvent(ImageSequenceTile.this));
 		}
 		
 		@Override
 		public void changed(int index) {
+			log.debug("ImageSequenceTileServerRpc: changed()");
 			fireEvent(new ChangeEvent(ImageSequenceTile.this, index));
 		}
 
 		@Override
 		public void click(MouseEventDetails mouseDetails, int index) {
+			log.debug("ImageSequenceTileServerRpc: click()");
 			fireEvent(new ClickEvent(ImageSequenceTile.this, mouseDetails, index));
 		}
 	};

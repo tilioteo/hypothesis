@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.ui;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 
 import com.tilioteo.hypothesis.shared.ui.selectbutton.SelectButtonServerRpc;
@@ -33,11 +34,15 @@ import com.vaadin.util.ReflectTools;
 @SuppressWarnings("serial")
 public abstract class SelectButton extends AbstractField<Boolean> {
 
+	private static Logger log = Logger.getLogger(SelectButton.class);
+
 	private SelectButtonServerRpc rpc = new SelectButtonServerRpc() {
 
 		@Override
 		public void setChecked(boolean checked,
 				MouseEventDetails mouseEventDetails) {
+			log.debug("SelectButtonServerRpc: setChecked()");
+			
 			if (isReadOnly()) {
 				return;
 			}

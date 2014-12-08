@@ -3,8 +3,8 @@
  */
 package com.tilioteo.hypothesis.client.ui.shortcutkey;
 
+import com.tilioteo.hypothesis.client.ui.AbstractNonVisualComponentConnector;
 import com.tilioteo.hypothesis.client.ui.VShortcutKey;
-import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -13,7 +13,7 @@ import com.vaadin.shared.ui.Connect;
  */
 @SuppressWarnings("serial")
 @Connect(com.tilioteo.hypothesis.ui.ShortcutKey.class)
-public class ShortcutKeyConnector extends AbstractComponentConnector {
+public class ShortcutKeyConnector extends AbstractNonVisualComponentConnector {
 
 	@Override
 	protected void init() {

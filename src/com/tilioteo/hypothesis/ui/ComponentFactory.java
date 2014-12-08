@@ -64,6 +64,12 @@ public class ComponentFactory {
 			else if (name.equals(SlideXmlConstants.IMAGE))
 				component = ComponentFactory.<Image> createFromElement(
 						Image.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.VIDEO))
+				component = ComponentFactory.<Video> createFromElement(
+						Video.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.AUDIO))
+				component = ComponentFactory.<Audio> createFromElement(
+						Audio.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.BUTTON))
 				component = ComponentFactory.<Button> createFromElement(
 						Button.class, element, slideManager);

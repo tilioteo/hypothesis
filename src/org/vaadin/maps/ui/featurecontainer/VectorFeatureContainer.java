@@ -6,6 +6,7 @@ package org.vaadin.maps.ui.featurecontainer;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import org.apache.log4j.Logger;
 import org.vaadin.maps.shared.ui.featurecontainer.VectorFeatureContainerServerRpc;
 import org.vaadin.maps.ui.feature.VectorFeature;
 
@@ -20,9 +21,12 @@ import com.vaadin.util.ReflectTools;
 @SuppressWarnings("serial")
 public class VectorFeatureContainer extends AbstractFeatureContainer<VectorFeature> {
 
+	private static Logger log = Logger.getLogger(VectorFeatureContainer.class);
+
 	VectorFeatureContainerServerRpc rpc = new VectorFeatureContainerServerRpc() {
 		@Override
 		public void click(MouseEventDetails mouseDetails) {
+			log.debug("VectorFeatureContainerServerRpc: click()");
 			fireEvent(new ClickEvent(VectorFeatureContainer.this, mouseDetails));
 		}
 	};

@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.vaadin.maps.event.LayoutEvents.LayoutClickEvent;
 import org.vaadin.maps.event.LayoutEvents.LayoutClickListener;
 import org.vaadin.maps.event.LayoutEvents.LayoutClickNotifier;
@@ -31,11 +32,13 @@ import com.vaadin.ui.Component;
 @SuppressWarnings("serial")
 public class GridLayout<C extends Component> extends AbstractLayout<C> implements LayoutClickNotifier<C> {
 
+	private static Logger log = Logger.getLogger(GridLayout.class);
+
 	private GridLayoutServerRpc rpc = new GridLayoutServerRpc() {
 
 		@Override
-		public void layoutClick(MouseEventDetails mouseDetails,
-				Connector clickedConnector) {
+		public void layoutClick(MouseEventDetails mouseDetails, Connector clickedConnector) {
+			log.debug("GridLayoutServerRpc: layoutClick()");
 			fireEvent(LayoutClickEvent.createEvent(GridLayout.this,
 					mouseDetails, clickedConnector));
 

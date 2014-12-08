@@ -6,6 +6,8 @@ package com.tilioteo.hypothesis.ui;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import org.apache.log4j.Logger;
+
 import com.tilioteo.hypothesis.servlet.ServletUtil;
 import com.tilioteo.hypothesis.shared.ui.browserappletframe.BrowserAppletFrameClientRpc;
 import com.tilioteo.hypothesis.shared.ui.browserappletframe.BrowserAppletFrameServerRpc;
@@ -24,6 +26,8 @@ import com.vaadin.util.ReflectTools;
 @SuppressWarnings("serial")
 public class BrowserAppletFrame extends BrowserFrame {
 	
+	private static Logger log = Logger.getLogger(BrowserAppletFrame.class);
+
 	public static final String PARAM_EMBED_PAGE			=	"browserapplet.html";
 	public static final String PARAM_APPLICATION_URL	=	"app_url";
 	public static final String PARAM_PROCESS_APP		=	"process_app";
@@ -34,6 +38,7 @@ public class BrowserAppletFrame extends BrowserFrame {
 	private BrowserAppletFrameServerRpc rpc = new BrowserAppletFrameServerRpc() {
 		@Override
 		public void readyChecked(boolean readyState) {
+			log.debug("BrowserAppletFrameServerRpc: readyChecked()");
 			fireEvent(new ReadyCheckedEvent(BrowserAppletFrame.this, readyState));
 		}
 	};

@@ -48,7 +48,6 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 @PreserveOnRefresh
-//@Push
 public class ProcessUI extends HUI implements ProcessEventListener,	DetachListener, CommandScheduler {
 
 	private static Logger log = Logger.getLogger(ProcessUI.class);

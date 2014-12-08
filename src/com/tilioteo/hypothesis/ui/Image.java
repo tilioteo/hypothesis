@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.ui;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
@@ -37,6 +38,8 @@ import com.vaadin.util.ReflectTools;
  */
 @SuppressWarnings("serial")
 public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskable {
+
+	private static Logger log = Logger.getLogger(Image.class);
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
@@ -119,16 +122,19 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskab
     protected ImageServerRpc rpc = new ImageServerRpc() {
         @Override
         public void click(MouseEventDetails mouseDetails) {
+        	log.debug("ImageServerRpc: click()");
             fireEvent(new ClickEvent(Image.this, mouseDetails));
         }
 
 		@Override
 		public void load() {
+        	log.debug("ImageServerRpc: load()");
 			fireEvent(new LoadEvent(Image.this));
 		}
 
 		@Override
 		public void error() {
+        	log.debug("ImageServerRpc: error()");
 			fireEvent(new ErrorEvent(Image.this));
 		}
     };

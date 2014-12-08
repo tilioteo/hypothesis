@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.vaadin.maps.event.LayoutEvents.LayoutClickEvent;
 import org.vaadin.maps.event.LayoutEvents.LayoutClickListener;
 import org.vaadin.maps.event.LayoutEvents.LayoutClickNotifier;
@@ -30,17 +31,20 @@ import com.vaadin.ui.Component;
 public class LayerLayout extends AbstractLayout<Layer> implements
 		LayoutClickNotifier<Layer> {
 
+	private static Logger log = Logger.getLogger(LayerLayout.class);
+
 	private LayerLayoutServerRpc rpc = new LayerLayoutServerRpc() {
 
 		@Override
-		public void layoutClick(MouseEventDetails mouseDetails,
-				Connector clickedConnector) {
+		public void layoutClick(MouseEventDetails mouseDetails,	Connector clickedConnector) {
+			log.debug("LayerLayoutServerRpc: layoutClick()");
 			fireEvent(LayoutClickEvent.createEvent(LayerLayout.this,
 					mouseDetails, clickedConnector));
 		}
 
 		@Override
 		public void updateMeasuredSize(int newWidth, int newHeight) {
+			log.debug("LayerLayoutServerRpc: updateMeasuredSize()");
 			LayerLayout.this.updateMeasuredSize(newWidth, newHeight);
 		}
 	};

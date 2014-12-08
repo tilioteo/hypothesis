@@ -25,7 +25,7 @@ public class MaskConnector extends AbstractExtensionConnector {
 	
 	private Widget widget;
 	private Element maskElement = null;
-	String position = null;
+	Position position = null;
 	
 	public MaskConnector() {
 		registerRpc(MaskClientRpc.class, new MaskClientRpc() {
@@ -45,7 +45,7 @@ public class MaskConnector extends AbstractExtensionConnector {
 	@Override
 	protected void extend(ServerConnector target) {
 		widget = ((ComponentConnector) target).getWidget();
-		position = widget.getElement().getStyle().getPosition();
+		position = positionFromString(widget.getElement().getStyle().getPosition());
 	}
 	
 	protected void mask() {
@@ -62,10 +62,21 @@ public class MaskConnector extends AbstractExtensionConnector {
 			style.setHeight(100, Unit.PCT);
 			style.setBackgroundColor("#808080");
 			
-			if (null == position || position.isEmpty()) {
+			if (null == position) {
 				widget.getElement().getStyle().setPosition(Style.Position.RELATIVE);
 			}
 		}
+	}
+	
+	private Position positionFromString(String position) {
+		if (position != null && !position.trim().isEmpty()) {
+			for (Position pos : Position.values()) {
+				if (pos.getCssName().equalsIgnoreCase(position)) {
+					return pos;
+				}
+			}
+		}
+		return null;
 	}
 	
 	protected void unmask() {
@@ -73,10 +84,10 @@ public class MaskConnector extends AbstractExtensionConnector {
 			maskElement.removeFromParent();
 			maskElement = null;
 			
-			if (null == position || position.isEmpty()) {
+			if (null == position) {
 				widget.getElement().getStyle().clearPosition();
 			} else {
-				widget.getElement().getStyle().setPosition(Style.Position.valueOf(position));
+				widget.getElement().getStyle().setPosition(position);
 			}
 		}
 	}

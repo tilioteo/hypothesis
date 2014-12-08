@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.ui;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
@@ -43,24 +44,30 @@ import com.vaadin.util.ReflectTools;
 @SuppressWarnings("serial")
 public class Video extends com.vaadin.ui.Video implements SlideComponent, Maskable {
 	
+	private static Logger log = Logger.getLogger(Video.class);
+
 	protected VideoServerRpc rpc = new VideoServerRpc() {
 		@Override
 		public void click(MouseEventDetails mouseDetails, double time) {
+			log.debug("VideoServerRpc: click()");
             fireEvent(new ClickEvent(Video.this, mouseDetails, time));
 		}
 
 		@Override
 		public void start(double time, boolean resumed) {
+			log.debug("VideoServerRpc: start()");
 			fireEvent(new StartEvent(Video.this, time, resumed));
 		}
 
 		@Override
 		public void stop(double time, boolean paused) {
+			log.debug("VideoServerRpc: stop()");
 			fireEvent(new StopEvent(Video.this, time, paused));
 		}
 
 		@Override
 		public void canPlayThrough() {
+			log.debug("VideoServerRpc: canPlayThrough()");
 			fireEvent(new CanPlayThroughEvent(Video.this));
 		}
 	};

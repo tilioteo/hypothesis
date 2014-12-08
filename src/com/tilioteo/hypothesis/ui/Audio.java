@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.ui;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
@@ -36,20 +37,25 @@ import com.vaadin.ui.Upload.StartedEvent;
 @SuppressWarnings("serial")
 public class Audio extends com.vaadin.ui.Audio implements SlideComponent {
 	
+	private static Logger log = Logger.getLogger(Audio.class);
+
 	protected AudioServerRpc rpc = new AudioServerRpc() {
 		
 		@Override
 		public void stop(double time, boolean paused) {
+			log.debug("AudioServerRpc: stop()");
 			fireEvent(new StopEvent(Audio.this, time, paused));
 		}
 		
 		@Override
 		public void start(double time, boolean resumed) {
+			log.debug("AudioServerRpc: start()");
 			fireEvent(new StartEvent(Audio.this, time, resumed));
 		}
 		
 		@Override
 		public void canPlayThrough() {
+			log.debug("AudioServerRpc: canPlayThrough()");
 			fireEvent(new CanPlayThroughEvent(Audio.this));
 		}
 	};

@@ -21,7 +21,7 @@ public class ProcessEventManager {
 
 	}
 
-	public final void addListener(Class<? extends ProcessEvent> eventClass,	ProcessEventListener eventListener) {
+	public synchronized final void addListener(Class<? extends ProcessEvent> eventClass,	ProcessEventListener eventListener) {
 		if (!isListening(eventListener, eventClass)) {
 			EventListenerList listeners = listenersMap.get(eventClass);
 			if (listeners == null) {
@@ -33,7 +33,7 @@ public class ProcessEventManager {
 	}
 
 	@SafeVarargs
-	public final void addListener(ProcessEventListener eventListener,
+	public synchronized final void addListener(ProcessEventListener eventListener,
 			Class<? extends ProcessEvent>... eventClasses) {
 		for (Class<? extends ProcessEvent> eventClass : eventClasses) {
 			addListener(eventClass, eventListener);
@@ -49,7 +49,7 @@ public class ProcessEventManager {
 		return listeners;
 	}
 
-	public final void fireEvent(ProcessEvent event) {
+	public synchronized final void fireEvent(ProcessEvent event) {
 		if (event != null) {
 			EventListenerList listenerList = findListeners(event.getClass());
 
@@ -84,14 +84,14 @@ public class ProcessEventManager {
 	 * public final void removeAllListeners() { listenersMap.clear(); }
 	 */
 
-	public final void removeListener(Class<? extends ProcessEvent> eventClass, ProcessEventListener eventListener) {
+	public synchronized final void removeListener(Class<? extends ProcessEvent> eventClass, ProcessEventListener eventListener) {
 		EventListenerList listeners = listenersMap.get(eventClass);
 		if (listeners != null) {
 			listeners.remove(ProcessEventListener.class, eventListener);
 		}
 	}
 
-	public final void removeListener(ProcessEventListener eventListener) {
+	public synchronized final void removeListener(ProcessEventListener eventListener) {
 		Collection<EventListenerList> listenersCollection = listenersMap.values();
 		for (EventListenerList listeners : listenersCollection) {
 			if (listeners != null) {

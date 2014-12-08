@@ -6,6 +6,7 @@ package org.vaadin.maps.ui.tile;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import org.apache.log4j.Logger;
 import org.vaadin.maps.server.TileResource;
 import org.vaadin.maps.shared.ui.tile.ProxyTileServerRpc;
 import org.vaadin.maps.shared.ui.tile.ProxyTileState;
@@ -24,24 +25,30 @@ import com.vaadin.util.ReflectTools;
 @SuppressWarnings("serial")
 public abstract class AbstractProxyTile<T extends TileResource> extends AbstractTile {
 
+	private static Logger log = Logger.getLogger(AbstractProxyTile.class);
+
 	protected ProxyTileServerRpc rpc = new ProxyTileServerRpc() {
 		@Override
 		public void load() {
+			log.debug("ProxyTileServerRpc: load()");
 			fireEvent(new LoadEvent(AbstractProxyTile.this));
 		}
 
 		@Override
 		public void error() {
+			log.debug("ProxyTileServerRpc: error()");
 			fireEvent(new ErrorEvent(AbstractProxyTile.this));
 		}
 
 		@Override
 		public void click(MouseEventDetails mouseDetails) {
+			log.debug("ProxyTileServerRpc: click()");
 			fireEvent(new ClickEvent(AbstractProxyTile.this, mouseDetails));
 		}
 
 		@Override
 		public void updateClippedSize(int width, int height) {
+			log.debug("ProxyTileServerRpc: updateClippedSize()");
 			int oldWidth = AbstractProxyTile.this.clippedWidth;
 			int oldHeight = AbstractProxyTile.this.clippedHeight;
 			AbstractProxyTile.this.clippedWidth = width;
