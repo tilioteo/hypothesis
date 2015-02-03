@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.plugin.map.ui;
 import java.util.List;
 
 import org.dom4j.Element;
+import org.vaadin.maps.server.LonLat;
 import org.vaadin.maps.ui.featurecontainer.VectorFeatureContainer.ClickEvent;
 import org.vaadin.maps.ui.featurecontainer.VectorFeatureContainer.ClickListener;
 
@@ -105,6 +106,12 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 			public void click(ClickEvent event) {
 				VectorFeatureLayerData data = new VectorFeatureLayerData(VectorFeatureLayer.this, slideManager);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
+				if (getForLayer() != null) {
+					LonLat lonLat = getForLayer().getViewWorldTransform().viewToWorld(event.getRelativeX(), event.getRelativeY());
+					if (lonLat != null) {
+						data.setWorldXY(lonLat.getLon(), lonLat.getLat());
+					}
+				}
 
 				Command componentEvent = MapComponentFactory.createVectorFeatureLayerClickEventCommand(data);
 				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);

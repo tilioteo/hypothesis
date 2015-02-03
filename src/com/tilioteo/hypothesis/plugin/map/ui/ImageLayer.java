@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.plugin.map.ui;
 import java.util.List;
 
 import org.dom4j.Element;
+import org.vaadin.maps.server.LonLat;
 import org.vaadin.maps.ui.tile.AbstractProxyTile.LoadEvent;
 import org.vaadin.maps.ui.tile.AbstractProxyTile.LoadListener;
 
@@ -97,6 +98,12 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 			public void click(ClickEvent event) {
 				ImageLayerData data = new ImageLayerData(ImageLayer.this, slideManager);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
+				if (getForLayer() != null) {
+					LonLat lonLat = getForLayer().getViewWorldTransform().viewToWorld(event.getRelativeX(), event.getRelativeY());
+					if (lonLat != null) {
+						data.setWorldXY(lonLat.getLon(), lonLat.getLat());
+					}
+				}
 
 				Command componentEvent = MapComponentFactory.createImageLayerClickEventCommand(data);
 				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);

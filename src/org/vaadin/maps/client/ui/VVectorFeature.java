@@ -58,8 +58,8 @@ public class VVectorFeature extends AbstractDrawingContainer implements CanShift
 
 	public void setGeometry(Geometry geometry) {
 		if (geometry != null) {
+			Utils.moveGeometry(geometry, -shiftX, -shiftY);
 			if (!geometry.equals(this.geometry)) {
-				clear();
 				// create new vector object and insert it into feature root element
 				drawGeometry(geometry);
 			}
@@ -190,6 +190,7 @@ public class VVectorFeature extends AbstractDrawingContainer implements CanShift
 	public void clear() {
 		super.clear();
 		drawing = null;
+		//setShift(0, 0);
 	}
 	
 	public void clearText() {
@@ -201,10 +202,13 @@ public class VVectorFeature extends AbstractDrawingContainer implements CanShift
 	}
 
 	private void drawGeometry(Geometry geometry) {
-		drawing = Utils.drawGeometry(geometry, pointShape, pointShapeScale);
-		updateDrawingStyle();
-		updateHoverStyle();
-		add(drawing);
+		clear();
+		if (geometry != null) {
+			drawing = Utils.drawGeometry(geometry, pointShape, pointShapeScale, shiftX, shiftY);
+			updateDrawingStyle();
+			updateHoverStyle();
+			add(drawing);
+		}
 	}
 	
 	public void setCentroid(Double x, Double y) {
@@ -265,8 +269,9 @@ public class VVectorFeature extends AbstractDrawingContainer implements CanShift
 		shiftX = x;
 		shiftY = y;
 		
-		getImpl().setX(getElement(), x, isAttached());
-		getImpl().setY(getElement(), y, isAttached());
+		drawGeometry(geometry);
+		/*getImpl().setX(getElement(), x, isAttached());
+		getImpl().setY(getElement(), y, isAttached());*/
 	}
 
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.dom4j.Element;
 import org.vaadin.maps.ui.handler.FeatureHandler;
-import org.vaadin.maps.ui.handler.FeatureHandler.GeometryEvent;
+import org.vaadin.maps.ui.handler.FeatureHandler.DrawFeatureEvent;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
@@ -83,11 +83,11 @@ public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointContro
 	}
 
 	private void setDrawHandler(final String actionId) {
-		addGeomertyListener(new FeatureHandler.GeometryListener() {
+		addDrawFeatureListener(new FeatureHandler.DrawFeatureListener() {
 			@Override
-			public void geometry(GeometryEvent event) {
+			public void drawFeature(DrawFeatureEvent event) {
 				DrawPointControlData data = new DrawPointControlData(DrawPointControl.this, slideManager);
-				data.setGeometry(event.getGeometry());
+				data.setFeature(event.getFeature());
 
 				Command componentEvent = MapComponentFactory.createDrawPointControlEventCommand(data);
 				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);

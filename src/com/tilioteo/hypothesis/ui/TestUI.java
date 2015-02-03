@@ -5,12 +5,16 @@ package com.tilioteo.hypothesis.ui;
 
 import javax.servlet.annotation.WebServlet;
 
+import org.vaadin.maps.server.Bounds;
+import org.vaadin.maps.server.LonLat;
 import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.ui.LayerLayout;
+import org.vaadin.maps.ui.MapContainer;
 import org.vaadin.maps.ui.control.DrawPathControl;
 import org.vaadin.maps.ui.control.DrawPointControl;
 import org.vaadin.maps.ui.control.DrawPolygonControl;
 import org.vaadin.maps.ui.control.PanControl;
+import org.vaadin.maps.ui.control.ZoomControl;
 import org.vaadin.maps.ui.feature.VectorFeature;
 import org.vaadin.maps.ui.featurecontainer.VectorFeatureContainer;
 import org.vaadin.maps.ui.handler.PathHandler.FinishStrategy;
@@ -38,11 +42,13 @@ import com.tilioteo.hypothesis.ui.ShortcutKey.KeyPressEvent;
 import com.tilioteo.hypothesis.ui.Video.ClickEvent;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Notification;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -1030,10 +1036,14 @@ public class TestUI extends HUI {
 		video.mask();
 		*/
 		
-		final Map map = new Map();
+		final MapContainer map = new MapContainer();
 		verticalLayout.addComponent(map);
 		map.setWidth("80%");
 		map.setHeight("80%");
+
+		map.setCRS("EPSG:26986");
+		map.setBounds(new Bounds(232325.38526025353,898705.3447384972,238934.49648710093,903749.1401484597));
+		
 		//map.mask();
 
 		
@@ -1088,27 +1098,37 @@ public class TestUI extends HUI {
 		
 		WMSLayer wmsLayer = new WMSLayer("http://giswebservices.massgis.state.ma.us/geoserver/wms");
 		wmsLayer.setLayers("massgis:GISDATA.TOWNS_POLYM,massgis:GISDATA.NAVTEQRDS_ARC,massgis:GISDATA.NAVTEQRDS_ARC_INT");
-		wmsLayer.setSRS("EPSG:26986");
-		wmsLayer.setBBox("232325.38526025353,898705.3447384972,238934.49648710093,903749.1401484597");
-		map.addComponent(wmsLayer);
-
-		VectorFeatureLayer vectorLayer = new VectorFeatureLayer();
-		/*vectorLayer.addClickListener(new VectorFeatureContainer.ClickListener() {
+		//wmsLayer.setStyles("Black_Lines,GISDATA.NAVTEQRDS_ARC::ForOrthos,GISDATA.NAVTEQRDS_ARC_INT::Default");
+		//wmsLayer.setBBox("232325.38526025353,898705.3447384972,238934.49648710093,903749.1401484597");
+		/*wmsLayer.addClickListener(new ClickListener() {
 			@Override
-			public void click(VectorFeatureContainer.ClickEvent event) {
-				Notification.show("Vector layer container clicked");
-				int index = imageSequenceLayer.getTileIndex();
-				imageSequenceLayer.setTileIndex(++index);
+			public void click(com.vaadin.event.MouseEvents.ClickEvent event) {
+				LonLat lonLat = map.getViewWorldTransform().viewToWorld(event.getRelativeX(), event.getRelativeY());
+				Notification.show(lonLat != null ? lonLat.toString() : "world coordinates not defined");
 			}
 		});*/
 		
-		map.addComponent(vectorLayer);
+		map.addLayer(wmsLayer);
+
+		VectorFeatureLayer vectorLayer = new VectorFeatureLayer();
+		vectorLayer.addClickListener(new VectorFeatureContainer.ClickListener() {
+			@Override
+			public void click(VectorFeatureContainer.ClickEvent event) {
+				LonLat lonLat = map.getViewWorldTransform().viewToWorld(event.getRelativeX(), event.getRelativeY());
+				Notification.show(lonLat != null ? lonLat.toString() : "world coordinates not defined");
+			}
+		});
+		
+		map.addLayer(vectorLayer);
 
 		
 		WKTReader wktReader = new WKTReader();
 		try {
-		 	Geometry geometry = wktReader.read("POLYGON ((50 50,200 50,200 200,50 200,50 50),(100 100,150 100,150 150,100 150,100 100))");
+		 	//Geometry geometry = wktReader.read("POLYGON ((50 50,200 50,200 200,50 200,50 50),(100 100,150 100,150 150,100 150,100 100))");
+		 	//Geometry geometry = wktReader.read("POLYGON ((232769.381335 903304.361011,234101.369560 903304.361011,234101.369560 901981.252708,232769.381335 901981.252708,232769.381335 903304.361011),(233213.377410 902860.364936,233657.373485 902860.364936,233657.373485 902416.368862,233213.377410 902416.368862,233213.377410 902860.364936))");
 		 	
+		 	Geometry geometry = wktReader.read("POLYGON ((235905.421862 899957.475766,236513.851728 899957.475766,236513.851728 899110.964649,235905.421862 899110.964649,235905.421862 899957.475766))");
+
 		 	VectorFeature feature = new VectorFeature(geometry);
 /*		 	feature.addClickListener(new org.vaadin.maps.ui.feature.VectorFeature.ClickListener() {
 				@Override
@@ -1124,7 +1144,7 @@ public class TestUI extends HUI {
 				}
 			});
 			*/
-		 	vectorLayer.addComponent(feature);
+		 	//vectorLayer.addComponent(feature);
 		 	
 		 			 	
 		} catch (ParseException e) {
@@ -1213,7 +1233,10 @@ public class TestUI extends HUI {
 		PanControl panControl = new PanControl(map);
 		controlLayer.addComponent(panControl);
 		panControl.activate();
-
+		
+		ZoomControl zoomControl = new ZoomControl(map);
+		controlLayer.addComponent(zoomControl);
+		zoomControl.activate();
 	
 		/*final WebSocket socket = new WebSocket("ws://localhost:9876/app/service/");
 		socket.addOpenListener(new WebSocket.OpenListener() {

@@ -13,27 +13,35 @@ import org.vaadin.maps.client.geometry.Point;
 import org.vaadin.maps.shared.ui.Style;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Event;
+import com.vaadin.client.MouseEventDetailsBuilder;
+import com.vaadin.shared.MouseEventDetails;
 
 /**
  * @author kamil
  *
  */
-public class VPointHandler extends AbstractDrawFeatureHandler implements ClickHandler, MouseMoveHandler {
+public class VPointHandler extends AbstractDrawFeatureHandler implements MouseDownHandler, MouseMoveHandler, MouseUpHandler, CanShift {
 
 	public static final String CLASSNAME = "v-pointhandler";
 	
-	public ClickHandler clickHandlerSlave; 
+	public SyntheticClickHandler clickHandlerSlave; 
 	
 	protected VVectorFeatureLayer layer = null;
 	protected VVectorFeatureContainer container = null;
+	
+	private int lastShiftX = 0;
+	private int lastShiftY = 0;
 	
 	/**
 	 * point of mouse cursor position
@@ -41,22 +49,34 @@ public class VPointHandler extends AbstractDrawFeatureHandler implements ClickHa
 	 */
 	private Circle cursor = null;
 	
-	protected HandlerRegistration clickHandler = null;
+	private boolean mouseDown = false;
+	private boolean mouseMoved = false;
+	protected MouseEventDetails mouseEventDetails = null;
+	protected Element eventElement = null;
+	
+	//protected HandlerRegistration clickHandler = null;
+	protected HandlerRegistration mouseDownHandler = null;
+	protected HandlerRegistration mouseUpHandler = null;
 	protected HandlerRegistration mouseMoveHandler = null;
 	
 	private HashMap<GeometryEventHandler, HandlerRegistration> geometryHandlerMap = new HashMap<GeometryEventHandler, HandlerRegistration>();
 
 	public static int[] getMouseEventXY(MouseEvent<?> event) {
+		return getMouseEventXY(MouseEventDetailsBuilder.buildMouseEventDetails(event.getNativeEvent(), event.getRelativeElement()), event.getRelativeElement());
+	}
+	
+	public static int[] getMouseEventXY(MouseEventDetails details, Element relativeElement) {
 		// Firefox encounters some problems with relative position to SVG element
 		// correct xy position is obtained using the parent DIV element of vector layer 
-		Element relative = event.getRelativeElement();
-		if (relative != null) {
-			Element parent = relative.getParentElement();
+		if (relativeElement != null) {
+			Element parent = relativeElement.getParentElement();
 			if (parent != null) {
-				return new int[] { event.getRelativeX(parent), event.getRelativeY(parent) };
+				return new int[] {
+						details.getClientX() - parent.getAbsoluteLeft() + parent.getScrollLeft() + parent.getOwnerDocument().getScrollLeft(),
+						details.getClientY() - parent.getAbsoluteTop() + parent.getScrollTop() + parent.getOwnerDocument().getScrollTop() };
 			}
 		}
-		return new int[] { event.getX(), event.getY() };
+		return new int[] { details.getClientX(), details.getClientY() };
 	}
 	
 
@@ -82,6 +102,7 @@ public class VPointHandler extends AbstractDrawFeatureHandler implements ClickHa
 	protected void initialize() {
 		if (layer != null && layer.getWidget() != null && layer.getWidget() instanceof VVectorFeatureContainer) {
 			container = (VVectorFeatureContainer) layer.getWidget();
+			container.setCanShiftSlave(this);
 			ensureContainerHandlers();
 		} else {
 			container = null;
@@ -94,26 +115,24 @@ public class VPointHandler extends AbstractDrawFeatureHandler implements ClickHa
 	@Override
 	protected void finalize() {
 		if (container != null) {
+			container.setCanShiftSlave(null);
 			removeContainerHandlers();
 			container = null;
 		}
 	}
 
 	protected void ensureContainerHandlers() {
-		clickHandler = container.addClickHandler(this);
+		//clickHandler = container.addClickHandler(this);
+		mouseDownHandler = container.addMouseDownHandler(this);
+		mouseUpHandler = container.addMouseUpHandler(this);
 		mouseMoveHandler = container.addMouseMoveHandler(this);
 	}
 	
-	protected final void removeHandler(HandlerRegistration handler) {
-		if (handler != null) {
-			handler.removeHandler();
-			handler = null;
-		}
-	}
-
 	protected void removeContainerHandlers() {
-		removeHandler(clickHandler);
-		removeHandler(mouseMoveHandler);
+		//removeEventHandler(clickHandler);
+		removeEventHandler(mouseDownHandler);
+		removeEventHandler(mouseUpHandler);
+		removeEventHandler(mouseMoveHandler);
 	}
 	
 	private void addCursor() {
@@ -147,13 +166,12 @@ public class VPointHandler extends AbstractDrawFeatureHandler implements ClickHa
 	}
 	
 	/**
-	 * Create a coordinate recalculated from display view units to world units
-	 * @param x
-	 * @param y
+	 * Create a coordinate from array.
+	 * <strong>Note:</strong> World coordinates are recalculated on server side.
+	 * @param xy
 	 * @return  new {@link Coordinate} 
 	 */
-	public Coordinate createWorldCoordinate(int[] xy) {
-		// TODO implement
+	public Coordinate createCoordinate(int[] xy) {
 		return new Coordinate(xy[0], xy[1]);
 	}
 	
@@ -171,7 +189,7 @@ public class VPointHandler extends AbstractDrawFeatureHandler implements ClickHa
 		updateCursorStyle();
 	}
 
-	@Override
+	/*@Override
 	public void onClick(ClickEvent event) {
 		if (!active) {
 			return;
@@ -182,14 +200,56 @@ public class VPointHandler extends AbstractDrawFeatureHandler implements ClickHa
 		}
 		
 		int[] xy = getMouseEventXY(event);
-		Point point = new Point(createWorldCoordinate(xy));
+		Point point = new Point(createCoordinate(xy));
 		fireEvent(new GeometryEvent(VPointHandler.this, point));
-  	}
+  	}*/
+	
+	protected void syntheticClick(MouseEventDetails details, Element relativeElement) {
+		if (clickHandlerSlave != null) {
+			clickHandlerSlave.syntheticClick(details, relativeElement);
+		}
+		
+		int[] xy = getMouseEventXY(details, relativeElement);
+		Point point = new Point(createCoordinate(xy));
+		fireEvent(new GeometryEvent(VPointHandler.this, point));
+	}
+
+	@Override
+	public void onMouseDown(MouseDownEvent event) {
+		if (!active) {
+			return;
+		}
+		
+		mouseDown = true;
+		mouseEventDetails = MouseEventDetailsBuilder.buildMouseEventDetails(event.getNativeEvent(), event.getRelativeElement());
+		mouseEventDetails.setType(Event.getTypeInt("click"));
+		eventElement = event.getRelativeElement();
+	}
+
+	@Override
+	public void onMouseUp(MouseUpEvent event) {
+		if (!active) {
+			return;
+		}
+		
+		if (!mouseMoved) {
+			syntheticClick(mouseEventDetails, eventElement);
+		} else {
+			mouseMoved = false;
+		}
+		mouseDown = false;
+		mouseEventDetails = null;
+		eventElement = null;
+	}
 
 	@Override
 	public void onMouseMove(MouseMoveEvent event) {
 		if (!active) {
 			return;
+		}
+		
+		if (mouseDown) {
+			mouseMoved = true;
 		}
 		
 		int[] xy = getMouseEventXY(event);
@@ -236,9 +296,36 @@ public class VPointHandler extends AbstractDrawFeatureHandler implements ClickHa
 
 	public void removeGeometryEventHandler(GeometryEventHandler handler) {
 		if (geometryHandlerMap.containsKey(handler)) {
-			removeHandler(geometryHandlerMap.get(handler));
+			removeEventHandler(geometryHandlerMap.get(handler));
 			geometryHandlerMap.remove(handler);
 		}
+	}
+
+	public interface SyntheticClickHandler {
+		public void syntheticClick(MouseEventDetails details, Element relativeElement);
+	}
+
+	@Override
+	public void setShift(int x, int y) {
+		int deltaX = x - lastShiftX;
+		int deltaY = y - lastShiftY;
+		lastShiftX = x;
+		lastShiftY = y;
+		
+		updateDrawings(deltaX, deltaY);
+	}
+
+	@Override
+	public int getShiftX() {
+		return lastShiftX;
+	}
+
+	@Override
+	public int getShiftY() {
+		return lastShiftY;
+	}
+
+	protected void updateDrawings(int deltaX, int deltaY) {
 	}
 
 }

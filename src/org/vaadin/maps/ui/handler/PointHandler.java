@@ -41,11 +41,15 @@ public class PointHandler extends FeatureHandler {
 
 		@Override
 		public void geometry(String wkb) {
-			addNewFeature(wkb);
 			try {
-				fireEvent(new GeometryEvent(PointHandler.this, Utils.wkbHexToGeometry(wkb)));
+				Geometry geometry = Utils.wkbHexToGeometry(wkb);
+				if (layer != null && layer.getForLayer() != null) {
+					Utils.transformViewToWorld(geometry, layer.getForLayer().getViewWorldTransform());
+				}
+				VectorFeature feature = addNewFeature(geometry);
+				fireEvent(new DrawFeatureEvent(PointHandler.this, feature));
+				
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -66,19 +70,14 @@ public class PointHandler extends FeatureHandler {
 		registerRpc(rpc);
 	}
 	
-	protected void addNewFeature(String wkb) {
-		if (layer != null && wkb != null) {
-			try {
-				Geometry geometry = Utils.wkbHexToGeometry(wkb);
-
-				if (geometry != null) {
-					feature = new VectorFeature(geometry);
-					layer.addComponent(feature);
-				}
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+	protected VectorFeature addNewFeature(Geometry geometry) {
+		if (geometry != null) {
+			feature = new VectorFeature(geometry);
+			feature.setStyle(featureStyle);
+			layer.addComponent(feature);
+			return feature;
 		}
+		return null;
 	}
 
 	@Override

@@ -11,7 +11,6 @@ import org.vaadin.maps.client.ui.SizeChangeHandler;
 import org.vaadin.maps.client.ui.VLayerLayout;
 import org.vaadin.maps.shared.ui.layerlayout.LayerLayoutServerRpc;
 import org.vaadin.maps.shared.ui.layerlayout.LayerLayoutState;
-import org.vaadin.maps.ui.LayerLayout;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Widget;
@@ -32,7 +31,7 @@ import com.vaadin.shared.ui.LayoutClickRpc;
  * 
  */
 @SuppressWarnings("serial")
-@Connect(LayerLayout.class)
+@Connect(org.vaadin.maps.ui.LayerLayout.class)
 public class LayerLayoutConnector extends AbstractLayoutConnector implements ElementResizeListener {
 
     private LayoutClickEventHandler clickEventHandler = new LayoutClickEventHandler(

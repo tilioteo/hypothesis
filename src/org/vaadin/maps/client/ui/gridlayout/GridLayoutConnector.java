@@ -6,8 +6,10 @@ package org.vaadin.maps.client.ui.gridlayout;
 import org.vaadin.maps.client.ui.AbstractLayoutConnector;
 import org.vaadin.maps.client.ui.Tile;
 import org.vaadin.maps.client.ui.Tile.SizeChangeHandler;
+import org.vaadin.maps.client.ui.Tile.TileLoadHandler;
 import org.vaadin.maps.client.ui.VGridLayout;
 import org.vaadin.maps.client.ui.tile.ImageTileConnector;
+import org.vaadin.maps.shared.ui.gridlayout.GridLayoutServerRpc;
 import org.vaadin.maps.shared.ui.gridlayout.GridLayoutState;
 import org.vaadin.maps.shared.ui.gridlayout.GridLayoutState.ChildComponentData;
 import org.vaadin.maps.ui.GridLayout;
@@ -15,7 +17,9 @@ import org.vaadin.maps.ui.GridLayout;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.communication.StateChangeEvent;
+import com.vaadin.client.ui.LayoutClickEventHandler;
 import com.vaadin.shared.ui.Connect;
+import com.vaadin.shared.ui.LayoutClickRpc;
 
 /**
  * @author morong
@@ -25,6 +29,21 @@ import com.vaadin.shared.ui.Connect;
 @Connect(GridLayout.class)
 public class GridLayoutConnector extends AbstractLayoutConnector {
 	
+    private LayoutClickEventHandler clickEventHandler = new LayoutClickEventHandler(
+            this) {
+
+		@Override
+        protected ComponentConnector getChildComponent(com.google.gwt.user.client.Element element) {
+            return getWidget().getComponent(element);
+        }
+
+        @Override
+        protected LayoutClickRpc getLayoutClickRPC() {
+            return getRpcProxy(GridLayoutServerRpc.class);
+        }
+
+    };
+
 	private SizeChangeHandler sizeChangeHandler = new SizeChangeHandler() {
 		@Override
 		public void onSizeChange(Tile tile, int oldWidth, int oldHeight, int newWidth, int newHeight) {
@@ -41,6 +60,26 @@ public class GridLayoutConnector extends AbstractLayoutConnector {
 		}
 	};
 	
+	private TileLoadHandler loadHandler = new TileLoadHandler() {
+		@Override
+		public void onLoad(Tile tile) {
+			VGridLayout gridLayout = getWidget();
+			
+			if (gridLayout.getWidgetCount() == 1) {
+				// reset shift
+				gridLayout.setShift(0, 0);
+			} else {
+				
+			}
+		}
+	};
+	
+    @Override
+    public void init() {
+        super.init();
+        getWidget().client = getConnection();
+    }
+    
 	@Override
 	public void updateCaption(ComponentConnector connector) {
 		// nop
@@ -50,6 +89,8 @@ public class GridLayoutConnector extends AbstractLayoutConnector {
     @Override
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
+
+        clickEventHandler.handleEventHandlerRegistration();
 
         for (ComponentConnector child : getChildComponents()) {
             setChildWidgetPosition(child);
@@ -67,6 +108,7 @@ public class GridLayoutConnector extends AbstractLayoutConnector {
             if (!getWidget().contains(child.getWidget())) {
             	if (child instanceof ImageTileConnector) {
             		((ImageTileConnector)child).setSizeChangeHandler(sizeChangeHandler);
+            		((ImageTileConnector)child).setTileLoadHandler(loadHandler);
             	}
                 getWidget().add(child.getWidget());
                 //child.addStateChangeHandler(childStateChangeHandler);
@@ -79,6 +121,7 @@ public class GridLayoutConnector extends AbstractLayoutConnector {
                 //oldChild.removeStateChangeHandler(childStateChangeHandler);
             	if (oldChild instanceof ImageTileConnector) {
             		((ImageTileConnector)oldChild).setSizeChangeHandler(null);
+            		((ImageTileConnector)oldChild).setTileLoadHandler(null);
             	}
             }
         }

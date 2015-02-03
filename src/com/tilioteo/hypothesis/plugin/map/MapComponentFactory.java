@@ -23,18 +23,27 @@ import com.tilioteo.hypothesis.plugin.map.event.ImageLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.ImageLayerEvent;
 import com.tilioteo.hypothesis.plugin.map.event.ImageSequenceLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.ImageSequenceLayerEvent;
+import com.tilioteo.hypothesis.plugin.map.event.PanControlData;
+import com.tilioteo.hypothesis.plugin.map.event.PanControlEvent;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureEvent;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerEvent;
+import com.tilioteo.hypothesis.plugin.map.event.WMSLayerData;
+import com.tilioteo.hypothesis.plugin.map.event.WMSLayerEvent;
+import com.tilioteo.hypothesis.plugin.map.event.ZoomControlData;
+import com.tilioteo.hypothesis.plugin.map.event.ZoomControlEvent;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPointControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPolygonControl;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageSequenceLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
+import com.tilioteo.hypothesis.plugin.map.ui.PanControl;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeature;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeatureLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageLayer;
+import com.tilioteo.hypothesis.plugin.map.ui.WMSLayer;
+import com.tilioteo.hypothesis.plugin.map.ui.ZoomControl;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.tilioteo.hypothesis.ui.ComponentFactory;
@@ -58,6 +67,9 @@ public class MapComponentFactory {
 			else if (name.equals(SlideXmlConstants.IMAGE_LAYER))
 				component = ComponentFactory.<ImageLayer> createFromElement(
 						ImageLayer.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.WMS_LAYER))
+				component = ComponentFactory.<WMSLayer> createFromElement(
+						WMSLayer.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.IMAGE_SEQUENCE_LAYER))
 				component = ComponentFactory.<ImageSequenceLayer> createFromElement(
 						ImageSequenceLayer.class, element, slideManager);
@@ -73,6 +85,12 @@ public class MapComponentFactory {
 			else if (name.equals(SlideXmlConstants.DRAW_POLYGON))
 				component = ComponentFactory.<DrawPolygonControl> createFromElement(
 								DrawPolygonControl.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.PAN))
+				component = ComponentFactory.<PanControl> createFromElement(
+						PanControl.class, element, slideManager);
+			else if (name.equals(SlideXmlConstants.ZOOM))
+				component = ComponentFactory.<ZoomControl> createFromElement(
+						ZoomControl.class, element, slideManager);
 			else if (name.equals(SlideXmlConstants.FEATURE))
 				component = ComponentFactory.<VectorFeature> createFromElement(
 						VectorFeature.class, element, slideManager);
@@ -85,6 +103,12 @@ public class MapComponentFactory {
 			return component;
 		}
 		return null;
+	}
+
+	public static Command createWMSLayerClickEventCommand(WMSLayerData data) {
+		WMSLayerEvent event = new WMSLayerEvent.Click(data);
+
+		return CommandFactory.createComponentEventCommand(event);
 	}
 
 	public static Command createImageLayerClickEventCommand(ImageLayerData data) {
@@ -143,6 +167,24 @@ public class MapComponentFactory {
 
 	public static Command createDrawPolygonControlEventCommand(DrawPolygonControlData data) {
 		DrawPolygonControlEvent event = new DrawPolygonControlEvent.DrawPolygon(data);
+
+		return CommandFactory.createComponentEventCommand(event);
+	}
+
+	public static Command createPanControlPanStartEventCommand(PanControlData data) {
+		PanControlEvent event = new PanControlEvent.PanStart(data);
+
+		return CommandFactory.createComponentEventCommand(event);
+	}
+
+	public static Command createPanControlPanEndEventCommand(PanControlData data) {
+		PanControlEvent event = new PanControlEvent.PanEnd(data);
+
+		return CommandFactory.createComponentEventCommand(event);
+	}
+
+	public static Command createZoomControlZoomChangeEventCommand(ZoomControlData data) {
+		ZoomControlEvent event = new ZoomControlEvent.ZoomChange(data);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}

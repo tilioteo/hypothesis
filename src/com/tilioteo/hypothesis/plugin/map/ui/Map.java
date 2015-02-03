@@ -3,15 +3,15 @@
  */
 package com.tilioteo.hypothesis.plugin.map.ui;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.dom4j.Element;
+import org.vaadin.maps.server.Bounds;
 import org.vaadin.maps.shared.ui.Style;
-import org.vaadin.maps.ui.LayerLayout;
+import org.vaadin.maps.ui.HasLayerLayout;
+import org.vaadin.maps.ui.MapContainer;
 import org.vaadin.maps.ui.control.AbstractControl;
-import org.vaadin.maps.ui.layer.ControlLayer;
-import org.vaadin.maps.ui.layer.Layer;
+import org.vaadin.maps.ui.layer.AbstractLayer;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.core.SlideManager;
@@ -32,15 +32,11 @@ import com.vaadin.ui.Alignment;
  *
  */
 @SuppressWarnings("serial")
-public class Map extends LayerLayout implements SlideComponent, Maskable {
+public class Map extends MapContainer implements SlideComponent, Maskable {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
 	private Mask mask = null;
-	
-	private HashMap<String, Style> styles = new HashMap<String, Style>();
-	
-	private ControlLayer controlLayer;
 	
 	public Map() {
 		this.parentAlignment = new ParentAlignment();
@@ -75,34 +71,25 @@ public class Map extends LayerLayout implements SlideComponent, Maskable {
 		}
 	}
 	
-	private void addStyle(String id, Style style) {
-		if (id != null && style != null) {
-			styles.put(id, style);
-		}
-	}
-
 	private void addLayers(Element element) {
-		// Add default control layer
-		controlLayer = new ControlLayer();
-		addComponent(controlLayer);
-		
-		List<Element> elements = SlideXmlUtility.getLayers(
-				element, SlideXmlConstants.VALID_LAYER_ELEMENTS);
+		List<Element> elements = SlideXmlUtility.getLayers(element, SlideXmlConstants.VALID_LAYER_ELEMENTS);
 		for (Element childElement : elements) {
 			SlideComponent component = MapComponentFactory.createComponentFromElement(childElement, slideManager);
-			if (component instanceof Layer) {
-				addComponent((Layer)component);
+			if (component instanceof AbstractLayer<?>) {
+				addLayer((AbstractLayer<?>)component);
 			}
 		}
 	}
 
 	private void addControls(Element element) {
-		List<Element> elements = SlideXmlUtility.getControls(
-				element, SlideXmlConstants.VALID_CONTROL_ELEMENTS);
+		List<Element> elements = SlideXmlUtility.getControls(element, SlideXmlConstants.VALID_CONTROL_ELEMENTS);
 		for (Element childElement : elements) {
 			SlideComponent component = MapComponentFactory.createComponentFromElement(childElement, slideManager);
 			if (component instanceof AbstractControl) {
-				controlLayer.addComponent((AbstractControl)component);
+				if (component instanceof HasLayerLayout) {
+					((HasLayerLayout)component).setLayout(this);
+				}
+				addControl((AbstractControl)component);
 			}
 		}
 	}
@@ -122,10 +109,8 @@ public class Map extends LayerLayout implements SlideComponent, Maskable {
 		ComponentUtility.setCommonProperties(this, element, properties, parentAlignment);
 
 		// set Map specific properties
-	}
-
-	public Style getStyle(String name) {
-		return styles.get(name);
+		setCRS(properties.get(SlideXmlConstants.CRS));
+		setBounds(Bounds.fromBBOX(properties.get(SlideXmlConstants.BBOX)));
 	}
 
 	@Override
@@ -149,6 +134,5 @@ public class Map extends LayerLayout implements SlideComponent, Maskable {
 		
 		super.finalize();
 	}
-	
-	
+
 }

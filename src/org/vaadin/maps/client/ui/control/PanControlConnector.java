@@ -26,5 +26,4 @@ public class PanControlConnector extends NavigateControlConnector {
 		return (PanControlState) super.getState();
 	}
 
-
 }

@@ -20,6 +20,8 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.dom.client.MouseWheelEvent;
+import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,7 +33,7 @@ import com.vaadin.client.StyleConstants;
  * @author morong
  * 
  */
-public class VLayerLayout extends ComplexPanel implements PanHandler {
+public class VLayerLayout extends ComplexPanel implements PanHandler, ZoomHandler {
 
 	/** Class name, prefix in styling */
 	public static final String CLASSNAME = "v-layerlayout";
@@ -315,6 +317,10 @@ public class VLayerLayout extends ComplexPanel implements PanHandler {
 		return addDomHandler(handler, MouseUpEvent.getType());
 	}
 
+	public HandlerRegistration addMouseWheelHandler(MouseWheelHandler handler) {
+		return addDomHandler(handler, MouseWheelEvent.getType());
+	}
+
 	/**
 	 * Internal wrapper for wrapping widgets in the Layer layout
 	 */
@@ -438,6 +444,17 @@ public class VLayerLayout extends ComplexPanel implements PanHandler {
 			Widget widget = iterator.next();
 			if (widget instanceof PanHandler) {
 				((PanHandler)widget).onPanEnd(totalX, totalY);
+			}
+		}
+	}
+
+	@Override
+	public void onZoom(double zoom) {
+		Iterator<Widget> iterator = iterator();
+		while (iterator.hasNext()) {
+			Widget widget = iterator.next();
+			if (widget instanceof ZoomHandler) {
+				((ZoomHandler)widget).onZoom(zoom);
 			}
 		}
 	}

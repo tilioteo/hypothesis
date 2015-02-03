@@ -96,13 +96,13 @@ public interface LayoutEvents<C extends Component> {
 
         private final C clickedComponent;
         private final C childComponent;
+        private MouseEventDetails details;
 
-        public LayoutClickEvent(C source,
-                MouseEventDetails mouseEventDetails,
-                C clickedComponent, C childComponent) {
+        public LayoutClickEvent(C source, MouseEventDetails mouseEventDetails, C clickedComponent, C childComponent) {
             super(source, mouseEventDetails);
             this.clickedComponent = clickedComponent;
             this.childComponent = childComponent;
+            details = mouseEventDetails;
         }
 
         /**
@@ -144,6 +144,10 @@ public interface LayoutEvents<C extends Component> {
 
             return new LayoutClickEvent<C>((C) layout, mouseDetails, clickedComponent,
                     childComponent);
+        }
+        
+        public static <C extends Component> ClickEvent createClickEvent(Component source, LayoutClickEvent<C> layoutClickEvent) {
+        	return new ClickEvent(source, layoutClickEvent.details);
         }
     }
 }

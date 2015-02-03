@@ -85,7 +85,12 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
     public void addComponent(VectorFeature feature) {
     	getContent().addComponent(feature);
     	
+    	if (getForLayer() != null) {
+    		feature.transformToView(getForLayer().getViewWorldTransform());
+    	}
+    	
     	setInheritedStyles(feature);
+    	setTransformChangeListener(feature);
     }
 
 	/**
@@ -101,6 +106,7 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
     	getContent().addComponent(feature, index);
     	
     	setInheritedStyles(feature);
+    	setTransformChangeListener(feature);
     }
 
     /**
@@ -114,10 +120,17 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
     	
     	for (VectorFeature feature : features) {
     		setInheritedStyles(feature);
+        	setTransformChangeListener(feature);
     	}
     }
 
-    private void setInheritedStyles(VectorFeature feature) {
+    private void setTransformChangeListener(VectorFeature feature) {
+    	if (getForLayer() != null) {
+    		getForLayer().addTransformChangeListener(feature);
+    	}
+	}
+
+	private void setInheritedStyles(VectorFeature feature) {
     	if (feature != null) {
    			feature.setInheritedStyle(style);
    			feature.setInheritedHoverStyle(hoverStyle);
@@ -263,4 +276,11 @@ public class VectorFeatureLayer extends AbstractLayer<VectorFeatureContainer> im
 		}
 	}
 
+    @Override
+	public void setForLayer(ForLayer forLayer) {
+    	super.setForLayer(forLayer);
+    	
+    	
+    }
+    
 }

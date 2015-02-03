@@ -4,6 +4,7 @@
 package org.vaadin.maps.client.ui;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -58,6 +59,13 @@ public abstract class AbstractHandler extends Widget {
 		finalize();
 	}
 	
+	protected final void removeEventHandler(HandlerRegistration handler) {
+		if (handler != null) {
+			handler.removeHandler();
+			handler = null;
+		}
+	}
+
 	protected abstract void initialize();
 	protected abstract void finalize();
 }

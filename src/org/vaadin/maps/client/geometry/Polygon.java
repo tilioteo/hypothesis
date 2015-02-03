@@ -163,11 +163,11 @@ public class Polygon extends Geometry {
 
 		int k = -1;
 		for (Coordinate coordinate : shell.coordinates) {
-			coordinates[++k] = new Coordinate(coordinate);
+			coordinates[++k] = coordinate;//new Coordinate(coordinate);
 		}
 		for (LinearRing hole : holes) {
 			for (Coordinate coordinate : hole.coordinates) {
-				coordinates[++k] = new Coordinate(coordinate);
+				coordinates[++k] = coordinate;//new Coordinate(coordinate);
 			}
 		}
 

@@ -3,15 +3,16 @@
  */
 package org.vaadin.maps.client.ui;
 
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * @author kamil
  *
  */
-public abstract class InteractiveLayer extends AbstractLayer implements PanHandler, SizeChangeHandler {
+public abstract class InteractiveLayer extends AbstractLayer implements PanHandler, ZoomHandler, SizeChangeHandler {
 
-    private int shiftX = 0;
+	private int shiftX = 0;
     private int shiftY = 0;
 
     protected boolean fixed = false; 
@@ -22,6 +23,10 @@ public abstract class InteractiveLayer extends AbstractLayer implements PanHandl
 
 	protected void setFixed(boolean fixed) {
 		this.fixed = fixed;
+	}
+
+	@Override
+	public void onSizeChange(int oldWidth, int oldHeight, int newWidth,	int newHeight) {
 	}
 
 	@Override
@@ -42,7 +47,22 @@ public abstract class InteractiveLayer extends AbstractLayer implements PanHandl
 		}
 	}
 	
+	@Override
+	public void onZoom(double zoom) {
+		if (!fixed) {
+			Widget content = getWidget();
+		}
+	}
+
 	public void clearShift() {
 		shiftX = shiftY = 0;
 	}
+
+	protected final void removeHandler(HandlerRegistration handler) {
+		if (handler != null) {
+			handler.removeHandler();
+			handler = null;
+		}
+	}
+	
 }

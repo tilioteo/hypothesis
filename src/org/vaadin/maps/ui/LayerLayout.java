@@ -240,12 +240,14 @@ public class LayerLayout extends AbstractLayout<Layer> implements
 		markAsDirty();
 	}
 	
-	private void updateMeasuredSize(int newWidth, int newHeight) {
+	protected void updateMeasuredSize(int newWidth, int newHeight) {
 		int oldWidth = this.measuredWidth;
 		int oldHeight = this.measuredHeight;
 		
 		this.measuredWidth = newWidth;
 		this.measuredHeight = newHeight;
+		
+		
 		Iterator<Component> iterator = iterator();
 		while (iterator.hasNext()) {
 			Component layer = iterator.next();

@@ -8,13 +8,12 @@ import org.vaadin.maps.client.geometry.Coordinate;
 import org.vaadin.maps.client.ui.VPointHandler;
 import org.vaadin.maps.client.ui.VPointHandler.GeometryEvent;
 import org.vaadin.maps.client.ui.VPointHandler.GeometryEventHandler;
+import org.vaadin.maps.client.ui.VPointHandler.SyntheticClickHandler;
 import org.vaadin.maps.client.ui.layer.VectorFeatureLayerConnector;
 import org.vaadin.maps.shared.ui.handler.PointHandlerServerRpc;
 import org.vaadin.maps.shared.ui.handler.PointHandlerState;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.vaadin.client.MouseEventDetailsBuilder;
+import com.google.gwt.dom.client.Element;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.shared.Connector;
 import com.vaadin.shared.MouseEventDetails;
@@ -26,7 +25,7 @@ import com.vaadin.shared.ui.Connect;
  */
 @SuppressWarnings("serial")
 @Connect(org.vaadin.maps.ui.handler.PointHandler.class)
-public class PointHandlerConnector extends AbstractHandlerConnector implements ClickHandler, GeometryEventHandler {
+public class PointHandlerConnector extends AbstractHandlerConnector implements SyntheticClickHandler, GeometryEventHandler {
 
 	@Override
 	protected void init() {
@@ -60,13 +59,21 @@ public class PointHandlerConnector extends AbstractHandlerConnector implements C
 		}
 	}
 
-	@Override
+	/*@Override
 	public void onClick(ClickEvent event) {
-		Coordinate coordinate = getWidget().createWorldCoordinate(VPointHandler.getMouseEventXY(event));
+		Coordinate coordinate = getWidget().createCoordinate(VPointHandler.getMouseEventXY(event));
 		MouseEventDetails mouseDetails = MouseEventDetailsBuilder.buildMouseEventDetails(event.getNativeEvent(), getWidget().getElement());
 		getRpcProxy(PointHandlerServerRpc.class).click(coordinate.x, coordinate.y,
 				mouseDetails.getButtonName(), mouseDetails.isAltKey(), mouseDetails.isCtrlKey(),
 				mouseDetails.isMetaKey(), mouseDetails.isShiftKey(), mouseDetails.isDoubleClick());
+	}*/
+
+	@Override
+	public void syntheticClick(MouseEventDetails details, Element relativeElement) {
+		Coordinate coordinate = getWidget().createCoordinate(VPointHandler.getMouseEventXY(details, relativeElement));
+		getRpcProxy(PointHandlerServerRpc.class).click(coordinate.x, coordinate.y,
+				details.getButtonName(), details.isAltKey(), details.isCtrlKey(),
+				details.isMetaKey(), details.isShiftKey(), details.isDoubleClick());
 	}
 
 	@Override

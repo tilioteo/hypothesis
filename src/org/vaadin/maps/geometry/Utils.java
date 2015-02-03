@@ -3,6 +3,11 @@
  */
 package org.vaadin.maps.geometry;
 
+import org.vaadin.maps.server.LonLat;
+import org.vaadin.maps.server.Pixel;
+import org.vaadin.maps.server.ViewWorldTransform;
+
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
@@ -58,6 +63,28 @@ public class Utils {
 		}
 		
 		return null;
+	}
+
+	public static void transformWorldToView(Geometry geometry, ViewWorldTransform viewWorldTransform) {
+		Coordinate[] coordinates = geometry.getCoordinates();
+		for (Coordinate coordinate : coordinates) {
+			Pixel pixel = viewWorldTransform.worldToView(coordinate.x, coordinate.y);
+			if (pixel != null) {
+				coordinate.x = pixel.getX();
+				coordinate.y = pixel.getY();
+			}
+		}
+	}
+
+	public static void transformViewToWorld(Geometry geometry, ViewWorldTransform viewWorldTransform) {
+		Coordinate[] coordinates = geometry.getCoordinates();
+		for (Coordinate coordinate : coordinates) {
+			LonLat lonLat = viewWorldTransform.viewToWorld(coordinate.x, coordinate.y);
+			if (lonLat != null) {
+				coordinate.x = lonLat.getLon();
+				coordinate.y = lonLat.getLat();
+			}
+		}
 	}
 
 }

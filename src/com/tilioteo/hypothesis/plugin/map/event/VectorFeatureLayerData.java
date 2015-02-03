@@ -19,6 +19,7 @@ public class VectorFeatureLayerData extends AbstractComponentData<VectorFeatureL
 
 	// using 2D coordinates only
 	private Coordinate coordinate;
+	private Coordinate worldCoordinate;
 
 	public VectorFeatureLayerData(VectorFeatureLayer sender, SlideManager slideManager) {
 		super(sender, slideManager);
@@ -28,12 +29,24 @@ public class VectorFeatureLayerData extends AbstractComponentData<VectorFeatureL
 		return coordinate;
 	}
 
+	public final Coordinate getWorldCoordinate() {
+		return worldCoordinate;
+	}
+
 	public final boolean hasCoordinate() {
 		return coordinate != null;
 	}
 
+	public final boolean hasWorldCoordinate() {
+		return worldCoordinate != null;
+	}
+
 	public final void setCoordinate(Coordinate coordinate) {
 		this.coordinate = coordinate;
+	}
+
+	public final void setWorldCoordinate(Coordinate coordinate) {
+		this.worldCoordinate = coordinate;
 	}
 
 	public final void setXY(double x, double y) {
@@ -42,6 +55,14 @@ public class VectorFeatureLayerData extends AbstractComponentData<VectorFeatureL
 			coordinate.y = y;
 		} else
 			coordinate = new Coordinate(x, y);
+	}
+
+	public final void setWorldXY(double x, double y) {
+		if (worldCoordinate != null) {
+			worldCoordinate.x = x;
+			worldCoordinate.y = y;
+		} else
+			worldCoordinate = new Coordinate(x, y);
 	}
 
 	@Override

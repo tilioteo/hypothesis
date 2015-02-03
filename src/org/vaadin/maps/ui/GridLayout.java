@@ -39,11 +39,10 @@ public class GridLayout<C extends Component> extends AbstractLayout<C> implement
 		@Override
 		public void layoutClick(MouseEventDetails mouseDetails, Connector clickedConnector) {
 			log.debug("GridLayoutServerRpc: layoutClick()");
-			fireEvent(LayoutClickEvent.createEvent(GridLayout.this,
-					mouseDetails, clickedConnector));
-
+			fireEvent(LayoutClickEvent.createEvent(GridLayout.this,	mouseDetails, clickedConnector));
 		}
 	};
+	
 	/**
 	 * Cursor X position: this is where the next component with unspecified x,y
 	 * is inserted

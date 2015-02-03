@@ -25,14 +25,18 @@ public class MapPlugin implements SlideComponentPlugin {
 	private StringSet elements = new StringSet(
 			SlideXmlConstants.MAP
 			/*SlideXmlConstants.LAYERS,
-			SlideXmlConstants.IMAGELAYER,
-			SlideXmlConstants.FEATURELAYER,
+			SlideXmlConstants.IMAGE_LAYER,
+			SlideXmlConstants.WMS_LAYER,
+			SlideXmlConstants.IMAGE_SEQUENCE_LAYER,
+			SlideXmlConstants.FEATURE_LAYER,
 			SlideXmlConstants.FEATURES,
 			SlideXmlConstants.FEATURE,
 			SlideXmlConstants.GEOMETRY,
 			SlideXmlConstants.CONTROLS,
 			SlideXmlConstants.DRAW_POINT,
-			SlideXmlConstants.DRAW_PATH*/
+			SlideXmlConstants.DRAW_PATH,
+			SlideXmlConstants.PAN,
+			SlideXmlConstants.ZOOM*/
 			);
 	
 	private StringSet eventTypes = new StringSet(
@@ -41,7 +45,10 @@ public class MapPlugin implements SlideComponentPlugin {
 			MapEventTypes.FeatureClick,
 			MapEventTypes.DrawPoint,
 			MapEventTypes.DrawPath,
-			MapEventTypes.DrawPolygon
+			MapEventTypes.DrawPolygon,
+			MapEventTypes.PanStart,
+			MapEventTypes.PanEnd,
+			MapEventTypes.ZoomChange
 			);
 	
 	private Map<String, Set<ValidParentGroup>> elementParentGroups = new HashMap<String, Set<ValidParentGroup>>();

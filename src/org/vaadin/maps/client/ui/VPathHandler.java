@@ -9,12 +9,14 @@ import org.vaadin.gwtgraphics.client.shape.Circle;
 import org.vaadin.gwtgraphics.client.shape.Path;
 import org.vaadin.gwtgraphics.client.shape.path.LineTo;
 import org.vaadin.maps.client.drawing.Utils;
+import org.vaadin.maps.client.geometry.Coordinate;
 import org.vaadin.maps.client.geometry.LineString;
 import org.vaadin.maps.shared.ui.Style;
 
 import com.google.gwt.core.client.Duration;
-import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.vaadin.shared.MouseEventDetails;
 
 /**
  * @author kamil
@@ -140,7 +142,7 @@ public class VPathHandler extends VPointHandler {
 	}
 	
 	protected void addLineStringVertex(int[] xy) {
-		lineString.getCoordinateSequence().add(createWorldCoordinate(xy));
+		lineString.getCoordinateSequence().add(createCoordinate(xy));
 	}
 
 	private void updateLineSegment(int x, int y) {
@@ -158,7 +160,7 @@ public class VPathHandler extends VPointHandler {
 	}
 	
 	protected void prepareLineString(int[] xy) {
-		lineString = new LineString(createWorldCoordinate(xy));
+		lineString = new LineString(createCoordinate(xy));
 	}
 	
 	/*private void finishLineString(int[] xy) {
@@ -221,7 +223,7 @@ public class VPathHandler extends VPointHandler {
 		updateVerticesStyle();
 	}
 
-	@Override
+	/*@Override
 	public void onClick(ClickEvent event) {
 		if (!active) {
 			return;
@@ -288,6 +290,76 @@ public class VPathHandler extends VPointHandler {
 				addLineStringVertex(xy);
 			}
 		}
+	}*/
+
+	
+	@Override
+	protected void syntheticClick(MouseEventDetails details, Element relativeElement) {
+		if (!active) {
+			return;
+		}
+		
+		boolean finish = false;
+		boolean isDoubleClick = false;
+		
+		if (null == clickDuration) {
+			clickDuration = new Duration();
+			
+		} else {
+			if (clickDuration.elapsedMillis() <= DOUBLE_CLICK_THRESHOLD) {
+				isDoubleClick = true;
+				clickDuration = null;
+			} else {
+				clickDuration = new Duration();
+			}
+		}
+
+		if (isDoubleClick && !FinishStrategy.DoubleClick.equals(strategy)) {
+			return;
+		}
+		
+		int[] xy = getMouseEventXY(details, relativeElement);
+
+		// first click
+		// add start point and begin line drawing
+		// create and insert start point
+		if (null == startPoint) {
+			prepareDrawing(xy[0], xy[1]);
+			prepareLineString(xy);
+		} else {
+			if (details.isShiftKey() && (FinishStrategy.AltClick.equals(strategy) || isDoubleClick)) {
+				// finish drawing with closing line if shift key has been pressed
+				// and the click is in start point's circle
+				if (isWithinCircle(startPoint.getX(), startPoint.getY(), startPoint.getRadius(), xy[0], xy[1])) {
+					finish = true;
+					if (isDoubleClick) {
+						// remove last vertex from everywhere
+						removeLastLineStringVertex();
+						removeLastVertex();
+					}
+					// close line
+					closeLineString();
+				}
+			} else if ((FinishStrategy.AltClick.equals(strategy) && details.isAltKey())) {
+				// finish drawing when strategy conditions pass
+				finish = true;
+				// append last vertex
+				addLineStringVertex(xy);
+
+			} else if (FinishStrategy.DoubleClick.equals(strategy) && isDoubleClick) {
+				finish = true;
+			}
+			
+			if (finish) {
+				fireEvent(new GeometryEvent(VPathHandler.this, lineString));
+				cleanDrawing();
+				cleanLineString();
+			} else {
+				addLineSegment(xy[0], xy[1]);
+				// append vertex
+				addLineStringVertex(xy);
+			}
+		}
 	}
 
 	protected boolean isWithinCircle(int circleX, int circleY, int radius, int pointX, int pointY) {
@@ -320,4 +392,29 @@ public class VPathHandler extends VPointHandler {
 		}
 		strategy = FinishStrategy.AltClick;
 	}
+
+	@Override
+	protected void updateDrawings(int deltaX, int deltaY) {
+		if (startPoint != null ) {
+			startPoint.setX(startPoint.getX() + deltaX);
+			startPoint.setY(startPoint.getY() + deltaY);
+		}
+		if (line != null) {
+			line.setX(line.getX() + deltaX);
+			line.setY(line.getY() + deltaY);
+		}
+		for (Circle vertex : vertices) {
+			vertex.setX(vertex.getX() + deltaX);
+			vertex.setY(vertex.getY() + deltaY);
+		}
+		if (lineString != null) {
+			Coordinate[] coordinates = lineString.getCoordinates();
+			for (Coordinate coordinate : coordinates) {
+				coordinate.x += deltaX;
+				coordinate.y += deltaY;
+			}
+		}
+	}
+
+
 }

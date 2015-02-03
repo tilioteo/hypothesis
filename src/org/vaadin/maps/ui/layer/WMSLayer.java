@@ -3,9 +3,12 @@
  */
 package org.vaadin.maps.ui.layer;
 
+import org.vaadin.maps.server.Bounds;
+import org.vaadin.maps.server.Size;
 import org.vaadin.maps.server.WMSConstants;
+import org.vaadin.maps.shared.ui.layer.WMSLayerServerRpc;
 import org.vaadin.maps.shared.ui.layer.WMSLayerState;
-import org.vaadin.maps.ui.CRSUtility;
+import org.vaadin.maps.ui.MapConstants;
 import org.vaadin.maps.ui.tile.WMSTile;
 
 import com.tilioteo.hypothesis.common.Strings;
@@ -18,20 +21,25 @@ import com.tilioteo.hypothesis.common.Strings;
 public class WMSLayer extends GridLayer<WMSTile> {
 	
 	private String baseUrl = "";
-	private int tileWidth = WMSConstants.DEFAULT_WIDTH;
-	private int tileHeight = WMSConstants.DEFAULT_HEIGHT;
-	private String crs = WMSConstants.DEFAULT_CRS;
 	private String format = WMSConstants.DEFAULT_FORMAT;
 	private String styles = "";
-	private String bbox = "";
 	private String layers = "";
+
+	private Size tileSize = new Size(WMSConstants.DEFAULT_WIDTH, WMSConstants.DEFAULT_HEIGHT);
+	private Size visible = new Size(); 
 	
+	private Bounds bounds = new Bounds();
 	
-	private int visibleWidth = 0;
-	private int visibleHeight = 0;
+	private WMSLayerServerRpc rpc = new WMSLayerServerRpc() {
+		@Override
+		public void requestSingleTile(int width, int height, int shiftX, int shiftY) {
+			WMSLayer.this.requestSingleTile(width, height, shiftX, shiftY);
+		}
+	};
 	
 	public WMSLayer() {
 		super();
+		registerRpc(rpc);
 	}
 
 	public WMSLayer(String baseUrl) {
@@ -65,16 +73,6 @@ public class WMSLayer extends GridLayer<WMSTile> {
 		}
 	}
 
-	public String getCRS() {
-		return crs;
-	}
-
-	public void setCRS(String crs) {
-		if (CRSUtility.checkCRS(crs)) {
-			this.crs = crs;
-		}
-	}
-
 	public String getFormat() {
 		return format;
 	}
@@ -91,14 +89,6 @@ public class WMSLayer extends GridLayer<WMSTile> {
 		this.styles = styles;
 	}
 
-	public String getBBox() {
-		return bbox;
-	}
-
-	public void setBBox(String bbox) {
-		this.bbox = bbox;
-	}
-
 	public String getLayers() {
 		return layers;
 	}
@@ -111,13 +101,14 @@ public class WMSLayer extends GridLayer<WMSTile> {
 		
 		getGrid().removeAllComponents();
 		
-		if (!Strings.isNullOrEmpty(baseUrl) && visibleWidth > 0 && visibleHeight > 0) {
+		if (!Strings.isNullOrEmpty(baseUrl) && visible.isValid()) {
+			
 			if (getState().singleTile) {
 				getGrid().setRows(1);
 				getGrid().setColumns(1);
 				
-				tileWidth = 2*visibleWidth;
-				tileHeight = 2*visibleHeight;
+				tileSize.setWidth(2*visible.getWidth());
+				tileSize.setHeight(2*visible.getHeight());
 				
 				WMSTile tile = createTile();
 				
@@ -127,16 +118,28 @@ public class WMSLayer extends GridLayer<WMSTile> {
 			}
 		}
 	}
+	
+	private void requestSingleTile(int width, int height, int shiftX, int shiftY) {
+		rebuildTiles();
+	}
 
 	private WMSTile createTile() {
+		String crs = MapConstants.DEFAULT_CRS;
+		if (getForLayer() != null) {
+			if (getForLayer().getCRS() != null) {
+				crs = getForLayer().getCRS();
+			}
+			bounds = getForLayer().getExtent();
+		}
+		
 		WMSTile tile = new WMSTile(baseUrl);
 		tile.setLayers(layers);
-		tile.setWidth(tileWidth);
-		tile.setHeight(tileHeight);
+		tile.setWidth(tileSize.getWidth());
+		tile.setHeight(tileSize.getHeight());
 		tile.setSRS(crs);
 		tile.setStyles(styles);
-		tile.setBBox(bbox);
 		tile.setFormat(format);
+		tile.setBBox(bounds.scale(2).toBBOX());
 		
 		return tile;
 	}
@@ -154,10 +157,10 @@ public class WMSLayer extends GridLayer<WMSTile> {
 	
 	@Override
 	public void sizeChanged(int oldWidth, int oldHeight, int newWidth, int newHeight) {
-		visibleWidth = newWidth;
-		visibleHeight = newHeight;
+		visible.setWidth(newWidth);
+		visible.setHeight(newHeight);
 		
-		if (newWidth > oldWidth || newHeight > oldHeight) {
+		if ((oldWidth <= 0 && newWidth > oldWidth) || (oldHeight <= 0 && newHeight > oldHeight)) {
 			rebuildTiles();
 		}
 	}

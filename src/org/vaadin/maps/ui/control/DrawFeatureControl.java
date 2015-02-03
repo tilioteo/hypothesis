@@ -12,7 +12,7 @@ import org.vaadin.maps.ui.CanCancel;
 import org.vaadin.maps.ui.CanUndoRedo;
 import org.vaadin.maps.ui.StyleUtility;
 import org.vaadin.maps.ui.handler.FeatureHandler;
-import org.vaadin.maps.ui.handler.FeatureHandler.GeometryListener;
+import org.vaadin.maps.ui.handler.FeatureHandler.DrawFeatureListener;
 import org.vaadin.maps.ui.handler.RequiresVectorFeatureLayer;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 
@@ -27,6 +27,7 @@ public abstract class DrawFeatureControl<H extends FeatureHandler> extends Abstr
 	protected VectorFeatureLayer layer = null;
 	protected H handlerInstance = null;
 	
+	protected Style featureStyle = null;
 	protected Style cursorStyle = null;
 	
 	public DrawFeatureControl(VectorFeatureLayer layer) {
@@ -51,11 +52,18 @@ public abstract class DrawFeatureControl<H extends FeatureHandler> extends Abstr
 			setHandler(handlerInstance);
 		}
 		provideLayerToHandler();
+		provideFeatureStyleToHandler();
 	}
 	
 	private void provideLayerToHandler() {
 		if (handler != null && handler instanceof RequiresVectorFeatureLayer) {
 			((RequiresVectorFeatureLayer)handler).setLayer(layer);
+		}
+	}
+
+	private void provideFeatureStyleToHandler() {
+		if (handler != null && handler instanceof FeatureHandler) {
+			((FeatureHandler)handler).setFeatureStyle(featureStyle);
 		}
 	}
 
@@ -90,6 +98,15 @@ public abstract class DrawFeatureControl<H extends FeatureHandler> extends Abstr
 		return (DrawFeatureControlState) super.getState();
 	}
 	
+	public Style getFeatureStyle() {
+		return featureStyle;
+	}
+
+	public void setFeatureStyle(Style style) {
+		this.featureStyle = style;
+		provideFeatureStyleToHandler();
+	}
+
 	public Style getCursorStyle() {
 		return cursorStyle;
 	}
@@ -116,15 +133,15 @@ public abstract class DrawFeatureControl<H extends FeatureHandler> extends Abstr
 			handler.cancel();
 	}
 	
-	public void addGeomertyListener(GeometryListener listener) {
+	public void addDrawFeatureListener(DrawFeatureListener listener) {
 		if (handlerInstance != null) {
-			handlerInstance.addGeometryListener(listener);
+			handlerInstance.addDrawFeatureListener(listener);
 		}
 	}
 	
-	public void removeGeometryListener(GeometryListener listener) {
+	public void removeDrawFeatureListener(DrawFeatureListener listener) {
 		if (handlerInstance != null) {
-			handlerInstance.removeGeometryListener(listener);
+			handlerInstance.removeDrawFeatureListener(listener);
 		}
 	}
 	

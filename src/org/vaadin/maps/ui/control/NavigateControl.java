@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.vaadin.maps.server.ClassUtility;
 import org.vaadin.maps.shared.ui.control.NavigateControlState;
+import org.vaadin.maps.ui.HasLayerLayout;
 import org.vaadin.maps.ui.LayerLayout;
 import org.vaadin.maps.ui.handler.NavigateHandler;
 import org.vaadin.maps.ui.handler.RequiresLayerLayout;
@@ -16,7 +17,7 @@ import org.vaadin.maps.ui.handler.RequiresLayerLayout;
  *
  */
 @SuppressWarnings("serial")
-public abstract class NavigateControl<H extends NavigateHandler> extends AbstractControl {
+public abstract class NavigateControl<H extends NavigateHandler> extends AbstractControl implements HasLayerLayout {
 	private final Class<H> handlerClass;
 	
 	LayerLayout layout = null;
@@ -71,6 +72,12 @@ public abstract class NavigateControl<H extends NavigateHandler> extends Abstrac
 		return null;
 	}
 	
+	@Override
+	public LayerLayout getLayout() {
+		return layout;
+	}
+	
+	@Override
 	public void setLayout(LayerLayout layout) {
 		this.layout = layout;
 		getState().layout = layout;

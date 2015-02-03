@@ -16,5 +16,8 @@ public class MapEventTypes {
 	public static final String DrawPath = "DRAW_PATH";
 	public static final String DrawPoint = "DRAW_POINT";
 	public static final String DrawPolygon = "DRAW_POLYGON";
+	public static final String PanStart = "PAN_START";
+	public static final String PanEnd = "PAN_END";
+	public static final String ZoomChange = "ZOOM_CHANGE";
 
 }

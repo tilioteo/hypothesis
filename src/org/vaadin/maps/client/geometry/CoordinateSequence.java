@@ -189,7 +189,12 @@ public class CoordinateSequence implements Iterable<Coordinate> {
 	 *         sequence
 	 */
 	Coordinate[] toArray() {
-		return (Coordinate[]) coordinates.toArray();
+		Coordinate[] array = new Coordinate[size()];
+		int i = 0;
+		for (Coordinate coordinate : coordinates) {
+			array[i++] = coordinate;
+		}
+		return array;
 	}
 	
 	@Override

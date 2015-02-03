@@ -10,6 +10,7 @@ import org.dom4j.Element;
 import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.ui.control.Control;
 import org.vaadin.maps.ui.control.DrawFeatureControl;
+import org.vaadin.maps.ui.control.NavigateControl;
 import org.vaadin.maps.ui.feature.VectorFeature;
 import org.vaadin.maps.ui.handler.PathHandler.FinishStrategy;
 import org.vaadin.maps.ui.layer.Layer;
@@ -97,10 +98,15 @@ public class MapUtility {
 		setCommonProperties(control, element, properties);
 	}
 
+	public void setNavigateControlProperties(NavigateControl<?> control, Element element, StringMap properties) {
+		setControlProperties(control, element, properties);
+	}
+
 	public void setDrawFeatureControlProperties(DrawFeatureControl<?> control, Element element,
 			StringMap properties, SlideManager slideManager) {
 		
 		setControlProperties(control, element, properties);
+		setFeatureStyle(control, properties);
 		setCursorStyle(control, properties);
 		
 		SlideComponent component = slideManager.getComponent(properties.get(SlideXmlConstants.LAYER_ID));
@@ -125,6 +131,18 @@ public class MapUtility {
 		setLineStyle(control, properties);
 		setVertexStyle(control, properties);
 		setFinishStrategy(control, properties);
+	}
+
+	private void setFeatureStyle(DrawFeatureControl<?> control,	StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.FEATURE_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setFeatureStyle(style);
+				return;
+			}
+		}
+		control.setFeatureStyle(null);
 	}
 
 	private void setCursorStyle(DrawFeatureControl<?> control, StringMap properties) {

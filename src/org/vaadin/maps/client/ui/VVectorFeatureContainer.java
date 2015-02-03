@@ -26,6 +26,8 @@ public class VVectorFeatureContainer extends DrawingArea implements CanShift {
 
 	private int shiftX = 0;
 	private int shiftY = 0;
+	
+	private CanShift canShiftSlave = null;
 
 	public VVectorFeatureContainer() {
 		super(1, 1);
@@ -41,13 +43,26 @@ public class VVectorFeatureContainer extends DrawingArea implements CanShift {
 	@Override
 	public AbstractDrawing add(AbstractDrawing drawing) {
 		if (drawing != null) {
+			VVectorFeature feature = null;
+			if (drawing instanceof VVectorFeature) {
+				feature = (VVectorFeature) drawing;
+				feature.setShift(shiftX, shiftY);
+			}
+			if (feature != null && feature.isHidden()) {
+				return hiddenContainer.add(feature);
+			} else {
+				return container.add(drawing);
+			}
+		}
+		return null;
+		/*if (drawing != null) {
 			if (drawing instanceof VVectorFeature && ((VVectorFeature) drawing).isHidden()) {
 				return hiddenContainer.add(drawing);
 			} else {
 				return container.add(drawing);
 			}
 		}
-		return null;
+		return null;*/
 	}
 
 	@Override
@@ -107,6 +122,9 @@ public class VVectorFeatureContainer extends DrawingArea implements CanShift {
 		shiftY = y;
 		
 		setChildrenShift();
+		if (canShiftSlave != null) {
+			canShiftSlave.setShift(x, y);
+		}
 	}
 
 	private void setChildrenShift() {
@@ -126,4 +144,11 @@ public class VVectorFeatureContainer extends DrawingArea implements CanShift {
 		}
 	}
 
+	public CanShift getCanShiftSlave() {
+		return canShiftSlave;
+	}
+
+	public void setCanShiftSlave(CanShift canShiftSlave) {
+		this.canShiftSlave = canShiftSlave;
+	}
 }

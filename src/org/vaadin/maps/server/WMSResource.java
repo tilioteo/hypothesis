@@ -3,6 +3,8 @@
  */
 package org.vaadin.maps.server;
 
+import org.vaadin.maps.ui.MapConstants;
+
 import com.vaadin.server.ExternalResource;
 
 /**
@@ -19,7 +21,7 @@ public class WMSResource extends ExternalResource implements TileResource {
 	private String format = WMSConstants.DEFAULT_FORMAT;
 	private String layers = "";
 	private String styles = "";
-	private String srs = WMSConstants.DEFAULT_CRS;
+	private String srs = MapConstants.DEFAULT_CRS;
 	private String bbox = "";
 	private boolean transparent = false;
 	
@@ -177,7 +179,7 @@ public class WMSResource extends ExternalResource implements TileResource {
 			if (srs != null && !srs.isEmpty()) {
 				this.srs = srs;
 			} else {
-				this.srs = WMSConstants.DEFAULT_CRS;
+				this.srs = MapConstants.DEFAULT_CRS;
 			}
 		}
 	}

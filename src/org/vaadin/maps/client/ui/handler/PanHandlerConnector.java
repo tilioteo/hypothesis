@@ -4,11 +4,13 @@
 package org.vaadin.maps.client.ui.handler;
 
 import org.vaadin.maps.client.ui.VPanHandler;
-import org.vaadin.maps.client.ui.layerlayout.LayerLayoutConnector;
+import org.vaadin.maps.client.ui.VPanHandler.PanEndEvent;
+import org.vaadin.maps.client.ui.VPanHandler.PanEndEventHandler;
+import org.vaadin.maps.client.ui.VPanHandler.PanStartEvent;
+import org.vaadin.maps.client.ui.VPanHandler.PanStartEventHandler;
+import org.vaadin.maps.shared.ui.handler.PanHandlerRpc;
 import org.vaadin.maps.shared.ui.handler.PanHandlerState;
 
-import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
 
 /**
@@ -17,11 +19,14 @@ import com.vaadin.shared.ui.Connect;
  */
 @SuppressWarnings("serial")
 @Connect(org.vaadin.maps.ui.handler.PanHandler.class)
-public class PanHandlerConnector extends AbstractHandlerConnector {
+public class PanHandlerConnector extends LayerLayoutHandlerConnector implements PanStartEventHandler, PanEndEventHandler {
 
 	@Override
 	protected void init() {
 		super.init();
+		
+		getWidget().addPanStartEventHandler(this);
+		getWidget().addPanEndEventHandler(this);
 	}
 
 	@Override
@@ -35,18 +40,13 @@ public class PanHandlerConnector extends AbstractHandlerConnector {
 	}
 
 	@Override
-	public void onStateChanged(StateChangeEvent stateChangeEvent) {
-		super.onStateChanged(stateChangeEvent);
-		
-		if (stateChangeEvent.hasPropertyChanged("layout")) {
-			Connector connector = getState().layout;
-			if (connector != null) {
-				if (connector instanceof LayerLayoutConnector)
-					getWidget().setLayout(((LayerLayoutConnector)connector).getWidget());
-			} else
-				getWidget().setLayout(null);
-		}
+	public void panStart(PanStartEvent event) {
+		getRpcProxy(PanHandlerRpc.class).panStart(event.getX(), event.getY());
 	}
 
+	@Override
+	public void panEnd(PanEndEvent event) {
+		getRpcProxy(PanHandlerRpc.class).panEnd(event.getDeltaX(), event.getDeltaY());
+	}
 
 }

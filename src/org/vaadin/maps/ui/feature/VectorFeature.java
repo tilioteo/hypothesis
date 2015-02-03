@@ -8,6 +8,9 @@ import java.lang.reflect.Method;
 
 import org.apache.log4j.Logger;
 import org.vaadin.maps.geometry.Utils;
+import org.vaadin.maps.server.ViewWorldTransform;
+import org.vaadin.maps.server.ViewWorldTransform.TransformChangeEvent;
+import org.vaadin.maps.server.ViewWorldTransform.TransformChangeListener;
 import org.vaadin.maps.shared.ui.Style;
 import org.vaadin.maps.shared.ui.feature.FeatureServerRpc;
 import org.vaadin.maps.shared.ui.feature.VectorFeatureState;
@@ -25,7 +28,7 @@ import com.vividsolutions.jts.geom.Point;
  *
  */
 @SuppressWarnings("serial")
-public class VectorFeature extends AbstractFeature {
+public class VectorFeature extends AbstractFeature implements TransformChangeListener {
 
 	private static Logger log = Logger.getLogger(VectorFeature.class);
 
@@ -71,10 +74,10 @@ public class VectorFeature extends AbstractFeature {
 		this.geometry = geometry;
 		getState().wkb = Utils.geometryToWKBHex(geometry);
 		
-		setGeometryCentroid();
+		setGeometryCentroid(this.geometry);
 	}
 
-	private void setGeometryCentroid() {
+	private void setGeometryCentroid(Geometry geometry) {
 		if (geometry != null) {
 			Point centroid = geometry.getCentroid();
 			double x = centroid.getX();
@@ -421,6 +424,33 @@ public class VectorFeature extends AbstractFeature {
 	public void removeDoubleClickListener(DoubleClickListener listener) {
 		removeListener(DoubleClickEvent.class, listener,
 				DoubleClickListener.FEATURE_DOUBLE_CLICK_METHOD);
+	}
+
+	@Override
+	public void onTransformChange(TransformChangeEvent event) {
+		transformToView(event.getViewWorldTransform());
+	}
+
+	private Geometry transformGeometryToView(Geometry worldGeometry, ViewWorldTransform viewWorldTransform) {
+		if (worldGeometry != null && viewWorldTransform != null) {
+			Geometry clone = (Geometry) worldGeometry.clone();
+			
+			Utils.transformWorldToView(clone, viewWorldTransform);
+			return clone;
+		}
+		return null;
+	}
+	
+	public void transformToView(ViewWorldTransform viewWorldTransform) {
+		if (viewWorldTransform != null && viewWorldTransform.getViewWorldRatio() != 0) {
+			Geometry viewGeometry = transformGeometryToView(this.geometry, viewWorldTransform);
+			
+			getState().wkb = Utils.geometryToWKBHex(viewGeometry);
+			setGeometryCentroid(viewGeometry);
+
+		} else {
+			setGeometry(this.geometry);
+		}
 	}
 	
 }

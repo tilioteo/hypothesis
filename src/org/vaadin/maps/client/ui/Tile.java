@@ -17,4 +17,8 @@ public interface Tile extends IsWidget, CanShift {
 	public static interface SizeChangeHandler {
 		public void onSizeChange(Tile tile, int oldWidth, int oldHeight, int newWidth, int newHeight);
 	}
+	
+	public static interface TileLoadHandler {
+		public void onLoad(Tile tile);
+	}
 }

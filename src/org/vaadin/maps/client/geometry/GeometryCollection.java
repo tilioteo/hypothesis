@@ -118,7 +118,7 @@ public class GeometryCollection extends Geometry implements Iterable<Geometry> {
 		int k = -1;
 		for (Geometry geometry : geometries) {
 			for (Coordinate coordinate : geometry.getCoordinates()) {
-				coordinates[++k] = new Coordinate(coordinate);
+				coordinates[++k] = coordinate;//new Coordinate(coordinate);
 			}
 		}
 		return coordinates;

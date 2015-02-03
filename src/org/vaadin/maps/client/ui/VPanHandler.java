@@ -3,6 +3,8 @@
  */
 package org.vaadin.maps.client.ui;
 
+import java.util.HashMap;
+
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -10,13 +12,15 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 
 /**
  * @author kamil
  *
  */
-public class VPanHandler extends AbstractNavigateHandler implements MouseDownHandler, MouseMoveHandler, MouseUpHandler {
+public class VPanHandler extends AbstractNavigateHandler implements HasLayerLayout, MouseDownHandler, MouseMoveHandler, MouseUpHandler {
 
 	public static final String CLASSNAME = "v-panhandler";
 	
@@ -34,11 +38,15 @@ public class VPanHandler extends AbstractNavigateHandler implements MouseDownHan
 	protected int lastX;
 	protected int lastY;
 
+	private HashMap<PanStartEventHandler, HandlerRegistration> panStartHandlerMap = new HashMap<PanStartEventHandler, HandlerRegistration>();
+	private HashMap<PanEndEventHandler, HandlerRegistration> panEndHandlerMap = new HashMap<PanEndEventHandler, HandlerRegistration>();
+
 	public VPanHandler() {
 		super();
 		setStyleName(CLASSNAME);
 	}
 	
+	@Override
 	public void setLayout(VLayerLayout layout) {
 		if (this.layout == layout) {
 			return;
@@ -75,6 +83,10 @@ public class VPanHandler extends AbstractNavigateHandler implements MouseDownHan
 			int dY = lastY - startY;
 			
 			if (Math.abs(dX) > 3 || Math.abs(dY) > 3) {
+				if (!panning) {
+					fireEvent(new PanStartEvent(this, startX, startY));
+				}
+				
 				panning = true;
 				
 				if (layout != null) {
@@ -88,10 +100,11 @@ public class VPanHandler extends AbstractNavigateHandler implements MouseDownHan
 	@Override
 	public void onMouseUp(MouseUpEvent event) {
 		if (panStarted && panning) {
-			panning = false;
 			
 			int totalX = event.getClientX() - startX;
 			int totalY = event.getClientY() - startY;
+			
+			fireEvent(new PanEndEvent(this, totalX, totalY));
 			
 			startX = startY = lastX = lastY = 0;
 			
@@ -100,6 +113,7 @@ public class VPanHandler extends AbstractNavigateHandler implements MouseDownHan
 			}
 		}
 
+		panning = false;
 		panStarted = false;
 	}
 
@@ -133,6 +147,100 @@ public class VPanHandler extends AbstractNavigateHandler implements MouseDownHan
 	protected void finalize() {
 		if (layout != null) {
 			removeMouseHandlers();
+		}
+	}
+
+	public interface PanStartEventHandler extends EventHandler {
+		void panStart(PanStartEvent event);
+	}
+
+	public static class PanStartEvent extends GwtEvent<PanStartEventHandler> {
+
+		public static final Type<PanStartEventHandler> TYPE = new Type<PanStartEventHandler>();
+		
+		private int x;
+		private int y;
+		
+		public PanStartEvent(VPanHandler source, int x, int y) {
+			setSource(source);
+			this.x = x;
+			this.y = y;
+		}
+		
+		public int getX() {
+			return x;
+		}
+
+		public int getY() {
+			return y;
+		}
+
+		@Override
+		public Type<PanStartEventHandler> getAssociatedType() {
+			return TYPE;
+		}
+
+		@Override
+		protected void dispatch(PanStartEventHandler handler) {
+			handler.panStart(this);
+		}
+	}
+
+	public interface PanEndEventHandler extends EventHandler {
+		void panEnd(PanEndEvent event);
+	}
+
+	public static class PanEndEvent extends GwtEvent<PanEndEventHandler> {
+
+		public static final Type<PanEndEventHandler> TYPE = new Type<PanEndEventHandler>();
+		
+		private int dx;
+		private int dy;
+		
+		public PanEndEvent(VPanHandler source, int dx, int dy) {
+			setSource(source);
+			this.dx = dx;
+			this.dy = dy;
+		}
+		
+		public int getDeltaX() {
+			return dx;
+		}
+
+		public int getDeltaY() {
+			return dy;
+		}
+
+		@Override
+		public Type<PanEndEventHandler> getAssociatedType() {
+			return TYPE;
+		}
+
+		@Override
+		protected void dispatch(PanEndEventHandler handler) {
+			handler.panEnd(this);
+		}
+	}
+
+	public void addPanStartEventHandler(PanStartEventHandler handler) {
+		panStartHandlerMap.put(handler, addHandler(handler, PanStartEvent.TYPE));
+	}
+
+	public void removePanStartEventHandler(PanStartEventHandler handler) {
+		if (panStartHandlerMap.containsKey(handler)) {
+			removeEventHandler(panStartHandlerMap.get(handler));
+			panStartHandlerMap.remove(handler);
+		}
+	}
+
+	public void addPanEndEventHandler(PanEndEventHandler handler) {
+		panEndHandlerMap.put(handler, addHandler(handler, PanEndEvent.TYPE));
+	}
+
+	public void removePanEndEventHandler(PanEndEventHandler handler) {
+		if (panEndHandlerMap.containsKey(handler)) {
+			removeEventHandler(panEndHandlerMap.get(handler));
+			panEndHandlerMap.remove(handler);
 		}
 	}
 
