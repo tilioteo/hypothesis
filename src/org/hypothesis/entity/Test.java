@@ -75,7 +75,7 @@ public final class Test extends SerializableIdObject {
 	/**
 	 * signalize if test data are for production
 	 */
-	private boolean production;
+	private Boolean production;
 
 	/**
 	 * timestamp test created at
@@ -161,11 +161,11 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@Column(name = "PRODUCTION", nullable = false)
-	public boolean isProduction() {
+	public Boolean isProduction() {
 		return production;
 	}
 
-	public void setProduction(boolean production) {
+	public void setProduction(Boolean production) {
 		this.production = production;
 	}
 
@@ -223,9 +223,8 @@ public final class Test extends SerializableIdObject {
 		this.status = status.getCode();
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "USER_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne
+	@JoinColumn(name = "USER_ID")
 	public final User getUser() {
 		return user;
 	}
@@ -234,9 +233,8 @@ public final class Test extends SerializableIdObject {
 		this.user = user;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;
 	}
@@ -256,9 +254,8 @@ public final class Test extends SerializableIdObject {
 		this.lastBranch = branch;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "LAST_TASK_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Task getLastTask() {
 		return lastTask;
 	}
@@ -267,9 +264,8 @@ public final class Test extends SerializableIdObject {
 		this.lastTask = task;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "LAST_SLIDE_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Slide getLastSlide() {
 		return lastSlide;
 	}

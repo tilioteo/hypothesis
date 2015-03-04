@@ -5,7 +5,6 @@ package org.hypothesis.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +16,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.Cascade;
 import org.hypothesis.common.SerializableIdObject;
 
 /**
@@ -60,9 +58,8 @@ public final class GroupPermission extends SerializableIdObject {
 		return super.getId();
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "GROUP_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Group getGroup() {
 		return group;
 	}
@@ -71,9 +68,8 @@ public final class GroupPermission extends SerializableIdObject {
 		this.group = group;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;
 	}

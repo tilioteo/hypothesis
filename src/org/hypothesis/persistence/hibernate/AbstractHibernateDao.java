@@ -48,7 +48,9 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 					"Session allready opened and transaction started.");
 
 		session = Util.getSession();
-		session.beginTransaction();
+		if (!session.getTransaction().isActive()) {
+			session.beginTransaction();
+		}
 	}
 
 	/**
@@ -60,7 +62,11 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 
 	public void commit() {
 		flush();
-		getSession().getTransaction().commit();
+		session = Util.getSession();
+		
+		if (session.getTransaction().isActive()) {
+			getSession().getTransaction().commit();
+		}
 		session = null;
 	}
 
@@ -157,7 +163,11 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	}
 
 	public void rollback() {
-		getSession().getTransaction().rollback();
+		session = Util.getSession();
+		
+		if (session.getTransaction().isActive()) {
+			getSession().getTransaction().rollback();
+		}
 		session = null;
 	}
 }

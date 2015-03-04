@@ -23,8 +23,8 @@ import org.hypothesis.common.constants.StringConstants;
  */
 public class Utility {
 	
-	private static final String ENCODING_UTF8	=	"utf-8";
-	private static final String DESCENDANT_FMT	=	"descendant::%s";
+	public static final String ENCODING_UTF8	=	"utf-8";
+	public static final String DESCENDANT_FMT	=	"descendant::%s";
 	
 	@SuppressWarnings("unchecked")
 	public static void clearAllChilds(Node parent) {

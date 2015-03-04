@@ -5,7 +5,6 @@ package org.hypothesis.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,7 +17,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.dom4j.Document;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 import org.hypothesis.application.common.xml.SlideXmlConstants;
 import org.hypothesis.common.SerializableIdObject;
@@ -78,10 +76,8 @@ public final class SlideContent extends SerializableIdObject {
 		return super.getId();
 	}
 
-	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE })
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "SLIDE_TEMPLATE_UID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final SlideTemplate getTemplate() {
 		return template;
 	}

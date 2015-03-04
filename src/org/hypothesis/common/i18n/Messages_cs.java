@@ -13,11 +13,12 @@ public class Messages_cs extends Messages {
 	static final Object[][] contents_cs = {
 			{ TEXT_MANAGER_APP_TITLE, "Hypothesis manager" },
 			{ TEXT_APP_TITLE, "Hypothesis" },
-			{ TEXT_APP_DESCRIPTION, "Testování hypotéz" },
+			{ TEXT_APP_DESCRIPTION, "Hypothesis manager" },
 			{ TEXT_BUTTON_CHANGE_USER_DATA, "Změnit osobní údaje" },
 			{ TEXT_BUTTON_MANAGE_GROUPS, "Správa skupin" },
 			{ TEXT_BUTTON_MANAGE_USERS, "Správa uživatelů" },
-			{ TEXT_BUTTON_MANAGE_PERMITIONS, "Správa oprávnění" },
+			{ TEXT_BUTTON_MANAGE_PERMISSIONS, "Správa oprávnění" },
+			{ TEXT_BUTTON_EXPORT_TESTS, "Exportovat testy" },
 			{ TEXT_BUTTON_LOGOUT, "Odhlásit" },
 			{ PATTERN_DATE_FORMAT, "d.M.yyyy" },
 			{ TEXT_LOGGED_USER, "přihlášený uživatel:" },
@@ -137,9 +138,14 @@ public class Messages_cs extends Messages {
 			{ TEXT_TOTAL_GROUPS_FMT, "celkem skupin: %d" },
 			{ TEXT_NO_USERS_SELECTED, "Nejsou vybráni žádní uživatelé." },
 			{ TEXT_GENERATE, "vygenerovat podle vzoru skupina-001-XXXX" },
+			
+			{ TEXT_EXPORT_TESTS_TITLE, "Export testů"},
+			{ TEXT_EXPORT_DATE_FROM, "Datum od"},
+			{ TEXT_EXPORT_DATE_TO, "Datum do"},
+			{ TEXT_NO_PACK_SELECTED, "Není vybrána baterie"},
+			{ TEXT_DATE_FROM_OR_TO_NOT_SELECTED, "Není vybráno datum od nebo datum do"},
 
-			{
-					TEXT_BASE_INFO,
+			{ TEXT_BASE_INFO,
 					"Vítejte v aplikaci Hypothesis. Začněte výběrem kteréhokoliv z přístupných testů níže..." },
 			{ TEXT_TEST_INFO, "Informace o testu..." },
 
@@ -154,6 +160,9 @@ public class Messages_cs extends Messages {
 			{ ERROR_EXPORT_CANNOT_WRITE_TO_FILE,
 					"Nemohu zapisovat do exportního souboru." },
 
+			{ TEXT_EXPORT_TESTS_FILE_NAME, "hypothesis-testy.xlsx" },
+			{ TEXT_EXPORT_TESTS_SHEET_NAME, "Testy" },
+					
 			{ TEXT_DELETE_CONFIRM, "Potvrďte prosím smazání" },
 			{ TEXT_DELETE_SELECTED_USERS,
 					"Opravdu chcete smazat vybrané uživatele?" },

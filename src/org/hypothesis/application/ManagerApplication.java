@@ -122,6 +122,11 @@ public class ManagerApplication extends AbstractBaseApplication {
 		}
 		return groupsTable;
 	}
+	
+	public Table getTestsTable() {
+		
+		return null;
+	}
 
 	public BeanContainer<Long, User> getUsersSource() {
 		if (usersSource == null) {

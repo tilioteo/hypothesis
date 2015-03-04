@@ -13,11 +13,12 @@ public class Messages_en extends Messages {
 	static final Object[][] contents_en = {
 			{ TEXT_MANAGER_APP_TITLE, "Hypothesis manager" },
 			{ TEXT_APP_TITLE, "Hypothesis" },
-			{ TEXT_APP_DESCRIPTION, "Hypothesis testing" },
+			{ TEXT_APP_DESCRIPTION, "Hypothesis manager" },
 			{ TEXT_BUTTON_CHANGE_USER_DATA, "Change personal data" },
 			{ TEXT_BUTTON_MANAGE_GROUPS, "Manage groups" },
 			{ TEXT_BUTTON_MANAGE_USERS, "Manage users" },
-			{ TEXT_BUTTON_MANAGE_PERMITIONS, "Manage permitions" },
+			{ TEXT_BUTTON_MANAGE_PERMISSIONS, "Manage permitions" },
+			{ TEXT_BUTTON_EXPORT_TESTS, "Export tests" },
 			{ TEXT_BUTTON_LOGOUT, "Logout" },
 			{ PATTERN_DATE_FORMAT, "yyyy.MM.dd" },
 			{ TEXT_LOGGED_USER, "logged user:" },
@@ -134,8 +135,13 @@ public class Messages_en extends Messages {
 			{ TEXT_NO_USERS_SELECTED, "There are no users selected." },
 			{ TEXT_GENERATE, "generate according to pattern group-001-XXXX" },
 
-			{
-					TEXT_BASE_INFO,
+			{ TEXT_EXPORT_TESTS_TITLE, "Tests export"},
+			{ TEXT_EXPORT_DATE_FROM, "Date from"},
+			{ TEXT_EXPORT_DATE_TO, "Date to"},
+			{ TEXT_NO_PACK_SELECTED, "No pack selected"},
+			{ TEXT_DATE_FROM_OR_TO_NOT_SELECTED, "No date from or date to selected"},
+
+			{ TEXT_BASE_INFO,
 					"Welcome to the Hypothesis application. Start by choosing any of the enabled tests below..." },
 			{ TEXT_TEST_INFO, "Information about the test..." },
 
@@ -147,6 +153,9 @@ public class Messages_en extends Messages {
 			{ ERROR_EXPORT_ROWS_LIMIT_EXCEEDED,
 					"Excel table rows count limit exceeded." },
 			{ ERROR_EXPORT_CANNOT_WRITE_TO_FILE, "Cannot write to export file." },
+
+			{ TEXT_EXPORT_TESTS_FILE_NAME, "hypothesis-tests.xlsx" },
+			{ TEXT_EXPORT_TESTS_SHEET_NAME, "Tests" },
 
 			{ TEXT_DELETE_CONFIRM, "Please, confirm delete" },
 			{ TEXT_DELETE_SELECTED_USERS,

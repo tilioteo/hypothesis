@@ -36,7 +36,8 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 	private EditPersonalData editPersonalData;
 	private EditGroups editGroups;
 	private EditUsers editUsers;
-	private EditPermissions editPermitions;
+	private EditPermissions editPermissions;
+	private ExportTests exportTests;
 
 	/**
 	 * Constructor
@@ -113,11 +114,11 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 		content.setContent(editGroups);
 	}
 
-	public void managePermitionsButtonClick(ClickEvent event) {
-		if (editPermitions == null) {
-			editPermitions = new EditPermissions(this.getApp());
+	public void managePermissionsButtonClick(ClickEvent event) {
+		if (editPermissions == null) {
+			editPermissions = new EditPermissions(this.getApp());
 		}
-		content.setContent(editPermitions);
+		content.setContent(editPermissions);
 	}
 
 	public void manageUsersButtonClick(ClickEvent event) {
@@ -125,6 +126,13 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 			editUsers = new EditUsers();
 		}
 		content.setContent(editUsers);
+	}
+
+	public void exportTestsButtonClick(ClickEvent event) {
+		if (exportTests == null) {
+			exportTests = new ExportTests();
+		}
+		content.setContent(exportTests);
 	}
 
 	public void refreshUserInfoLabel() {
@@ -159,8 +167,10 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 				Messages.TEXT_BUTTON_MANAGE_GROUPS));
 		Button manageUsersButton = new Button(ApplicationMessages.get().getString(
 				Messages.TEXT_BUTTON_MANAGE_USERS));
-		Button managePermitionsButton = new Button(ApplicationMessages.get().getString(
-				Messages.TEXT_BUTTON_MANAGE_PERMITIONS));
+		Button managePermissionsButton = new Button(ApplicationMessages.get().getString(
+				Messages.TEXT_BUTTON_MANAGE_PERMISSIONS));
+		Button exportTestsButton = new Button(ApplicationMessages.get().getString(
+				Messages.TEXT_BUTTON_EXPORT_TESTS));
 		Button logoutButton = new Button(ApplicationMessages.get().getString(
 				Messages.TEXT_BUTTON_LOGOUT));
 
@@ -172,15 +182,18 @@ public class MainWindow extends AbstractMainWindow<ManagerApplication> {
 				"manageGroupsButtonClick");
 		manageUsersButton.addListener(ClickEvent.class, this,
 				"manageUsersButtonClick");
-		managePermitionsButton.addListener(ClickEvent.class, this,
-				"managePermitionsButtonClick");
+		managePermissionsButton.addListener(ClickEvent.class, this,
+				"managePermissionsButtonClick");
+		exportTestsButton.addListener(ClickEvent.class, this,
+				"exportTestsButtonClick");
 		logoutButton.addListener(ClickEvent.class, this, "logoutButtonClick");
 
 		menu.addComponent(homepageButton);
 		menu.addComponent(settingsButton);
 		menu.addComponent(manageGroupsButton);
 		menu.addComponent(manageUsersButton);
-		// menu.addComponent(managePermitionsButton);
+		menu.addComponent(exportTestsButton);
+		// menu.addComponent(managePermissionsButton);
 		menu.addComponent(logoutButton);
 	}
 

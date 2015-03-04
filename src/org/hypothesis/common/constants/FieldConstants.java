@@ -29,6 +29,8 @@ public class FieldConstants {
 	public static final String EXPIRE_DATE = "expireDate";
 	public static final String AVAILABLE_PACKS = "availablePacks";
 	public static final String PACK = "pack";
+	public static final String TEST = "test";
+	public static final String SLIDE = "slide";
 	public static final String ENABLED_GROUPS = "enabledGroups";
 	public static final String ENABLED_USERS = "enabledUsers";
 	public static final String DISABLED_USERS = "disabledUsers";
@@ -38,5 +40,8 @@ public class FieldConstants {
 	public static final String CHANGE_SUFFIX = "_change";
 	public static final String OWNER_ID = "ownerId";
 	public static final String PUBLISHED = "published";
+	public static final String CREATED = "created";
+	public static final String STARTED = "started";
+	public static final String FINISHED = "finished";
 
 }

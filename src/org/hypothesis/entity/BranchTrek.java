@@ -5,7 +5,6 @@ package org.hypothesis.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,7 +16,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
 import org.hypothesis.common.SerializableIdObject;
 
@@ -31,8 +29,8 @@ import org.hypothesis.common.SerializableIdObject;
 @Entity
 @Table(name = "TBL_BRANCH_TREK", uniqueConstraints = { @UniqueConstraint(columnNames = {
 		"PACK_ID", "KEY", "BRANCH_ID" }) })
-@org.hibernate.annotations.Table(appliesTo = "TBL_BRANCH_TREK", indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = {
-		"PACK_ID", "BRANCH_ID" }), @Index(name="IX_KEY", columnNames = {"KEY"}) })
+@org.hibernate.annotations.Table(appliesTo = "TBL_BRANCH_TREK",
+		indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = {	"PACK_ID", "BRANCH_ID" }) })
 @Access(AccessType.PROPERTY)
 public final class BranchTrek extends SerializableIdObject {
 	/**
@@ -43,16 +41,18 @@ public final class BranchTrek extends SerializableIdObject {
 	private Pack pack;
 	private String key;
 	private Branch branch;
+	private Branch nextBranch;
 
 	protected BranchTrek() {
 		super();
 	}
 
-	public BranchTrek(Pack pack, String key, Branch branch) {
+	public BranchTrek(Pack pack, Branch branch, String key, Branch nextBranch) {
 		this();
 		this.pack = pack;
 		this.key = key;
 		this.branch = branch;
+		this.nextBranch = nextBranch;
 	}
 
 	@Override
@@ -64,9 +64,8 @@ public final class BranchTrek extends SerializableIdObject {
 		return super.getId();
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;
 	}
@@ -84,15 +83,24 @@ public final class BranchTrek extends SerializableIdObject {
 		this.key = key;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "BRANCH_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Branch getBranch() {
 		return branch;
 	}
 
 	protected void setBranch(Branch branch) {
 		this.branch = branch;
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "NEXT_BRANCH_ID", nullable = false)
+	public final Branch getNextBranch() {
+		return nextBranch;
+	}
+
+	protected void setNextBranch(Branch branch) {
+		this.nextBranch = branch;
 	}
 
 	@Override
@@ -114,6 +122,11 @@ public final class BranchTrek extends SerializableIdObject {
 				return false;
 		} else if (!getBranch().equals(other.getBranch()))
 			return false;
+		if (getNextBranch() == null) {
+			if (other.getNextBranch() != null)
+				return false;
+		} else if (!getNextBranch().equals(other.getNextBranch()))
+			return false;
 		if (getKey() == null) {
 			if (other.getKey() != null)
 				return false;
@@ -134,6 +147,8 @@ public final class BranchTrek extends SerializableIdObject {
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
 		result = prime * result
 				+ ((getBranch() == null) ? 0 : getBranch().hashCode());
+		result = prime * result
+				+ ((getNextBranch() == null) ? 0 : getNextBranch().hashCode());
 		result = prime * result
 				+ ((getKey() == null) ? 0 : getKey().hashCode());
 		result = prime * result

@@ -19,7 +19,8 @@ public class Messages extends ListResourceBundle {
 	public static final String TEXT_BUTTON_CHANGE_USER_DATA = generateId();
 	public static final String TEXT_BUTTON_MANAGE_GROUPS = generateId();
 	public static final String TEXT_BUTTON_MANAGE_USERS = generateId();
-	public static final String TEXT_BUTTON_MANAGE_PERMITIONS = generateId();
+	public static final String TEXT_BUTTON_MANAGE_PERMISSIONS = generateId();
+	public static final String TEXT_BUTTON_EXPORT_TESTS = generateId();
 	public static final String TEXT_BUTTON_LOGOUT = generateId();
 	public static final String PATTERN_DATE_FORMAT = generateId();
 	public static final String TEXT_LOGGED_USER = generateId();
@@ -108,7 +109,7 @@ public class Messages extends ListResourceBundle {
 	public static final String TEXT_TOTAL_PACKS_FMT = generateId();
 	public static final String TEXT_NO_GROUPS_SELECTED = generateId();
 
-	// edit permitions view
+	// edit permissions view
 	public static final String TEXT_EDIT_PERMISSIONS_TITLE = generateId();
 
 	// edit personal data view
@@ -131,6 +132,13 @@ public class Messages extends ListResourceBundle {
 	public static final String TEXT_TOTAL_GROUPS_FMT = generateId();
 	public static final String TEXT_NO_USERS_SELECTED = generateId();
 	public static final String TEXT_GENERATE = generateId();
+	
+	// export tests view
+	public static final String TEXT_EXPORT_TESTS_TITLE = generateId();
+	public static final String TEXT_EXPORT_DATE_FROM = generateId();
+	public static final String TEXT_EXPORT_DATE_TO = generateId();
+	public static final String TEXT_NO_PACK_SELECTED = generateId();
+	public static final String TEXT_DATE_FROM_OR_TO_NOT_SELECTED = generateId();
 
 	// hypothesis pack select window
 	public static final String TEXT_BASE_INFO = generateId();
@@ -145,6 +153,9 @@ public class Messages extends ListResourceBundle {
 	public static final String ERROR_EXPORT_ROWS_LIMIT_EXCEEDED = generateId();
 	public static final String ERROR_EXPORT_CANNOT_WRITE_TO_FILE = generateId();
 
+	public static final String TEXT_EXPORT_TESTS_FILE_NAME = generateId();
+	public static final String TEXT_EXPORT_TESTS_SHEET_NAME = generateId();
+	
 	// delete
 	public static final String TEXT_DELETE_CONFIRM = generateId();
 	public static final String TEXT_DELETE_SELECTED_USERS = generateId();

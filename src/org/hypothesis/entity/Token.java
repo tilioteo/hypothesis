@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
 import org.hypothesis.common.SerializableUidObject;
 
 /**
@@ -39,7 +37,7 @@ public final class Token extends SerializableUidObject {
 	/**
 	 * run test in production or testing mode
 	 */
-	private boolean production;
+	private Boolean production;
 
 	private User user;
 	private Pack pack;
@@ -75,17 +73,16 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@Column(name = "PRODUCTION", nullable = false)
-	public boolean isProduction() {
+	public Boolean isProduction() {
 		return production;
 	}
 
-	public void setProduction(boolean production) {
+	public void setProduction(Boolean production) {
 		this.production = production;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "USER_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final User getUser() {
 		return user;
 	}
@@ -94,9 +91,8 @@ public final class Token extends SerializableUidObject {
 		this.user = user;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Pack getPack() {
 		return pack;
 	}
@@ -105,6 +101,7 @@ public final class Token extends SerializableUidObject {
 		this.pack = pack;
 	}
 
+	@Column(name = "DATETIME")
 	public final Date getDatetime() {
 		return datetime;
 	}

@@ -5,7 +5,6 @@ package org.hypothesis.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,7 +15,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
 import org.hypothesis.common.SerializableIdObject;
 
 /**
@@ -67,11 +65,8 @@ public final class Slide extends SerializableIdObject {
 		this.id = id;
 	}
 
-	// @ManyToOne(cascade={CascadeType.PERSIST, CascadeType.MERGE})
-	@OneToOne(optional = false, cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE })
+	@OneToOne(optional = false)
 	@JoinColumn(name = "SLIDE_CONTENT_ID", nullable = false, unique = true)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final SlideContent getContent() {
 		return content;
 	}

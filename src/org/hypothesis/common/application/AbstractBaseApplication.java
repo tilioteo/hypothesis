@@ -16,8 +16,11 @@ import org.hypothesis.common.i18n.ApplicationMessages;
 import org.hypothesis.common.i18n.Messages;
 import org.hypothesis.entity.User;
 import org.hypothesis.persistence.PermissionManager;
+import org.hypothesis.persistence.TestManager;
 import org.hypothesis.persistence.UserGroupManager;
 import org.hypothesis.persistence.hibernate.GroupDao;
+import org.hypothesis.persistence.hibernate.SlideOutputDao;
+import org.hypothesis.persistence.hibernate.TestDao;
 import org.hypothesis.persistence.hibernate.UserDao;
 
 import com.vaadin.terminal.ParameterHandler;
@@ -43,6 +46,7 @@ public abstract class AbstractBaseApplication extends AbstractHibernateApplicati
 	private User currentUser = null;
 	private UserGroupManager userGroupManager = null;
 	private PermissionManager permissionManager = null;
+	private TestManager testManager = null;
 
 	private HttpServletResponse response;
 	private BaseWindow mainWindow = null;
@@ -127,6 +131,10 @@ public abstract class AbstractBaseApplication extends AbstractHibernateApplicati
 	public final UserGroupManager getUserGroupManager() {
 		return userGroupManager;
 	}
+	
+	public final TestManager getTestManager() {
+		return testManager;
+	}
 
 	@Override
 	public void init() {
@@ -149,6 +157,8 @@ public abstract class AbstractBaseApplication extends AbstractHibernateApplicati
 		userGroupManager = new UserGroupManager(new UserDao(),
 				new GroupDao());
 		permissionManager = PermissionManager.newInstance();
+		
+		testManager = new TestManager(new TestDao(), new SlideOutputDao());
 	}
 
 	public abstract void loadProtectedResources();

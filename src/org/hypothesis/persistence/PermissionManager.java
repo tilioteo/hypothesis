@@ -22,6 +22,7 @@ import org.hypothesis.entity.UserPermission;
 import org.hypothesis.entity.Test.Status;
 import org.hypothesis.persistence.hibernate.GroupPermissionDao;
 import org.hypothesis.persistence.hibernate.PackDao;
+import org.hypothesis.persistence.hibernate.SlideOutputDao;
 import org.hypothesis.persistence.hibernate.TestDao;
 import org.hypothesis.persistence.hibernate.UserPermissionDao;
 
@@ -44,7 +45,7 @@ public class PermissionManager {
 	
 	protected PermissionManager(UserPermissionDao userPermitionDao,
 			GroupPermissionDao groupPermitionDao) {
-		this(userPermitionDao, groupPermitionDao, new TestManager(new TestDao()));
+		this(userPermitionDao, groupPermitionDao, new TestManager(new TestDao(), new SlideOutputDao()));
 	}
 
 	protected PermissionManager(UserPermissionDao userPermitionDao,
@@ -221,6 +222,12 @@ public class PermissionManager {
 		try {
 			// Set<Pack> packs = new HashSet<Pack>();
 			Hashtable<Long, Pack> packs = new Hashtable<Long, Pack>();
+			
+			// get published packs
+			List<Pack> publishedPacks = getPublishedPacks();
+			for (Pack pack : publishedPacks) {
+				packs.put(pack.getId(), pack);
+			}
 
 			if (!user.getGroups().isEmpty()) {
 				Set<GroupPermission> groupsPermissions = getGroupsPermissions(user

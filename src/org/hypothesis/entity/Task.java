@@ -45,7 +45,7 @@ public final class Task extends SerializableIdObject implements HasQueue<Slide> 
 
 	private String name;
 	private String note;
-	private boolean randomized;
+	private Boolean randomized;
 
 	/**
 	 * list of slides
@@ -80,11 +80,11 @@ public final class Task extends SerializableIdObject implements HasQueue<Slide> 
 	}
 
 	@Column(name = "RANDOMIZED")
-	public final boolean isRandomized() {
+	public final Boolean isRandomized() {
 		return randomized;
 	}
 	
-	public final void setRandomized(boolean randomized) {
+	public final void setRandomized(Boolean randomized) {
 		this.randomized = randomized;
 	}
 

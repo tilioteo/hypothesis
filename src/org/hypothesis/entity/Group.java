@@ -73,7 +73,7 @@ public final class Group extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = "NOTE", nullable = true)
+	@Column(name = "NOTE")
 	public final String getNote() {
 		return note;
 	}

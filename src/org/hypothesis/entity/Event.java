@@ -7,7 +7,6 @@ import java.util.Date;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +18,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 import org.hypothesis.common.SerializableIdObject;
 
@@ -141,9 +139,8 @@ public final class Event extends SerializableIdObject {
 		this.xmlData = xmlData;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "BRANCH_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Branch getBranch() {
 		return branch;
 	}
@@ -152,9 +149,8 @@ public final class Event extends SerializableIdObject {
 		this.branch = branch;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "TASK_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Task getTask() {
 		return task;
 	}
@@ -163,9 +159,8 @@ public final class Event extends SerializableIdObject {
 		this.task = task;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToOne
 	@JoinColumn(name = "SLIDE_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final Slide getSlide() {
 		return slide;
 	}

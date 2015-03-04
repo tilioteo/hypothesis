@@ -3,10 +3,8 @@
  */
 package org.hypothesis.entity;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -30,7 +28,6 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hypothesis.application.common.xml.BranchXmlConstants;
-import org.hypothesis.common.BranchMap;
 import org.hypothesis.common.HasQueue;
 import org.hypothesis.common.SerializableIdObject;
 import org.hypothesis.common.xml.Utility;
@@ -64,19 +61,9 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 	private List<Task> tasks = new LinkedList<Task>();
 
 	/**
-	 * set of branch treks associated with brach
-	 */
-	private Set<BranchTrek> branchTreks = new HashSet<BranchTrek>();
-
-	/**
 	 * parsed dom document from xml
 	 */
 	private transient Document document = null;
-
-	/**
-	 * specialized hash map for branches which can follow this one
-	 */
-	private transient BranchMap branchMap = new BranchMap();
 
 	@Override
 	@Id
@@ -119,23 +106,6 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 		this.tasks = list;
 	}
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_BRANCH_BRANCH_TREK", joinColumns = @JoinColumn(name = "BRANCH_ID"), inverseJoinColumns = @JoinColumn(name = "BRANCH_TREK_ID"))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	protected final Set<BranchTrek> getBranchTreks() {
-		return branchTreks;
-	}
-
-	protected void setBranchTreks(Set<BranchTrek> branchTreks) {
-		this.branchTreks = branchTreks;
-
-		this.branchMap.clear();
-		for (BranchTrek sequence : branchTreks) {
-			branchMap.put(sequence.getKey(), sequence.getBranch());
-		}
-	}
-
 	@Transient
 	public final Document getDocument() {
 		if (document == null) {
@@ -155,11 +125,6 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 				// throw new InvalidBranchXmlException();
 			}
 		}
-	}
-
-	@Transient
-	public BranchMap getBranchMap() {
-		return branchMap;
 	}
 
 	@Transient
@@ -206,11 +171,6 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 				return false;
 		} else if (!getTasks().equals(other.getTasks()))
 			return false;
-		if (getBranchTreks() == null) {
-			if (other.getBranchTreks() != null)
-				return false;
-		} else if (!getBranchTreks().equals(other.getBranchTreks()))
-			return false;
 		return true;
 	}
 
@@ -224,9 +184,6 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 				+ ((getNote() == null) ? 0 : getNote().hashCode());
 		result = prime * result
 				+ ((getTasks() == null) ? 0 : getTasks().hashCode());
-		result = prime
-				* result
-				+ ((getBranchTreks() == null) ? 0 : getBranchTreks().hashCode());
 		return result;
 	}
 
