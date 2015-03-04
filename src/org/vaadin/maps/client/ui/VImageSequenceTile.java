@@ -103,6 +103,7 @@ public class VImageSequenceTile extends VImageTile {
 	
 	private void updateImage() {
 		setUrl(urls.get(index));
+    	setVisible(true);
 	}
 	
 	public void setIndex(int index) {

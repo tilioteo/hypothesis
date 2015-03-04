@@ -28,8 +28,8 @@ public class VImageTile extends Image implements Tile {
     
     @Override
     public void setUrl(String url) {
-    	super.setUrl(url != null ? url : "");
     	setVisible(false);
+    	super.setUrl(url != null ? url : "");
     }
 
     
