@@ -2,9 +2,7 @@ package com.tilioteo.hypothesis.client.ui.timer;
 
 import java.util.Set;
 
-import com.vaadin.client.VConsole;
 import com.vaadin.shared.ui.Connect;
-import com.google.gwt.core.client.Scheduler;
 import com.tilioteo.hypothesis.client.Timer;
 import com.tilioteo.hypothesis.client.Timer.StartEvent;
 import com.tilioteo.hypothesis.client.Timer.StopEvent;

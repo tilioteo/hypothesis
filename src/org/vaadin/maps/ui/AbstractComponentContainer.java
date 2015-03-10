@@ -144,8 +144,7 @@ public abstract class AbstractComponentContainer<C extends Component> extends Ab
             // Make sure we're not adding the component inside it's own content
             for (Component parent = this; parent != null; parent = parent.getParent()) {
                 if (parent == c) {
-                    throw new IllegalArgumentException(
-                            "Component cannot be added inside it's own content");
+                    throw new IllegalArgumentException("Component cannot be added inside it's own content.");
                 }
             }
         }

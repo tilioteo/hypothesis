@@ -146,7 +146,7 @@ public class Polygon extends Geometry {
 	}
 	
 	public Polygon(Polygon polygon) {
-		this(polygon.shell, polygon.holes != null ? (LinearRing[]) polygon.holes.toArray() : null, polygon.SRID);
+		this(polygon.shell, polygon.holes != null ? polygon.holes.toArray(new LinearRing[0]) : null, polygon.SRID);
 	}
 
 	@Override

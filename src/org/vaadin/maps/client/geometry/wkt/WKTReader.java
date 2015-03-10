@@ -555,7 +555,7 @@ public class WKTReader {
 			points.add(new Point(coordinate));
 		}
 
-		return (Point[]) points.toArray();
+		return points.toArray(new Point[0]);
 	}
 
 	/**
@@ -589,7 +589,7 @@ public class WKTReader {
 			nextToken = getNextCloserOrComma();
 		}
 
-		return new Polygon(shell, (LinearRing[]) holes.toArray());
+		return new Polygon(shell, holes.toArray(new LinearRing[0]));
 	}
 
 	/**
@@ -625,7 +625,7 @@ public class WKTReader {
 			nextToken = getNextCloserOrComma();
 		}
 
-		return new MultiLineString((LineString[]) lineStrings.toArray());
+		return new MultiLineString(lineStrings.toArray(new LineString[0]));
 	}
 
 	/**
@@ -662,7 +662,7 @@ public class WKTReader {
 			nextToken = getNextCloserOrComma();
 		}
 
-		return new MultiPolygon((Polygon[]) polygons.toArray());
+		return new MultiPolygon(polygons.toArray(new Polygon[0]));
 	}
 
 	/**
@@ -700,7 +700,7 @@ public class WKTReader {
 			nextToken = getNextCloserOrComma();
 		}
 
-		return new GeometryCollection((Geometry[]) geometries.toArray());
+		return new GeometryCollection(geometries.toArray(new Geometry[0]));
 	}
 
 }

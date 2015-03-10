@@ -86,7 +86,7 @@ public class GeometryCollection extends Geometry implements Iterable<Geometry> {
 		else if (geometryCollection instanceof MultiPolygon)
 			return new MultiPolygon((MultiPolygon)geometryCollection);
 		else
-			return new GeometryCollection((Geometry[])geometryCollection.geometries.toArray(), geometryCollection.SRID);
+			return new GeometryCollection(geometryCollection.geometries.toArray(new Geometry[0]), geometryCollection.SRID);
 	}
 	
 	@Override

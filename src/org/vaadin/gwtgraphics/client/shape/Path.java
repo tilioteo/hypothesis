@@ -115,6 +115,7 @@ public class Path extends Shape implements Cloneable {
 	 * 
 	 * @return a cloned Path
 	 */
+	@Override
 	public Path clone() {
 		int length = steps.size();
 		Path p = new Path(length);

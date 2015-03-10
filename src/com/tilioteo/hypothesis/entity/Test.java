@@ -298,7 +298,7 @@ public class Test extends SerializableIdObject {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		SimpleTest other = (SimpleTest) obj;
+		Test other = (Test) obj;
 		
 		Long id = getId();
 		Long id2 = other.getId();

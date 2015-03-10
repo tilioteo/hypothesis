@@ -58,7 +58,7 @@ import com.vividsolutions.jts.io.WKTReader;
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "unused" })
 @Theme("hypothesis")
 public class TestUI extends HUI {
 
@@ -970,6 +970,7 @@ public class TestUI extends HUI {
 	
 	@Override
 	protected void init(VaadinRequest request) {
+		super.init(request);
 
 		/*WrappedSession session = request.getWrappedSession();
 		HttpSession httpSession = ((WrappedHttpSession)session).getHttpSession();

@@ -62,8 +62,8 @@ public class MapContainer extends LayerLayout implements ForLayer {
 		}
 	}
 	
-	public void removeStyle(Style style) {
-		styles.remove(style);
+	public void removeStyle(String id) {
+		styles.remove(id);
 		//TODO remove styling from objects
 	}
 	

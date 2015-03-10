@@ -524,10 +524,11 @@ public abstract class SelectButton extends FocusWidget implements ClickHandler, 
 			panel.add(inputWidget);
 		}
 
-		panel.setSpacing(2);
-		tableElement = panel.getElement();
-		wrapper.appendChild(panel.getElement());
-
+		if (panel != null) {
+			panel.setSpacing(2);
+			tableElement = panel.getElement();
+			wrapper.appendChild(panel.getElement());
+		}
 	}
 
 	@Override

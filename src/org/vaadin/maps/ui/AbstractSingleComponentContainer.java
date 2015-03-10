@@ -154,8 +154,7 @@ public abstract class AbstractSingleComponentContainer<C extends Component> exte
                 oldParent.setContent(null);
             }
         } else if (parent != null) {
-            throw new IllegalArgumentException(
-                    "Content is already attached to another parent");
+            throw new IllegalArgumentException("Content is already attached to another parent.");
         }
     }
 
