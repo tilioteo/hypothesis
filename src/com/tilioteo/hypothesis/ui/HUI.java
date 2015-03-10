@@ -6,14 +6,15 @@ package com.tilioteo.hypothesis.ui;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
+import com.tilioteo.hypothesis.core.Messages;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
 
 /**
  * @author kamil
  *
  */
 @SuppressWarnings("serial")
+//@Push
 public abstract class HUI extends UI {
 
     /**
@@ -30,7 +31,7 @@ public abstract class HUI extends UI {
 	public void setContent(Component content) {
         if (content instanceof NonVisualComponent) {
             throw new IllegalArgumentException(
-                    "A non visual component cannot be added using setContent. Use attachNonVisualComponent(NonVisualComponent) instead");
+                    Messages.getString("Error.NonvisualNoSetContent"));
         }
 
         super.setContent(content);
@@ -62,11 +63,11 @@ public abstract class HUI extends UI {
     public void addTimer(Timer timer) throws IllegalArgumentException, NullPointerException {
 
         if (timer == null) {
-            throw new NullPointerException("Argument must not be null");
+            throw new NullPointerException(Messages.getString("Error.NullArgument"));
         }
 
         if (timer.isAttached()) {
-            throw new IllegalArgumentException("Timer is already attached to an application.");
+            throw new IllegalArgumentException(Messages.getString("Error.TimerAttached"));
         }
 
         attachTimer(timer);
@@ -124,11 +125,11 @@ public abstract class HUI extends UI {
     public void addShortcutKey(ShortcutKey shortcutKey) throws IllegalArgumentException, NullPointerException {
 
         if (shortcutKey == null) {
-            throw new NullPointerException("Argument must not be null");
+            throw new NullPointerException(Messages.getString("Error.NullArgument"));
         }
 
         if (shortcutKey.isAttached()) {
-            throw new IllegalArgumentException("ShortcutKey is already attached to an application.");
+            throw new IllegalArgumentException(Messages.getString("Error.ShortcutKeyAttached"));
         }
 
         attachShortcutKey(shortcutKey);

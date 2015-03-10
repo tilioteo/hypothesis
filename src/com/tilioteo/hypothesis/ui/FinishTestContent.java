@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.processing.Command;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -24,7 +25,7 @@ public class FinishTestContent extends VerticalLayout {
 		setSizeFull();
 		
 		Label heading = new Label("<h2>"
-				+ "Test byl dokončen. Stiskněte tlačítko pro zavření aplikace."
+				+ Messages.getString("Caption.TestFinished")
 				//+ ApplicationMessages.get().getString(Messages.TEXT_TEST_FINISHED)
 				+ "</h2>");
 		heading.setContentMode(ContentMode.HTML);
@@ -32,7 +33,7 @@ public class FinishTestContent extends VerticalLayout {
 		addComponent(heading);
 		setComponentAlignment(heading, Alignment.MIDDLE_CENTER);
 		
-		Button button = new Button("Zavřít"
+		Button button = new Button(Messages.getString("Caption.Close")
 				//ApplicationMessages.get().getString(Messages.TEXT_BUTTON_CLOSE_TEST)
 				);
 		button.addStyleName("big default");

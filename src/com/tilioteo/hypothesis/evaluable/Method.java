@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.tilioteo.hypothesis.annotation.ExpressionScope;
 import com.tilioteo.hypothesis.annotation.ExpressionScopePrivate;
 import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
+import com.tilioteo.hypothesis.core.Messages;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -64,7 +65,7 @@ public class Method extends Primitive implements HasReference {
 						if (method.isAnnotationPresent(ExpressionScope.class)) {
 							ExpressionScope scope = method.getAnnotation(ExpressionScope.class);
 							if (classPrivateScope || Scope.PRIVATE.equals(scope.value())) {
-								throw new Exception(String.format("Method '%s' of class '%s' is eliminated from expression evaluation.", method.getName(), obj.getClass().getName()));
+								throw new Exception(Messages.getString("Error.MethodEliminated", method.getName(), obj.getClass().getName()));
 							}
 						}
 						// prepare arguments, do conversions if needed

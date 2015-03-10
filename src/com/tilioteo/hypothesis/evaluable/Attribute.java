@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import com.tilioteo.hypothesis.annotation.ExpressionScope;
 import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
 import com.tilioteo.hypothesis.annotation.ExpressionScopePrivate;
+import com.tilioteo.hypothesis.core.Messages;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -53,7 +54,7 @@ public class Attribute extends Variable implements HasReference {
 					if (field.isAnnotationPresent(ExpressionScope.class)) {
 						ExpressionScope scope = field.getAnnotation(ExpressionScope.class);
 						if (classPrivateScope || Scope.PRIVATE.equals(scope.value())) {
-							throw new Exception(String.format("Field '%s' of class '%s' is eliminated from expression evaluation.", field.getName(), obj.getClass().getName()));
+							throw new Exception(Messages.getString("Error.FieldEliminated", field.getName(), obj.getClass().getName()));
 						}
 					}
 					

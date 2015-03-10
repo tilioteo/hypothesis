@@ -267,7 +267,7 @@ public class ProcessManager implements ProcessEventListener {
 
 		// TODO add some error description
 		processEventManager.fireEvent(new ErrorNotificationEvent(
-				eventObj.getTest(), "Something went wrong"));
+				eventObj.getTest(), Messages.getString("Error.Unspecified")));
 	}
 
 	private void processFinishBranch(FinishBranchEvent eventObj) {
@@ -476,8 +476,7 @@ public class ProcessManager implements ProcessEventListener {
 			}
 		} else {
 			// TODO set localizable resource
-			processEventManager.fireEvent(new ErrorNotificationEvent(
-					SimpleTest.DUMMY_TEST, "An error occured when starting test."));
+			processEventManager.fireEvent(new ErrorNotificationEvent(SimpleTest.DUMMY_TEST, Messages.getString("Error.StartTest")));
 		}
 	}
 
@@ -562,13 +561,13 @@ public class ProcessManager implements ProcessEventListener {
 			} else {
 				// TODO set localizable resource
 				processEventManager.fireEvent(new ErrorNotificationEvent(
-						SimpleTest.DUMMY_TEST, "You do not have permition to process."));
+						SimpleTest.DUMMY_TEST, Messages.getString("Error.InsufficientRights")));
 			}
 		} else {
 			log.debug("Invalid token.");
 			// TODO set localizable resource
 			processEventManager.fireEvent(new ErrorNotificationEvent(
-					SimpleTest.DUMMY_TEST, "Invalid token."));
+					SimpleTest.DUMMY_TEST, Messages.getString("Error.Token")));
 		}
 	}
 

@@ -75,6 +75,8 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 	
 	@Override
 	protected void init(VaadinRequest request) {
+		super.init(request);
+		
 		log.debug("ProcessUI initialization");
 		addDetachListener(this);
 		processModel = new ProcessModel(this);

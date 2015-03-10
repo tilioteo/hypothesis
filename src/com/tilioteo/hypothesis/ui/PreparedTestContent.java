@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerState.Direction;
 import com.tilioteo.hypothesis.ui.Timer.StopEvent;
@@ -28,7 +29,7 @@ public class PreparedTestContent extends VerticalLayout {
 		setSizeFull();
 		
 		heading = new Label("<h2>"
-				+ "Test je připraven. Stiskněte tlačítko pro jeho spuštění."
+				+ Messages.getString("Caption.TestReady")
 				//+ ApplicationMessages.get().getString(Messages.TEXT_TEST_FINISHED)
 				+ "</h2>");
 		heading.setContentMode(ContentMode.HTML);
@@ -43,7 +44,7 @@ public class PreparedTestContent extends VerticalLayout {
 			button = new Button();
 		}
 		
-		button.setCaption("Spustit"
+		button.setCaption(Messages.getString("Caption.Run")
 				//ApplicationMessages.get().getString(Messages.TEXT_BUTTON_CLOSE_TEST)
 				);
 		button.addStyleName("big default");

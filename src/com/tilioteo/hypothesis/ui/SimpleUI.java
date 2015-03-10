@@ -11,7 +11,6 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.UI;
 
 /**
  * @author kamil
@@ -31,6 +30,7 @@ public class SimpleUI extends UI {
 	
 	@Override
 	protected void init(VaadinRequest request) {
+		super.init(request);
 		
 		pid = request.getParameter("pid");
 

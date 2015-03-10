@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.ui;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.vaadin.data.util.BeanItem;
@@ -81,7 +82,7 @@ public class SimplePackPanel extends Panel implements ClickListener {
 		buttonLayout.setSizeFull();
 		panelLayout.addComponent(buttonLayout);
 		
-		startButton = new Button("Start test");
+		startButton = new Button(Messages.getString("Caption.StartTest"));
 		buttonLayout.addComponent(startButton);
 		startButton.addClickListener(this);
 		

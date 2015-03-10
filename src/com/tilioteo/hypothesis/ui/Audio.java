@@ -10,6 +10,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
@@ -114,7 +115,7 @@ public class Audio extends com.vaadin.ui.Audio implements SlideComponent {
 		ComponentUtility.setMediaSources(this, element);
 		
 		// TODO make localizable
-		setAltText("Your browser doesn't support audio.");
+		setAltText(Messages.getString("Error.AudioSupport"));
 	}
 
 	private void setHandlers(Element element) {

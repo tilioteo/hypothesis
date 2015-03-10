@@ -14,6 +14,8 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import com.tilioteo.hypothesis.core.Messages;
+
 /**
  * @author kamil
  * 
@@ -52,7 +54,7 @@ public class HibernateUtil {
 		} else {
 			log.error("Hibernate SessionFactory not yet initialized.");
 			throw new NullPointerException(
-					"Hibernate SessionFactory not yet initialized.");
+					Messages.getString("Error.SessionFactoryInitialization"));
 		}
 	}
 

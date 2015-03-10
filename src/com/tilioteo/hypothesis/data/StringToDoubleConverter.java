@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.data;
 import java.util.Locale;
 
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.Messages;
 import com.vaadin.data.util.converter.AbstractStringToNumberConverter;
 
 /**
@@ -36,8 +37,7 @@ public class StringToDoubleConverter extends
 		try {
 			result = Double.parseDouble(value.replace(",", "."));
 		} catch (NumberFormatException e) {
-			throw new ConversionException("Could not convert '" + value
-					+ "' to " + getModelType().getName());
+			throw new ConversionException(Messages.getString("Error.Convertion", value, getModelType().getName()));
 		}
 
 		return result;
