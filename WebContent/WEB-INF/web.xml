@@ -18,7 +18,8 @@
 	</context-param>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/hypothesis-context.xml</param-value>
+		<!--param-value>/WEB-INF/hypothesis-context.xml</param-value-->
+		<param-value>com.tilioteo.hypothesis.context.HypothesisConfig</param-value>
 	</context-param>
 	<context-param>
 		<param-name>hibernateConfigLocation</param-name>
