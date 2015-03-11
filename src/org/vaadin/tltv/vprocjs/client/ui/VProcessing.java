@@ -251,12 +251,20 @@ public class VProcessing extends SimplePanel {
 			
 			var p =  vprocessing.@org.vaadin.tltv.vprocjs.client.ui.VProcessing::proJsObj;
 			if (p) {
+				try {
+					p.bindCallbacks($wnd);
+				} catch(e) {}
+				
 				p.exit();
 			}
 			
 			try {
 				p = new $wnd.Processing(targetcanvas, processingCode);
 				vprocessing.@org.vaadin.tltv.vprocjs.client.ui.VProcessing::proJsObj = p;
+				try {
+					p.bindCallbacks($wnd);
+				} catch(e) {}
+				
 			} catch(e) {
 				alert("Failed to execute processing code!\n\nError: " + e.message);
 			}
@@ -314,6 +322,11 @@ public class VProcessing extends SimplePanel {
 			} catch(e) {
 				alert("Failed to execute processing javascript code!\n\nError: " + e.message);
 			}
+			try {
+				if (p) {
+					p.bindJavascript(this);
+				}
+			} catch(e) {}
 		} else {
 			alert("Error: Target canvas not found! Your browser probably does not support HTML5 canvas element");
 		}

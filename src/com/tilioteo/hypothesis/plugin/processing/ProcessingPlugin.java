@@ -13,6 +13,7 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.common.StringSet;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.extension.SlideComponentPlugin;
+import com.tilioteo.hypothesis.plugin.processing.event.ProcessingEventTypes;
 import com.tilioteo.hypothesis.ui.SlideComponent;
 
 /**
@@ -26,7 +27,7 @@ public class ProcessingPlugin implements SlideComponentPlugin {
 			);
 
 	private StringSet eventTypes = new StringSet(
-			//MapEventTypes.LayerLoad,
+			ProcessingEventTypes.Callback
 			);
 	
 	private Map<String, Set<ValidParentGroup>> elementParentGroups = new HashMap<String, Set<ValidParentGroup>>();
