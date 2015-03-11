@@ -115,7 +115,7 @@ public class PacksModel implements ReadyCheckedListener {
 
 		//client debug
 		//String url = String.format("%s/process/?gwt.codesvr=127.0.0.1:9997&%s=%s%s", contextUrl, "token", token.getUid(), "&fs");
-		String url = String.format("%s/process/?%s=%s%s", contextUrl, "token", token.getUid(), "&fs" + lang != null ? "&lang=" + lang : "");
+		String url = String.format("%s/process/?%s=%s%s%s", contextUrl, "token", token.getUid(), "&fs", lang != null ? "&lang=" + lang : "");
 		JavaScript javaScript = Page.getCurrent().getJavaScript();
 		javaScript.execute("open(\"" + url + "\",\"_blank\",\"width=800,height=600,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no\")");
 		token = null;
@@ -127,7 +127,7 @@ public class PacksModel implements ReadyCheckedListener {
 
 		//client debug
 		//String url = String.format("%s/process/?gwt.codesvr=127.0.0.1:9997&%s=%s%s", contextUrl, "token", token.getUid(), "&fs&bk=true");
-		String url = String.format("%s/process/?%s=%s%s", contextUrl, "token", token.getUid(), "&fs&bk=true" + lang != null ? "&lang=" + lang : "");
+		String url = String.format("%s/process/?%s=%s%s%s", contextUrl, "token", token.getUid(), "&fs&bk=true", lang != null ? "&lang=" + lang : "");
 		Page.getCurrent().setLocation(url);
 		token = null;
 	}

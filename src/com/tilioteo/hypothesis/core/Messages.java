@@ -7,7 +7,6 @@ import java.util.Locale;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import com.tilioteo.hypothesis.ui.UI;
@@ -24,7 +23,7 @@ public class Messages {
 			ApplicationContext applicationContext =	current.getApplicationContext();
 			MessageSource messageSource = applicationContext.getBean(ReloadableResourceBundleMessageSource.class);
 			
-			Locale locale = LocaleContextHolder.getLocale();
+			Locale locale = current.getLocale();
 			return messageSource.getMessage(key, arguments, locale);
 		}
 		return key;

@@ -9,7 +9,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.vaadin.server.VaadinRequest;
@@ -37,14 +36,11 @@ public class UI extends com.vaadin.ui.UI {
 	@Override
 	protected void init(VaadinRequest request) {
 		language = request.getParameter("lang");
-		if (language != null) {
-			Locale locale = new Locale(language);
-			if (locale != null) {
-				LocaleContextHolder.setLocale(locale);
-			}
-		} else {
-			LocaleContextHolder.setLocale(new Locale("cs"));
+		if (null == language) {
+			language = "cs"; // default
 		}
+		
+		setLocale(new Locale(language));
 		
 		WrappedSession session = request.getWrappedSession();
 		HttpSession httpSession = ((WrappedHttpSession)session).getHttpSession();
