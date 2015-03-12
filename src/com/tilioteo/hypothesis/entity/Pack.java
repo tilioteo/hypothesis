@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -25,6 +26,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -32,7 +36,7 @@ import org.hibernate.annotations.LazyCollectionOption;
  * 
  */
 @Entity
-@Table(name = "TBL_PACK")
+@Table(name = EntityTableConstants.PACK_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Pack extends SerializableIdObject implements HasList<Branch> {
 
@@ -57,14 +61,14 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "packGenerator")
-	@SequenceGenerator(name = "packGenerator", sequenceName = "hbn_pack_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.PACK_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.PACK_GENERATOR, sequenceName = EntityTableConstants.PACK_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "NAME", nullable = false, unique = true)
+	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
 	public final String getName() {
 		return name;
 	}
@@ -73,7 +77,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		this.name = name;
 	}
 
-	@Column(name = "DESCRIPTION")
+	@Column(name = EntityFieldConstants.DESCRIPTION)
 	public final String getDescription() {
 		return description;
 	}
@@ -82,7 +86,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		this.description = description;
 	}
 
-	@Column(name = "PUBLISHED")
+	@Column(name = EntityFieldConstants.PUBLISHED)
 	public final Boolean getPublished() {
 		return published;
 	}
@@ -91,7 +95,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		this.published = published;
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -101,11 +105,11 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_PACK_BRANCH", joinColumns = @JoinColumn(name = "PACK_ID"), inverseJoinColumns = @JoinColumn(name = "BRANCH_ID"))
+	@JoinTable(name = EntityTableConstants.PACK_BRANCH_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.PACK_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	// @IndexColumn(name="IDX", base = 1)
-	public final List<Branch> getBranches() {
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@OrderColumn(name = EntityFieldConstants.RANK)
+	public List<Branch> getBranches() {
 		return branches;
 	}
 
@@ -119,73 +123,88 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	public final void addBranch(Branch b) {
-		this.branches.add(b);
+		getBranches().add(b);
 	}
 
 	public final void removeBranch(Branch b) {
-		this.branches.remove(b);
+		getBranches().remove(b);
 	}
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof Pack))
+		}
+		if (!(obj instanceof Pack)) {
 			return false;
+		}
 		Pack other = (Pack) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+		
+		Long id = getId();
+		Long id2 = other.getId();
+		String name = getName();
+		String name2 = other.getName();
+		String description = getDescription();
+		String description2 = other.getDescription();
+		Boolean published = getPublished();
+		Boolean published2 = other.getPublished();
+		String note = getNote();
+		String note2 = other.getNote();
+		//List<Branch> branches = getBranches();
+		//List<Branch> branches2 = other.getBranches();
+
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getDescription() == null) {
-			if (other.getDescription() != null)
-				return false;
-		} else if (!getDescription().equals(other.getDescription()))
+		}
+
+		if (name != null && !name.equals(name2)) {
 			return false;
-		if (getName() == null) {
-			if (other.getName() != null)
-				return false;
-		} else if (!getName().equals(other.getName()))
+		} else if (name2 != null) {
 			return false;
-		if (getNote() == null) {
-			if (other.getNote() != null)
-				return false;
-		} else if (!getNote().equals(other.getNote()))
+		}
+		
+		if (description != null && !description.equals(description2)) {
 			return false;
-		if (getPublished() == null) {
-			if (other.getPublished() != null)
-				return false;
-		} else if (!getPublished().equals(other.getPublished()))
+		} else if (description2 != null) {
 			return false;
-		if (getBranches() == null) {
-			if (other.getBranches() != null)
-				return false;
-		} else if (!getBranches().equals(other.getBranches()))
+		}
+		
+		if (published != null && !published.equals(published2)) {
 			return false;
+		} else if (published2 != null) {
+			return false;
+		}
+		
+		if (note != null && !note.equals(note2)) {
+			return false;
+		} else if (note2 != null) {
+			return false;
+		}
+
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 67;
+		Long id = getId();
+		String name = getName();
+		String description = getDescription();
+		Boolean published = getPublished();
+		String note = getNote();
+		List<Branch> branches = getBranches();
+		
+		final int prime = 19;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime
-				* result
-				+ ((getDescription() == null) ? 0 : getDescription().hashCode());
-		result = prime * result
-				+ ((getName() == null) ? 0 : getName().hashCode());
-		result = prime * result
-				+ ((getNote() == null) ? 0 : getNote().hashCode());
-		result = prime * result
-				+ ((getPublished() == null) ? 0 : getPublished().hashCode());
-		result = prime * result
-				+ ((getBranches() == null) ? 0 : getBranches().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result + (name != null ? name.hashCode() : 0);
+		result = prime * result	+ (description != null ? description.hashCode() : 0);
+		result = prime * result	+ (published != null ? published.hashCode() : 0);
+		result = prime * result	+ (note != null ? note.hashCode() : 0);
+		result = prime * result	+ branches.hashCode();
 		return result;
 	}
 

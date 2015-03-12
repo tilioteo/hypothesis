@@ -18,6 +18,7 @@ import com.tilioteo.hypothesis.common.Strings;
  */
 public class BranchXmlUtility {
 
+	@SuppressWarnings("unused")
 	private static Logger log = Logger.getLogger(BranchXmlUtility.class);
 
 	public static Element getBranchKeyElement(Element element) {

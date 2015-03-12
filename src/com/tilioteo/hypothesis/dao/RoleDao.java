@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.common.FieldConstants;
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
 import com.tilioteo.hypothesis.entity.Role;
 
 /**
@@ -17,7 +17,7 @@ import com.tilioteo.hypothesis.entity.Role;
 public class RoleDao extends AbstractHibernateDao<Role, Long> {
 
 	public Role findByNameIgnoreCase(String name) {
-		List<Role> roles = findByCriteria(Restrictions.eq(FieldConstants.NAME,
+		List<Role> roles = findByCriteria(Restrictions.eq(EntityFieldConstants.NAME,
 				name).ignoreCase());
 		if (roles.size() > 0)
 			return roles.get(0);

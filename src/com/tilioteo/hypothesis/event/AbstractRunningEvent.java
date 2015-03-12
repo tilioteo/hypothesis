@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import com.vaadin.server.ErrorHandler;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -10,7 +12,7 @@ package com.tilioteo.hypothesis.event;
 @SuppressWarnings("serial")
 public abstract class AbstractRunningEvent extends AbstractProcessEvent {
 
-	protected AbstractRunningEvent(Object source) {
-		super(source);
+	protected AbstractRunningEvent(Object source, ErrorHandler errorHandler) {
+		super(source, errorHandler);
 	}
 }

@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SlideContent TemplateUID="29D23302-8E1C-11E1-A42C-008EBBE59B18">
+<SlideContent TemplateUID="2C2A3A99-12E2-4373-8B31-114B7306D50A">
 	<Bindings>
 		<Bind>
-			<Panel Id="ct001_ct001_ct001">
-				<Properties>
-					<Caption Value="Zadejte osobní údaje" />
-				</Properties>
-			</Panel>
+			<ImageSequenceLayer Id="sequence_layer">
+				<Images>
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_cervena.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_modra.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_zelena.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_dole.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_nahore.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_dole_tlacitko.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_nahore_tlacitko.png" />
+				</Images>
+			</ImageSequenceLayer>
+		</Bind>
+		<Bind>
+			<Variable Id="answerKeys" Values="1,2,3,4,3,4,3" />
 		</Bind>
 	</Bindings>
 </SlideContent>

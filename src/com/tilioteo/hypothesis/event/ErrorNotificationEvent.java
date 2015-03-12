@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -13,14 +14,15 @@ import com.vaadin.ui.Notification.Type;
 @SuppressWarnings("serial")
 public class ErrorNotificationEvent extends AbstractNotificationEvent {
 
-	public ErrorNotificationEvent(String caption) {
-		super(caption);
+	public ErrorNotificationEvent(SimpleTest test, String caption) {
+		super(test, caption);
 	}
 
-	public ErrorNotificationEvent(String caption, String description) {
-		super(caption, description);
+	public ErrorNotificationEvent(SimpleTest test, String caption, String description) {
+		super(test, caption, description);
 	}
 
+	@Override
 	public String getName() {
 		return ProcessEventTypes.Null;
 	}

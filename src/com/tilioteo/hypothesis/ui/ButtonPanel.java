@@ -15,9 +15,9 @@ import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.event.ButtonPanelData;
-import com.tilioteo.hypothesis.model.AbstractBaseAction;
-import com.tilioteo.hypothesis.model.Command;
-import com.tilioteo.hypothesis.model.CommandFactory;
+import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.tilioteo.hypothesis.processing.Command;
+import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -54,6 +54,9 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 	protected void addChilds() {
 		int i = 1;
 		for (String caption : captions) {
+			if (null == caption) {
+				caption = "";
+			}
 			Button button = new Button();
 			button.setCaption(caption);
 			button.setData(String.format("%s_%d",
@@ -85,19 +88,18 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 		addChilds();
 	}
 
-	private void setClickHandler(String actionId) {
-		final ButtonPanelData data = new ButtonPanelData(this, slideManager);
-		final Command componentEvent = CommandFactory
-				.createButtonPanelClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
-
+	private void setClickHandler(final String actionId) {
 		addButtonClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
+				ButtonPanelData data = new ButtonPanelData(ButtonPanel.this, slideManager);
 				data.setButton((Button) event.getSource());
-				componentEvent.execute();
-				action.execute();
+				
+				Command componentEvent = CommandFactory.createButtonPanelClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -105,8 +107,7 @@ public class ButtonPanel extends MultipleComponentPanel<Button> implements
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 

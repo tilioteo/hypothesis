@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.ui;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
@@ -15,9 +16,9 @@ import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.event.ImageData;
-import com.tilioteo.hypothesis.model.AbstractBaseAction;
-import com.tilioteo.hypothesis.model.Command;
-import com.tilioteo.hypothesis.model.CommandFactory;
+import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.tilioteo.hypothesis.processing.Command;
+import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.tilioteo.hypothesis.shared.EventId;
 import com.tilioteo.hypothesis.shared.ui.image.ImageServerRpc;
 import com.tilioteo.hypothesis.shared.ui.image.ImageState;
@@ -36,10 +37,13 @@ import com.vaadin.util.ReflectTools;
  * 
  */
 @SuppressWarnings("serial")
-public class Image extends com.vaadin.ui.Image implements SlideComponent {
+public class Image extends com.vaadin.ui.Image implements SlideComponent, Maskable {
+
+	private static Logger log = Logger.getLogger(Image.class);
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
+	private Mask mask = null;
 	
     /**
      * Class for holding information about a image load event. A
@@ -118,16 +122,19 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
     protected ImageServerRpc rpc = new ImageServerRpc() {
         @Override
         public void click(MouseEventDetails mouseDetails) {
+        	log.debug("ImageServerRpc: click()");
             fireEvent(new ClickEvent(Image.this, mouseDetails));
         }
 
 		@Override
 		public void load() {
+        	log.debug("ImageServerRpc: load()");
 			fireEvent(new LoadEvent(Image.this));
 		}
 
 		@Override
 		public void error() {
+        	log.debug("ImageServerRpc: error()");
 			fireEvent(new ErrorEvent(Image.this));
 		}
     };
@@ -236,19 +243,18 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 
 	}
 
-	private void setClickHandler(String actionId) {
-		final ImageData data = new ImageData(this, slideManager);
-		final Command componentEvent = CommandFactory
-				.createImageClickEventCommand(data);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
-
+	private void setClickHandler(final String actionId) {
 		addClickListener(new MouseEvents.ClickListener() {
 			@Override
 			public void click(MouseEvents.ClickEvent event) {
-				data.setXY(event.getClientX(), event.getClientY());
-				componentEvent.execute();
-				action.execute();
+				ImageData data = new ImageData(Image.this, slideManager);
+				data.setXY(event.getRelativeX(), event.getRelativeY());
+				
+				Command componentEvent = CommandFactory.createImageClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -256,8 +262,7 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -279,17 +284,16 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 		}
 	}
 
-	private void setLoadHandler(String actionId) {
-		final Command componentEvent = CommandFactory
-				.createImageLoadEventCommand(this, slideManager);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
-
+	private void setLoadHandler(final String actionId) {
 		addLoadListener(new LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
-				componentEvent.execute();
-				action.execute();
+				ImageData data = new ImageData(Image.this, slideManager);
+				Command componentEvent = CommandFactory.createImageLoadEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -310,4 +314,19 @@ public class Image extends com.vaadin.ui.Image implements SlideComponent {
 		this.slideManager = slideManager;
 	}
 
+	@Override
+	public void mask() {
+		if (null == mask) {
+			mask = Mask.addToComponent(this);
+		}
+		mask.show();
+	}
+
+	@Override
+	public void unmask() {
+		if (mask != null) {
+			mask.hide();
+		}
+	}
+	
 }

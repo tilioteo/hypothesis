@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.entity.Task;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -13,9 +14,14 @@ import com.tilioteo.hypothesis.entity.Task;
 public class FinishTaskEvent extends AbstractRunningEvent {
 
 	public FinishTaskEvent(Task task) {
-		super(task);
+		this(task, null);
 	}
 
+	public FinishTaskEvent(Task task, ErrorHandler errorHandler) {
+		super(task, errorHandler);
+	}
+
+	@Override
 	public String getName() {
 		return ProcessEventTypes.FinishTask;
 	}

@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import java.util.HashMap;
+import java.util.Set;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -11,7 +12,7 @@ import java.util.HashMap;
  */
 public class ProcessEventTypes {
 
-	private static int nextId = 0;
+	private static long nextId = 0;
 
 	private static final HashMap<String, ProcessEventType> events = new HashMap<String, ProcessEventType>();
 
@@ -34,13 +35,32 @@ public class ProcessEventTypes {
 	public static final String TestError = "TEST_ERROR";
 	public static final String RenderSlide = "RENDER_SLIDE";
 	public static final String AfterRender = "AFTER_RENDER";
+
+	public static final String Action = "ACTION";
+
 	public static final String ButtonClick = "BUTTON_CLICK";
 	public static final String ButtonPanelClick = "BUTTONPANEL_CLICK";
 	public static final String RadioButtonClick = "RADIOBUTTON_CLICK";
-
-	public static final String RadioPanelClick = "RADIOPANEL_CLICK";
+	public static final String CheckBoxClick = "CHECKBOX_CLICK";
+	public static final String SelectPanelClick = "SELECTPANEL_CLICK";
 	public static final String ImageClick = "IMAGE_CLICK";
 	public static final String ImageLoad = "IMAGE_LOAD";
+	public static final String TimerStart = "TIMER_START";
+	public static final String TimerStop = "TIMER_STOP";
+	public static final String TimerUpdate = "TIMER_UPDATE";
+	public static final String WindowInit = "WINDOW_INIT";
+	public static final String WindowOpen = "WINDOW_OPEN";
+	public static final String WindowClose = "WINDOW_CLOSE";
+	public static final String VideoClick = "VIDEO_CLICK";
+	public static final String VideoLoad = "VIDEO_LOAD";
+	public static final String VideoStart = "VIDEO_START";
+	public static final String VideoStop = "VIDEO_STOP";
+	public static final String AudioLoad = "AUDIO_LOAD";
+	public static final String AudioStart = "AUDIO_START";
+	public static final String AudioStop = "AUDIO_STOP";
+	public static final String SlideInit = "SLIDE_INIT";
+	public static final String SlideShow = "SLIDE_SHOW";
+	public static final String ShortcutKey = "SHORTCUT_KEY";
 
 	static {
 		registerEvent(StartTest); // 1
@@ -55,22 +75,42 @@ public class ProcessEventTypes {
 		nextId += 5;
 		registerEvent(BreakTest); // 15
 		registerEvent(ContinueTest); // 16
-		nextId += 4;
+		nextId += 3;
 		registerEvent(TestError); // 20
 		nextId += 9;
 		registerEvent(RenderSlide); // 30
 		registerEvent(AfterRender); // 31
-		nextId += 68;
+
+		registerEvent(SlideInit); // 32
+		registerEvent(SlideShow); // 33
+		registerEvent(ShortcutKey); // 34
+		nextId += 15;
+		registerEvent(Action); // 50
+		nextId += 49;
 		registerEvent(ButtonClick); // 100
-		registerEvent(ButtonPanelClick); // 101
-		registerEvent(RadioButtonClick); // 102
-		registerEvent(RadioPanelClick); // 103
-		registerEvent(ImageClick); // 104
-		registerEvent(ImageLoad); // 105
-		nextId += 894; // user events begin from 1000
+		registerEvent(RadioButtonClick); // 101
+		registerEvent(CheckBoxClick); // 102
+		registerEvent(ButtonPanelClick); // 103
+		registerEvent(SelectPanelClick); // 104
+		registerEvent(ImageClick); // 105
+		registerEvent(ImageLoad); // 106
+		registerEvent(TimerStart); // 107
+		registerEvent(TimerStop); // 108
+		registerEvent(TimerUpdate); // 109
+		registerEvent(WindowInit); // 110
+		registerEvent(WindowOpen); // 111
+		registerEvent(WindowClose); // 112
+		registerEvent(VideoClick); // 113
+		registerEvent(VideoLoad); // 114
+		registerEvent(VideoStart); // 115
+		registerEvent(VideoStop); // 116
+		registerEvent(AudioLoad); // 117
+		registerEvent(AudioStart); // 118
+		registerEvent(AudioStop); // 119
+		//nextId += 881; // plugin events begin from 1000
 	}
 
-	private static int generateId() {
+	private static long generateId() {
 		return ++nextId;
 	}
 
@@ -82,6 +122,15 @@ public class ProcessEventTypes {
 		if (!events.containsKey(name)) {
 			ProcessEventType event = new ProcessEventType(generateId(), name);
 			events.put(name, event);
+		}
+	}
+	
+	public static void registerPluginEvents(Set<String> names) {
+		// increase next event id to begin in thousands 
+		nextId = (Math.round(Math.floor(nextId/1000)) + 1) * 1000 - 1;		
+
+		for (String name : names) {
+			registerEvent(name);
 		}
 	}
 

@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.ui;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.dom4j.Element;
@@ -16,9 +17,10 @@ import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
-import com.tilioteo.hypothesis.model.AbstractBaseAction;
-import com.tilioteo.hypothesis.model.Command;
-import com.tilioteo.hypothesis.model.CommandFactory;
+import com.tilioteo.hypothesis.event.WindowData;
+import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.tilioteo.hypothesis.processing.Command;
+import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
@@ -147,6 +149,8 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 
 	private boolean initialized = false;
 
+	private ArrayList<CloseListener> closeListeners = new ArrayList<CloseListener>();
+	
 	public Window() {
 		this.parentAlignment = new ParentAlignment();
 	}
@@ -257,22 +261,37 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		fireOpen();
 	}
 
-	private void setCloseHandler(String actionId) {
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+	private void setCloseHandler(final String actionId) {
 		addCloseListener(new CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				action.execute();
+				WindowData data = new WindowData(Window.this, slideManager);
+				Command componentEvent = CommandFactory.createWindowCloseEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
 
+    @Override
+	public void addCloseListener(CloseListener listener) {
+    	super.addCloseListener(listener);
+    	closeListeners.add(listener);
+    }
+    
+    public void removeAllCloseListeners() {
+    	for (CloseListener listener : closeListeners) {
+    		removeCloseListener(listener);
+    	}
+    	closeListeners.clear();
+    }
+
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -297,13 +316,16 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		}
 	}
 
-	private void setInitHandler(String actionId) {
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+	private void setInitHandler(final String actionId) {
 		addInitListener(new InitListener() {
 			@Override
 			public void initWindow(InitEvent event) {
-				action.execute();
+				WindowData data = new WindowData(Window.this, slideManager);
+				Command componentEvent = CommandFactory.createWindowInitEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -318,13 +340,16 @@ public class Window extends com.vaadin.ui.Window implements SlideComponentContai
 		// TODO in future set dynamic css
 	}
 
-	private void setOpenHandler(String actionId) {
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
+	private void setOpenHandler(final String actionId) {
 		addOpenListener(new OpenListener() {
 			@Override
 			public void openWindow(OpenEvent e) {
-				action.execute();
+				WindowData data = new WindowData(Window.this, slideManager);
+				Command componentEvent = CommandFactory.createWindowOpenEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}

@@ -9,8 +9,8 @@ package com.tilioteo.hypothesis.evaluable;
  */
 public class Entity extends Variable {
 	
-	public Entity(String name) {
-		super(name);
+	public Entity(String name, Class<?> type) {
+		super(name, type);
 	}
 	
 }

@@ -19,8 +19,10 @@ public class Navigator {
 	}
 	
 	public void next() {
-		slideManager.getEventManager().fireEvent(
-				new FinishSlideEvent(slideManager.current(), Direction.NEXT));
+		if (slideManager.hasValidFields()) {
+			slideManager.getEventManager().fireEvent(
+					new FinishSlideEvent(slideManager.current(), Direction.NEXT));
+		}
 	}
 	
 	public void prior() {

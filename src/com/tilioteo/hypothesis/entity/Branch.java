@@ -3,10 +3,8 @@
  */
 package com.tilioteo.hypothesis.entity;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -30,6 +28,8 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
 import com.tilioteo.hypothesis.dom.BranchXmlConstants;
 import com.tilioteo.hypothesis.dom.XmlUtility;
 
@@ -40,7 +40,7 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
  * 
  */
 @Entity
-@Table(name = "TBL_BRANCH")
+@Table(name = EntityTableConstants.BRANCH_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Branch extends SerializableIdObject implements HasList<Task> {
 
@@ -54,7 +54,7 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	/**
 	 * raw xml string for branch
 	 */
-	private String branchXml;
+	private String xmlData;
 
 	/**
 	 * list of tasks
@@ -62,30 +62,20 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	private List<Task> tasks = new LinkedList<Task>();
 
 	/**
-	 * set of branch treks associated with brach
-	 */
-	private Set<BranchTrek> branchTreks = new HashSet<BranchTrek>();
-
-	/**
 	 * parsed dom document from xml
 	 */
 	private transient Document document = null;
 
-	/**
-	 * specialized hash map for branches which can follow this one
-	 */
-	private transient BranchMap branchMap = new BranchMap();
-
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchGenerator")
-	@SequenceGenerator(name = "branchGenerator", sequenceName = "hbn_branch_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.BRANCH_GENERATOR, sequenceName = EntityTableConstants.BRANCH_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -94,22 +84,22 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 		this.note = note;
 	}
 
-	@Column(name = "BRANCH_XML", nullable = false)
+	@Column(name = EntityFieldConstants.XML_DATA, nullable = false)
 	@Type(type="text")
-	protected String getBranchXml() {
-		return branchXml;
+	protected String getXmlData() {
+		return xmlData;
 	}
 
-	protected void setBranchXml(String branchXml) {
-		this.branchXml = branchXml;
+	protected void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_BRANCH_TASK", joinColumns = @JoinColumn(name = "BRANCH_ID"), inverseJoinColumns = @JoinColumn(name = "TASK_ID"))
+	@JoinTable(name = EntityTableConstants.BRANCH_TASK_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.TASK_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	@OrderColumn(name = "RANK")
-	public final List<Task> getTasks() {
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@OrderColumn(name = EntityFieldConstants.RANK)
+	public List<Task> getTasks() {
 		return tasks;
 	}
 
@@ -117,27 +107,10 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 		this.tasks = list;
 	}
 
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_BRANCH_BRANCH_TREK", joinColumns = @JoinColumn(name = "BRANCH_ID"), inverseJoinColumns = @JoinColumn(name = "BRANCH_TREK_ID"))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	protected final Set<BranchTrek> getBranchTreks() {
-		return branchTreks;
-	}
-
-	protected void setBranchTreks(Set<BranchTrek> branchTreks) {
-		this.branchTreks = branchTreks;
-
-		this.branchMap.clear();
-		for (BranchTrek sequence : branchTreks) {
-			branchMap.put(sequence.getKey(), sequence.getBranch());
-		}
-	}
-
 	@Transient
 	public final Document getDocument() {
 		if (document == null) {
-			document = XmlUtility.readString(getBranchXml());
+			document = XmlUtility.readString(getXmlData());
 		}
 		return document;
 	}
@@ -146,32 +119,28 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 		if (document != getDocument()) {
 			if (isValidDocument(document)) {
 				this.document = document;
-				this.branchXml = XmlUtility.writeString(this.document);
+				this.xmlData = XmlUtility.writeString(this.document);
 			} else {
 				this.document = null;
-				this.branchXml = null;
+				this.xmlData = null;
 				// throw new InvalidBranchXmlException();
 			}
 		}
 	}
 
 	@Transient
-	public BranchMap getBranchMap() {
-		return branchMap;
-	}
-
-	@Transient
 	public final List<Task> getList() {
-		return tasks;
+		return getTasks();
 	}
 
 	public final void addTask(Task task) {
-		if (task != null)
-			this.tasks.add(task);
+		if (task != null) {
+			getTasks().add(task);
+		}
 	}
 
 	public final void removeTask(Task task) {
-		this.tasks.remove(task);
+		getTasks().remove(task);
 	}
 
 	private boolean isValidDocument(Document doc) {
@@ -181,50 +150,61 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof Branch))
+		}
+		if (!(obj instanceof Branch)) {
 			return false;
+		}
 		Branch other = (Branch) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+		
+		Long id = getId();
+		Long id2 = other.getId();
+		String note = getNote();
+		String note2 = other.getNote();
+		String xmlData = getXmlData();
+		String xmlData2 = other.getXmlData();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getNote() == null) {
-			if (other.getNote() != null)
-				return false;
-		} else if (!getNote().equals(other.getNote()))
+		}
+
+		if (note != null && !note.equals(note2)) {
 			return false;
-		if (getTasks() == null) {
-			if (other.getTasks() != null)
-				return false;
-		} else if (!getTasks().equals(other.getTasks()))
+		} else if (note2 != null) {
 			return false;
-		if (getBranchTreks() == null) {
-			if (other.getBranchTreks() != null)
-				return false;
-		} else if (!getBranchTreks().equals(other.getBranchTreks()))
+		}
+		
+		if (xmlData != null && !xmlData.equals(xmlData2)) {
 			return false;
+		} else if (xmlData2 != null) {
+			return false;
+		}
+		
+		if (!getTasks().equals(other.getTasks())) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 61;
+		Long id = getId();
+		String note = getNote();
+		String xmlData = getXmlData();
+		
+		final int prime = 3;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime * result
-				+ ((getNote() == null) ? 0 : getNote().hashCode());
-		result = prime * result
-				+ ((getTasks() == null) ? 0 : getTasks().hashCode());
-		result = prime
-				* result
-				+ ((getBranchTreks() == null) ? 0 : getBranchTreks().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (note != null ? note.hashCode() : 0);
+		result = prime * result	+ (xmlData != null ? xmlData.hashCode() : 0);
+		result = prime * result + getTasks().hashCode();
+		
 		return result;
 	}
 

@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.entity.Slide;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author kamil
@@ -13,9 +14,14 @@ import com.tilioteo.hypothesis.entity.Slide;
 public class PriorSlideEvent extends AbstractRunningEvent {
 
 	public PriorSlideEvent(Slide slide) {
-		super(slide);
+		this(slide, null);
 	}
 
+	public PriorSlideEvent(Slide slide, ErrorHandler errorHandler) {
+		super(slide, errorHandler);
+	}
+
+	@Override
 	public String getName() {
 		return ProcessEventTypes.PriorSlide;
 	}

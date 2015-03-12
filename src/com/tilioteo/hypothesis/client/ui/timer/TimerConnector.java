@@ -2,12 +2,12 @@ package com.tilioteo.hypothesis.client.ui.timer;
 
 import java.util.Set;
 
-import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 import com.tilioteo.hypothesis.client.Timer;
 import com.tilioteo.hypothesis.client.Timer.StartEvent;
 import com.tilioteo.hypothesis.client.Timer.StopEvent;
 import com.tilioteo.hypothesis.client.Timer.UpdateEvent;
+import com.tilioteo.hypothesis.client.ui.AbstractNonVisualComponentConnector;
 import com.tilioteo.hypothesis.client.ui.VTimer;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerClientRpc;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerServerRpc;
@@ -17,7 +17,7 @@ import com.vaadin.client.communication.StateChangeEvent.StateChangeHandler;
 
 @SuppressWarnings("serial")
 @Connect(com.tilioteo.hypothesis.ui.Timer.class)
-public class TimerConnector extends AbstractComponentConnector implements
+public class TimerConnector extends AbstractNonVisualComponentConnector implements
 		Timer.StartEventHandler, Timer.StopEventHandler,
 		Timer.UpdateEventHandler {
 
@@ -35,8 +35,8 @@ public class TimerConnector extends AbstractComponentConnector implements
 			}
 
 			@Override
-			public void stop() {
-				getWidget().stop();
+			public void stop(boolean silent) {
+				getWidget().stop(silent);
 			}
 
 			@Override
@@ -99,21 +99,18 @@ public class TimerConnector extends AbstractComponentConnector implements
 	}
 
 	@Override
-	public void start(StartEvent event) {
-		getRpcProxy(TimerServerRpc.class).start(event.getTime(),
-				event.getDirection().name(), event.isResumed());
+	public void start(final StartEvent event) {
+		getRpcProxy(TimerServerRpc.class).started(event.getTime(), event.getDirection().name(), event.isResumed());
+	}
+	
+	@Override
+	public void stop(final StopEvent event) {
+		getRpcProxy(TimerServerRpc.class).stopped(event.getTime(), event.getDirection().name(), event.isPaused());
 	}
 
 	@Override
-	public void stop(StopEvent event) {
-		getRpcProxy(TimerServerRpc.class).stop(event.getTime(),
-				event.getDirection().name(), event.isPaused());
-	}
-
-	@Override
-	public void update(UpdateEvent event) {
-		getRpcProxy(TimerServerRpc.class).update(event.getTime(),
-				event.getDirection().name(), event.getInterval());
+	public void update(final UpdateEvent event) {
+		//getRpcProxy(TimerServerRpc.class).update(event.getTime(), event.getDirection().name(), event.getInterval());
 	}
 
 }

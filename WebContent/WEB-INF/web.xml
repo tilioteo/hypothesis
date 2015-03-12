@@ -4,17 +4,30 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	id="WebApp_ID" version="3.0">
 	<display-name>hypothesis</display-name>
+	<!--<context-param>
+		<param-name>productionMode</param-name>
+		<param-value>true</param-value>
+	</context-param>-->
+	<context-param>
+		<param-name>heartbeatInterval</param-name>
+		<param-value>60</param-value>
+	</context-param>
     <context-param>
 		<param-name>contextClass</param-name>
 		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
 	</context-param>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/hypothesis-context.xml</param-value>
+		<!--param-value>/WEB-INF/hypothesis-context.xml</param-value-->
+		<param-value>com.tilioteo.hypothesis.context.HypothesisConfig</param-value>
 	</context-param>
 	<context-param>
 		<param-name>hibernateConfigLocation</param-name>
 		<param-value>/WEB-INF/hibernate.cfg.xml</param-value>
+	</context-param>
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>/WEB-INF/log4j.cfg.xml</param-value>
 	</context-param>
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

@@ -3,24 +3,25 @@
  */
 package com.tilioteo.hypothesis.ui;
 
-import com.vaadin.ui.Panel;
+import com.tilioteo.hypothesis.entity.Pack;
+import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * @author kamil
  *
  */
-public class PackPanel extends Panel {
+@SuppressWarnings("serial")
+public class PackPanel extends SimplePackPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public PackPanel() {
-		setWidth("100%");
-		setHeight("100px");
+	public PackPanel(Pack pack) {
+		super(pack);
+	}
+	
+	@Override
+	public void buttonClick(ClickEvent event) {
+		super.buttonClick(event);
 		
-		setCaption("Pack");
+		collapse();
 	}
 	
 }

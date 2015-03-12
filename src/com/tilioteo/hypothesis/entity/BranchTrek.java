@@ -5,7 +5,6 @@ package com.tilioteo.hypothesis.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,8 +16,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Index;
+
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -28,10 +29,10 @@ import org.hibernate.annotations.Index;
  * 
  */
 @Entity
-@Table(name = "TBL_BRANCH_TREK", uniqueConstraints = { @UniqueConstraint(columnNames = {
-		"PACK_ID", "KEY", "BRANCH_ID" }) })
-@org.hibernate.annotations.Table(appliesTo = "TBL_BRANCH_TREK", indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = {
-		"PACK_ID", "BRANCH_ID" }), @Index(name="IX_KEY", columnNames = {"KEY"}) })
+@Table(name = EntityTableConstants.BRANCH_TREK_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
+		EntityFieldConstants.PACK_ID, EntityFieldConstants.KEY, EntityFieldConstants.BRANCH_ID }) })
+@org.hibernate.annotations.Table(appliesTo = EntityTableConstants.BRANCH_TREK_TABLE,
+		indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = { EntityFieldConstants.PACK_ID, EntityFieldConstants.BRANCH_ID }) })
 @Access(AccessType.PROPERTY)
 public final class BranchTrek extends SerializableIdObject {
 	/**
@@ -42,30 +43,31 @@ public final class BranchTrek extends SerializableIdObject {
 	private Pack pack;
 	private String key;
 	private Branch branch;
+	private Branch nextBranch;
 
 	protected BranchTrek() {
 		super();
 	}
 
-	public BranchTrek(Pack pack, String key, Branch branch) {
+	public BranchTrek(Pack pack, Branch branch, String key, Branch nextBranch) {
 		this();
 		this.pack = pack;
 		this.key = key;
 		this.branch = branch;
+		this.nextBranch = nextBranch;
 	}
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchTrekGenerator")
-	@SequenceGenerator(name = "branchTrekGenerator", sequenceName = "hbn_branch_trek_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_TREK_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.BRANCH_TREK_GENERATOR, sequenceName = EntityTableConstants.BRANCH_TREK_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne
+	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
 	public final Pack getPack() {
 		return pack;
 	}
@@ -74,7 +76,7 @@ public final class BranchTrek extends SerializableIdObject {
 		this.pack = pack;
 	}
 
-	@Column(name = "KEY", nullable = false)
+	@Column(name = EntityFieldConstants.KEY, nullable = false)
 	public final String getKey() {
 		return key;
 	}
@@ -83,9 +85,8 @@ public final class BranchTrek extends SerializableIdObject {
 		this.key = key;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "BRANCH_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne
+	@JoinColumn(name = EntityFieldConstants.BRANCH_ID, nullable = false)
 	public final Branch getBranch() {
 		return branch;
 	}
@@ -94,49 +95,87 @@ public final class BranchTrek extends SerializableIdObject {
 		this.branch = branch;
 	}
 
+	@ManyToOne
+	@JoinColumn(name = EntityFieldConstants.NEXT_BRANCH_ID, nullable = false)
+	public final Branch getNextBranch() {
+		return nextBranch;
+	}
+
+	protected void setNextBranch(Branch branch) {
+		this.nextBranch = branch;
+	}
+
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof BranchTrek))
+		}
+		if (!(obj instanceof BranchTrek)) {
 			return false;
+		}
 		BranchTrek other = (BranchTrek) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+		
+		Long id = getId();
+		Long id2 = other.getId();
+		Pack pack = getPack();
+		Pack pack2 = other.getPack();
+		String key = getKey();
+		String key2 = other.getKey();
+		Branch branch = getBranch();
+		Branch branch2 = other.getBranch();
+		Branch nextBranch = getNextBranch();
+		Branch nextBranch2 = other.getNextBranch();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		if (getBranch() == null) {
-			if (other.getBranch() != null)
-				return false;
-		} else if (!getBranch().equals(other.getBranch()))
+		}
+
+		if (pack != null && !pack.equals(pack2)) {
 			return false;
-		if (getKey() == null) {
-			if (other.getKey() != null)
-				return false;
-		} else if (!getKey().equals(other.getKey()))
+		} else if (pack2 != null) {
 			return false;
-		if (getPack() == null) {
-			if (other.getPack() != null)
-				return false;
-		} else if (!getPack().equals(other.getPack()))
+		}
+		
+		if (key != null && !key.equals(key2)) {
 			return false;
+		} else if (key2 != null) {
+			return false;
+		}
+		
+		if (branch != null && !branch.equals(branch2)) {
+			return false;
+		} else if (branch2 != null) {
+			return false;
+		}
+		
+		if (nextBranch != null && !nextBranch.equals(nextBranch2)) {
+			return false;
+		} else if (nextBranch2 != null) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 31;
+		Long id = getId();
+		Pack pack = getPack();
+		String key = getKey();
+		Branch branch = getBranch();
+		Branch nextBranch = getNextBranch();
+
+		final int prime = 7;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		result = prime * result
-				+ ((getBranch() == null) ? 0 : getBranch().hashCode());
-		result = prime * result
-				+ ((getKey() == null) ? 0 : getKey().hashCode());
-		result = prime * result
-				+ ((getPack() == null) ? 0 : getPack().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (pack != null ? pack.hashCode() : 0);
+		result = prime * result	+ (key != null ? key.hashCode() : 0);
+		result = prime * result	+ (branch != null ? branch.hashCode() : 0);
+		result = prime * result	+ (nextBranch != null ? nextBranch.hashCode() : 0);
 		return result;
 	}
 

@@ -22,7 +22,6 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 		GenericDao<T, ID> {
 
 	private Class<T> persistentClass;
-	private Session session = null;
 
 	/**
 	 * Class constructor
@@ -43,13 +42,9 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	 * public void setSession(Session s) { this.session = s; }
 	 */
 
+	@Override
 	public void beginTransaction() {
-		if (session != null && session.isOpen())
-			throw new IllegalStateException(
-					"Session allready opened and transaction started.");
-
-		session = HibernateUtil.getSession();
-		session.beginTransaction();
+		HibernateUtil.beginTransaction();
 	}
 
 	/**
@@ -59,26 +54,20 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 		getSession().clear();
 	}
 
+	@Override
 	public void commit() {
 		flush();
-		getSession().getTransaction().commit();
-		session = null;
+		HibernateUtil.commitTransaction();
 	}
 
+	@Override
 	public List<T> findAll() {
 		return findByCriteria();
 	}
 
-	// public List<T> findByExample(T exampleInstance, String[] excludeProperty)
-	// {
-	// Criteria crit = getSession().createCriteria(getPersistentClass());
-	// Example example = Example.create(exampleInstance);
-	// for (String exclude : excludeProperty) {
-	// example.excludeProperty(exclude);
-	// }
-	// crit.add(example);
-	// return crit.list();
-	// }
+	public Criteria createCriteria() {
+		return getSession().createCriteria(getPersistentClass());
+	}
 
 	/**
 	 * Not used. But, it can be used inside subclasses as a convenience method
@@ -96,6 +85,7 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public T findById(ID id, boolean lock) {
 		T entity;
 		if (lock)
@@ -128,13 +118,11 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	 * 
 	 * @return the session retrieved
 	 */
-	protected Session getSession() {
-		if (session == null)
-			throw new IllegalStateException(
-					"Session has not been set on DAO before usage, try use beginTransaction() first.");
-		return session;
+	public Session getSession() {
+		return HibernateUtil.getSession();
 	}
 
+	@Override
 	public T makePersistent(T entity) {
 		getSession().saveOrUpdate(entity);
 		return entity;
@@ -149,12 +137,13 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	 * entity; }
 	 */
 
+	@Override
 	public void makeTransient(T entity) {
 		getSession().delete(entity);
 	}
-
+	
+	@Override
 	public void rollback() {
-		getSession().getTransaction().rollback();
-		session = null;
+		HibernateUtil.rollbackTransaction();
 	}
 }

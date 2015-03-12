@@ -3,8 +3,12 @@
  */
 package com.tilioteo.hypothesis.evaluable;
 
+import org.apache.log4j.Logger;
+
 import com.tilioteo.hypothesis.annotation.ExpressionScope;
 import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
+import com.tilioteo.hypothesis.annotation.ExpressionScopePrivate;
+import com.tilioteo.hypothesis.core.Messages;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -12,10 +16,12 @@ import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
  */
 public class Attribute extends Variable implements HasReference {
 	
+	private static Logger log = Logger.getLogger(Attribute.class);
+
 	private Primitive reference;
 	
-	public Attribute(String name) {
-		super(name);
+	public Attribute(String name, Class<?> type) {
+		super(name, type);
 	}
 	
 	public String getString() {
@@ -40,21 +46,24 @@ public class Attribute extends Variable implements HasReference {
 			Object obj = reference.getValue();
 	
 			if (obj != null) {
+				boolean classPrivateScope = obj.getClass().isAnnotationPresent(ExpressionScopePrivate.class);
+				
 				java.lang.reflect.Field field;
 				try {
 					field = obj.getClass().getField(getName());
 					if (field.isAnnotationPresent(ExpressionScope.class)) {
 						ExpressionScope scope = field.getAnnotation(ExpressionScope.class);
-						if (Scope.PRIVATE.equals(scope.value())) {
-							throw new Exception(String.format("Field '%s' of class '%s' is eliminated from expression evaluation.", field.getName(), obj.getClass().getName()));
+						if (classPrivateScope || Scope.PRIVATE.equals(scope.value())) {
+							throw new Exception(Messages.getString("Error.FieldEliminated", field.getName(), obj.getClass().getName()));
 						}
 					}
 					
 					Object res = field.get(obj);
 					return res;
 				} catch (Exception e) {
+					log.error(e.getMessage());
 					// TODO: handle exception
-					System.err.println(e.getMessage());
+					System.err.println();
 				}
 			} /*else
 				throw new NullReferenceException(String.format("Object reference for method %s is null", name));*/

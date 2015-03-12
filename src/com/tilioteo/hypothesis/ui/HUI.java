@@ -3,31 +3,53 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 
+import com.tilioteo.hypothesis.core.Messages;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.UI;
 
 /**
  * @author kamil
  *
  */
 @SuppressWarnings("serial")
+//@Push
 public abstract class HUI extends UI {
 
     /**
-     * List of windows in this UI.
+     * List of timers in this UI.
      */
     private final LinkedHashSet<Timer> timers = new LinkedHashSet<Timer>();
+    
+    /**
+     * List of timers in this UI.
+     */
+    private final LinkedHashSet<ShortcutKey> shortcuts = new LinkedHashSet<ShortcutKey>();
 
     @Override
 	public void setContent(Component content) {
-        if (content instanceof Timer) {
+        if (content instanceof NonVisualComponent) {
             throw new IllegalArgumentException(
-                    "A Timer cannot be added using setContent. Use addTimer(Timer timer) instead");
+                    Messages.getString("Error.NonvisualNoSetContent"));
         }
+
         super.setContent(content);
 	}
+    
+    protected void attachNonVisualComponent(NonVisualComponent component, boolean markAsDirty) {
+    	component.setParent(this);
+    	if (markAsDirty) {
+    		markAsDirty();
+    	}
+    }
+
+    protected void detachNonVisualComponent(NonVisualComponent component, boolean markAsDirty) {
+    	component.setParent(null);
+    	if (markAsDirty) {
+    		markAsDirty();
+    	}
+    }
 
     /**
      * Adds a timer as inside this UI.
@@ -38,16 +60,14 @@ public abstract class HUI extends UI {
      * @throws NullPointerException
      *             if the given <code>Timer</code> is <code>null</code>.
      */
-    public void addTimer(Timer timer) throws IllegalArgumentException,
-            NullPointerException {
+    public void addTimer(Timer timer) throws IllegalArgumentException, NullPointerException {
 
         if (timer == null) {
-            throw new NullPointerException("Argument must not be null");
+            throw new NullPointerException(Messages.getString("Error.NullArgument"));
         }
 
         if (timer.isAttached()) {
-            throw new IllegalArgumentException(
-                    "Timer is already attached to an application.");
+            throw new IllegalArgumentException(Messages.getString("Error.TimerAttached"));
         }
 
         attachTimer(timer);
@@ -56,13 +76,12 @@ public abstract class HUI extends UI {
     /**
      * Helper method to attach a timer.
      * 
-     * @param t
+     * @param timer
      *            the timer to add
      */
-    private void attachTimer(Timer t) {
-        timers.add(t);
-        t.setParent(this);
-        markAsDirty();
+    private void attachTimer(Timer timer) {
+        timers.add(timer);
+        attachNonVisualComponent(timer, true);
     }
 
     /**
@@ -77,12 +96,80 @@ public abstract class HUI extends UI {
             // Timer timer is not in this UI.
             return false;
         }
-        timer.stop();
-        timer.setParent(null);
-        markAsDirty();
+        timer.stop(true);
+        detachNonVisualComponent(timer, true);
 
         return true;
     }
 
+    public void removeAllTimers() {
+    	Iterator<Timer> iterator;
+    	while ((iterator = timers.iterator()).hasNext()) {
+    		Timer timer = iterator.next();
+    		timer.stop(true);
+    		detachNonVisualComponent(timer, false);
+    		timers.remove(timer);
+    	}
+    	markAsDirty();
+    }
 
+    /**
+     * Adds a shortcut key as inside this UI.
+     * 
+     * @param shortcutKey
+     * @throws IllegalArgumentException
+     *             if the shortcut key is already added to an application
+     * @throws NullPointerException
+     *             if the given <code>ShortcutKey</code> is <code>null</code>.
+     */
+    public void addShortcutKey(ShortcutKey shortcutKey) throws IllegalArgumentException, NullPointerException {
+
+        if (shortcutKey == null) {
+            throw new NullPointerException(Messages.getString("Error.NullArgument"));
+        }
+
+        if (shortcutKey.isAttached()) {
+            throw new IllegalArgumentException(Messages.getString("Error.ShortcutKeyAttached"));
+        }
+
+        attachShortcutKey(shortcutKey);
+    }
+
+    /**
+     * Helper method to attach a shortcut key.
+     * 
+     * @param shortcutKey
+     *            the shortcut key to add
+     */
+    private void attachShortcutKey(ShortcutKey shortcutKey) {
+        shortcuts.add(shortcutKey);
+        attachNonVisualComponent(shortcutKey, true);
+    }
+
+    /**
+     * Remove the given timer from this UI.
+     * 
+     * @param shortcutKey
+     *            ShortcutKey to be removed.
+     * @return true if the shortcut kez was removed, false otherwise
+     */
+    public boolean removeShortcutKey(ShortcutKey shortcutKey) {
+        if (!shortcuts.remove(shortcutKey)) {
+            // ShortcutKey shortcutKey is not in this UI.
+            return false;
+        }
+        detachNonVisualComponent(shortcutKey, true);
+
+        return true;
+    }
+
+    public void removeAllShortcutKeys() {
+    	Iterator<ShortcutKey> iterator;
+    	while ((iterator = shortcuts.iterator()).hasNext()) {
+    		ShortcutKey shortcutKey = iterator.next();
+    		detachNonVisualComponent(shortcutKey, false);
+    		shortcuts.remove(shortcutKey);
+    	}
+    	markAsDirty();
+    }
 }

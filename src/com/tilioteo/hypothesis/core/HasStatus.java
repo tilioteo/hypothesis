@@ -3,7 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
-import com.tilioteo.hypothesis.entity.Test.Status;
+import com.tilioteo.hypothesis.entity.Status;
 
 /**
  * @author Kamil Morong - Hypothesis

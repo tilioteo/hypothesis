@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.persistence;
 
+import org.apache.log4j.Logger;
+
 import com.tilioteo.hypothesis.dao.PackDao;
 import com.tilioteo.hypothesis.entity.Pack;
 
@@ -12,7 +14,7 @@ import com.tilioteo.hypothesis.entity.Pack;
  */
 public class PackManager {
 
-	// private static Logger logger = Logger.getLogger(TestManager.class);
+	private static Logger log = Logger.getLogger(PackManager.class);
 
 	private PackDao packDao;
 
@@ -21,18 +23,16 @@ public class PackManager {
 	}
 
 	public Pack findPackById(Long id) {
-		// logger.log(GPTest.LOG_PRIORITY,
-		// String.format("TestManager.findTest(%d)", id));
+		log.debug(String.format("findPackById: id = %s", id != null ? id : "null"));
 		try {
 			packDao.beginTransaction();
 			Pack pack = packDao.findById(id, true);
 			packDao.commit();
 
-			// logger.log(GPTest.LOG_PRIORITY, "return test");
 			return pack;
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			packDao.rollback();
-			// logger.error(String.format("TestManager.findTest(%d)", id), e);
 			return null;
 		}
 	}

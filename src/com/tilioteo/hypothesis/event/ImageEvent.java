@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.event;
 
 import com.tilioteo.hypothesis.ui.Image;
+import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -15,9 +16,14 @@ public abstract class ImageEvent extends AbstractComponentEvent<Image> {
 	public static class Click extends ImageEvent {
 
 		public Click(ImageData data) {
-			super(data);
+			this(data, null);
 		}
 
+		public Click(ImageData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
+		}
+
+		@Override
 		public String getName() {
 			return ProcessEventTypes.ImageClick;
 		}
@@ -27,17 +33,22 @@ public abstract class ImageEvent extends AbstractComponentEvent<Image> {
 	public static class Load extends ImageEvent {
 
 		public Load(ImageData data) {
-			super(data);
+			this(data, null);
 		}
 
+		public Load(ImageData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
+		}
+
+		@Override
 		public String getName() {
 			return ProcessEventTypes.ImageLoad;
 		}
 
 	}
 
-	protected ImageEvent(/* ProcessEvent event, */ImageData data) {
-		super(/* event, */data);
+	protected ImageEvent(ImageData data, ErrorHandler errorHandler) {
+		super(data, errorHandler);
 	}
 
 }

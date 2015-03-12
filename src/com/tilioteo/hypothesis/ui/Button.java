@@ -13,9 +13,10 @@ import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
-import com.tilioteo.hypothesis.model.AbstractBaseAction;
-import com.tilioteo.hypothesis.model.Command;
-import com.tilioteo.hypothesis.model.CommandFactory;
+import com.tilioteo.hypothesis.event.ButtonData;
+import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.tilioteo.hypothesis.processing.Command;
+import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -51,17 +52,16 @@ public class Button extends com.vaadin.ui.NativeButton implements
 
 	}
 
-	private void setClickHandler(String actionId) {
-		final Command componentEvent = CommandFactory
-				.createButtonClickEventCommand(this, slideManager);
-		final Command action = CommandFactory.createActionCommand(slideManager,
-				actionId);
-
+	private void setClickHandler(final String actionId) {
 		addClickListener(new Button.ClickListener() {
 			@Override
 			public void buttonClick(Button.ClickEvent event) {
-				componentEvent.execute();
-				action.execute();
+				ButtonData data = new ButtonData(Button.this, slideManager);
+				Command componentEvent = CommandFactory.createButtonClickEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
 			}
 		});
 	}
@@ -69,8 +69,7 @@ public class Button extends com.vaadin.ui.NativeButton implements
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstatnce()
-				.createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 

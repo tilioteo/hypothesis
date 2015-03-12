@@ -5,7 +5,6 @@ package com.tilioteo.hypothesis.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,9 +17,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.dom4j.Document;
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
 import com.tilioteo.hypothesis.dom.AbstractSlideXmlException;
 import com.tilioteo.hypothesis.dom.InvalidSlideContentXmlException;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
@@ -34,7 +34,7 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
  * 
  */
 @Entity
-@Table(name = "TBL_SLIDE_CONTENT")
+@Table(name = EntityTableConstants.SLIDE_CONTENT_TABLE)
 @Access(AccessType.PROPERTY)
 public final class SlideContent extends SerializableIdObject {
 
@@ -51,7 +51,7 @@ public final class SlideContent extends SerializableIdObject {
 	/**
 	 * raw xml string of slide content
 	 */
-	private String contentXml;
+	private String xmlData;
 
 	private String note;
 
@@ -71,17 +71,15 @@ public final class SlideContent extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slideContentGenerator")
-	@SequenceGenerator(name = "slideContentGenerator", sequenceName = "hbn_slide_content_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.SLIDE_CONTENT_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.SLIDE_CONTENT_GENERATOR, sequenceName = EntityTableConstants.SLIDE_CONTENT_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@ManyToOne(optional = false, cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE })
-	@JoinColumn(name = "SLIDE_TEMPLATE_UID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne(optional = false)
+	@JoinColumn(name = EntityFieldConstants.SLIDE_TEMPLATE_UID, nullable = false)
 	public final SlideTemplate getTemplate() {
 		return template;
 	}
@@ -90,17 +88,17 @@ public final class SlideContent extends SerializableIdObject {
 		this.template = slideTemplate;
 	}
 
-	@Column(name = "CONTENT_XML", nullable = false)
+	@Column(name = EntityFieldConstants.XML_DATA, nullable = false)
 	@Type(type="text")
-	protected String getContentXml() {
-		return contentXml;
+	protected String getXmlData() {
+		return xmlData;
 	}
 
-	protected void setContentXml(String contentXml) {
-		this.contentXml = contentXml;
+	protected void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -112,7 +110,7 @@ public final class SlideContent extends SerializableIdObject {
 	@Transient
 	public final Document getDocument() {
 		if (document == null) {
-			document = XmlUtility.readString(getContentXml());
+			document = XmlUtility.readString(getXmlData());
 		}
 		return document;
 	}
@@ -122,7 +120,7 @@ public final class SlideContent extends SerializableIdObject {
 		if (document != getDocument()) {
 			if (isValidDocument(document)) {
 				this.document = document;
-				this.contentXml = XmlUtility.writeString(this.document);
+				this.xmlData = XmlUtility.writeString(this.document);
 			} else {
 				/*
 				 * this.document = null; this.contentXml = null;
@@ -171,42 +169,65 @@ public final class SlideContent extends SerializableIdObject {
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof SlideContent))
+		}
+		if (!(obj instanceof SlideContent)) {
 			return false;
+		}
 		SlideContent other = (SlideContent) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+
+		Long id = getId();
+		Long id2 = other.getId();
+		SlideTemplate template = getTemplate();
+		SlideTemplate template2 = other.getTemplate();
+		String xmlData = getXmlData();
+		String xmlData2 = other.getXmlData();
+		String note = getNote();
+		String note2 = other.getNote();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getContentXml() == null) {
-			if (other.getContentXml() != null)
-				return false;
-		} else if (!getContentXml().equals(other.getContentXml()))
+		}
+
+		if (template != null && !template.equals(template2)) {
 			return false;
-		if (getNote() == null) {
-			if (other.getNote() != null)
-				return false;
-		} else if (!getNote().equals(other.getNote()))
+		} else if (template2 != null) {
 			return false;
+		}
+		
+		if (xmlData != null && !xmlData.equals(xmlData2)) {
+			return false;
+		} else if (xmlData2 != null) {
+			return false;
+		}
+
+		if (note != null && !note.equals(note2)) {
+			return false;
+		} else if (note2 != null) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 13;
+		Long id = getId();
+		SlideTemplate template = getTemplate();
+		String xmlData = getXmlData();
+		String note = getNote();
+
+		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime * result
-				+ ((getContentXml() == null) ? 0 : getContentXml().hashCode());
-		result = prime * result
-				+ ((getNote() == null) ? 0 : getNote().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (template != null ? template.hashCode() : 0);
+		result = prime * result	+ (xmlData != null ? xmlData.hashCode() : 0);
+		result = prime * result + (note != null ? note.hashCode() : 0);
 		return result;
 	}
 

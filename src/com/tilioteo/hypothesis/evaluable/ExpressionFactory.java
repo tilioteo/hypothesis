@@ -5,6 +5,8 @@ package com.tilioteo.hypothesis.evaluable;
 
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import com.tilioteo.hypothesis.common.ReadOnlyHashSet;
 import com.tilioteo.hypothesis.common.StringConstants;
 import com.tilioteo.hypothesis.common.Strings;
@@ -14,6 +16,8 @@ import com.tilioteo.hypothesis.common.Strings;
  *
  */
 public class ExpressionFactory {
+
+	private static Logger log = Logger.getLogger(ExpressionFactory.class);
 
 	private static final Set<Character> PROHIBITED = new ReadOnlyHashSet<Character>(
 			StringConstants.CHR_REV_QUOTE,
@@ -77,7 +81,9 @@ public class ExpressionFactory {
 		Expression expression = null;
 		try {
 			expression = buildExpression(text);
-		} catch (Throwable e) {}
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+		}
 		
 		return expression;
 	}
@@ -251,6 +257,10 @@ public class ExpressionFactory {
 						}
 						if (classGroup != null)
 							classGroup.setEndPosition(j);	
+						break;
+					} else if (j == text.length()-1) {
+						if (classGroup != null)
+							classGroup.setEndPosition(j + 1);
 						break;
 					}
 				}
@@ -427,7 +437,7 @@ public class ExpressionFactory {
 		if (isValue(string))
 			return new Constant(string);
 		else if (isIdentificator(string))
-			return new Variable(string);
+			return new Variable(string, Object.class);
 		
 		return null;
 	}
@@ -459,10 +469,18 @@ public class ExpressionFactory {
 					ClassNodeGroup group = (ClassNodeGroup)operatorNode.getGroup();
 					MethodArgumentGroup argumentGroup = group.getArgumentGroup();
 					if (argumentGroup != null) { // method call
-						Method method = new Method(str, argumentGroup.getArgumentPrimitives());
+						Primitive[] arguments = argumentGroup.getArgumentPrimitives();
+						for (int i = 0; i < arguments.length; ++i) {
+							if (arguments[i] instanceof Expression) {
+								Expression argumentExpression = (Expression)arguments[i];
+								argumentExpression.mergeVariables(expression.variables);
+							}
+						}
+						
+						Method method = new Method(str, arguments);
 						expression.setRightSide(method);
 					} else { // atttribute value
-						Attribute attribute = new Attribute(str);
+						Attribute attribute = new Attribute(str, Object.class);
 						expression.setRightSide(attribute);
 					}
 				}

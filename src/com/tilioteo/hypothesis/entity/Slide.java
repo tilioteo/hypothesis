@@ -5,7 +5,6 @@ package com.tilioteo.hypothesis.entity;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,7 +15,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -25,7 +25,7 @@ import org.hibernate.annotations.Cascade;
  * 
  */
 @Entity
-@Table(name = "TBL_SLIDE")
+@Table(name = EntityTableConstants.SLIDE_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Slide extends SerializableIdObject {
 
@@ -33,8 +33,6 @@ public final class Slide extends SerializableIdObject {
 	 * 
 	 */
 	private static final long serialVersionUID = -6866522778488675162L;
-
-	// private SlideTemplate template;
 
 	/**
 	 * parent slide content
@@ -53,24 +51,21 @@ public final class Slide extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slideGenerator")
-	@SequenceGenerator(name = "slideGenerator", sequenceName = "hbn_slide_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.SLIDE_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.SLIDE_GENERATOR, sequenceName = EntityTableConstants.SLIDE_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
 	// TODO: debug only
-	@Override
+	/*@Override
 	public void setId(Long id) {
 		this.id = id;
-	}
+	}*/
 
-	// @ManyToOne(cascade={CascadeType.PERSIST, CascadeType.MERGE})
-	@OneToOne(optional = false, cascade = { CascadeType.PERSIST,
-			CascadeType.MERGE })
-	@JoinColumn(name = "SLIDE_CONTENT_ID", nullable = false, unique = true)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@OneToOne(optional = false)
+	@JoinColumn(name = EntityFieldConstants.SLIDE_CONTENT_ID, nullable = false, unique = true)
 	public final SlideContent getContent() {
 		return content;
 	}
@@ -79,7 +74,7 @@ public final class Slide extends SerializableIdObject {
 		this.content = content;
 	}
 
-	@Column(name = "NOTE")
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -90,49 +85,56 @@ public final class Slide extends SerializableIdObject {
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof Slide))
+		}
+		if (!(obj instanceof Slide)) {
 			return false;
+		}
 		Slide other = (Slide) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+
+		Long id = getId();
+		Long id2 = other.getId();
+		SlideContent content = getContent();
+		SlideContent content2 = other.getContent();
+		String note = getNote();
+		String note2 = other.getNote();
+
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getContent() == null) {
-			if (other.getContent() != null)
-				return false;
-		} else if (!getContent().equals(other.getContent()))
+		}
+
+		if (content != null && !content.equals(content2)) {
 			return false;
-		if (getNote() == null) {
-			if (other.getNote() != null)
-				return false;
-		} else if (!getNote().equals(other.getNote()))
+		} else if (content2 != null) {
 			return false;
-		/*
-		 * if (getTemplate() == null) { if (other.getTemplate() != null) return
-		 * false; } else if (!getTemplate().equals(other.getTemplate())) return
-		 * false;
-		 */
+		}
+		
+		if (note != null && !note.equals(note2)) {
+			return false;
+		} else if (note2 != null) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
+		Long id = getId();
+		SlideContent content = getContent();
+		String note = getNote();
+
 		final int prime = 29;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime * result
-				+ ((getContent() == null) ? 0 : getContent().hashCode());
-		result = prime * result
-				+ ((getNote() == null) ? 0 : getNote().hashCode());
-		// result = prime * result + ((getTemplate() == null) ? 0 :
-		// getTemplate().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (content != null ? getContent().hashCode() : 0);
+		result = prime * result	+ (note != null ? getNote().hashCode() : 0);
+
 		return result;
 	}
 

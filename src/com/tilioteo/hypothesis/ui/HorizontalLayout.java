@@ -21,10 +21,11 @@ import com.vaadin.ui.Component;
  */
 @SuppressWarnings("serial")
 public class HorizontalLayout extends com.vaadin.ui.HorizontalLayout implements
-		SlideComponentContainer {
+		SlideComponentContainer, Maskable {
 
 	private SlideManager slideManager;
 	private ParentAlignment parentAlignment;
+	private Mask mask = null;
 
 	public HorizontalLayout() {
 		this.parentAlignment = new ParentAlignment();
@@ -84,4 +85,19 @@ public class HorizontalLayout extends com.vaadin.ui.HorizontalLayout implements
 		this.slideManager = slideManager;
 	}
 
+	@Override
+	public void mask() {
+		if (null == mask) {
+			mask = Mask.addToComponent(this);
+		}
+		mask.show();
+	}
+
+	@Override
+	public void unmask() {
+		if (mask != null) {
+			mask.hide();
+		}
+	}
+	
 }

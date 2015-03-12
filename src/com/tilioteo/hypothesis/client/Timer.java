@@ -8,9 +8,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerManager;
+import com.vaadin.client.VConsole;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -177,6 +179,8 @@ public class Timer {
 	private long elapsed = 0;
 	private Date startTime;
 	private Direction direction = Direction.UP;
+	private boolean infinite = false;
+
 
 	/**
 	 * handle manager for StartEvent and StopEvent
@@ -190,32 +194,22 @@ public class Timer {
 	HashMap<Long, HandlerManager> handlerManagerMap = new HashMap<Long, HandlerManager>();
 	
 	/**
-	 * internal timer runs for 1 period of 10 ms
+	 * internal timer runs for 1 period of TIMER_TICK ms
 	 */
 	private com.google.gwt.user.client.Timer internalTimer = new com.google.gwt.user.client.Timer() {
 		@Override
 		public void run() {
 			if (running) {
-				setElapsed();
-
-				if (!running) {
-					onStop(counter, direction, false);
-					handlerManager.fireEvent(new StopEvent(Timer.this,
-							counter, direction, false));
-				} else {
-					startTime = new Date();
-					schedule(TIMER_TICK);
-				}
+				Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+					@Override
+					public void execute() {
+						setElapsed();
+					}
+				});
 			}
 		}
 	};
 	
-	protected void onStart(long time, Direction direction, boolean resumed) {};
-
-	protected void onStop(long time, Direction direction, boolean paused) {};
-
-	protected void onUpdate(long time, Direction direction, long timeSlice) {};
-
 	public long getCounter() {
 		return counter;
 	}
@@ -229,28 +223,24 @@ public class Timer {
 	}
 
 	public void pause() {
-		if (running) {
-			running = false;
-			setElapsed();
-			onStop(counter, direction, true);
-			handlerManager.fireEvent(new StopEvent(Timer.this, counter,
-					direction, true));
-		}
+		stop(true, false);
 	}
 	
 	protected void resume(boolean started) {
 		if (!running) {
-			onStart(counter, direction, started);
-			handlerManager.fireEvent(new StartEvent(Timer.this, counter,
-					direction, started));
+			VConsole.log("Timer StartEvent");
+			//onStart(counter, direction, started);
+			handlerManager.fireEvent(new StartEvent(Timer.this, counter, direction, !started));
 			running = true;
 			startTime = new Date();
-			internalTimer.schedule(TIMER_TICK);
+			internalTimer.scheduleRepeating(TIMER_TICK);
 		}
 	}
 
 	public void resume() {
-		resume(true);
+		if (startCounter > 0) {
+			resume(false);
+		}
 	}
 
 	public void setDirection(Direction direction) throws Exception {
@@ -261,35 +251,78 @@ public class Timer {
 	}
 
 	protected void setElapsed() {
-		elapsed += new Date().getTime() - startTime.getTime();
-
-		if (elapsed >= startCounter) {
-			running = false;
-			elapsed = startCounter;
-		}
+		elapsed = new Date().getTime() - startTime.getTime();
 		updateCounter(elapsed);
+
+		// stop timer when the time passed 
+		if (!infinite && elapsed >= startCounter) {
+			running = false;
+			internalTimer.cancel();
+			
+			VConsole.log("Timer StopEvent");
+			handlerManager.fireEvent(new StopEvent(Timer.this, counter,	direction, false));
+
+		} else {
+			signalTimeSlices(elapsed);
+		}
+	}
+	
+	public boolean isInfinite() {
+		return infinite;
+	}
+
+	protected void setInfinite(boolean infinite) {
+		this.infinite = infinite;
+		if (infinite) {
+			direction = Direction.UP;
+		}
 	}
 
 	public void start(long miliSeconds) {
-		running = false;
-		startCounter = miliSeconds;
-		if (Direction.UP.equals(direction))
-			counter = 0;
-		else
-			counter = startCounter;
-
+		if (miliSeconds < 0) {
+			setInfinite(true);
+		}
+		
 		elapsed = 0;
-		resume(false);
-	}
 
-	public void stop() {
+		if (miliSeconds >= TIMER_TICK) {
+			startCounter = miliSeconds;
+
+			if (Direction.UP.equals(direction))
+				counter = 0;
+			else
+				counter = startCounter;
+
+			Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					resume(true);
+				}
+			});
+
+		} else {
+			startCounter = 0;
+		}
+	}
+	
+	private void stop(boolean pause, boolean silent) {
 		if (running) {
 			running = false;
-			updateCounter(startCounter);
-			onStop(counter, direction, false);
-			handlerManager.fireEvent(new StopEvent(Timer.this, counter,
-					direction, false));
+			internalTimer.cancel();
+			setElapsed();
+			if (!silent) {
+				VConsole.log("Timer StopEvent");
+				//onStop(counter, direction, false);
+				handlerManager.fireEvent(new StopEvent(Timer.this, counter,	direction, pause));
+			}
+			if (!pause) {
+				startCounter = 0;
+			}
 		}
+	}
+
+	public void stop(boolean silent) {
+		stop(false, silent);
 	}
 
 	private void updateCounter(long elapsed) {
@@ -297,8 +330,10 @@ public class Timer {
 			counter = elapsed;
 		} else {
 			counter = startCounter - elapsed;
+			if (counter < 0) {
+				counter = 0;
+			}
 		}
-		signalTimeSlices(elapsed);
 	}
 	
 	private void signalTimeSlices(long elapsed) {
@@ -308,11 +343,9 @@ public class Timer {
 			// if rest passes into first timer tick interval then fire update event
 			// for this time slice
 			if (rest >= 0 && rest < TIMER_TICK) {
-				onUpdate(counter, direction, timeSlice);
 				handlerManagerMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, direction, timeSlice));
 			}
 		}
-		
 	}
 
 	public void addUpdateEventHandler(long interval, UpdateEventHandler handler) {

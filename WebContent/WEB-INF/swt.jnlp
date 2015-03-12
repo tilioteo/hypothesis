@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.5+" codebase="$$codebase" href="$$href">
+	<information>
+  		<title>SWT Platform Library</title>
+  		<vendor>Eclipse</vendor>
+  		<!--homepage href="www.eclipse.com"/-->
+		<description>Eclipse SWT Platform Library</description>
+	</information>
+	<update check="background" policy="always"/>
+	<security>
+		<all-permissions/>
+	</security>
+
+	<resources os="Windows" arch="x86">
+		<nativelib href="swt-win32-x86.jar"/>
+		<jar href="swt-win32-x86.jar"/>
+	</resources>
+	
+	<resources os="Windows" arch="x86_64">
+		<nativelib href="swt-win32-x86_64.jar"/>
+		<jar href="swt-win32-x86_64.jar"/>
+	</resources>
+
+	<resources os="Windows" arch="amd64">
+		<nativelib href="swt-win32-x86_64.jar"/>
+		<jar href="swt-win32-x86_64.jar"/>
+	</resources>
+
+	<resources os="Linux" arch="ppc64">
+		<nativelib href="swt-linux-ppc64.jar"/>
+		<jar href="swt-linux-ppc64.jar"/>
+	</resources>
+	
+	<resources os="Linux" arch="ppc">
+		<nativelib href="swt-linux-ppc.jar"/>
+		<jar href="swt-linux-ppc.jar"/>
+	</resources>
+	
+	<resources os="Linux" arch="x86_64">
+		<nativelib href="swt-linux-x86_64.jar"/>
+		<jar href="swt-linux-x86_64.jar"/>
+	</resources>
+
+	<resources os="Linux" arch="amd64">
+		<nativelib href="swt-linux-x86_64.jar"/>
+		<jar href="swt-linux-x86_64.jar"/>
+	</resources>
+
+	<resources os="Linux">
+		<nativelib href="swt-linux-x86.jar"/>
+		<jar href="swt-linux-x86.jar"/>
+	</resources>
+
+	<resources os="Mac OS X" arch="i386">
+		<j2se version="1.6+" java-vm-args="-XstartOnFirstThread"/>
+		<nativelib href= "swt-macosx.jar"/>
+		<jar href= "swt-macosx.jar"/>
+	</resources>
+	
+	<resources os="Mac OS X" arch="x86_64">
+		<j2se version="1.6+" java-vm-args="-XstartOnFirstThread"/>
+		<nativelib href="swt-macosx-x86_64.jar"/>
+		<jar href="swt-macosx-x86_64.jar"/>
+	</resources>
+
+	<component-desc/>
+</jnlp>

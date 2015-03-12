@@ -3,15 +3,21 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
+import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.ui.MultipleComponentPanel.Orientation;
-import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractMedia;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
@@ -40,12 +46,6 @@ public class ComponentUtility {
 			if (caption != null) {
 				component.setCaption(caption);
 			}
-
-			/*
-			 * component.setCaption(stringMap.get(SlideXmlConstants.CAPTION,
-			 * ((AbstractComponent) component).getData() != null ? (String)
-			 * ((AbstractComponent) component).getData() : ""));
-			 */
 		}
 	}
 
@@ -56,6 +56,7 @@ public class ComponentUtility {
 		setCommonProperties(component, element, stringMap, parentAlignment);
 
 		// set AbstractField specific properties
+		component.setReadOnly(stringMap.getBoolean(SlideXmlConstants.READ_ONLY, false));
 	}
 
 	public static void setCommonLayoutProperties(
@@ -70,13 +71,14 @@ public class ComponentUtility {
 			ParentAlignment parentAlignment) {
 		// store component id
 		if (component instanceof AbstractComponent)
-			((AbstractComponent) component).setData(SlideXmlUtility
-					.getId(element));
+			((AbstractComponent) component).setData(SlideXmlUtility.getId(element));
 
 		setCaption(component, stringMap);
 
 		setWidth(component, stringMap.getDimension(SlideXmlConstants.WIDTH));
 		setHeight(component, stringMap.getDimension(SlideXmlConstants.HEIGHT));
+		component.setVisible(stringMap.getBoolean(SlideXmlConstants.VISIBLE, true));
+		component.setEnabled(stringMap.getBoolean(SlideXmlConstants.ENABLED, true));
 
 		setParentAlignment(stringMap, parentAlignment);
 	}
@@ -90,14 +92,54 @@ public class ComponentUtility {
 		Orientation orientation = getOrientation(stringMap,
 				Orientation.Horizontal);
 		component.setOrientation(orientation);
+		
+		setChildsSize(component, stringMap);
+	}
+	
+	public static void setMediaSources(AbstractMedia media, Element component) {
+		List<Element> elements = SlideXmlUtility.getComponentSources(component);
+		
+		List<Resource> resources = new ArrayList<Resource>();
+		for (Element element : elements) {
+			String url = element.attributeValue(SlideXmlConstants.URL);
+			if (!Strings.isNullOrEmpty(url)) {
+				resources.add(new ExternalResource(url));
+			}
+		}
+		
+		if (!resources.isEmpty()) {
+			media.setSources(resources.toArray(new Resource[0]));
+		}
 	}
 
-	private static void setHeight(Component component, String dimension) {
-		if (component != null)
-			if (dimension != null)
-				component.setHeight(dimension);
-			else
-				component.setHeight(-1, Unit.PIXELS);
+	private static void setChildsSize(
+			MultipleComponentPanel<? extends AbstractComponent> component,
+			StringMap stringMap) {
+		setChildsWidth(component, stringMap.getDimension(SlideXmlConstants.CHILD_WIDTH));
+		setChildsHeight(component, stringMap.getDimension(SlideXmlConstants.CHILD_HEIGHT));
+		
+	}
+
+	private static void setChildsWidth(
+			MultipleComponentPanel<? extends AbstractComponent> component,
+			String dimension) {
+		if (component != null) {
+			component.setChildsWidth(dimension);
+		}
+	}
+
+	private static void setChildsHeight(
+			MultipleComponentPanel<? extends AbstractComponent> component,
+			String dimension) {
+		if (component != null) {
+			component.setChildsHeight(dimension);
+		}
+	}
+
+	public static void setHeight(Component component, String dimension) {
+		if (component != null) {
+			component.setHeight(dimension);
+		}
 	}
 
 	private static void setLayoutSpacing(AbstractOrderedLayout component,
@@ -111,17 +153,17 @@ public class ComponentUtility {
 
 	private static void setParentAlignment(StringMap properties,
 			ParentAlignment parentAlignment) {
-		String align = properties.get(SlideXmlConstants.ALIGNMENT);
-		Alignment alignment = stringToAlignment(align);
-		parentAlignment.setAlignment(alignment);
+		if (parentAlignment != null) {
+			String align = properties.get(SlideXmlConstants.ALIGNMENT);
+			Alignment alignment = stringToAlignment(align);
+			parentAlignment.setAlignment(alignment);
+		}
 	}
 
-	private static void setWidth(Component component, String dimension) {
-		if (component != null)
-			if (dimension != null)
-				component.setWidth(dimension);
-			else
-				component.setWidth(-1, Unit.PIXELS);
+	public static void setWidth(Component component, String dimension) {
+		if (component != null) {
+			component.setWidth(dimension);
+		}
 	}
 
 	private static Alignment stringToAlignment(String align) {

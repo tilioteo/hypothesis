@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,7 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -26,7 +26,7 @@ import org.hibernate.annotations.Cascade;
  * 
  */
 @Entity
-@Table(name = "TBL_TOKEN")
+@Table(name = EntityTableConstants.TOKEN_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Token extends SerializableUidObject {
 
@@ -68,23 +68,23 @@ public final class Token extends SerializableUidObject {
 
 	@Override
 	@Id
-	@Column(name = "UID")
+	@Column(name = EntityFieldConstants.UID)
 	public final String getUid() {
 		return uid;
 	}
 
-	@Column(name = "PRODUCTION", nullable = false)
+	@Column(name = EntityFieldConstants.PRODUCTION, nullable = false)
 	public boolean isProduction() {
 		return production;
 	}
 
-	public void setProduction(boolean production) {
-		this.production = production;
+	public void setProduction(Boolean production) {
+		this.production = production != null ? production : false;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "USER_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
+	@JoinColumn(name = EntityFieldConstants.USER_ID)
+	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public final User getUser() {
 		return user;
 	}
@@ -93,9 +93,8 @@ public final class Token extends SerializableUidObject {
 		this.user = user;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "PACK_ID", nullable = false)
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne
+	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
 	public final Pack getPack() {
 		return pack;
 	}
@@ -104,6 +103,7 @@ public final class Token extends SerializableUidObject {
 		this.pack = pack;
 	}
 
+	@Column(name = EntityFieldConstants.DATETIME)
 	public final Date getDatetime() {
 		return datetime;
 	}
@@ -114,57 +114,74 @@ public final class Token extends SerializableUidObject {
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof Token))
+		}
+		if (!(obj instanceof Token)) {
 			return false;
+		}
 		Token other = (Token) obj;
-		if (getUid() == null) {
-			if (other.getUid() != null)
-				return false;
-		} else if (!getUid().equals(other.getUid()))
+
+		String uid = getUid();
+		String uid2 = other.getUid();
+		boolean production = isProduction();
+		boolean production2 = other.isProduction();
+		User user = getUser();
+		User user2 = other.getUser();
+		Pack pack = getPack();
+		Pack pack2 = other.getPack();
+		Date datetime = getDatetime();
+		Date datetime2 = other.getDatetime();
+
+		if (uid != null && !uid.equals(uid2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getDatetime() == null) {
-			if (other.getDatetime() != null)
-				return false;
-		} else if (!getDatetime().equals(other.getDatetime()))
+		} else if (uid2 != null) {
 			return false;
-		if (getPack() == null) {
-			if (other.getPack() != null)
-				return false;
-		} else if (!getPack().equals(other.getPack()))
+		}
+
+		if (production != production2) {
 			return false;
-		if (getUid() == null) {
-			if (other.getUid() != null)
-				return false;
-		} else if (!getUid().equals(other.getUid()))
+		}
+
+		if (user != null && !user.equals(user2)) {
 			return false;
-		if (getUser() == null) {
-			if (other.getUser() != null)
-				return false;
-		} else if (!getUser().equals(other.getUser()))
+		} else if (user2 != null) {
 			return false;
+		}
+		
+		if (pack != null && !pack.equals(pack2)) {
+			return false;
+		} else if (pack2 != null) {
+			return false;
+		}
+		
+		if (datetime != null && !datetime.equals(datetime2)) {
+			return false;
+		} else if (datetime2 != null) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 211;
+		String uid = getUid();
+		boolean production = isProduction();
+		User user = getUser();
+		Pack pack = getPack();
+		Date datetime = getDatetime();
+
+		final int prime = 59;
 		int result = 1;
-		result = prime * result
-				+ ((getUid() == null) ? 0 : getUid().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime * result
-				+ ((getDatetime() == null) ? 0 : getDatetime().hashCode());
-		result = prime * result
-				+ ((getPack() == null) ? 0 : getPack().hashCode());
-		result = prime * result
-				+ ((getUid() == null) ? 0 : getUid().hashCode());
-		result = prime * result
-				+ ((getUser() == null) ? 0 : getUser().hashCode());
+		result = prime * result	+ (uid != null ? uid.hashCode() : 0);
+		result = prime * result	+ (production ? 1 : 0);
+		result = prime * result + (user != null ? user.hashCode() : 0);
+		result = prime * result	+ (pack != null ? pack.hashCode() : 0);
+		result = prime * result	+ (datetime != null ? datetime.hashCode() : 0);
 		return result;
 	}
 

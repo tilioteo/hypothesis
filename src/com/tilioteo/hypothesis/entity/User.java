@@ -25,6 +25,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * 
  * @author Kamil Morong - Hypothesis
@@ -33,7 +36,7 @@ import org.hibernate.annotations.LazyCollectionOption;
  * 
  */
 @Entity
-@Table(name = "TBL_USER")
+@Table(name = EntityTableConstants.USER_TABLE)
 @Access(AccessType.PROPERTY)
 public final class User extends SerializableIdObject {
 
@@ -77,14 +80,14 @@ public final class User extends SerializableIdObject {
 	 */
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userGenerator")
-	@SequenceGenerator(name = "userGenerator", sequenceName = "hbn_user_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.USER_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.USER_GENERATOR, sequenceName = EntityTableConstants.USER_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "USERNAME", nullable = false, unique = true)
+	@Column(name = EntityFieldConstants.USERNAME, nullable = false, unique = true)
 	public final String getUsername() {
 		return username;
 	}
@@ -98,7 +101,7 @@ public final class User extends SerializableIdObject {
 		this.username = username;
 	}
 
-	@Column(name = "PASSW", nullable = false)
+	@Column(name = EntityFieldConstants.PASSWORD, nullable = false)
 	public final String getPassword() {
 		return password;
 	}
@@ -112,7 +115,7 @@ public final class User extends SerializableIdObject {
 		this.password = password;
 	}
 
-	@Column(name = "ENABLED", nullable = false)
+	@Column(name = EntityFieldConstants.ENABLED, nullable = false)
 	public final Boolean getEnabled() {
 		return enabled;
 	}
@@ -121,7 +124,7 @@ public final class User extends SerializableIdObject {
 		this.enabled = enabled;
 	}
 
-	@Column(name = "EXPIREDATE")
+	@Column(name = EntityFieldConstants.EXPIRE_DATE)
 	public final Date getExpireDate() {
 		return expireDate;
 	}
@@ -130,7 +133,7 @@ public final class User extends SerializableIdObject {
 		this.expireDate = expireDate;
 	}
 
-	@Column(name = "NOTE", nullable = true)
+	@Column(name = EntityFieldConstants.NOTE, nullable = true)
 	public final String getNote() {
 		return note;
 	}
@@ -140,7 +143,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_USER_ROLE", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
+	@JoinTable(name = EntityTableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.ROLE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public final Set<Role> getRoles() {
@@ -151,11 +154,10 @@ public final class User extends SerializableIdObject {
 		this.roles = roles;
 	}
 
-	@ManyToMany(targetEntity = Group.class, cascade = {
-			CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "GROUP_ID"))
+	@ManyToMany(targetEntity = Group.class, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = EntityTableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.GROUP_ID))
 	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
-	@LazyCollection(LazyCollectionOption.FALSE)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	public final Set<Group> getGroups() {
 		return groups;
 	}
@@ -164,7 +166,7 @@ public final class User extends SerializableIdObject {
 		this.groups = groups;
 	}
 
-	@Column(name = "OWNER_ID", nullable = true)
+	@Column(name = EntityFieldConstants.OWNER_ID, nullable = true)
 	public final Long getOwnerId() {
 		return ownerId;
 	}
@@ -174,92 +176,116 @@ public final class User extends SerializableIdObject {
 	}
 
 	public final void addRole(Role role) {
-		this.roles.add(role);
+		getRoles().add(role);
 	}
 
 	public final void removeRole(Role role) {
-		this.roles.remove(role);
+		getRoles().remove(role);
 	}
 
 	public final void addGroup(Group group) {
-		this.groups.add(group);
+		getGroups().add(group);
 	}
 
 	public final void removeGroup(Group group) {
-		this.groups.remove(group);
+		getGroups().remove(group);
 	}
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof User))
+		}
+		if (!(obj instanceof User)) {
 			return false;
+		}
 		User other = (User) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+		
+		Long id = getId();
+		Long id2 = other.getId();
+		String username = getUsername();
+		String username2 = other.getUsername();
+		String password = getPassword();
+		String password2 = other.getPassword();
+		Boolean enabled = getEnabled();
+		Boolean enabled2 = other.getEnabled();
+		Date expireDate = getExpireDate();
+		Date expireDate2 = other.getExpireDate();
+		String note = getNote();
+		String note2 = other.getNote();
+		Long ownerId = getOwnerId();
+		Long ownerId2 = other.getOwnerId();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		if (getEnabled() == null) {
-			if (other.getEnabled() != null)
-				return false;
-		} else if (!getEnabled().equals(other.getEnabled()))
+		}
+
+		if (username != null && !username.equals(username2)) {
 			return false;
-		if (getExpireDate() == null) {
-			if (other.getExpireDate() != null)
-				return false;
-		} else if (!getExpireDate().equals(other.getExpireDate()))
+		} else if (username2 != null) {
 			return false;
-		/*
-		 * if (getGroups() == null) { if (other.getGroups() != null) return
-		 * false; } else if (!getGroups().equals(other.getGroups())) return
-		 * false;
-		 */
-		if (getNote() == null) {
-			if (other.getNote() != null)
-				return false;
-		} else if (!getNote().equals(other.getNote()))
+		}
+		
+		if (password != null && !password.equals(password2)) {
 			return false;
-		if (getPassword() == null) {
-			if (other.getPassword() != null)
-				return false;
-		} else if (!getPassword().equals(other.getPassword()))
+		} else if (password2 != null) {
 			return false;
-		if (getRoles() == null) {
-			if (other.getRoles() != null)
-				return false;
-		} else if (!getRoles().equals(other.getRoles()))
+		}
+		
+		if (enabled != null && !enabled.equals(enabled2)) {
 			return false;
-		if (getUsername() == null) {
-			if (other.getUsername() != null)
-				return false;
-		} else if (!getUsername().equals(other.getUsername()))
+		} else if (enabled2 != null) {
 			return false;
+		}
+		
+		if (expireDate != null && !expireDate.equals(expireDate2)) {
+			return false;
+		} else if (expireDate2 != null) {
+			return false;
+		}
+		
+		if (note != null && !note.equals(note2)) {
+			return false;
+		} else if (note2 != null) {
+			return false;
+		}
+		
+		if (ownerId != null && !ownerId.equals(ownerId2)) {
+			return false;
+		} else if (ownerId2 != null) {
+			return false;
+		}
+
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 113;
+		Long id = getId();
+		String username = getUsername();
+		String password = getPassword();
+		Boolean enabled = getEnabled();
+		Date expireDate = getExpireDate();
+		String note = getNote();
+		Long ownerId = getOwnerId();
+		Set<Role> roles = getRoles();
+		Set<Group> groups = getGroups();
+
+		final int prime = 61;
 		int result = 1;
-		result = prime * result + (getId() == null ? 0 : getId().hashCode());
-		result = prime * result
-				+ ((getEnabled() == null) ? 0 : getEnabled().hashCode());
-		result = prime * result
-				+ ((getExpireDate() == null) ? 0 : getExpireDate().hashCode());
-		// result = prime * result + ((getGroups() == null) ? 0 :
-		// getGroups().hashCode());
-		result = prime * result
-				+ ((getNote() == null) ? 0 : getNote().hashCode());
-		result = prime * result
-				+ ((getPassword() == null) ? 0 : getPassword().hashCode());
-		result = prime * result
-				+ ((getRoles() == null) ? 0 : getRoles().hashCode());
-		result = prime * result
-				+ ((getUsername() == null) ? 0 : getUsername().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (username != null ? username.hashCode() : 0);
+		result = prime * result	+ (password != null ? password.hashCode() : 0);
+		result = prime * result	+ (enabled != null ? enabled.hashCode() : 0);
+		result = prime * result + (expireDate != null ? expireDate.hashCode() : 0);
+		result = prime * result + (note != null ? note.hashCode() : 0);
+		result = prime * result + (ownerId != null ? ownerId.hashCode() : 0);
+		result = prime * result	+ roles.hashCode();
+		result = prime * result + groups.hashCode();
 		return result;
 	}
 

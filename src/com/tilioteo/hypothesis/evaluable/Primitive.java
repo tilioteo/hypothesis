@@ -65,4 +65,8 @@ public abstract class Primitive {
 		value = null;
 	}
 
+	@Override
+	public String toString() {
+		return value != null ? value.toString() : "⦰";
+	}
 }

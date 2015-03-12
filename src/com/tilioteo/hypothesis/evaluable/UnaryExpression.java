@@ -83,4 +83,15 @@ public class UnaryExpression extends Expression {
 		
 		return null;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		if (Operator.NOT.equals(operator) || Operator.MINUS.equals(operator)) {
+			builder.append("(" + operator.toString() + rightSide.toString() + ")");
+		} else {
+			builder.append(rightSide.toString());
+		}
+		return builder.toString();
+	}
 }

@@ -77,6 +77,11 @@ enum Operator {
 	public boolean isLogical() {
 		return LOGICAL.contains(this);
 	}*/
+	
+	@Override
+	public String toString() {
+		return string;
+	}
 
 	public static Operator get(String string) {
 		return lookup.get(string);

@@ -24,6 +24,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -31,7 +34,7 @@ import org.hibernate.annotations.LazyCollectionOption;
  * 
  */
 @Entity
-@Table(name = "TBL_GROUP")
+@Table(name = EntityTableConstants.GROUP_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Group extends SerializableIdObject {
 
@@ -51,9 +54,9 @@ public final class Group extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groupGenerator")
-	@SequenceGenerator(name = "groupGenerator", sequenceName = "hbn_group_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.GROUP_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.GROUP_GENERATOR, sequenceName = EntityTableConstants.GROUP_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
@@ -63,7 +66,7 @@ public final class Group extends SerializableIdObject {
 		super.setId(id);
 	}
 
-	@Column(name = "NAME", nullable = false, unique = true)
+	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
 	public final String getName() {
 		return name;
 	}
@@ -72,7 +75,7 @@ public final class Group extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = "NOTE", nullable = true)
+	@Column(name = EntityFieldConstants.NOTE)
 	public final String getNote() {
 		return note;
 	}
@@ -81,7 +84,7 @@ public final class Group extends SerializableIdObject {
 		this.note = note;
 	}
 
-	@Column(name = "OWNER_ID", nullable = false)
+	@Column(name = EntityFieldConstants.OWNER_ID, nullable = false)
 	public final Long getOwnerId() {
 		return ownerId;
 	}
@@ -90,12 +93,11 @@ public final class Group extends SerializableIdObject {
 		this.ownerId = ownerId;
 	}
 
-	@ManyToMany(targetEntity = User.class, cascade = {
-			CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "GROUP_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
+	@ManyToMany(targetEntity = User.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = EntityTableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.GROUP_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID))
 	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
-	@LazyCollection(LazyCollectionOption.FALSE)
-	public final Set<User> getUsers() {
+	@LazyCollection(LazyCollectionOption.TRUE)
+	public Set<User> getUsers() {
 		return users;
 	}
 
@@ -104,37 +106,60 @@ public final class Group extends SerializableIdObject {
 	}
 
 	public final void addUser(User user) {
-		this.users.add(user);
+		getUsers().add(user);
 	}
 
 	public final void removeUser(User user) {
-		this.users.remove(user);
+		getUsers().remove(user);
 	}
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof Group))
+		}
+		if (!(obj instanceof Group)) {
 			return false;
+		}
 		Group other = (Group) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+		
+		Long id = getId();
+		Long id2 = other.getId();
+		String name = getName();
+		String name2 = other.getName();
+		String note = getNote();
+		String note2 = other.getNote();
+		Long ownerId = getOwnerId();
+		Long ownerId2 = other.getOwnerId();
+		//Set<User> users = getUsers();
+		//Set<User> users2 = other.getUsers();
+
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		if (getName() == null) {
-			if (other.getName() != null)
-				return false;
-		} else if (!getName().equals(other.getName()))
+		}
+
+		if (name != null && !name.equals(name2)) {
 			return false;
-		if (getNote() == null) {
-			if (other.getNote() != null)
-				return false;
-		} else if (!getNote().equals(other.getNote()))
+		} else if (name2 != null) {
 			return false;
+		}
+		
+		if (note != null && !note.equals(note2)) {
+			return false;
+		} else if (note2 != null) {
+			return false;
+		}
+		
+		if (ownerId != null && !ownerId.equals(ownerId2)) {
+			return false;
+		} else if (ownerId2 != null) {
+			return false;
+		}
+		
 		/*
 		 * if (getUsers() == null) { if (other.getUsers() != null) return false;
 		 * } else if (!getUsers().equals(other.getUsers())) return false;
@@ -144,15 +169,19 @@ public final class Group extends SerializableIdObject {
 
 	@Override
 	public final int hashCode() {
-		final int prime = 163;
+		Long id = getId();
+		String name = getName();
+		String note = getNote();
+		Long ownerId = getOwnerId();
+		Set<User> users = getUsers();
+		
+		final int prime = 13;
 		int result = 1;
-		result = prime * result + (getId() == null ? 0 : getId().hashCode());
-		result = prime * result
-				+ ((getName() == null) ? 0 : getName().hashCode());
-		result = prime * result
-				+ ((getNote() == null) ? 0 : getNote().hashCode());
-		// result = prime * result + ((getUsers() == null) ? 0 :
-		// getUsers().hashCode());*/
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (name != null ? name.hashCode() : 0);
+		result = prime * result	+ (note != null ? note.hashCode() : 0);
+		result = prime * result	+ (ownerId != null ? ownerId.hashCode() : 0);
+		result = prime * result + users.hashCode();
 		return result;
 	}
 

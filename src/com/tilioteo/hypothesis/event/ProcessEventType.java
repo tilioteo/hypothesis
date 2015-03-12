@@ -8,15 +8,15 @@ package com.tilioteo.hypothesis.event;
  * 
  */
 public class ProcessEventType {
-	private int id;
+	private long id;
 	private String name;
 
-	public ProcessEventType(int id, String name) {
+	public ProcessEventType(long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

@@ -7,7 +7,6 @@ import java.util.Date;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,8 +18,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
+
+import com.tilioteo.hypothesis.common.EntityFieldConstants;
+import com.tilioteo.hypothesis.common.EntityTableConstants;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -32,7 +33,7 @@ import org.hibernate.annotations.Type;
  * 
  */
 @Entity
-@Table(name = "TBL_EVENT")
+@Table(name = EntityTableConstants.EVENT_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Event extends SerializableIdObject {
 
@@ -49,7 +50,7 @@ public final class Event extends SerializableIdObject {
 	/**
 	 * code of event type
 	 */
-	private Integer type;
+	private Long type;
 
 	/**
 	 * human readable name
@@ -59,14 +60,7 @@ public final class Event extends SerializableIdObject {
 	/**
 	 * saved data
 	 */
-	private String data;
-
-	/**
-	 * event result
-	 */
-	/*
-	 * private Integer result = null; private String resultDetail = null;
-	 */
+	private String xmlData;
 
 	/**
 	 * current processing branch
@@ -87,7 +81,7 @@ public final class Event extends SerializableIdObject {
 		super();
 	}
 
-	public Event(int type, String name, Date datetime) {
+	public Event(long type, String name, Date datetime) {
 		this();
 		this.type = type;
 		this.name = name;
@@ -96,14 +90,14 @@ public final class Event extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eventGenerator")
-	@SequenceGenerator(name = "eventGenerator", sequenceName = "hbn_event_seq", initialValue = 1, allocationSize = 1)
-	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.EVENT_GENERATOR)
+	@SequenceGenerator(name = EntityTableConstants.EVENT_GENERATOR, sequenceName = EntityTableConstants.EVENT_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = EntityFieldConstants.ID)
 	public final Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = "TIMESTAMP", nullable = false)
+	@Column(name = EntityFieldConstants.TIMESTAMP, nullable = false)
 	protected Long getTimeStamp() {
 		return timeStamp;
 	}
@@ -112,16 +106,16 @@ public final class Event extends SerializableIdObject {
 		this.timeStamp = timeStamp;
 	}
 
-	@Column(name = "TYPE", nullable = false)
-	public final Integer getType() {
+	@Column(name = EntityFieldConstants.TYPE, nullable = false)
+	public final Long getType() {
 		return type;
 	}
 
-	protected void setType(Integer type) {
+	protected void setType(Long type) {
 		this.type = type;
 	}
 
-	@Column(name = "NAME")
+	@Column(name = EntityFieldConstants.NAME)
 	public final String getName() {
 		return name;
 	}
@@ -130,19 +124,18 @@ public final class Event extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = "DATA")
+	@Column(name = EntityFieldConstants.XML_DATA)
 	@Type(type="text")
-	public final String getData() {
-		return data;
+	public final String getXmlData() {
+		return xmlData;
 	}
 
-	public final void setData(String data) {
-		this.data = data;
+	public final void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "BRANCH_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne
+	@JoinColumn(name = EntityFieldConstants.BRANCH_ID)
 	public final Branch getBranch() {
 		return branch;
 	}
@@ -151,9 +144,8 @@ public final class Event extends SerializableIdObject {
 		this.branch = branch;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "TASK_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne
+	@JoinColumn(name = EntityFieldConstants.TASK_ID)
 	public final Task getTask() {
 		return task;
 	}
@@ -162,9 +154,8 @@ public final class Event extends SerializableIdObject {
 		this.task = task;
 	}
 
-	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinColumn(name = "SLIDE_ID")
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@ManyToOne
+	@JoinColumn(name = EntityFieldConstants.SLIDE_ID)
 	public final Slide getSlide() {
 		return slide;
 	}
@@ -180,89 +171,105 @@ public final class Event extends SerializableIdObject {
 
 	@Override
 	public final boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof Event))
+		}
+		if (!(obj instanceof Event)) {
 			return false;
+		}
 		Event other = (Event) obj;
-		if (getId() == null) {
-			if (other.getId() != null)
-				return false;
-		} else if (!getId().equals(other.getId()))
+
+		Long id = getId();
+		Long id2 = other.getId();
+		Long timeStamp = getTimeStamp();
+		Long timeStamp2 = other.getTimeStamp();
+		Long type = getType();
+		Long type2 = other.getType();
+		String name = getName();
+		String name2 = other.getName();
+		String xmlData = getXmlData();
+		String xmlData2 = other.getXmlData();
+		Branch branch = getBranch();
+		Branch branch2 = other.getBranch();
+		Task task = getTask();
+		Task task2 = other.getTask();
+		Slide slide = getSlide();
+		Slide slide2 = other.getSlide();
+		
+		// if id of one instance is null then compare other properties
+		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
-		// TODO remove when Buffered.SourceException occurs
-		if (getBranch() == null) {
-			if (other.getBranch() != null)
-				return false;
-		} else if (!getBranch().equals(other.getBranch()))
+		}
+
+		if (timeStamp != null && !timeStamp.equals(timeStamp2)) {
 			return false;
-		if (getData() == null) {
-			if (other.getData() != null)
-				return false;
-		} else if (!getData().equals(other.getData()))
+		} else if (timeStamp2 != null) {
 			return false;
-		/*
-		 * if (getResult() == null) { if (other.getResult() != null) return
-		 * false; } else if (!getResult().equals(other.getResult())) return
-		 * false; if (getResultDetail() == null) { if (other.getResultDetail()
-		 * != null) return false; } else if
-		 * (!getResultDetail().equals(other.getResultDetail())) return false;
-		 */
-		if (getSlide() == null) {
-			if (other.getSlide() != null)
-				return false;
-		} else if (!getSlide().equals(other.getSlide()))
+		}
+		
+		if (type != null && !type.equals(type2)) {
 			return false;
-		if (getTask() == null) {
-			if (other.getTask() != null)
-				return false;
-		} else if (!getTask().equals(other.getTask()))
+		} else if (type2 != null) {
 			return false;
-		if (getTimeStamp() == null) {
-			if (other.getTimeStamp() != null)
-				return false;
-		} else if (!getTimeStamp().equals(other.getTimeStamp()))
+		}
+		
+		if (name != null && !name.equals(name2)) {
 			return false;
-		if (getType() == null) {
-			if (other.getType() != null)
-				return false;
-		} else if (!getType().equals(other.getType()))
+		} else if (name2 != null) {
 			return false;
-		if (getName() == null) {
-			if (other.getName() != null)
-				return false;
-		} else if (!getName().equals(other.getName()))
+		}
+		
+		if (xmlData != null && !xmlData.equals(xmlData2)) {
 			return false;
+		} else if (xmlData2 != null) {
+			return false;
+		}
+		
+		if (branch != null && !branch.equals(branch2)) {
+			return false;
+		} else if (branch2 != null) {
+			return false;
+		}
+		
+		if (task != null && !task.equals(task2)) {
+			return false;
+		} else if (task2 != null) {
+			return false;
+		}
+		
+		if (slide != null && !slide.equals(slide2)) {
+			return false;
+		} else if (slide2 != null) {
+			return false;
+		}
+		
 		return true;
 	}
 
 	@Override
 	public final int hashCode() {
-		final int prime = 101;
+		Long id = getId();
+		Long timeStamp = getTimeStamp();
+		Long type = getType();
+		String name = getName();
+		String xmlData = getXmlData();
+		Branch branch = getBranch();
+		Task task = getTask();
+		Slide slide = getSlide();
+
+		final int prime = 11;
 		int result = 1;
-		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-		// TODO remove when Buffered.SourceException occurs
-		result = prime * result
-				+ ((getBranch() == null) ? 0 : getBranch().hashCode());
-		result = prime * result
-				+ ((getData() == null) ? 0 : getData().hashCode());
-		/*
-		 * result = prime * result + ((getResult() == null) ? 0 :
-		 * getResult().hashCode()); result = prime * result +
-		 * ((getResultDetail() == null) ? 0 : getResultDetail().hashCode());
-		 */
-		result = prime * result
-				+ ((getSlide() == null) ? 0 : getSlide().hashCode());
-		result = prime * result
-				+ ((getTask() == null) ? 0 : getTask().hashCode());
-		result = prime * result
-				+ ((getTimeStamp() == null) ? 0 : getTimeStamp().hashCode());
-		result = prime * result
-				+ ((getType() == null) ? 0 : getType().hashCode());
-		result = prime * result
-				+ ((getName() == null) ? 0 : getName().hashCode());
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result	+ (timeStamp != null ? timeStamp.hashCode() : 0);
+		result = prime * result	+ (type != null ? type.hashCode() : 0);
+		result = prime * result	+ (name != null ? name.hashCode() : 0);
+		result = prime * result	+ (xmlData != null ? xmlData.hashCode() : 0);
+		result = prime * result	+ (branch != null ? branch.hashCode() : 0);
+		result = prime * result	+ (task != null ? task.hashCode() : 0);
+		result = prime * result	+ (slide != null ? slide.hashCode() : 0);
 		return result;
 	}
 

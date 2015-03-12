@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.dom;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,8 +38,7 @@ public class SlideXmlUtility {
 	@SuppressWarnings("unchecked")
 	public static List<Element> getActionsElements(Element documentRoot) {
 		if (documentRoot != null) {
-			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS
-					.contains(documentRoot.getName())) {
+			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
 				return null;
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
@@ -70,6 +70,19 @@ public class SlideXmlUtility {
 		return getElementSubNodeChilds(component, SlideXmlConstants.ITEMS, null);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static List<Element> getComponentSources(Element component) {
+		return component.selectNodes(String.format(
+				"%s//%s", SlideXmlConstants.SOURCES,
+				SlideXmlConstants.SOURCE));
+
+	}
+
+	public static List<Element> getFieldValidators(Element field) {
+		return getElementSubNodeChilds(field, SlideXmlConstants.VALIDATORS,
+				null);
+	}
+
 	public static List<Element> getComponentProperties(Element component) {
 		return getElementSubNodeChilds(component, SlideXmlConstants.PROPERTIES,
 				null);
@@ -82,23 +95,24 @@ public class SlideXmlUtility {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List<Element> getElementSubNodeChilds(Element element,
-			String subNodeName, StringSet validElementNames) {
+	public static List<Element> getElementSubNodeChilds(Element element, String subNodeName, StringSet validElementNames) {
 		if (element != null && !Strings.isNullOrEmpty(subNodeName)) {
-			List<Node> childs = element.selectNodes(String.format("%s/*",
-					subNodeName));
+			List<Node> childs = element.selectNodes(String.format("%s/*", subNodeName));
 
 			List<Element> elements = new LinkedList<Element>();
 			for (Node child : childs) {
 				if (child instanceof Element) {
-					if (validElementNames == null
-							|| (validElementNames != null && validElementNames
-									.contains(child.getName()))) {
-						elements.add((Element) child);
+					Element childElement = (Element)child;
+					String childName = childElement.getName();
+					if (!Strings.isNullOrEmpty(childElement.getNamespacePrefix())) {
+						childName = childElement.getQualifiedName();
+					}
+					
+					if (validElementNames == null || (validElementNames != null && validElementNames.contains(childName))) {
+						elements.add(childElement);
 					} else if (validElementNames != null) {
-						log.warn(String
-								.format("Xml element '%s' ignored inside of element '%s'",
-										child.getName(), element.getName()));
+						log.warn(String.format("Xml element '%s' ignored inside of element '%s'",
+										childName, element.getName()));
 					}
 				}
 			}
@@ -111,8 +125,7 @@ public class SlideXmlUtility {
 
 	public static Element getExpressionElement(Element element) {
 		if (element != null) {
-			return (Element) element
-					.selectSingleNode(SlideXmlConstants.EXPRESSION);
+			return (Element) element.selectSingleNode(SlideXmlConstants.EXPRESSION);
 		}
 
 		return null;
@@ -121,6 +134,30 @@ public class SlideXmlUtility {
 	public static Element getFalseElement(Element element) {
 		if (element != null) {
 			return (Element) element.selectSingleNode(SlideXmlConstants.FALSE);
+		}
+
+		return null;
+	}
+
+	public static Element getMessageElement(Element element) {
+		if (element != null) {
+			return (Element) element.selectSingleNode(SlideXmlConstants.MESSAGE);
+		}
+
+		return null;
+	}
+
+	public static Element getMinElement(Element element) {
+		if (element != null) {
+			return (Element) element.selectSingleNode(SlideXmlConstants.MIN);
+		}
+
+		return null;
+	}
+
+	public static Element getMaxElement(Element element) {
+		if (element != null) {
+			return (Element) element.selectSingleNode(SlideXmlConstants.MAX);
 		}
 
 		return null;
@@ -195,6 +232,21 @@ public class SlideXmlUtility {
 		return null;
 	}
 
+	public static Element getInstanceSubElement(Element element) {
+		if (element != null) {
+			Element instance = (Element) element
+					.selectSingleNode(SlideXmlConstants.INSTANCE);
+			if (instance != null) {
+				@SuppressWarnings("unchecked")
+				List<Element> elements = instance.elements();
+				if (elements.size() > 0)
+					return elements.get(0);
+			}
+		}
+
+		return null;
+	}
+
 	public static Element getTrueElement(Element element) {
 		if (element != null) {
 			return (Element) element.selectSingleNode(SlideXmlConstants.TRUE);
@@ -209,6 +261,71 @@ public class SlideXmlUtility {
 
 	public static String getValue(Element element) {
 		return element.attributeValue(SlideXmlConstants.VALUE);
+	}
+
+	public static String getValues(Element element) {
+		return element.attributeValue(SlideXmlConstants.VALUES);
+	}
+
+	public static String getKey(Element element) {
+		return element.attributeValue(SlideXmlConstants.KEY);
+	}
+
+	public static String getValidatorMessage(Element element, String defaultMessage) {
+		Element messageElement = getMessageElement(element);
+		if (messageElement != null) {
+			String message = messageElement.getTextTrim();
+			if (Strings.isNullOrEmpty(message)) {
+				return defaultMessage;
+			}
+			return message;
+		}
+		
+		return defaultMessage;
+	}
+	
+	public static Double getNumberValidatorMinValue(Element element) {
+		Element subElement = getMinElement(element);
+		if (subElement != null) {
+			return Strings.toDouble(subElement.attributeValue(SlideXmlConstants.VALUE));
+		}
+		
+		return null;
+	}
+
+	public static Double getNumberValidatorMaxValue(Element element) {
+		Element subElement = getMaxElement(element);
+		if (subElement != null) {
+			return Strings.toDouble(subElement.attributeValue(SlideXmlConstants.VALUE));
+		}
+		
+		return null;
+	}
+
+	public static Date getDateValidatorMinValue(Element element, String defaultFormat) {
+		Element subElement = getMinElement(element);
+		if (subElement != null) {
+			String format = subElement.attributeValue(SlideXmlConstants.FORMAT);
+			if (Strings.isNullOrEmpty(format)) {
+				format = defaultFormat;
+			}
+			return Strings.toDate(subElement.attributeValue(SlideXmlConstants.VALUE), format);
+		}
+		
+		return null;
+	}
+
+	public static Date getDateValidatorMaxValue(Element element, String defaultFormat) {
+		Element subElement = getMaxElement(element);
+		if (subElement != null) {
+			String format = subElement.attributeValue(SlideXmlConstants.FORMAT);
+			if (Strings.isNullOrEmpty(format)) {
+				format = defaultFormat;
+			}
+			return Strings.toDate(subElement.attributeValue(SlideXmlConstants.VALUE), format);
+		}
+		
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -308,6 +425,25 @@ public class SlideXmlUtility {
 					SlideXmlConstants.WINDOW));
 
 			return windows;
+		}
+
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<Element> getTimersElements(Element documentRoot) {
+		if (documentRoot != null) {
+			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS
+					.contains(documentRoot.getName())) {
+				return null;
+				// throw new NotValidDocumentRoot(documentRoot);
+			}
+
+			List<Element> timers = documentRoot.selectNodes(String.format(
+					"%s//%s", SlideXmlConstants.TIMERS,
+					SlideXmlConstants.TIMER));
+
+			return timers;
 		}
 
 		return null;

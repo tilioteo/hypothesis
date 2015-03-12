@@ -3,8 +3,27 @@ package com.tilioteo.hypothesis.ui;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.TimerTask;
 
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+
+import com.tilioteo.hypothesis.annotation.ExpressionScope;
+import com.tilioteo.hypothesis.annotation.ExpressionScope.Scope;
+import com.tilioteo.hypothesis.common.StringMap;
+import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.SlideFactory;
+import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.core.SlideUtility;
+import com.tilioteo.hypothesis.dom.SlideXmlConstants;
+import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.event.TimerData;
+import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.tilioteo.hypothesis.processing.Command;
+import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerClientRpc;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerServerRpc;
 import com.tilioteo.hypothesis.shared.ui.timer.TimerState;
@@ -12,38 +31,56 @@ import com.tilioteo.hypothesis.shared.ui.timer.TimerState.Direction;
 import com.vaadin.event.EventRouter;
 import com.vaadin.shared.ui.ComponentStateUtil;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.util.ReflectTools;
 
 @SuppressWarnings("serial")
-public class Timer extends AbstractComponent {
+public class Timer extends AbstractComponent implements SlideComponent, NonVisualComponent {
+
+	private static Logger log = Logger.getLogger(Timer.class);
 
 	private TimerServerRpc rpc = new TimerServerRpc() {
 
 		@Override
-		public void start(long time, String direction, boolean resumed) {
-			fireEvent(new StartEvent(Timer.this, time, Direction.valueOf(direction), resumed));
+		public void started(long time, String direction, boolean resumed) {
+			log.debug("TimerServerRpc: started()");
+			clientStarted();
+			//fireEvent(new StartEvent(Timer.this, time, Direction.valueOf(direction), resumed));
 		}
 
 		@Override
-		public void stop(long time, String direction, boolean paused) {
-			fireEvent(new StopEvent(Timer.this, time, Direction.valueOf(direction), paused));
+		public void stopped(long time, String direction, boolean paused) {
+			log.debug("TimerServerRpc: stopped()");
+			clientStopped();
+			//fireEvent(new StopEvent(Timer.this, time, Direction.valueOf(direction), paused));
 		}
 
-		@Override
+		/*@Override
 		public void update(long time, String direction, long interval) {
 			EventRouter eventRouter = eventRouterMap.get(interval);
 			if (eventRouter != null) {
+				log.debug("TimerServerRpc: update() interval:" + interval);
 				eventRouter.fireEvent(new UpdateEvent(Timer.this, time, Direction.valueOf(direction), interval));
 			}
-		}
+		}*/
 
 	};
 	
 	private TimerClientRpc clientRpc;
 	
 	private HashMap<Long, EventRouter> eventRouterMap = new HashMap<Long, EventRouter>();
+	
+	private long startCounter = 0;
+	private long counter = 0;
+	private boolean running = false;
+	private long elapsed = 0;
+	private Date startTime;
+	private boolean infinite = false;
+	private long time = 0;
+	
+	private java.util.Timer internalTimer;
 
 	public abstract class TimerEvent extends Component.Event {
 
@@ -85,7 +122,7 @@ public class Timer extends AbstractComponent {
 	public interface StartListener extends Serializable {
 
 		public static final Method TIMER_START_METHOD = ReflectTools
-				.findMethod(StartListener.class, "start", StartEvent.class);
+				.findMethod(StartListener.class, StartEvent.EVENT_ID, StartEvent.class);
 
 		/**
 		 * Called when a {@link Timer} has been started. A reference to the
@@ -118,7 +155,7 @@ public class Timer extends AbstractComponent {
 	public interface StopListener extends Serializable {
 
 		public static final Method TIMER_STOP_METHOD = ReflectTools.findMethod(
-				StopListener.class, "stop", StopEvent.class);
+				StopListener.class, StopEvent.EVENT_ID, StopEvent.class);
 
 		/**
 		 * Called when a {@link Timer} has been stopped. A reference to the
@@ -150,7 +187,7 @@ public class Timer extends AbstractComponent {
 	public interface UpdateListener extends Serializable {
 
 		public static final Method TIMER_UPDATE_METHOD = ReflectTools
-				.findMethod(UpdateListener.class, "update", UpdateEvent.class);
+				.findMethod(UpdateListener.class, UpdateEvent.EVENT_ID, UpdateEvent.class);
 
 		/**
 		 * Called when a {@link Timer} has been updated. A reference to the
@@ -168,28 +205,166 @@ public class Timer extends AbstractComponent {
 		clientRpc = getRpcProxy(TimerClientRpc.class);
 	}
 
+	protected void clientStopped() {
+	}
+
+	protected void clientStarted() {
+	}
+
+	@ExpressionScope(Scope.PRIVATE)
 	@Override
 	public TimerState getState() {
 		return (TimerState) super.getState();
 	}
 
+	@ExpressionScope(Scope.PRIVATE)
 	public void start(long time) {
-		clientRpc.start(time);
+		setTime(time);
+		
+		if (time < 0) {
+			setInfinite(true);
+		}
+		
+		elapsed = 0;
+
+		if (time >= TimerState.TIMER_TICK) {
+			startCounter = time;
+			
+			if (Direction.UP.equals(getState().direction)) {
+				counter = 0;
+			} else {
+				counter = startCounter;
+			}
+
+			resume(true);
+			
+		} else {
+			startCounter = 0;
+		}
+	}
+	
+	protected void resume(boolean started) {
+		if (!running) {
+			running = true;
+			clientRpc.start(time);
+			
+			fireEvent(new StartEvent(Timer.this, counter, getState().direction, !started));
+			startTime = new Date();
+			internalTimer = new java.util.Timer();
+			internalTimer.scheduleAtFixedRate(new TimerTask() {
+				@Override
+				public void run() {
+					setElapsed();
+				}
+			}, TimerState.TIMER_TICK, TimerState.TIMER_TICK);
+			
+		}
 	}
 
+	protected void setElapsed() {
+		elapsed = new Date().getTime() - startTime.getTime();
+		updateCounter(elapsed);
+
+		// stop timer when the time passed 
+		if (!infinite && elapsed >= startCounter) {
+			running = false;
+			internalTimer.cancel();
+			
+			getUI().access/*Synchronously*/(new Runnable() {
+				@Override
+				public void run() {
+					fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+				}
+			});
+
+		} else {
+			signalTimeSlices(elapsed);
+		}
+	}
+
+	private void updateCounter(long elapsed) {
+		if (Direction.UP.equals(getState().direction)) {
+			counter = elapsed;
+		} else {
+			counter = startCounter - elapsed;
+			if (counter < 0) {
+				counter = 0;
+			}
+		}
+	}
+	
+	private void signalTimeSlices(long elapsed) {
+		for (final Long timeSlice : eventRouterMap.keySet()) {
+			// modulo for time slices passed in elapsed time
+			long rest = elapsed % timeSlice; 
+			// if rest passes into first timer tick interval then fire update event
+			// for this time slice
+			if (rest >= 0 && rest < TimerState.TIMER_TICK) {
+				getUI().access/*Synchronously*/(new Runnable() {
+					@Override
+					public void run() {
+						eventRouterMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, getState().direction, timeSlice));
+					}
+				});
+			}
+		}
+	}
+
+	public boolean isInfinite() {
+		return infinite;
+	}
+
+	protected void setInfinite(boolean infinite) {
+		this.infinite = infinite;
+		if (infinite) {
+			getState().direction = Direction.UP;
+		}
+	}
+
+
 	public void stop() {
-		clientRpc.stop();
+		stop(false);
+	}
+	
+	private void stop(boolean pause, boolean silent) {
+		if (running) {
+			running = false;
+			internalTimer.cancel();
+			setElapsed();
+
+			if (pause) {
+				clientRpc.pause();
+			} else {
+				clientRpc.stop(false);
+			}
+			
+			if (!silent) {
+				getUI().access/*Synchronously*/(new Runnable() {
+					@Override
+					public void run() {
+						fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+					}
+				});
+			}
+			if (!pause) {
+				startCounter = 0;
+			}
+		}
+	}
+
+	public void stop(boolean silent) {
+		stop(false, silent);
 	}
 
 	public boolean isRunning() {
-		clientRpc.getRunning();
-		return getState().running;
+		return running;
 	}
 
 	public Direction getDirection() {
 		return getState().direction;
 	}
 
+	@ExpressionScope(Scope.PRIVATE)
 	public void setDirection(Direction direction) {
 		getState().direction = direction;
 	}
@@ -264,6 +439,138 @@ public class Timer extends AbstractComponent {
 		
 		if (needRepaint && eventRouterMap.isEmpty())
         	ComponentStateUtil.removeRegisteredEventListener(getState(), UpdateEvent.EVENT_ID);
+	}
+	
+	
+	// SlideComponent
+	private SlideManager slideManager;
+	
+	public Timer(SlideManager slideManager) {
+		this();
+		this.slideManager = slideManager;
+	}
+	
+	/**
+	 * Not used, returns null
+	 */
+	@Override
+	public Alignment getAlignment() {
+		return null;
+	}
+
+	@Override
+	public void setSlideManager(SlideManager slideManager) {
+		this.slideManager = slideManager;
+	}
+
+	public void start() {
+		start(time);
+	}
+
+	@Override
+	public void loadFromXml(Element element) {
+
+		setProperties(element);
+		setHandlers(element);
+
+	}
+
+	protected void setProperties(Element element) {
+		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		
+		setData(SlideXmlUtility.getId(element));
+		setTime(properties.getInteger(SlideXmlConstants.TIME, 0));
+		setDirection(directionFromString(properties.get(SlideXmlConstants.DIRECTION, "up")));
+	}
+	
+	private Direction directionFromString(String value) {
+		if ("up".equalsIgnoreCase(value)) {
+			return Direction.UP;
+		} else if ("down".equalsIgnoreCase(value)) {
+			return Direction.DOWN;
+		}
+		return null;
+	}
+	
+	protected void setTime(long time) {
+		this.time = time < 0 ? -1 : time;
+	}
+	
+	private void setHandlers(Element element) {
+		List<Element> handlers = SlideUtility.getHandlerElements(element);
+
+		for (Element handler : handlers) {
+			setHandler(handler);
+		}
+	}
+
+	protected void setHandler(Element element) {
+		String name = element.getName();
+		String action = null;
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		if (anonymousAction != null)
+			action = anonymousAction.getId();
+
+		if (!Strings.isNullOrEmpty(action)) {
+			if (name.equals(SlideXmlConstants.START)) {
+				setStartHandler(action);
+			} else if (name.equals(SlideXmlConstants.STOP)) {
+				setStopHandler(action);
+			} else if (name.equals(SlideXmlConstants.UPDATE)) {
+				setUpdateHandler(action, Strings.toInteger((element.attributeValue(SlideXmlConstants.INTERVAL))));
+			}
+			// TODO add other event handlers
+		}
+	}
+
+	private void setStartHandler(final String actionId) {
+		addStartListener(new StartListener() {
+			@Override
+			public void start(StartEvent event) {
+				TimerData data = new TimerData(Timer.this, slideManager);
+				data.setTime(event.getTime());
+				
+				Command componentEvent = CommandFactory.createTimerStartEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
+			}
+		});
+	}
+
+	private void setStopHandler(final String actionId) {
+		addStopListener(new StopListener() {
+			@Override
+			public void stop(StopEvent event) {
+				TimerData data = new TimerData(Timer.this, slideManager);
+				data.setTime(event.getTime());
+
+				Command componentEvent = CommandFactory.createTimerStopEventCommand(data);
+				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+				Command.Executor.execute(componentEvent);
+				Command.Executor.execute(action);
+			}
+		});
+	}
+
+	private void setUpdateHandler(final String actionId, Integer interval) {
+		if (interval != null) {
+			addUpdateListener(interval, new UpdateListener() {
+				@Override
+				public void update(UpdateEvent event) {
+					TimerData data = new TimerData(Timer.this, slideManager);
+					data.setTime(event.getTime());
+
+					Command componentEvent = CommandFactory.createTimerUpdateEventCommand(data);
+					Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+
+					Command.Executor.execute(componentEvent);
+					Command.Executor.execute(action);
+				}
+			});
+		}
 	}
 
 }

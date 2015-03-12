@@ -5,13 +5,15 @@ package com.tilioteo.hypothesis.ui;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
+import com.tilioteo.hypothesis.core.Field;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
-import com.tilioteo.hypothesis.core.XmlDataWriter;
+import com.tilioteo.hypothesis.data.Validator;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.vaadin.ui.Alignment;
 
@@ -21,7 +23,7 @@ import com.vaadin.ui.Alignment;
  */
 @SuppressWarnings("serial")
 public class DateField extends com.vaadin.ui.DateField implements SlideComponent,
-		XmlDataWriter {
+		Field {
 
 	@SuppressWarnings("unused")
 	private SlideManager slideManager;
@@ -45,8 +47,9 @@ public class DateField extends com.vaadin.ui.DateField implements SlideComponent
 	public void loadFromXml(Element element) {
 
 		setProperties(element);
+		setValidators(element);
 
-	}
+ 	}
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideUtility.getPropertyValueMap(element);
@@ -56,16 +59,36 @@ public class DateField extends com.vaadin.ui.DateField implements SlideComponent
 
 	}
 
+	private void setValidators(Element element) {
+		List<Validator> validators = ComponentFactory.createDateFieldValidators(element);
+		for (Validator validator : validators) {
+			addValidator(validator);
+		}
+		
+		if (!validators.isEmpty()) {
+			setImmediate(true);
+		}
+	}
+
 	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
 	}
 
 	@Override
+	public void readDataFromElement(Element element) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public void writeDataToElement(Element element) {
-		element.addAttribute(SlideXmlConstants.TYPE,
-				SlideXmlConstants.DATEFIELD);
+		element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.DATE_FIELD);
 		element.addAttribute(SlideXmlConstants.ID, (String) getData());
+		Element captionElement = element.addElement(SlideXmlConstants.CAPTION);
+		if (getCaption() != null) {
+			captionElement.addText(getCaption());
+		}
 		Element valueElement = element.addElement(SlideXmlConstants.VALUE);
 		if (getValue() != null) {
 			Date date = (Date) getValue();
@@ -73,5 +96,19 @@ public class DateField extends com.vaadin.ui.DateField implements SlideComponent
 			valueElement.addText(format.format(date));
 		}
 	}
+
+    @Override
+    public void setValue(Date newValue) throws com.vaadin.data.Property.ReadOnlyException {
+        boolean readOnly = false;
+    	if (isReadOnly()) {
+    		readOnly = true;
+    		setReadOnly(false);
+    	}
+    	super.setValue(newValue);
+    	
+    	if (readOnly) {
+    		setReadOnly(true);
+    	}
+    }
 
 }

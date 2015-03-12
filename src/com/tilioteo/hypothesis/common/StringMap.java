@@ -43,7 +43,12 @@ public class StringMap extends HashMap<String, String> {
 	}
 
 	public Boolean getBoolean(String key) {
-		return Boolean.parseBoolean(get(key));
+		String value = get(key);
+		if (!Strings.isNullOrEmpty(value)) {
+			return Boolean.parseBoolean(value);
+		} else {
+			return null;
+		}
 	}
 
 	public boolean getBoolean(String key, boolean defaultValue) {
@@ -52,10 +57,7 @@ public class StringMap extends HashMap<String, String> {
 	}
 
 	public Integer getInteger(String key) {
-		try {
-			return Integer.parseInt(get(key));
-		} catch (NumberFormatException e) {}
-		return null;
+		return Strings.toInteger(get(key));
 	}
 
 	public int getInteger(String key, int defaultValue) {
@@ -64,10 +66,7 @@ public class StringMap extends HashMap<String, String> {
 	}
 
 	public Double getDouble(String key) {
-		try {
-			return Double.parseDouble(get(key));
-		} catch (NumberFormatException e) {}
-		return null;
+		return Strings.toDouble(get(key));
 	}
 
 	public double getDouble(String key, double defaultValue) {
@@ -80,28 +79,11 @@ public class StringMap extends HashMap<String, String> {
 	}
 	
 	public String[] getStringArray(String key, boolean emptyArrayAsDefault) {
-		String value = get(key);
-		if (value != null) {
-			int count = 0;
-			String[] parts = value.split(StringConstants.STR_QUOTED_STRING_SPLIT_PATTERN);
-			for (int i = 0; i < parts.length; ++i) {
-				parts[i] = parts[i].trim();
-				if (parts[i].equals(StringConstants.STR_COMMA) || parts[i].length() == 0)
-					parts[i] = null;
-				else
-					++count;
-			}
-			String[] array = new String[count];
-			int j = 0;
-			for (int i = 0; i < parts.length; ++i) {
-				if (parts[i] != null)
-					array[j++] = parts[i];
-			}
-
-			return array;
-		}
+		String[] array = Strings.toStringArray(get(key), StringConstants.STR_COMMA, StringConstants.STR_QUOTED_STRING_SPLIT_PATTERN);
 		
-		if (emptyArrayAsDefault)
+		if (array != null) {
+			return array;
+		} else if (emptyArrayAsDefault)
 			return new String[] {};
 		else
 			return null;

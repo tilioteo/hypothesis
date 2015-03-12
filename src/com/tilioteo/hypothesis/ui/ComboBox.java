@@ -9,9 +9,10 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.hypothesis.core.Field;
 import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.core.SlideUtility;
-import com.tilioteo.hypothesis.core.XmlDataWriter;
+import com.tilioteo.hypothesis.data.Validator;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.vaadin.ui.Alignment;
@@ -22,7 +23,7 @@ import com.vaadin.ui.Alignment;
  */
 @SuppressWarnings("serial")
 public class ComboBox extends com.vaadin.ui.ComboBox implements SlideComponent,
-		XmlDataWriter {
+		Field {
 
 	@SuppressWarnings("unused")
 	private SlideManager slideManager;
@@ -67,6 +68,7 @@ public class ComboBox extends com.vaadin.ui.ComboBox implements SlideComponent,
 
 		setProperties(element);
 		addItems(element);
+		setValidators(element);
 
 	}
 
@@ -78,20 +80,55 @@ public class ComboBox extends com.vaadin.ui.ComboBox implements SlideComponent,
 
 	}
 
+	private void setValidators(Element element) {
+		List<Validator> validators = ComponentFactory.createComboBoxValidators(element);
+		for (Validator validator : validators) {
+			addValidator(validator);
+		}
+		
+		if (!validators.isEmpty()) {
+			setImmediate(true);
+		}
+	}
+
 	@Override
 	public void setSlideManager(SlideManager slideManager) {
 		this.slideManager = slideManager;
 	}
 
 	@Override
+	public void readDataFromElement(Element element) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
 	public void writeDataToElement(Element element) {
 		element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.COMBOBOX);
 		element.addAttribute(SlideXmlConstants.ID, (String) getData());
+		Element captionElement = element.addElement(SlideXmlConstants.CAPTION);
+		if (getCaption() != null) {
+			captionElement.addText(getCaption());
+		}
 		Element valueElement = element.addElement(SlideXmlConstants.VALUE);
-		if (getValue() != null)
-			valueElement.addAttribute(SlideXmlConstants.VALUE,
-					(String) getValue());
-		valueElement.addText(getCaption());
+		if (getValue() != null) {
+			valueElement.addAttribute(SlideXmlConstants.ID, (String) getValue());
+			valueElement.addText(getItemCaption(getValue()));
+		}
 	}
+
+    @Override
+    public void setValue(Object newValue) throws com.vaadin.data.Property.ReadOnlyException {
+        boolean readOnly = false;
+    	if (isReadOnly()) {
+    		readOnly = true;
+    		setReadOnly(false);
+    	}
+    	super.setValue(newValue);
+    	
+    	if (readOnly) {
+    		setReadOnly(true);
+    	}
+    }
 
 }

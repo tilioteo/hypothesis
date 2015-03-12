@@ -6,17 +6,21 @@ package com.tilioteo.hypothesis.dom;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 import com.tilioteo.hypothesis.common.StringConstants;
+import com.tilioteo.hypothesis.common.Strings;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -71,17 +75,34 @@ public class XmlUtility {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static Element findElementByNameAndValue(Element element, String name, String attributeName, String attributeValue) {
+	public static Element findElementByNameAndValue(boolean descendant, Element element, String name, String prefix, String uri, String attributeName, String attributeValue) {
 		Element result = null;
 		if (element != null) {
-			for (Iterator<Node> i = element.selectNodes(String.format(DESCENDANT_FMT, name)).iterator();i.hasNext();) {
+			HashMap<String, String> namespaces = new HashMap<String, String>();
+			if (!Strings.isNullOrEmpty(prefix) && !Strings.isNullOrEmpty(uri)) {
+				name = String.format("%s:%s", prefix, name);
+				namespaces.put(prefix, uri);
+			}
+			XPath path = element.createXPath(descendant ? String.format(DESCENDANT_FMT, name) : name);
+			if (namespaces.size() > 0) {
+				path.setNamespaceURIs(namespaces);
+			}
+			
+			List<Node> nodes = path.selectNodes(element);
+			
+			for (Iterator<Node> i = nodes.iterator(); i.hasNext();) {
 				Node node = i.next();
 				
 				if (node instanceof Element) {
 					Element el = (Element)node;
 					
-					Attribute attr = el.attribute(attributeName);
-					if (attr != null && attr.getValue().equals(attributeValue)) {
+					if (attributeName != null) {
+						Attribute attr = el.attribute(attributeName);
+						if (attr != null && attr.getValue().equals(attributeValue)) {
+							result = el;
+							break;
+						}
+					} else {
 						result = el;
 						break;
 					}
@@ -122,6 +143,7 @@ public class XmlUtility {
 			try {
 				StringReader stringReader = new StringReader(xmlString);
 				SAXReader reader = new SAXReader();
+				//reader.setFeature("http://xml.org/sax/features/namespaces", false);
 				Document doc = reader.read(stringReader);
 				return doc;
 			}
