@@ -67,46 +67,46 @@ public final class SlideOutput extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slideOutputGenerator")
 	@SequenceGenerator(name = "slideOutputGenerator", sequenceName = "hbn_slide_output_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "SLIDE_ID", nullable = false)
-	public final Slide getSlide() {
+	public Slide getSlide() {
 		return slide;
 	}
 
-	public final void setSlide(Slide slide) {
+	public void setSlide(Slide slide) {
 		this.slide = slide;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "TEST_ID", nullable = false)
-	public final Test getTest() {
+	public Test getTest() {
 		return test;
 	}
 
-	public final void setTest(Test test) {
+	public void setTest(Test test) {
 		this.test = test;
 	}
 
 	@Column(name = "XML_DATA")
 	@Type(type="text")
-	public final String getXmlData() {
+	public String getXmlData() {
 		return xmlData;
 	}
 
-	public final void setXmlData(String xmlData) {
+	public void setXmlData(String xmlData) {
 		this.xmlData = xmlData;
 	}
 
 	@Column(name = "OUTPUT")
-	public final String getOutput() {
+	public String getOutput() {
 		return output;
 	}
 
-	public final void setOutput(String output) {
+	public void setOutput(String output) {
 		this.output = output;
 	}
 

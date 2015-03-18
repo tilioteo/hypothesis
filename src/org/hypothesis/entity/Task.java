@@ -57,34 +57,34 @@ public final class Task extends SerializableIdObject implements HasQueue<Slide> 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "taskGenerator")
 	@SequenceGenerator(name = "taskGenerator", sequenceName = "hbn_task_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Column(name = "NAME", nullable = false, unique = false)
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	@Column(name = "NOTE")
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
 	@Column(name = "RANDOMIZED")
-	public final Boolean isRandomized() {
+	public Boolean isRandomized() {
 		return randomized;
 	}
 	
-	public final void setRandomized(Boolean randomized) {
+	public void setRandomized(Boolean randomized) {
 		this.randomized = randomized;
 	}
 
@@ -93,7 +93,7 @@ public final class Task extends SerializableIdObject implements HasQueue<Slide> 
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	@OrderColumn(name = "RANK")
-	public final List<Slide> getSlides() {
+	public List<Slide> getSlides() {
 		return slides;
 	}
 
@@ -116,7 +116,7 @@ public final class Task extends SerializableIdObject implements HasQueue<Slide> 
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -149,7 +149,7 @@ public final class Task extends SerializableIdObject implements HasQueue<Slide> 
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 43;
 		int result = 1;
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());

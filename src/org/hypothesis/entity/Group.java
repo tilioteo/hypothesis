@@ -55,39 +55,39 @@ public final class Group extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groupGenerator")
 	@SequenceGenerator(name = "groupGenerator", sequenceName = "hbn_group_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Override
-	public final void setId(Long id) {
+	public void setId(Long id) {
 		super.setId(id);
 	}
 
 	@Column(name = "NAME", nullable = false, unique = true)
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	@Column(name = "NOTE")
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
 	@Column(name = "OWNER_ID", nullable = false)
-	public final Long getOwnerId() {
+	public Long getOwnerId() {
 		return ownerId;
 	}
 
-	public final void setOwnerId(Long ownerId) {
+	public void setOwnerId(Long ownerId) {
 		this.ownerId = ownerId;
 	}
 
@@ -96,7 +96,7 @@ public final class Group extends SerializableIdObject {
 	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "GROUP_ID"), inverseJoinColumns = @JoinColumn(name = "USER_ID"))
 	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
 	@LazyCollection(LazyCollectionOption.FALSE)
-	public final Set<User> getUsers() {
+	public Set<User> getUsers() {
 		return users;
 	}
 
@@ -104,16 +104,16 @@ public final class Group extends SerializableIdObject {
 		this.users = set;
 	}
 
-	public final void addUser(User user) {
+	public void addUser(User user) {
 		this.users.add(user);
 	}
 
-	public final void removeUser(User user) {
+	public void removeUser(User user) {
 		this.users.remove(user);
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -144,7 +144,7 @@ public final class Group extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 163;
 		int result = 1;
 		result = prime * result + (getId() == null ? 0 : getId().hashCode());
@@ -158,7 +158,7 @@ public final class Group extends SerializableIdObject {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return getName();
 	}
 

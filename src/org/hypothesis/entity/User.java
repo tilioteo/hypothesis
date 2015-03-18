@@ -81,12 +81,12 @@ public final class User extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userGenerator")
 	@SequenceGenerator(name = "userGenerator", sequenceName = "hbn_user_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Column(name = "USERNAME", nullable = false, unique = true)
-	public final String getUsername() {
+	public String getUsername() {
 		return username;
 	}
 
@@ -95,12 +95,12 @@ public final class User extends SerializableIdObject {
 	 * 
 	 * @param username
 	 */
-	public final void setUsername(String username) {
+	public void setUsername(String username) {
 		this.username = username;
 	}
 
 	@Column(name = "PASSWORD", nullable = false)
-	public final String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
@@ -109,34 +109,34 @@ public final class User extends SerializableIdObject {
 	 * 
 	 * @param password
 	 */
-	public final void setPassword(String password) {
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	@Column(name = "ENABLED", nullable = false)
-	public final Boolean getEnabled() {
+	public Boolean getEnabled() {
 		return enabled;
 	}
 
-	public final void setEnabled(Boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	@Column(name = "EXPIRE_DATE")
-	public final Date getExpireDate() {
+	public Date getExpireDate() {
 		return expireDate;
 	}
 
-	public final void setExpireDate(Date expireDate) {
+	public void setExpireDate(Date expireDate) {
 		this.expireDate = expireDate;
 	}
 
 	@Column(name = "NOTE", nullable = true)
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -144,7 +144,7 @@ public final class User extends SerializableIdObject {
 	@JoinTable(name = "TBL_USER_ROLE", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	public final Set<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return roles;
 	}
 
@@ -157,7 +157,7 @@ public final class User extends SerializableIdObject {
 	@JoinTable(name = "TBL_GROUP_USER", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "GROUP_ID"))
 	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
 	@LazyCollection(LazyCollectionOption.FALSE)
-	public final Set<Group> getGroups() {
+	public Set<Group> getGroups() {
 		return groups;
 	}
 
@@ -166,7 +166,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@Column(name = "OWNER_ID", nullable = true)
-	public final Long getOwnerId() {
+	public Long getOwnerId() {
 		return ownerId;
 	}
 
@@ -191,7 +191,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -243,7 +243,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 113;
 		int result = 1;
 		result = prime * result + (getId() == null ? 0 : getId().hashCode());
@@ -265,7 +265,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return getUsername();
 	}
 

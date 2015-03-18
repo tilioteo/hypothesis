@@ -62,37 +62,37 @@ public final class SlideOrder extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slideOrderGenerator")
 	@SequenceGenerator(name = "slideOrderGenerator", sequenceName = "hbn_slide_order_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 	
 	@ManyToOne
 	@JoinColumn(name = "TEST_ID", nullable = false)
-	public final Test getTest() {
+	public Test getTest() {
 		return test;
 	}
 
-	public final void setTest(Test test) {
+	public void setTest(Test test) {
 		this.test = test;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "TASK_ID", nullable = false)
-	public final Task getTask() {
+	public Task getTask() {
 		return task;
 	}
 
-	public final void setTask(Task task) {
+	public void setTask(Task task) {
 		this.task = task;
 	}
 
 	@Column(name = "XML_DATA")
 	@Type(type="text")
-	protected final String getData() {
+	protected String getData() {
 		return xmlData;
 	}
 
-	protected final void setData(String data) {
+	protected void setData(String data) {
 		this.xmlData = data;
 	}
 	

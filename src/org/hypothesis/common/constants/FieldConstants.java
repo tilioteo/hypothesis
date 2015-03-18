@@ -29,8 +29,11 @@ public class FieldConstants {
 	public static final String EXPIRE_DATE = "expireDate";
 	public static final String AVAILABLE_PACKS = "availablePacks";
 	public static final String PACK = "pack";
+	public static final String PACK_ID = "packId";
 	public static final String TEST = "test";
+	public static final String TEST_ID = "testId";
 	public static final String SLIDE = "slide";
+	public static final String SLIDE_ID = "slideId";
 	public static final String ENABLED_GROUPS = "enabledGroups";
 	public static final String ENABLED_USERS = "enabledUsers";
 	public static final String DISABLED_USERS = "disabledUsers";

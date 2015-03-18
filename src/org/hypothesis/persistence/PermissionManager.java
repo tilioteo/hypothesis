@@ -17,12 +17,11 @@ import org.hypothesis.entity.Group;
 import org.hypothesis.entity.GroupPermission;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.Test;
+import org.hypothesis.entity.Test.Status;
 import org.hypothesis.entity.User;
 import org.hypothesis.entity.UserPermission;
-import org.hypothesis.entity.Test.Status;
 import org.hypothesis.persistence.hibernate.GroupPermissionDao;
 import org.hypothesis.persistence.hibernate.PackDao;
-import org.hypothesis.persistence.hibernate.SlideOutputDao;
 import org.hypothesis.persistence.hibernate.TestDao;
 import org.hypothesis.persistence.hibernate.UserPermissionDao;
 
@@ -45,7 +44,7 @@ public class PermissionManager {
 	
 	protected PermissionManager(UserPermissionDao userPermitionDao,
 			GroupPermissionDao groupPermitionDao) {
-		this(userPermitionDao, groupPermitionDao, new TestManager(new TestDao(), new SlideOutputDao()));
+		this(userPermitionDao, groupPermitionDao, new TestManager(new TestDao()));
 	}
 
 	protected PermissionManager(UserPermissionDao userPermitionDao,

@@ -156,7 +156,7 @@ public final class Test extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "testGenerator")
 	@SequenceGenerator(name = "testGenerator", sequenceName = "hbn_test_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
@@ -170,7 +170,7 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@Column(name = "CREATED", nullable = false)
-	public final Date getCreated() {
+	public Date getCreated() {
 		return created;
 	}
 
@@ -179,53 +179,53 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@Column(name = "STARTED")
-	public final Date getStarted() {
+	public Date getStarted() {
 		return started;
 	}
 
-	public final void setStarted(Date started) {
+	public void setStarted(Date started) {
 		this.started = started;
 	}
 
 	@Column(name = "FINISHED")
-	public final Date getFinished() {
+	public Date getFinished() {
 		return finished;
 	}
 
-	public final void setFinished(Date finished) {
+	public void setFinished(Date finished) {
 		this.finished = finished;
 	}
 
 	@Column(name = "BROKEN")
-	public final Date getBroken() {
+	public Date getBroken() {
 		return broken;
 	}
 
-	public final void setBroken(Date broken) {
+	public void setBroken(Date broken) {
 		this.broken = broken;
 	}
 
 	@Column(name = "LAST_ACCESS", nullable = false)
-	public final Date getLastAccess() {
+	public Date getLastAccess() {
 		return lastAccess;
 	}
 
-	public final void setLastAccess(Date lastAccess) {
+	public void setLastAccess(Date lastAccess) {
 		this.lastAccess = lastAccess;
 	}
 
 	@Column(name = "STATUS", nullable = false)
-	public final Status getStatus() {
+	public Status getStatus() {
 		return Status.get(status);
 	}
 
-	public final void setStatus(Status status) {
+	public void setStatus(Status status) {
 		this.status = status.getCode();
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "USER_ID")
-	public final User getUser() {
+	public User getUser() {
 		return user;
 	}
 
@@ -235,7 +235,7 @@ public final class Test extends SerializableIdObject {
 
 	@ManyToOne
 	@JoinColumn(name = "PACK_ID", nullable = false)
-	public final Pack getPack() {
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -246,31 +246,31 @@ public final class Test extends SerializableIdObject {
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinColumn(name = "LAST_BRANCH_ID")
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Branch getLastBranch() {
+	public Branch getLastBranch() {
 		return lastBranch;
 	}
 
-	public final void setLastBranch(Branch branch) {
+	public void setLastBranch(Branch branch) {
 		this.lastBranch = branch;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "LAST_TASK_ID")
-	public final Task getLastTask() {
+	public Task getLastTask() {
 		return lastTask;
 	}
 
-	public final void setLastTask(Task task) {
+	public void setLastTask(Task task) {
 		this.lastTask = task;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "LAST_SLIDE_ID")
-	public final Slide getLastSlide() {
+	public Slide getLastSlide() {
 		return lastSlide;
 	}
 
-	public final void setLastSlide(Slide slide) {
+	public void setLastSlide(Slide slide) {
 		this.lastSlide = slide;
 	}
 
@@ -279,7 +279,7 @@ public final class Test extends SerializableIdObject {
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	@OrderColumn(name = "RANK")
-	public final List<Event> getEvents() {
+	public List<Event> getEvents() {
 		return events;
 	}
 
@@ -297,7 +297,7 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -375,7 +375,7 @@ public final class Test extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 79;
 		int result = 1;
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());

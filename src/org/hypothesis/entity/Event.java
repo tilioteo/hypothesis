@@ -98,7 +98,7 @@ public final class Event extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "eventGenerator")
 	@SequenceGenerator(name = "eventGenerator", sequenceName = "hbn_event_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
@@ -112,7 +112,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Column(name = "TYPE", nullable = false)
-	public final Long getType() {
+	public Long getType() {
 		return type;
 	}
 
@@ -121,7 +121,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Column(name = "NAME")
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -131,41 +131,41 @@ public final class Event extends SerializableIdObject {
 
 	@Column(name = "XML_DATA")
 	@Type(type="text")
-	public final String getXmlData() {
+	public String getXmlData() {
 		return xmlData;
 	}
 
-	public final void setXmlData(String xmlData) {
+	public void setXmlData(String xmlData) {
 		this.xmlData = xmlData;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "BRANCH_ID")
-	public final Branch getBranch() {
+	public Branch getBranch() {
 		return branch;
 	}
 
-	public final void setBranch(Branch branch) {
+	public void setBranch(Branch branch) {
 		this.branch = branch;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "TASK_ID")
-	public final Task getTask() {
+	public Task getTask() {
 		return task;
 	}
 
-	public final void setTask(Task task) {
+	public void setTask(Task task) {
 		this.task = task;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "SLIDE_ID")
-	public final Slide getSlide() {
+	public Slide getSlide() {
 		return slide;
 	}
 
-	public final void setSlide(Slide slide) {
+	public void setSlide(Slide slide) {
 		this.slide = slide;
 	}
 
@@ -175,7 +175,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -235,7 +235,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 101;
 		int result = 1;
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());

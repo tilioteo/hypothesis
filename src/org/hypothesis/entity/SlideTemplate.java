@@ -49,7 +49,7 @@ public final class SlideTemplate extends SerializableUidObject {
 	@Override
 	@Id
 	@Column(name = "UID")
-	public final String getUid() {
+	public String getUid() {
 		return super.getUid();
 	}
 
@@ -64,11 +64,11 @@ public final class SlideTemplate extends SerializableUidObject {
 	}
 
 	@Column(name = "NOTE")
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -131,7 +131,7 @@ public final class SlideTemplate extends SerializableUidObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -159,7 +159,7 @@ public final class SlideTemplate extends SerializableUidObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 3;
 		int result = 1;
 		// result = prime * result + ((getId() == null) ? 0 :

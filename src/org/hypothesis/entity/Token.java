@@ -68,7 +68,7 @@ public final class Token extends SerializableUidObject {
 	@Override
 	@Id
 	@Column(name = "UID")
-	public final String getUid() {
+	public String getUid() {
 		return uid;
 	}
 
@@ -83,7 +83,7 @@ public final class Token extends SerializableUidObject {
 
 	@ManyToOne
 	@JoinColumn(name = "USER_ID", nullable = false)
-	public final User getUser() {
+	public User getUser() {
 		return user;
 	}
 
@@ -93,7 +93,7 @@ public final class Token extends SerializableUidObject {
 
 	@ManyToOne
 	@JoinColumn(name = "PACK_ID", nullable = false)
-	public final Pack getPack() {
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -102,7 +102,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@Column(name = "DATETIME")
-	public final Date getDatetime() {
+	public Date getDatetime() {
 		return datetime;
 	}
 
@@ -111,7 +111,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -149,7 +149,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 211;
 		int result = 1;
 		result = prime * result

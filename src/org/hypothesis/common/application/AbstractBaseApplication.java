@@ -19,7 +19,6 @@ import org.hypothesis.persistence.PermissionManager;
 import org.hypothesis.persistence.TestManager;
 import org.hypothesis.persistence.UserGroupManager;
 import org.hypothesis.persistence.hibernate.GroupDao;
-import org.hypothesis.persistence.hibernate.SlideOutputDao;
 import org.hypothesis.persistence.hibernate.TestDao;
 import org.hypothesis.persistence.hibernate.UserDao;
 
@@ -158,7 +157,7 @@ public abstract class AbstractBaseApplication extends AbstractHibernateApplicati
 				new GroupDao());
 		permissionManager = PermissionManager.newInstance();
 		
-		testManager = new TestManager(new TestDao(), new SlideOutputDao());
+		testManager = new TestManager(new TestDao());
 	}
 
 	public abstract void loadProtectedResources();

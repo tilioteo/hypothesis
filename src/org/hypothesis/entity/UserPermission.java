@@ -80,14 +80,14 @@ public final class UserPermission extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "userPermissionGenerator")
 	@SequenceGenerator(name = "userPermissionGenerator", sequenceName = "hbn_user_permission_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinColumn(name = "USER_ID", nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final User getUser() {
+	public User getUser() {
 		return user;
 	}
 
@@ -98,7 +98,7 @@ public final class UserPermission extends SerializableIdObject {
 	@ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinColumn(name = "PACK_ID", nullable = false)
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final Pack getPack() {
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -107,25 +107,25 @@ public final class UserPermission extends SerializableIdObject {
 	}
 
 	@Column(name = "ENABLED", nullable = false)
-	public final Boolean getEnabled() {
+	public Boolean getEnabled() {
 		return enabled;
 	}
 
-	public final void setEnabled(Boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	@Column(name = "PASS")
-	public final Integer getPass() {
+	public Integer getPass() {
 		return pass;
 	}
 
-	public final void setPass(Integer pass) {
+	public void setPass(Integer pass) {
 		this.pass = pass;
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -162,7 +162,7 @@ public final class UserPermission extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 199;
 		int result = 1;
 		// result = prime * result + ((getId() == null) ? 0 :

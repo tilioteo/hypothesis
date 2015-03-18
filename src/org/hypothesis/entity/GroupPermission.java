@@ -54,13 +54,13 @@ public final class GroupPermission extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "groupPermissionGenerator")
 	@SequenceGenerator(name = "groupPermissionGenerator", sequenceName = "hbn_group_permission_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "GROUP_ID", nullable = false)
-	public final Group getGroup() {
+	public Group getGroup() {
 		return group;
 	}
 
@@ -70,7 +70,7 @@ public final class GroupPermission extends SerializableIdObject {
 
 	@ManyToOne
 	@JoinColumn(name = "PACK_ID", nullable = false)
-	public final Pack getPack() {
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -79,7 +79,7 @@ public final class GroupPermission extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -106,7 +106,7 @@ public final class GroupPermission extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 181;
 		int result = 1;
 		// result = prime * result + ((getId() == null) ? 0 :

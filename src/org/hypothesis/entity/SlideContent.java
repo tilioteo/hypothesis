@@ -72,13 +72,13 @@ public final class SlideContent extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "slideContentGenerator")
 	@SequenceGenerator(name = "slideContentGenerator", sequenceName = "hbn_slide_content_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "SLIDE_TEMPLATE_UID", nullable = false)
-	public final SlideTemplate getTemplate() {
+	public SlideTemplate getTemplate() {
 		return template;
 	}
 
@@ -97,11 +97,11 @@ public final class SlideContent extends SerializableIdObject {
 	}
 
 	@Column(name = "NOTE")
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -166,7 +166,7 @@ public final class SlideContent extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -194,7 +194,7 @@ public final class SlideContent extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 13;
 		int result = 1;
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());

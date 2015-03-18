@@ -60,13 +60,13 @@ public final class BranchTrek extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchTrekGenerator")
 	@SequenceGenerator(name = "branchTrekGenerator", sequenceName = "hbn_branch_trek_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
 	@JoinColumn(name = "PACK_ID", nullable = false)
-	public final Pack getPack() {
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -75,7 +75,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@Column(name = "KEY", nullable = false)
-	public final String getKey() {
+	public String getKey() {
 		return key;
 	}
 
@@ -85,7 +85,7 @@ public final class BranchTrek extends SerializableIdObject {
 
 	@ManyToOne
 	@JoinColumn(name = "BRANCH_ID", nullable = false)
-	public final Branch getBranch() {
+	public Branch getBranch() {
 		return branch;
 	}
 
@@ -95,7 +95,7 @@ public final class BranchTrek extends SerializableIdObject {
 
 	@ManyToOne
 	@JoinColumn(name = "NEXT_BRANCH_ID", nullable = false)
-	public final Branch getNextBranch() {
+	public Branch getNextBranch() {
 		return nextBranch;
 	}
 
@@ -104,7 +104,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -141,7 +141,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());

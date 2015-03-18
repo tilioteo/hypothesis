@@ -63,43 +63,43 @@ public final class Pack extends SerializableIdObject implements HasQueue<Branch>
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "packGenerator")
 	@SequenceGenerator(name = "packGenerator", sequenceName = "hbn_pack_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Column(name = "NAME", nullable = false, unique = true)
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	@Column(name = "DESCRIPTION")
-	public final String getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public final void setDescription(String description) {
+	public void setDescription(String description) {
 		this.description = description;
 	}
 
 	@Column(name = "PUBLISHED")
-	public final Boolean getPublished() {
+	public Boolean getPublished() {
 		return published;
 	}
 
-	public final void setPublished(Boolean published) {
+	public void setPublished(Boolean published) {
 		this.published = published;
 	}
 
 	@Column(name = "NOTE")
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -108,7 +108,7 @@ public final class Pack extends SerializableIdObject implements HasQueue<Branch>
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	@OrderColumn(name="RANK")
-	public final List<Branch> getBranches() {
+	public List<Branch> getBranches() {
 		return branches;
 	}
 
@@ -130,7 +130,7 @@ public final class Pack extends SerializableIdObject implements HasQueue<Branch>
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -173,7 +173,7 @@ public final class Pack extends SerializableIdObject implements HasQueue<Branch>
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 67;
 		int result = 1;
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());

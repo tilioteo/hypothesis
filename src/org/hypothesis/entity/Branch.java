@@ -70,16 +70,16 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branchGenerator")
 	@SequenceGenerator(name = "branchGenerator", sequenceName = "hbn_branch_seq", initialValue = 1, allocationSize = 1)
 	@Column(name = "ID")
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Column(name = "NOTE")
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -98,7 +98,7 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	@OrderColumn(name = "RANK")
-	public final List<Task> getTasks() {
+	public List<Task> getTasks() {
 		return tasks;
 	}
 
@@ -147,7 +147,7 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -175,7 +175,7 @@ public final class Branch extends SerializableIdObject implements HasQueue<Task>
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		final int prime = 61;
 		int result = 1;
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
