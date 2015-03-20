@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -81,6 +82,8 @@ public final class Event extends SerializableIdObject {
 	 * current processing slide
 	 */
 	private Slide slide;
+	
+	private Test test;
 
 	protected Event() {
 		super();
@@ -168,7 +171,18 @@ public final class Event extends SerializableIdObject {
 	public void setSlide(Slide slide) {
 		this.slide = slide;
 	}
-
+	
+	@ManyToOne
+	@JoinTable(name="TBL_TEST_EVENT",
+		joinColumns={@JoinColumn(name="EVENT_ID", insertable=false,updatable=false)},inverseJoinColumns={@JoinColumn(name="TEST_ID", insertable=false,updatable=false)})
+	public Test getTest() {
+		return test;
+	}
+	
+	protected void setTest(Test test) {
+		this.test = test;
+	}
+	
 	@Transient
 	public final Date getDatetime() {
 		return new Date(getTimeStamp());

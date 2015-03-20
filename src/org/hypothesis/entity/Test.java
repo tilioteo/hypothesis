@@ -274,7 +274,7 @@ public final class Test extends SerializableIdObject {
 		this.lastSlide = slide;
 	}
 
-	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }/*, mappedBy="test"*/)
 	@JoinTable(name = "TBL_TEST_EVENT", joinColumns = @JoinColumn(name = "TEST_ID"), inverseJoinColumns = @JoinColumn(name = "EVENT_ID"))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)

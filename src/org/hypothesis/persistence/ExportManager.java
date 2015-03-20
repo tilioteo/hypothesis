@@ -11,9 +11,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.common.constants.FieldConstants;
 import org.hypothesis.entity.ExportEvent;
-import org.hypothesis.entity.ExportOutput;
 import org.hypothesis.persistence.hibernate.ExportEventDao;
-import org.hypothesis.persistence.hibernate.ExportOutputDao;
 
 /**
  * @author kamil
@@ -22,15 +20,13 @@ import org.hypothesis.persistence.hibernate.ExportOutputDao;
 public class ExportManager {
 
 	private ExportEventDao exportEventDao;
-	private ExportOutputDao exportOutputDao;
 
 	public static ExportManager newInstance() {
-		return new ExportManager(new ExportEventDao(), new ExportOutputDao());
+		return new ExportManager(new ExportEventDao());
 	}
 	
-	public ExportManager(ExportEventDao exportEventDao, ExportOutputDao exportOutputDao) {
+	public ExportManager(ExportEventDao exportEventDao) {
 		this.exportEventDao = exportEventDao;
-		this.exportOutputDao = exportOutputDao;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -69,31 +65,6 @@ public class ExportManager {
 			
 		} catch (Throwable e) {
 			exportEventDao.rollback();
-		}
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	public ExportOutput findExportOutput(Long testId, Long slideId) {
-		try {
-			exportOutputDao.beginTransaction();
-			
-			Criteria criteria = exportOutputDao.createCriteria();
-			criteria.add(Restrictions.and(
-					Restrictions.eq(FieldConstants.TEST_ID, testId),
-					Restrictions.eq(FieldConstants.SLIDE_ID, slideId)));
-			
-			criteria.addOrder(Order.asc(FieldConstants.ID));
-
-			List<ExportOutput> exportOutputs = criteria.list();
-			exportOutputDao.commit();
-			
-			if (!exportOutputs.isEmpty()) {
-				return exportOutputs.get(0);
-			}
-		} catch (Throwable e) {
-			exportOutputDao.rollback();
-			e.getMessage();
 		}
 		return null;
 	}

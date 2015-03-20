@@ -24,9 +24,8 @@ import org.hypothesis.application.ManagerApplication;
 import org.hypothesis.common.i18n.ApplicationMessages;
 import org.hypothesis.common.i18n.Messages;
 import org.hypothesis.core.DateUtil;
-import org.hypothesis.core.SlideOutputParser;
+import org.hypothesis.core.SlideDataParser;
 import org.hypothesis.entity.ExportEvent;
-import org.hypothesis.entity.ExportOutput;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.User;
 import org.hypothesis.persistence.ExportManager;
@@ -195,10 +194,20 @@ public class ExportTests extends VerticalLayout implements Window.CloseListener 
 				header.createCell(8).setCellValue("branch_id");
 				header.createCell(9).setCellValue("task_id");
 				header.createCell(10).setCellValue("slide_id");
-				header.createCell(11).setCellValue("slide_output");
-				header.createCell(12).setCellValue("slide_data");
+				header.createCell(11).setCellValue("output_value1");
+				header.createCell(12).setCellValue("output_value2");
+				header.createCell(13).setCellValue("output_value3");
+				header.createCell(14).setCellValue("output_value4");
+				header.createCell(15).setCellValue("output_value5");
+				header.createCell(16).setCellValue("output_value6");
+				header.createCell(17).setCellValue("output_value7");
+				header.createCell(18).setCellValue("output_value8");
+				header.createCell(19).setCellValue("output_value9");
+				header.createCell(20).setCellValue("output_value10");
 				
-				int fieldCol = 12;
+				int outputValueCol = 11;
+				int fieldCol = outputValueCol + 10;
+				
 				HashMap<String, Integer> fieldColumnMap = new HashMap<String, Integer>();
 	
 				int rowNr = 1;
@@ -247,25 +256,26 @@ public class ExportTests extends VerticalLayout implements Window.CloseListener 
 							row.createCell(10).setCellValue(slideId);
 						
 							if ("FINISH_SLIDE".equalsIgnoreCase(eventName)) {
-								ExportOutput exportOutput = exportManager.findExportOutput(testId, slideId);
 								// write slide output properties
-								if (exportOutput != null) {
-									String outputString = SlideOutputParser.parseOutput(exportOutput.getOutput());
-									if (outputString != null) {
-										row.createCell(11).setCellValue(outputString);
+								String xmlData = event.getXmlData();
+								int colNr;	
+
+								if (xmlData != null) {
+									colNr = outputValueCol;
+									List<String> outputValues = SlideDataParser.parseOutputValues(xmlData);
+									for (String outputValue : outputValues) {
+										if (outputValue != null) {
+											row.createCell(colNr).setCellValue(outputValue);
+										}
+										++colNr;
 									}
-									String xmlData = exportOutput.getXmlData();
-									if (xmlData != null) {
-										row.createCell(12).setCellValue(xmlData);
-									}
-									Map<String, String> fieldMap = SlideOutputParser.parseData(xmlData);
-										
+
+									Map<String, String> fieldMap = SlideDataParser.parseFields(xmlData);
 									for (String fieldName : fieldMap.keySet()) {
-										int colNr; 
 										if (fieldColumnMap.containsKey(fieldName)) {
 											colNr = fieldColumnMap.get(fieldName);
 										} else {
-											colNr = ++fieldCol;
+											colNr = fieldCol++;
 											fieldColumnMap.put(fieldName, colNr);
 											header.createCell(colNr).setCellValue(fieldName);
 										}
@@ -306,7 +316,7 @@ public class ExportTests extends VerticalLayout implements Window.CloseListener 
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Set the table of groups
 	 */

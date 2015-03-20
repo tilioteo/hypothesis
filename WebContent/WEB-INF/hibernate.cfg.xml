@@ -39,7 +39,6 @@
 
         -->
   <mapping class="org.hypothesis.entity.SlideTemplate"/>
-  <mapping class="org.hypothesis.entity.SlideContent"/>
   <mapping class="org.hypothesis.entity.Slide"/>
   <mapping class="org.hypothesis.entity.SlideOrder"/>
   <mapping class="org.hypothesis.entity.SlideOutput"/>
@@ -57,6 +56,5 @@
   <mapping class="org.hypothesis.entity.UserPermission"/>
   <mapping class="org.hypothesis.entity.GroupPermission"/>
   <mapping class="org.hypothesis.entity.ExportEvent"/>
-  <mapping class="org.hypothesis.entity.ExportOutput"/>
  </session-factory>
 </hibernate-configuration>
