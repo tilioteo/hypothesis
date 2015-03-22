@@ -58,34 +58,34 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.TASK_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.TASK_GENERATOR, sequenceName = EntityTableConstants.TASK_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = false)
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	@Column(name = EntityFieldConstants.NOTE)
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 	
 	@Column(name = EntityFieldConstants.RANDOMIZED)
-	public final boolean isRandomized() {
+	public boolean isRandomized() {
 		return randomized;
 	}
 	
-	public final void setRandomized(Boolean randomized) {
+	public void setRandomized(Boolean randomized) {
 		this.randomized = randomized != null ? randomized : false;
 	}
 
@@ -118,7 +118,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -166,7 +166,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		String name = getName();
 		String note = getNote();

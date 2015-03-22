@@ -117,7 +117,7 @@ public class SimpleTest extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.TEST_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.TEST_GENERATOR, sequenceName = EntityTableConstants.TEST_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 

@@ -167,7 +167,8 @@ public class SlideXmlUtility {
 		return element.attributeValue(SlideXmlConstants.ID);
 	}
 
-	public static Element getInputValueElement(Element documentRoot) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<Element> getInputValueElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS
 					.contains(documentRoot.getName())) {
@@ -175,13 +176,8 @@ public class SlideXmlUtility {
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
-			Node node = XmlUtility.findFirstNodeByName(documentRoot,
-					SlideXmlConstants.INPUT_VALUE);
-			if (node != null && node instanceof Element) {
-				return (Element) node;
-			} else {
-				// throw new DocumentRootNoViewportException(documentRoot);
-			}
+			List<Element> elements = (List<Element>)(List)XmlUtility.findNodesByNameStarting(documentRoot, SlideXmlConstants.INPUT_VALUE);
+			return  elements;
 		}
 
 		return null;
@@ -197,7 +193,8 @@ public class SlideXmlUtility {
 		return element.attributeValue(SlideXmlConstants.NAME);
 	}
 
-	public static Element getOutputValueElement(Element documentRoot) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static List<Element> getOutputValueElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!SlideXmlConstants.VALID_SLIDE_ROOT_ELEMENTS
 					.contains(documentRoot.getName())) {
@@ -205,13 +202,8 @@ public class SlideXmlUtility {
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
-			Node node = XmlUtility.findFirstNodeByName(documentRoot,
-					SlideXmlConstants.OUTPUT_VALUE);
-			if (node != null && node instanceof Element) {
-				return (Element) node;
-			} else {
-				// throw new DocumentRootNoViewportException(documentRoot);
-			}
+			List<Element> elements = (List<Element>)(List)XmlUtility.findNodesByNameStarting(documentRoot, SlideXmlConstants.OUTPUT_VALUE);
+			return  elements;
 		}
 
 		return null;
@@ -453,84 +445,4 @@ public class SlideXmlUtility {
 		return (doc != null && doc.getRootElement() != null && doc
 				.getRootElement().getName().equals(SlideXmlConstants.SLIDE));
 	}
-
-	/*
-	 * public static String getEvaluationXmlString(Document doc) { if (doc !=
-	 * null && isValidSlideXml(doc)) { Node node =
-	 * Utility.findFirstNodeByName(doc.getRootElement(),
-	 * SlideXmlConstants.EVALUATION); if (node != null) { Document newDoc =
-	 * Utility.createDocument(); Element newRoot =
-	 * newDoc.addElement(SlideXmlConstants.SLIDE);
-	 * newRoot.add((Node)node.clone()); return Utility.writeString(newDoc); } }
-	 * 
-	 * return null; }
-	 */
-
-	/*
-	 * public static List<Node> getChoiceNodes(Node parent) { return
-	 * getChoiceNodes(parent, true); }
-	 * 
-	 * public static List<Node> getChoiceNodes(Node parent, boolean sublevel) {
-	 * return getNodesByFilter(parent,
-	 * SlideXmlNodeFilterConstants.FILTER_CHOICES, sublevel); }
-	 */
-
-	/*
-	 * public static List<Node> getLayerNodes(Node parent) { return
-	 * getLayerNodes(parent, true); }
-	 * 
-	 * public static List<Node> getLayerNodes(Node parent, boolean sublevel) {
-	 * return getNodesByFilter(parent,
-	 * SlideXmlNodeFilterConstants.FILTER_LAYERS, sublevel); }
-	 * 
-	 * public static List<Node> getControlNodes(Node parent) { return
-	 * getControlNodes(parent, true); }
-	 * 
-	 * public static List<Node> getControlNodes(Node parent, boolean sublevel) {
-	 * return getNodesByFilter(parent,
-	 * SlideXmlNodeFilterConstants.FILTER_CONTROLS, sublevel); }
-	 * 
-	 * public static List<Node> getStyleNodes(Node parent) { return
-	 * getStyleNodes(parent, true); }
-	 * 
-	 * public static List<Node> getStyleNodes(Node parent, boolean sublevel) {
-	 * return getNodesByFilter(parent,
-	 * SlideXmlNodeFilterConstants.FILTER_STYLES, sublevel); }
-	 * 
-	 * public static List<Node> getStyleMapNodes(Node parent) { return
-	 * getStyleMapNodes(parent, true); }
-	 * 
-	 * public static List<Node> getStyleMapNodes(Node parent, boolean sublevel)
-	 * { return getNodesByFilter(parent,
-	 * SlideXmlNodeFilterConstants.FILTER_STYLE_MAPS, sublevel); }
-	 * 
-	 * public static List<Node> getIconNodes(Node parent) { return
-	 * getIconNodes(parent, true); }
-	 * 
-	 * public static List<Node> getIconNodes(Node parent, boolean sublevel) {
-	 * return getNodesByFilter(parent, SlideXmlNodeFilterConstants.FILTER_ICONS,
-	 * sublevel); }
-	 * 
-	 * public static List<Node> getMarkerNodes(Node parent) { return
-	 * getMarkerNodes(parent, true); }
-	 * 
-	 * public static List<Node> getMarkerNodes(Node parent, boolean sublevel) {
-	 * return getNodesByFilter(parent,
-	 * SlideXmlNodeFilterConstants.FILTER_MARKERS, sublevel); }
-	 * 
-	 * public static List<Node> getFeatureNodes(Node parent) { return
-	 * getFeatureNodes(parent, true); }
-	 * 
-	 * public static List<Node> getFeatureNodes(Node parent, boolean sublevel) {
-	 * return getNodesByFilter(parent,
-	 * SlideXmlNodeFilterConstants.FILTER_FEATURES, sublevel); }
-	 * 
-	 * public static List<Node> getAttributeNodes(Node parent) { return
-	 * getAttributeNodes(parent, true); }
-	 * 
-	 * public static List<Node> getAttributeNodes(Node parent, boolean sublevel)
-	 * { return getNodesByFilter(parent,
-	 * SlideXmlNodeFilterConstants.FILTER_ATTRIBUTES, sublevel); }
-	 */
-
 }

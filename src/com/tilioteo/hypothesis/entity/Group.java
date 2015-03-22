@@ -57,39 +57,39 @@ public final class Group extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.GROUP_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.GROUP_GENERATOR, sequenceName = EntityTableConstants.GROUP_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Override
-	public final void setId(Long id) {
+	public void setId(Long id) {
 		super.setId(id);
 	}
 
 	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	@Column(name = EntityFieldConstants.NOTE)
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
 	@Column(name = EntityFieldConstants.OWNER_ID, nullable = false)
-	public final Long getOwnerId() {
+	public Long getOwnerId() {
 		return ownerId;
 	}
 
-	public final void setOwnerId(Long ownerId) {
+	public void setOwnerId(Long ownerId) {
 		this.ownerId = ownerId;
 	}
 
@@ -114,7 +114,7 @@ public final class Group extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -168,7 +168,7 @@ public final class Group extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		String name = getName();
 		String note = getNote();
@@ -186,7 +186,7 @@ public final class Group extends SerializableIdObject {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return getName();
 	}
 

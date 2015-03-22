@@ -16,8 +16,6 @@ public class SlideXmlConstants {
 	public static final String SLIDE_TEMPLATE = "SlideTemplate";
 	public static final String SLIDE_CONTENT = "SlideContent";
 	public static final String SLIDE = "Slide";
-	public static final String SLIDE_DATA = "SlideData";
-	public static final String SLIDE_OUTPUT = "SlideOutput";
 	public static final String VIEWPORT = "Viewport";
 	public static final String WINDOWS = "Windows";
 	public static final String WINDOW = "Window";
@@ -28,6 +26,7 @@ public class SlideXmlConstants {
 	public static final String TIMERS = "Timers";
 	public static final String TIMER = "Timer";
 	public static final String INPUT_VALUE = "InputValue";
+	public static final String OUTPUT_VALUES = "OutputValues";
 	public static final String OUTPUT_VALUE = "OutputValue";
 	public static final String COMPONENTS = "Components";
 	public static final String COMPONENT = "Component";
@@ -128,6 +127,7 @@ public class SlideXmlConstants {
 	public static final String FIELD = "Field";
 
 	public static final String EVENT_DATA = "EventData";
+	public static final String SLIDE_OUTPUT = "SlideOutput";
 	public static final String COMPONENT_DATA = "ComponentData";
 	public static final String NAVIGATOR = "Navigator";
 	public static final String SOURCES = "Sources";

@@ -69,46 +69,46 @@ public final class BranchOutput extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_OUTPUT_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.BRANCH_OUTPUT_GENERATOR, sequenceName = EntityTableConstants.BRANCH_OUTPUT_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.BRANCH_ID, nullable = false)
-	public final Branch getBranch() {
+	public Branch getBranch() {
 		return branch;
 	}
 
-	public final void setBranch(Branch branch) {
+	public void setBranch(Branch branch) {
 		this.branch = branch;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.TEST_ID, nullable = false)
-	public final SimpleTest getTest() {
+	public SimpleTest getTest() {
 		return test;
 	}
 
-	public final void setTest(SimpleTest test) {
+	public void setTest(SimpleTest test) {
 		this.test = test;
 	}
 
 	@Column(name = EntityFieldConstants.XML_DATA)
 	@Type(type="text")
-	public final String getXmlData() {
+	public String getXmlData() {
 		return xmlData;
 	}
 
-	public final void setXmlData(String data) {
+	public void setXmlData(String data) {
 		this.xmlData = data;
 	}
 
 	@Column(name = EntityFieldConstants.OUTPUT)
-	public final String getOutput() {
+	public String getOutput() {
 		return output;
 	}
 
-	public final void setOutput(String output) {
+	public void setOutput(String output) {
 		this.output = output;
 	}
 

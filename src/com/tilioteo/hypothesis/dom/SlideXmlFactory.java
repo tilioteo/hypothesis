@@ -99,8 +99,8 @@ public class SlideXmlFactory {
 		
 		log.debug(String.format("getSlideXml(slide:%d)", slide.getId()));
 
-		Document slideTemplate = slide.getContent().getTemplateDocument();
-		Document slideContent = slide.getContent().getDocument();
+		Document slideTemplate = slide.getTemplateDocument();
+		Document slideContent = slide.getDocument();
 
 		if (slideTemplate == null)
 			log.warn(String.format("Template document is NULL (slide:%d)", slide.getId()));
@@ -124,18 +124,6 @@ public class SlideXmlFactory {
 		Document eventData = XmlUtility.createDocument();
 		eventData.addElement(SlideXmlConstants.EVENT_DATA);
 		return eventData;
-	}
-
-	public static Document createSlideDataXml() {
-		Document slideData = XmlUtility.createDocument();
-		slideData.addElement(SlideXmlConstants.SLIDE_DATA);
-		return slideData;
-	}
-
-	public static Document createSlideOutputXml() {
-		Document slideOutput = XmlUtility.createDocument();
-		slideOutput.addElement(SlideXmlConstants.SLIDE_OUTPUT);
-		return slideOutput;
 	}
 
 	private static void mergeBindingNodes(Document doc,	Element destinationElement, Element sourceSubElement) {

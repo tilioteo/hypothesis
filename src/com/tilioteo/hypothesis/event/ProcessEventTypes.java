@@ -117,6 +117,10 @@ public class ProcessEventTypes {
 	public static ProcessEventType get(String key) {
 		return events.get(key);
 	}
+	
+	public static Long getFinishSlideEventId() {
+		return get(FinishSlide).getId();
+	}
 
 	public static void registerEvent(String name) {
 		if (!events.containsKey(name)) {

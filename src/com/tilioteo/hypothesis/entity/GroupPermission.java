@@ -55,13 +55,13 @@ public final class GroupPermission extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.GROUP_PERMISSION_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.GROUP_PERMISSION_GENERATOR, sequenceName = EntityTableConstants.GROUP_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.GROUP_ID, nullable = false)
-	public final Group getGroup() {
+	public Group getGroup() {
 		return group;
 	}
 
@@ -71,7 +71,7 @@ public final class GroupPermission extends SerializableIdObject {
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
-	public final Pack getPack() {
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -80,7 +80,7 @@ public final class GroupPermission extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -120,7 +120,7 @@ public final class GroupPermission extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		Group group = getGroup();
 		Pack pack = getPack();

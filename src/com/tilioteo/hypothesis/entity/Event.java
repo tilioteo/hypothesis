@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -77,6 +78,11 @@ public final class Event extends SerializableIdObject {
 	 */
 	private Slide slide;
 
+	/**
+	 * linked test
+	 */
+	private Test test;
+
 	protected Event() {
 		super();
 	}
@@ -93,7 +99,7 @@ public final class Event extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.EVENT_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.EVENT_GENERATOR, sequenceName = EntityTableConstants.EVENT_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
@@ -107,7 +113,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Column(name = EntityFieldConstants.TYPE, nullable = false)
-	public final Long getType() {
+	public Long getType() {
 		return type;
 	}
 
@@ -116,7 +122,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Column(name = EntityFieldConstants.NAME)
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -126,51 +132,63 @@ public final class Event extends SerializableIdObject {
 
 	@Column(name = EntityFieldConstants.XML_DATA)
 	@Type(type="text")
-	public final String getXmlData() {
+	public String getXmlData() {
 		return xmlData;
 	}
 
-	public final void setXmlData(String xmlData) {
+	public void setXmlData(String xmlData) {
 		this.xmlData = xmlData;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.BRANCH_ID)
-	public final Branch getBranch() {
+	public Branch getBranch() {
 		return branch;
 	}
 
-	public final void setBranch(Branch branch) {
+	public void setBranch(Branch branch) {
 		this.branch = branch;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.TASK_ID)
-	public final Task getTask() {
+	public Task getTask() {
 		return task;
 	}
 
-	public final void setTask(Task task) {
+	public void setTask(Task task) {
 		this.task = task;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.SLIDE_ID)
-	public final Slide getSlide() {
+	public Slide getSlide() {
 		return slide;
 	}
 
-	public final void setSlide(Slide slide) {
+	public void setSlide(Slide slide) {
 		this.slide = slide;
 	}
 
+	@ManyToOne
+	@JoinTable(name = EntityTableConstants.TEST_EVENT_TABLE,
+		joinColumns = {@JoinColumn(name = EntityFieldConstants.EVENT_ID, insertable = false, updatable = false)},
+		inverseJoinColumns = {@JoinColumn(name = EntityFieldConstants.TEST_ID, insertable = false, updatable = false)})
+	public Test getTest() {
+		return test;
+	}
+	
+	protected void setTest(Test test) {
+		this.test = test;
+	}
+	
 	@Transient
 	public final Date getDatetime() {
 		return new Date(getTimeStamp());
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -250,7 +268,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		Long timeStamp = getTimeStamp();
 		Long type = getType();

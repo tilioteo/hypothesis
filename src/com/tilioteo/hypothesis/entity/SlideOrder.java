@@ -64,37 +64,37 @@ public final class SlideOrder extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.SLIDE_ORDER_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.SLIDE_ORDER_GENERATOR, sequenceName = EntityTableConstants.SLIDE_ORDER_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 	
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.TEST_ID, nullable = false)
-	public final SimpleTest getTest() {
+	public SimpleTest getTest() {
 		return test;
 	}
 
-	public final void setTest(SimpleTest test) {
+	public void setTest(SimpleTest test) {
 		this.test = test;
 	}
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.TASK_ID, nullable = false)
-	public final Task getTask() {
+	public Task getTask() {
 		return task;
 	}
 
-	public final void setTask(Task task) {
+	public void setTask(Task task) {
 		this.task = task;
 	}
 
 	@Column(name = EntityFieldConstants.XML_DATA)
 	@Type(type="text")
-	protected final String getXmlData() {
+	protected String getXmlData() {
 		return xmlData;
 	}
 
-	protected final void setXmlData(String data) {
+	protected void setXmlData(String data) {
 		this.xmlData = data;
 	}
 	
@@ -135,22 +135,6 @@ public final class SlideOrder extends SerializableIdObject {
 		} else {
 			xmlData = null;
 		}
-	}
-
-	@Override
-	public int hashCode() {
-		Long id = getId();
-		SimpleTest test = getTest();
-		Task task = getTask();
-		String xmlData = getXmlData();
-
-		final int prime = 37;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (test != null ? test.hashCode() : 0);
-		result = prime * result + (task != null ? task.hashCode() : 0);
-		result = prime * result + (xmlData != null ? xmlData.hashCode() : 0);
-		return result;
 	}
 
 	@Override
@@ -199,6 +183,22 @@ public final class SlideOrder extends SerializableIdObject {
 		}
 		
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		Long id = getId();
+		SimpleTest test = getTest();
+		Task task = getTask();
+		String xmlData = getXmlData();
+
+		final int prime = 37;
+		int result = 1;
+		result = prime * result + (id != null ? id.hashCode() : 0);
+		result = prime * result + (test != null ? test.hashCode() : 0);
+		result = prime * result + (task != null ? task.hashCode() : 0);
+		result = prime * result + (xmlData != null ? xmlData.hashCode() : 0);
+		return result;
 	}
 
 }

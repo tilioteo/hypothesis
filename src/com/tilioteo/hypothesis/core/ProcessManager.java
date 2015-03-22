@@ -18,7 +18,6 @@ import com.tilioteo.hypothesis.entity.Event;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Slide;
 import com.tilioteo.hypothesis.entity.SlideOrder;
-import com.tilioteo.hypothesis.entity.SlideOutput;
 import com.tilioteo.hypothesis.entity.Task;
 import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Status;
@@ -289,12 +288,6 @@ public class ProcessManager implements ProcessEventListener {
 		slideManager.finishSlide();
 		saveProcessEvent(eventObj);
 
-		Object slideOutputValue = slideManager.getOutputValue();
-		taskManager.addSlideOutputValue(currentSlide, slideOutputValue);
-		branchManager.addSlideOutputValue(currentSlide, slideOutputValue);
-
-		saveSlideOutput();
-		
 		slideProcessing = false;
 		
 		if (autoSlideShow) {
@@ -654,24 +647,17 @@ public class ProcessManager implements ProcessEventListener {
 		}
 	}
 
-	private void saveSlideOutput() {
-		log.debug("saveSlideOutput::");
-		String data = slideManager.getSerializedData();
-		String output = slideManager.getSerializedOutputValue();
-
-		SlideOutput slideOutput = new SlideOutput(currentTest, currentSlide);
-		slideOutput.setXmlData(data);
-		slideOutput.setOutput(output);
-
-		outputManager.saveSlideOutput(slideOutput);
-	}
-
 	public void updateEvent(Event event) {
 		log.debug("updateEvent::");
 		if (event != null) {
 			event.setBranch(currentBranch);
 			event.setTask(currentTask);
 			event.setSlide(currentSlide);
+			
+			if (event.getType().equals(ProcessEventTypes.getFinishSlideEventId())) {
+				String slideData = slideManager.getSerializedSlideData();
+				event.setXmlData(slideData);
+			}
 			
 			testManager.saveEvent(event, currentTest);
 		}

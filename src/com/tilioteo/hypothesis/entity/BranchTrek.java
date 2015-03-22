@@ -62,13 +62,13 @@ public final class BranchTrek extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_TREK_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.BRANCH_TREK_GENERATOR, sequenceName = EntityTableConstants.BRANCH_TREK_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
-	public final Pack getPack() {
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -77,7 +77,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@Column(name = EntityFieldConstants.KEY, nullable = false)
-	public final String getKey() {
+	public String getKey() {
 		return key;
 	}
 
@@ -87,7 +87,7 @@ public final class BranchTrek extends SerializableIdObject {
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.BRANCH_ID, nullable = false)
-	public final Branch getBranch() {
+	public Branch getBranch() {
 		return branch;
 	}
 
@@ -97,7 +97,7 @@ public final class BranchTrek extends SerializableIdObject {
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.NEXT_BRANCH_ID, nullable = false)
-	public final Branch getNextBranch() {
+	public Branch getNextBranch() {
 		return nextBranch;
 	}
 
@@ -106,7 +106,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -162,7 +162,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		Pack pack = getPack();
 		String key = getKey();

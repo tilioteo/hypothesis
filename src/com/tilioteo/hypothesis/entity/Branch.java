@@ -71,16 +71,16 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.BRANCH_GENERATOR, sequenceName = EntityTableConstants.BRANCH_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Column(name = EntityFieldConstants.NOTE)
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -149,7 +149,7 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -193,7 +193,7 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		String note = getNote();
 		String xmlData = getXmlData();

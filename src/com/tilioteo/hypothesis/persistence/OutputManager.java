@@ -7,9 +7,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 
 import com.tilioteo.hypothesis.dao.BranchOutputDao;
-import com.tilioteo.hypothesis.dao.SlideOutputDao;
 import com.tilioteo.hypothesis.entity.BranchOutput;
-import com.tilioteo.hypothesis.entity.SlideOutput;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -19,16 +17,13 @@ public class OutputManager {
 
 	private static Logger log = Logger.getLogger(OutputManager.class);
 
-	private SlideOutputDao slideOutputDao;
 	private BranchOutputDao branchOutputDao;
 
 	public static OutputManager newInstance() {
-		return new OutputManager(new SlideOutputDao(), new BranchOutputDao());
+		return new OutputManager(new BranchOutputDao());
 	}
 	
-	public OutputManager(SlideOutputDao slideOutputDao,
-			BranchOutputDao branchOutputDao) {
-		this.slideOutputDao = slideOutputDao;
+	public OutputManager(BranchOutputDao branchOutputDao) {
 		this.branchOutputDao = branchOutputDao;
 	}
 
@@ -41,19 +36,6 @@ public class OutputManager {
 		} catch (HibernateException e) {
 			log.error(e.getMessage());
 			branchOutputDao.rollback();
-			//throw e;
-		}
-	}
-
-	public void saveSlideOutput(SlideOutput slideOutput) {
-		log.debug("saveSlideOutput");
-		try {
-			slideOutputDao.beginTransaction();
-			slideOutputDao.makePersistent(slideOutput);
-			slideOutputDao.commit();
-		} catch (HibernateException e) {
-			log.error(e.getMessage());
-			slideOutputDao.rollback();
 			//throw e;
 		}
 	}

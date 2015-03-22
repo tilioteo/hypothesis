@@ -51,7 +51,7 @@ public final class SlideTemplate extends SerializableUidObject {
 	@Override
 	@Id
 	@Column(name = EntityFieldConstants.UID)
-	public final String getUid() {
+	public String getUid() {
 		return super.getUid();
 	}
 
@@ -66,11 +66,11 @@ public final class SlideTemplate extends SerializableUidObject {
 	}
 
 	@Column(name = EntityFieldConstants.NOTE)
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -133,7 +133,7 @@ public final class SlideTemplate extends SerializableUidObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -174,7 +174,7 @@ public final class SlideTemplate extends SerializableUidObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		String uid = getUid();
 		String xmlData = getXmlData();
 		String note = getNote();

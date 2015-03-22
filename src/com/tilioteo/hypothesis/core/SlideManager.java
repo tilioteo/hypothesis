@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.core;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
@@ -23,10 +24,10 @@ import com.tilioteo.hypothesis.event.ViewportEventManager;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.ActionMap;
 import com.tilioteo.hypothesis.processing.ComponentMap;
-import com.tilioteo.hypothesis.processing.Expression;
 import com.tilioteo.hypothesis.processing.FieldList;
 import com.tilioteo.hypothesis.processing.HasActions;
 import com.tilioteo.hypothesis.processing.HasVariables;
+import com.tilioteo.hypothesis.processing.IndexedExpressionMap;
 import com.tilioteo.hypothesis.processing.TimerMap;
 import com.tilioteo.hypothesis.processing.Variable;
 import com.tilioteo.hypothesis.processing.VariableMap;
@@ -71,11 +72,9 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	private VariableMap variables = new VariableMap();
 	private ActionMap actions = new ActionMap();
 	private HashSet<ShortcutKey> shortcuts = new HashSet<ShortcutKey>();
-
-	private Expression inputExpression = null;
-	private Expression outputExpression = null;
-
-	private Object nextInputValue = null;
+	private IndexedExpressionMap outputValueExpressions = new IndexedExpressionMap(); 
+	private IndexedExpressionMap inputValueExpressions = new IndexedExpressionMap(); 
+	private HashMap<Integer, Object> nextInputValues = new HashMap<Integer, Object>();
 
 	private Document slideXml = null;
 	private Slide current = null;
@@ -97,7 +96,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		if (current != null) {
 			slideXml = SlideXmlFactory.buildSlideXml(current);
 			slideFactory.createSlideControls();
-			setInputValue(nextInputValue);
+			setInputValues();
 			fireEvent(new InitEvent(current));
 		}
 	}
@@ -119,9 +118,8 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		actions.clear();
 		timers.clear();
 		shortcuts.clear();
-		
-		inputExpression = null;
-		outputExpression = null;
+		outputValueExpressions.clear();
+		inputValueExpressions.clear();
 		
 		clearListeners();
 	}
@@ -142,10 +140,6 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		viewportEventManager.fireEvent(event);
 	}
 
-	/*public final ActionMap getActions() {
-		return actions;
-	}*/
-	
 	@Override
 	public final void setAction(String id, AbstractBaseAction action) {
 		actions.put(id, action);
@@ -164,21 +158,17 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		return fields;
 	}
 
-	public final Object getOutputValue() {
-		if (outputExpression != null) {
-			outputExpression.setVariables(variables);
-			return outputExpression.getValue();
-		}
-		return null;
+	public final IndexedExpressionMap getIntputValueExpressions() {
+		return inputValueExpressions;
 	}
 
-	public String getSerializedData() {
+	public final IndexedExpressionMap getOutputValueExpressions() {
+		outputValueExpressions.setVariables(variables);
+		return outputValueExpressions;
+	}
+
+	public String getSerializedSlideData() {
 		Document doc = slideFactory.createSlideData();
-		return XmlUtility.writeString(doc);
-	}
-
-	public String getSerializedOutputValue() {
-		Document doc = slideFactory.createSlideOutput();
 		return XmlUtility.writeString(doc);
 	}
 
@@ -197,39 +187,49 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	@Override
 	public Slide next() {
 		// save output value for next slide
-		nextInputValue = getOutputValue();
+		saveOutputValuesForNext();
 		Slide next = super.next();
 
 		// there is not another next slide, then clear nextInputValue
-		if (next == null)
-			nextInputValue = null;
+		if (next == null) {
+			nextInputValues.clear();
+		}
 
 		return current();
 	}
 
-	protected final void setInputExpression(Expression expression) {
-		this.inputExpression = expression;
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void setInputValue(Object value) {
-		if (inputExpression != null && value != null) {
-			String name = inputExpression.getSimpleVariableName();
-			if (name != null) {
-				Variable<?> variable = this.variables.get(name);
-				if (variable != null)
-					variable.setRawValue(value);
-				else {
-					variable = new Variable(name);
-					variable.setRawValue(value);
-					this.variables.put(variable);
-				}
+	private void saveOutputValuesForNext() {
+		nextInputValues.clear();
+		
+		IndexedExpressionMap list = getOutputValueExpressions();
+		for (Integer index : list.keySet()) {
+			IndexedExpression outputValueExpression = outputValueExpressions.get(index);
+			Object value = outputValueExpression.getValue();
+			if (value != null) {
+				nextInputValues.put(index, value);
 			}
 		}
 	}
 
-	protected final void setOutputExpression(Expression expression) {
-		this.outputExpression = expression;
+	@SuppressWarnings("rawtypes")
+	private void setInputValues() {
+		for (IndexedExpression inputIndexedExpression : inputValueExpressions.values()) {
+			if (inputIndexedExpression != null && inputIndexedExpression.getExpression() != null) {
+				int index = inputIndexedExpression.getIndex();
+				String name = inputIndexedExpression.getExpression().getSimpleVariableName();
+				Object value = nextInputValues.get(index);
+				if (name != null && value != null) {
+					Variable<?> variable = this.variables.get(name);
+					if (variable != null)
+						variable.setRawValue(value);
+					else {
+						variable = new Variable(name);
+						variable.setRawValue(value);
+						this.variables.put(variable);
+					}
+				}
+			}
+		}
 	}
 
 	public final void setViewport(LayoutComponent component) {
@@ -325,4 +325,5 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	public Slide getSlide() {
 		return current;
 	}
+
 }

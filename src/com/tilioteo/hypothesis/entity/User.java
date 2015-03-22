@@ -83,12 +83,12 @@ public final class User extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.USER_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.USER_GENERATOR, sequenceName = EntityTableConstants.USER_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Column(name = EntityFieldConstants.USERNAME, nullable = false, unique = true)
-	public final String getUsername() {
+	public String getUsername() {
 		return username;
 	}
 
@@ -97,12 +97,12 @@ public final class User extends SerializableIdObject {
 	 * 
 	 * @param username
 	 */
-	public final void setUsername(String username) {
+	public void setUsername(String username) {
 		this.username = username;
 	}
 
 	@Column(name = EntityFieldConstants.PASSWORD, nullable = false)
-	public final String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
@@ -111,34 +111,34 @@ public final class User extends SerializableIdObject {
 	 * 
 	 * @param password
 	 */
-	public final void setPassword(String password) {
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	@Column(name = EntityFieldConstants.ENABLED, nullable = false)
-	public final Boolean getEnabled() {
+	public Boolean getEnabled() {
 		return enabled;
 	}
 
-	public final void setEnabled(Boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	@Column(name = EntityFieldConstants.EXPIRE_DATE)
-	public final Date getExpireDate() {
+	public Date getExpireDate() {
 		return expireDate;
 	}
 
-	public final void setExpireDate(Date expireDate) {
+	public void setExpireDate(Date expireDate) {
 		this.expireDate = expireDate;
 	}
 
 	@Column(name = EntityFieldConstants.NOTE, nullable = true)
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -146,7 +146,7 @@ public final class User extends SerializableIdObject {
 	@JoinTable(name = EntityTableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.ROLE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
-	public final Set<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return roles;
 	}
 
@@ -158,7 +158,7 @@ public final class User extends SerializableIdObject {
 	@JoinTable(name = EntityTableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.GROUP_ID))
 	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
 	@LazyCollection(LazyCollectionOption.TRUE)
-	public final Set<Group> getGroups() {
+	public Set<Group> getGroups() {
 		return groups;
 	}
 
@@ -167,7 +167,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@Column(name = EntityFieldConstants.OWNER_ID, nullable = true)
-	public final Long getOwnerId() {
+	public Long getOwnerId() {
 		return ownerId;
 	}
 
@@ -192,7 +192,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -264,7 +264,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		String username = getUsername();
 		String password = getPassword();
@@ -290,7 +290,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return getUsername();
 	}
 

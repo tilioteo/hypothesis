@@ -48,21 +48,21 @@ public final class Role extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.ROLE_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.ROLE_GENERATOR, sequenceName = EntityTableConstants.ROLE_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -95,7 +95,7 @@ public final class Role extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		String name = getName();
 		
@@ -107,7 +107,7 @@ public final class Role extends SerializableIdObject {
 	}
 
 	@Override
-	public final String toString() {
+	public String toString() {
 		return getName();
 	}
 

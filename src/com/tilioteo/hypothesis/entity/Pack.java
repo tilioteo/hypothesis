@@ -64,43 +64,43 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.PACK_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.PACK_GENERATOR, sequenceName = EntityTableConstants.PACK_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
-	public final String getName() {
+	public String getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
 	@Column(name = EntityFieldConstants.DESCRIPTION)
-	public final String getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public final void setDescription(String description) {
+	public void setDescription(String description) {
 		this.description = description;
 	}
 
 	@Column(name = EntityFieldConstants.PUBLISHED)
-	public final Boolean getPublished() {
+	public Boolean getPublished() {
 		return published;
 	}
 
-	public final void setPublished(Boolean published) {
+	public void setPublished(Boolean published) {
 		this.published = published;
 	}
 
 	@Column(name = EntityFieldConstants.NOTE)
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
@@ -131,7 +131,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -189,7 +189,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		String name = getName();
 		String description = getDescription();

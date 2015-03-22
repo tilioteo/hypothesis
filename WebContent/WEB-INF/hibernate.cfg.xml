@@ -29,16 +29,15 @@
 		<property name="hibernate.hbm2ddl.auto">validate</property>
 		<!--<property name="hibernate.hbm2ddl.auto">update</property>-->
 		<mapping class="com.tilioteo.hypothesis.entity.SlideTemplate" />
-		<mapping class="com.tilioteo.hypothesis.entity.SlideContent" />
 		<mapping class="com.tilioteo.hypothesis.entity.Slide" />
 		<mapping class="com.tilioteo.hypothesis.entity.SlideOrder" />
-		<mapping class="com.tilioteo.hypothesis.entity.SlideOutput" />
 		<mapping class="com.tilioteo.hypothesis.entity.Task" />
 		<mapping class="com.tilioteo.hypothesis.entity.Branch" />
 		<mapping class="com.tilioteo.hypothesis.entity.BranchOutput" />
 		<mapping class="com.tilioteo.hypothesis.entity.Pack" />
 		<mapping class="com.tilioteo.hypothesis.entity.BranchTrek" />
 		<mapping class="com.tilioteo.hypothesis.entity.Event" />
+		<mapping class="com.tilioteo.hypothesis.entity.ExportEvent"/>
 		<mapping class="com.tilioteo.hypothesis.entity.SimpleTest" />
 		<mapping class="com.tilioteo.hypothesis.entity.Test" />
 		<mapping class="com.tilioteo.hypothesis.entity.Token" />

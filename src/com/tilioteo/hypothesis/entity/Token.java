@@ -69,7 +69,7 @@ public final class Token extends SerializableUidObject {
 	@Override
 	@Id
 	@Column(name = EntityFieldConstants.UID)
-	public final String getUid() {
+	public String getUid() {
 		return uid;
 	}
 
@@ -85,7 +85,7 @@ public final class Token extends SerializableUidObject {
 	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
 	@JoinColumn(name = EntityFieldConstants.USER_ID)
 	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public final User getUser() {
+	public User getUser() {
 		return user;
 	}
 
@@ -95,7 +95,7 @@ public final class Token extends SerializableUidObject {
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
-	public final Pack getPack() {
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -104,7 +104,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@Column(name = EntityFieldConstants.DATETIME)
-	public final Date getDatetime() {
+	public Date getDatetime() {
 		return datetime;
 	}
 
@@ -113,7 +113,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -168,7 +168,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		String uid = getUid();
 		boolean production = isProduction();
 		User user = getUser();

@@ -125,6 +125,14 @@ public class XmlUtility {
 		}
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static List<Node> findNodesByNameStarting(Node parent, String startName) {
+		if (parent != null && startName.length() > 0) {
+			return parent.selectNodes("./*[starts-with(name(), '"+startName+"')]");
+		}
+		return null;
+	}
 
 	public static Document readFile(final File file) {
 		if (file.exists()) {

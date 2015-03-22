@@ -79,13 +79,13 @@ public final class UserPermission extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.USER_PERMISSION_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.USER_PERMISSION_GENERATOR, sequenceName = EntityTableConstants.USER_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.USER_ID, nullable = false)
-	public final User getUser() {
+	public User getUser() {
 		return user;
 	}
 
@@ -95,7 +95,7 @@ public final class UserPermission extends SerializableIdObject {
 
 	@ManyToOne
 	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
-	public final Pack getPack() {
+	public Pack getPack() {
 		return pack;
 	}
 
@@ -104,25 +104,25 @@ public final class UserPermission extends SerializableIdObject {
 	}
 
 	@Column(name = EntityFieldConstants.ENABLED, nullable = false)
-	public final Boolean getEnabled() {
+	public Boolean getEnabled() {
 		return enabled;
 	}
 
-	public final void setEnabled(Boolean enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
 	@Column(name = EntityFieldConstants.PASS)
-	public final Integer getPass() {
+	public Integer getPass() {
 		return pass;
 	}
 
-	public final void setPass(Integer pass) {
+	public void setPass(Integer pass) {
 		this.pass = pass;
 	}
 
 	@Override
-	public final boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -178,7 +178,7 @@ public final class UserPermission extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
 		User user = getUser();
 		Pack pack = getPack();

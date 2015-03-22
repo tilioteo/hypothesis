@@ -11,12 +11,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.dom4j.Document;
+import org.hibernate.annotations.Type;
 
 import com.tilioteo.hypothesis.common.EntityFieldConstants;
 import com.tilioteo.hypothesis.common.EntityTableConstants;
+import com.tilioteo.hypothesis.dom.AbstractSlideXmlException;
+import com.tilioteo.hypothesis.dom.InvalidSlideContentXmlException;
+import com.tilioteo.hypothesis.dom.SlideXmlConstants;
+import com.tilioteo.hypothesis.dom.XmlUtility;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -35,18 +43,29 @@ public final class Slide extends SerializableIdObject {
 	private static final long serialVersionUID = -6866522778488675162L;
 
 	/**
-	 * parent slide content
+	 * the parent slide template
 	 */
-	private SlideContent content;
+	private SlideTemplate template;
+
+	/**
+	 * raw xml string of slide content
+	 */
+	private String xmlData;
+
 	private String note;
+
+	/**
+	 * parsed dom document from xml
+	 */
+	private transient Document document = null;
 
 	protected Slide() {
 		super();
 	}
 
-	public Slide(SlideContent content) {
+	public Slide(SlideTemplate template) {
 		this();
-		this.content = content;
+		this.template = template;
 	}
 
 	@Override
@@ -54,7 +73,7 @@ public final class Slide extends SerializableIdObject {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.SLIDE_GENERATOR)
 	@SequenceGenerator(name = EntityTableConstants.SLIDE_GENERATOR, sequenceName = EntityTableConstants.SLIDE_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = EntityFieldConstants.ID)
-	public final Long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 
@@ -64,56 +83,124 @@ public final class Slide extends SerializableIdObject {
 		this.id = id;
 	}*/
 
-	@OneToOne(optional = false)
-	@JoinColumn(name = EntityFieldConstants.SLIDE_CONTENT_ID, nullable = false, unique = true)
-	public final SlideContent getContent() {
-		return content;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = EntityFieldConstants.SLIDE_TEMPLATE_UID, nullable = false)
+	public SlideTemplate getTemplate() {
+		return template;
 	}
 
-	protected void setContent(SlideContent content) {
-		this.content = content;
+	protected void setTemplate(SlideTemplate slideTemplate) {
+		this.template = slideTemplate;
+	}
+
+	@Column(name = EntityFieldConstants.XML_DATA, nullable = false)
+	@Type(type="text")
+	protected String getXmlData() {
+		return xmlData;
+	}
+
+	protected void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
 	}
 
 	@Column(name = EntityFieldConstants.NOTE)
-	public final String getNote() {
+	public String getNote() {
 		return note;
 	}
 
-	public final void setNote(String note) {
+	public void setNote(String note) {
 		this.note = note;
 	}
 
+	@Transient
+	public final Document getDocument() {
+		if (document == null) {
+			document = XmlUtility.readString(getXmlData());
+		}
+		return document;
+	}
+
+	public final void setDocument(Document document) throws AbstractSlideXmlException {
+		if (document != getDocument()) {
+			if (isValidDocument(document)) {
+				this.document = document;
+				this.xmlData = XmlUtility.writeString(this.document);
+			} else {
+				throw new InvalidSlideContentXmlException();
+			}
+			// getTemplateUid();
+		}
+	}
+
+	/**
+	 * get the parent template's unique identificator
+	 * @return
+	 */
+	@Transient
+	public final String getTemplateUid() {
+		return getTemplate() != null ? getTemplate().getUid() : null;
+	}
+
+	/**
+	 * get the parent template's document
+	 * @return
+	 */
+	@Transient
+	public final Document getTemplateDocument() {
+		return getTemplate() != null ? getTemplate().getDocument() : null;
+	}
+
+	/**
+	 * this method checks the validity of slide document against the template
+	 * document slide and template must have equal uid
+	 * 
+	 * @param doc
+	 * @return
+	 */
+	private boolean isValidDocument(Document doc) {
+		return (doc != null	&&
+				doc.getRootElement() != null &&
+				doc.getRootElement().getName().equals(SlideXmlConstants.SLIDE_CONTENT) &&
+				getTemplate() != null &&
+				getTemplate().getUid() != null &&
+				doc.getRootElement().attributeValue(SlideXmlConstants.TEMPLATE_UID).equals(getTemplate().getUid()));
+	}
+
 	@Override
-	public final boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (!(obj instanceof Slide)) {
+		if (!(obj instanceof Slide))
 			return false;
-		}
 		Slide other = (Slide) obj;
 
 		Long id = getId();
 		Long id2 = other.getId();
-		SlideContent content = getContent();
-		SlideContent content2 = other.getContent();
+		SlideTemplate template = getTemplate();
+		SlideTemplate template2 = other.getTemplate();
+		String xmlData = getXmlData();
+		String xmlData2 = other.getXmlData();
 		String note = getNote();
 		String note2 = other.getNote();
-
-		// if id of one instance is null then compare other properties
+		
 		if (id != null && id2 != null && !id.equals(id2)) {
 			return false;
 		}
 
-		if (content != null && !content.equals(content2)) {
+		if (template != null && !template.equals(template2)) {
 			return false;
-		} else if (content2 != null) {
+		} else if (template2 != null) {
 			return false;
 		}
 		
+		if (xmlData != null && !xmlData.equals(xmlData2)) {
+			return false;
+		} else if (xmlData2 != null) {
+			return false;
+		}
+
 		if (note != null && !note.equals(note2)) {
 			return false;
 		} else if (note2 != null) {
@@ -124,16 +211,18 @@ public final class Slide extends SerializableIdObject {
 	}
 
 	@Override
-	public final int hashCode() {
+	public int hashCode() {
 		Long id = getId();
-		SlideContent content = getContent();
+		String xmlData = getXmlData();
+		SlideTemplate template = getTemplate();
 		String note = getNote();
 
 		final int prime = 29;
 		int result = 1;
 		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result	+ (content != null ? getContent().hashCode() : 0);
-		result = prime * result	+ (note != null ? getNote().hashCode() : 0);
+		result = prime * result	+ (xmlData != null ? xmlData.hashCode() : 0);
+		result = prime * result	+ (template != null ? template.hashCode() : 0);
+		result = prime * result	+ (note != null ? note.hashCode() : 0);
 
 		return result;
 	}
