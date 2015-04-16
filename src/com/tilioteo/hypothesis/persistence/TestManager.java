@@ -12,6 +12,7 @@ import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Restrictions;
 
+import com.tilioteo.hypothesis.dao.AbstractHibernateDao;
 import com.tilioteo.hypothesis.dao.EventDao;
 import com.tilioteo.hypothesis.dao.SlideOrderDao;
 import com.tilioteo.hypothesis.dao.TestDao;
@@ -148,7 +149,7 @@ public class TestManager {
 	@SuppressWarnings("rawtypes")
 	private int getLastTestEventRank(SimpleTest test) {
 		log.debug("getLastTestEventRank");
-		SQLQuery query = eventDao.getSession().createSQLQuery(
+		SQLQuery query = AbstractHibernateDao.getSession().createSQLQuery(
 				"SELECT max("  + FieldConstants.RANK + ") FROM " +
 						TableConstants.TEST_EVENT_TABLE + " WHERE " +
 						FieldConstants.TEST_ID + "=:testId GROUP BY " +
@@ -166,7 +167,7 @@ public class TestManager {
 	
 	private void saveTestEventJoin(SimpleTest test, Event event, int rank) {
 		log.debug("saveTestEventJoin");
-		SQLQuery query = eventDao.getSession().createSQLQuery(
+		SQLQuery query = AbstractHibernateDao.getSession().createSQLQuery(
 				"INSERT INTO " + TableConstants.TEST_EVENT_TABLE + " (" +
 						FieldConstants.TEST_ID + "," +
 						FieldConstants.EVENT_ID + "," +

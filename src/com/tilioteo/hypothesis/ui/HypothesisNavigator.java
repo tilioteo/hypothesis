@@ -5,7 +5,7 @@ package com.tilioteo.hypothesis.ui;
 
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent.PostViewChangeEvent;
-import com.tilioteo.hypothesis.event.HypothesisEventBus;
+import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.ui.view.HypothesisViewType;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -49,9 +49,9 @@ public class HypothesisNavigator extends Navigator {
 			public void afterViewChange(final ViewChangeEvent event) {
 				HypothesisViewType view = HypothesisViewType.getByViewName(event.getViewName());
 				// Appropriate events get fired after the view is changed.
-				HypothesisEventBus.post(new PostViewChangeEvent(view));
-				//HypothesisEventBus.post(new BrowserResizeEvent());
-				//HypothesisEventBus.post(new CloseOpenWindowsEvent());
+				MainEventBus.get().post(new PostViewChangeEvent(view));
+				//MainEventBus.get().post(new BrowserResizeEvent());
+				//MainEventBus.get().post(new CloseOpenWindowsEvent());
 			}
 		});
 	}

@@ -159,7 +159,6 @@ public abstract class SelectButton extends AbstractField<Boolean> {
 	@Override
 	public void setValue(Boolean newValue) {
 		setInternalValue(newValue);
-		//markAsDirty();
 	}
 
 	/**

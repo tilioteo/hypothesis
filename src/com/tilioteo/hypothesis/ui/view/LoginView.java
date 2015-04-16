@@ -5,7 +5,7 @@ import com.tilioteo.hypothesis.data.EmptyValidator;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidLoginEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidUserPermissionEvent;
-import com.tilioteo.hypothesis.event.HypothesisEventBus;
+import com.tilioteo.hypothesis.event.MainEventBus;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
@@ -15,12 +15,12 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -35,7 +35,7 @@ public class LoginView extends VerticalLayout {
 	public LoginView() {
 		setSizeFull();
 		
-		HypothesisEventBus.register(this);
+		MainEventBus.get().register(this);
 
 		Component loginForm = buildLoginForm();
 		addComponent(loginForm);
@@ -63,7 +63,7 @@ public class LoginView extends VerticalLayout {
 		button.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				HypothesisEventBus.post(new HypothesisEvent.GuestAccessRequestedEvent());
+				MainEventBus.get().post(new HypothesisEvent.GuestAccessRequestedEvent());
 			}
 		});
 		return button;
@@ -115,7 +115,7 @@ public class LoginView extends VerticalLayout {
 					username.setValidationVisible(true);
 					password.setValidationVisible(true);
 				} else {
-					HypothesisEventBus.post(new HypothesisEvent.UserLoginRequestedEvent(username.getValue(), password.getValue()));
+					MainEventBus.get().post(new HypothesisEvent.UserLoginRequestedEvent(username.getValue(), password.getValue()));
 				}
 			}
 		});

@@ -17,7 +17,7 @@ import com.tilioteo.hypothesis.event.ButtonPanelData;
 import com.tilioteo.hypothesis.event.ButtonPanelEvent;
 import com.tilioteo.hypothesis.event.ImageData;
 import com.tilioteo.hypothesis.event.ImageEvent;
-import com.tilioteo.hypothesis.event.ProcessEventManager;
+import com.tilioteo.hypothesis.event.ProcessEventBus;
 import com.tilioteo.hypothesis.event.SelectPanelData;
 import com.tilioteo.hypothesis.event.SelectPanelEvent;
 import com.tilioteo.hypothesis.event.SlideData;
@@ -91,23 +91,7 @@ public class CommandFactory {
 		return new Command() {
 			public void execute() {
 				log.debug("Execute component event command.");
-				AbstractComponentData<?> data = event.getComponentData();
-				if (data != null) {
-					SlideManager slideManager = data.getSlideManager();
-					if (slideManager != null) {
-						ProcessEventManager eventManager = slideManager.getEventManager();
-						if (eventManager != null) {
-							log.debug("Fire component event.");
-							eventManager.fireEvent(event);
-						} else {
-							log.error("Event manager IS NULL!");
-						}
-					} else {
-						log.error("Event slide manager IS NULL!");
-					}
-				} else {
-					log.error("Event component data IS NULL!");
-				}
+				ProcessEventBus.get().post(event);
 			}
 		};
 	}
@@ -116,23 +100,7 @@ public class CommandFactory {
 		return new Command() {
 			public void execute() {
 				log.debug("Execute slide event command.");
-				SlideData data = event.getComponentData();
-				if (data != null) {
-					SlideManager slideManager = data.getSlideManager();
-					if (slideManager != null) {
-						ProcessEventManager eventManager = slideManager.getEventManager();
-						if (eventManager != null) {
-							log.debug("Fire component event.");
-							eventManager.fireEvent(event);
-						} else {
-							log.error("Event manager IS NULL!");
-						}
-					} else {
-						log.error("Event slide manager IS NULL!");
-					}
-				} else {
-					log.error("Event component data IS NULL!");
-				}
+				ProcessEventBus.get().post(event);
 			}
 		};
 	}

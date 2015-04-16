@@ -189,7 +189,6 @@ public class ComponentUtility {
 				return Alignment.BOTTOM_RIGHT;
 		}
 
-		// return null;
 		// default
 		return Alignment.MIDDLE_CENTER;
 	}

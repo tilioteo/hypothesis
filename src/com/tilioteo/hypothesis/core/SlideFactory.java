@@ -26,6 +26,7 @@ import com.tilioteo.hypothesis.event.AudioData;
 import com.tilioteo.hypothesis.event.ButtonData;
 import com.tilioteo.hypothesis.event.ButtonPanelData;
 import com.tilioteo.hypothesis.event.ImageData;
+import com.tilioteo.hypothesis.event.ProcessEventBus;
 import com.tilioteo.hypothesis.event.SelectPanelData;
 import com.tilioteo.hypothesis.event.SlideData;
 import com.tilioteo.hypothesis.event.SlideEvent;
@@ -343,7 +344,7 @@ public class SlideFactory {
 					action.setExecuteCommand(new Command() {
 						@Override
 						public void execute() {
-							slideManager.getEventManager().fireEvent(new ActionEvent(action));
+							ProcessEventBus.get().post(new ActionEvent(action));
 						}
 					});
 					slideManager.setAction(id, action);
@@ -406,10 +407,8 @@ public class SlideFactory {
 	}
 
 	private Expression createExpression(Element element) {
-		if (element != null
-				&& element.getName().equals(SlideXmlConstants.EXPRESSION)) {
-			return new Expression(ExpressionFactory.parseString(element
-					.getTextTrim()));
+		if (element != null && element.getName().equals(SlideXmlConstants.EXPRESSION)) {
+			return new Expression(ExpressionFactory.parseString(element.getTextTrim()));
 		}
 		return null;
 	}
@@ -427,10 +426,8 @@ public class SlideFactory {
 
 				for (int i = 0; i < 2; ++i) {
 					@SuppressWarnings("unchecked")
-					List<Element> elements = i == 0 ? trueElement != null ? trueElement
-							.elements() : null
-							: falseElement != null ? falseElement.elements()
-									: null;
+					List<Element> elements = i == 0 ? trueElement != null ? trueElement.elements() : null
+							: falseElement != null ? falseElement.elements() : null;
 					if (elements != null) {
 						for (Element evaluableElement : elements) {
 							Evaluable evaluable = createEvaluable(evaluableElement);
@@ -532,16 +529,13 @@ public class SlideFactory {
 	private SwitchStatement createSwitchStatement(Element element) {
 		if (element != null
 				&& element.getName().equals(SlideXmlConstants.SWITCH)) {
-			Element expressionElement = SlideXmlUtility
-					.getExpressionElement(element);
-			List<Element> caseElements = SlideXmlUtility
-					.getCaseElements(element);
+			Element expressionElement = SlideXmlUtility.getExpressionElement(element);
+			List<Element> caseElements = SlideXmlUtility.getCaseElements(element);
 
 			Expression expression = createExpression(expressionElement);
 
 			if (expression != null) {
-				SwitchStatement statement = new SwitchStatement(slideManager,
-						expression);
+				SwitchStatement statement = new SwitchStatement(slideManager, expression);
 
 				for (Element caseElement : caseElements) {
 					String caseValue = SlideXmlUtility.getValue(caseElement);
@@ -550,8 +544,7 @@ public class SlideFactory {
 						for (Element evaluableElement : elements) {
 							Evaluable evaluable = createEvaluable(evaluableElement);
 							if (evaluable != null) {
-								statement
-										.addCaseEvaluable(caseValue, evaluable);
+								statement.addCaseEvaluable(caseValue, evaluable);
 							}
 						}
 					}

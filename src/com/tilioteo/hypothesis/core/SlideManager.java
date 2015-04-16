@@ -17,7 +17,6 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Slide;
 import com.tilioteo.hypothesis.entity.Task;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
-import com.tilioteo.hypothesis.event.ProcessEventManager;
 import com.tilioteo.hypothesis.event.ViewportEvent;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
 import com.tilioteo.hypothesis.event.ViewportEventManager;
@@ -62,7 +61,6 @@ public class SlideManager extends ListManager<Task, Slide> implements
 
 	private ViewportEventManager viewportEventManager = new ViewportEventManager();
 
-	private ProcessEventManager eventManager;
 	private SlideFactory slideFactory;
 
 	private FieldList fields = new FieldList();
@@ -81,9 +79,8 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	private LayoutComponent viewport = null;
 
 
-	public SlideManager(ProcessEventManager eventManager) {
+	public SlideManager() {
 		slideFactory = SlideFactory.getInstance(this);
-		this.eventManager = eventManager;
 	}
 
 	public void addViewportEventListener(Class<? extends ViewportEvent> eventClass,	ViewportEventListener listener) {
@@ -148,10 +145,6 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	@Override
 	public final AbstractBaseAction getAction(String id) {
 		return actions.get(id);
-	}
-
-	public final ProcessEventManager getEventManager() {
-		return eventManager;
 	}
 
 	public final FieldList getFields() {

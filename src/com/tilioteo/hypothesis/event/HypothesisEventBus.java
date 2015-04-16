@@ -12,18 +12,16 @@ public class HypothesisEventBus implements SubscriberExceptionHandler {
 
     private final EventBus eventBus = new EventBus(this);
     
-    private static HypothesisEventBus instance = new HypothesisEventBus();
-
-    public static void post(final Object event) {
-        instance.eventBus.post(event);
+    public void post(final Object event) {
+        eventBus.post(event);
     }
 
-    public static void register(final Object object) {
-    	instance.eventBus.register(object);
+    public void register(final Object object) {
+    	eventBus.register(object);
     }
 
-    public static void unregister(final Object object) {
-    	instance.eventBus.unregister(object);
+    public void unregister(final Object object) {
+    	eventBus.unregister(object);
     }
 
     @Override

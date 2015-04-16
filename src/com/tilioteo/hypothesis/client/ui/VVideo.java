@@ -51,8 +51,7 @@ public class VVideo extends Widget {
      * 
      * @param el
      */
-    private native void updateDimensionsWhenMetadataLoaded(Element el)
-    /*-{
+    private native void updateDimensionsWhenMetadataLoaded(Element el) /*-{
               var self = this;
               el.addEventListener('loadedmetadata', $entry(function(e) {
                   self.@com.tilioteo.hypothesis.client.ui.VVideo::updateElementDynamicSize(II)(el.videoWidth, el.videoHeight);
@@ -126,7 +125,6 @@ public class VVideo extends Widget {
     }
 
 	protected final VideoElement getVideoElement() {
-		//return (VideoElement) Element.as(getElement());
 		return video;
 	}
 	

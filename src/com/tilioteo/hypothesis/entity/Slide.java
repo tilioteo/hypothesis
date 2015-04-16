@@ -16,13 +16,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-//import org.dom4j.Document;
 import org.hibernate.annotations.Type;
-
-//import com.tilioteo.hypothesis.dom.AbstractSlideXmlException;
-//import com.tilioteo.hypothesis.dom.InvalidSlideContentXmlException;
-//import com.tilioteo.hypothesis.dom.SlideXmlConstants;
-//import com.tilioteo.hypothesis.dom.XmlUtility;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -52,10 +46,6 @@ public final class Slide extends SerializableIdObject {
 
 	private String note;
 
-//	/**
-//	 * parsed dom document from xml
-//	 */
-//	private transient Document document = null;
 
 	protected Slide() {
 		super();
@@ -110,26 +100,6 @@ public final class Slide extends SerializableIdObject {
 		this.note = note;
 	}
 
-//	@Transient
-//	public final Document getDocument() {
-//		if (document == null) {
-//			document = XmlUtility.readString(getXmlData());
-//		}
-//		return document;
-//	}
-//
-//	public final void setDocument(Document document) throws AbstractSlideXmlException {
-//		if (document != getDocument()) {
-//			if (isValidDocument(document)) {
-//				this.document = document;
-//				this.xmlData = XmlUtility.writeString(this.document);
-//			} else {
-//				throw new InvalidSlideContentXmlException();
-//			}
-//			// getTemplateUid();
-//		}
-//	}
-
 	/**
 	 * get the parent template's unique identificator
 	 * @return
@@ -147,31 +117,6 @@ public final class Slide extends SerializableIdObject {
 	public final String getTemplateXmlData() {
 		return getTemplate() != null ? getTemplate().getXmlData() : null;
 	}
-
-//	/**
-//	 * get the parent template's document
-//	 * @return
-//	 */
-//	@Transient
-//	public final Document getTemplateDocument() {
-//		return getTemplate() != null ? getTemplate().getDocument() : null;
-//	}
-
-//	/**
-//	 * this method checks the validity of slide document against the template
-//	 * document slide and template must have equal uid
-//	 * 
-//	 * @param doc
-//	 * @return
-//	 */
-//	private boolean isValidDocument(Document doc) {
-//		return (doc != null	&&
-//				doc.getRootElement() != null &&
-//				doc.getRootElement().getName().equals(SlideXmlConstants.SLIDE_CONTENT) &&
-//				getTemplate() != null &&
-//				getTemplate().getUid() != null &&
-//				doc.getRootElement().attributeValue(SlideXmlConstants.TEMPLATE_UID).equals(getTemplate().getUid()));
-//	}
 
 	@Override
 	public boolean equals(Object obj) {

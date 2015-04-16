@@ -199,7 +199,6 @@ public abstract class SelectButton extends FocusWidget implements ClickHandler, 
 					getValue());
 			return;
 
-			// break;
 		case Event.ONMOUSEDOWN:
 			if (DOM.isOrHasChild(getElement(), DOM.eventGetTarget(event))) {
 				// This was moved from mouseover, which iOS sometimes skips.

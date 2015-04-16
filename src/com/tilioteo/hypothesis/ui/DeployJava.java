@@ -76,12 +76,7 @@ public class DeployJava extends AbstractExtension {
 		javaScript.execute(String.format("var c=0;var l;var i=document.getElementById(\"$ifrm\");if(i&&typeof i.contentWindow.deployJava!=\"undefined\"){cth_cjv(i.contentWindow.deployJava.versionCheck(\"%s\"))}else{l=setInterval(function(){if(typeof i.contentWindow.deployJava!=\"undefined\"){clearInterval(l);cth_cjv(i.contentWindow.deployJava.versionCheck(\"%s\"))}else if(++c>20){clearInterval(l);cth_cjv(null)}},250)};", pattern, pattern));
 	}
 	
-	/*public void checkWebStartInstalled(String pattern) {
-		javaScript.execute(String.format("cth_cjv(typeof deployJava!=\"undefined\"&&deployJava.isWebStartInstalled?deployJava.isWebStartInstalled(\"%s\"):null)", pattern));
-	}*/
-	
 	public void launchJavaWebStart(String jnlp) {
-		//javaScript.execute(String.format("deployJava.launchWebStartApplication(\"%s\")", jnlp));
 		javaScript.execute(String.format("var i=document.getElementById(\"$ifrm\");if(i&&typeof i.contentWindow.deployJava!=\"undefined\")i.contentWindow.deployJava.launchWebStartApplication(\"%s\");", jnlp));
 	}
 	

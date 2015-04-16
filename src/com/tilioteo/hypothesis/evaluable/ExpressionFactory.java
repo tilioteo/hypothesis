@@ -22,8 +22,6 @@ public class ExpressionFactory {
 	private static final Set<Character> PROHIBITED = new ReadOnlyHashSet<Character>(
 			StringConstants.CHR_REV_QUOTE,
 			StringConstants.CHR_AT,
-			//StringConstants.CHR_HASH,
-			//StringConstants.CHR_DOLLAR,
 			StringConstants.CHR_PERCENT,
 			StringConstants.CHR_SQUARE_BRACE_OPEN,
 			StringConstants.CHR_SQUARE_BRACE_CLOSE,

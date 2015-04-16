@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.PostViewChangeEvent;
-import com.tilioteo.hypothesis.event.HypothesisEventBus;
+import com.tilioteo.hypothesis.event.MainEventBus;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -28,11 +28,7 @@ import com.vaadin.ui.themes.ValoTheme;
 public final class HypothesisMenu extends CustomComponent {
 
 	public static final String ID = "hypothesis-menu";
-	//public static final String REPORTS_BADGE_ID = "dashboard-menu-reports-badge";
-	//public static final String NOTIFICATIONS_BADGE_ID = "dashboard-menu-notifications-badge";
 	private static final String STYLE_VISIBLE = "valo-menu-visible";
-	//private Label notificationsBadge;
-	//private Label reportsBadge;
 	private MenuItem settingsItem;
 
 	public HypothesisMenu() {
@@ -106,7 +102,7 @@ public final class HypothesisMenu extends CustomComponent {
 		settingsItem.addItem(itemCaption, new Command() {
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
-				HypothesisEventBus.post(new HypothesisEvent.UserLoggedOutEvent());
+				MainEventBus.get().post(new HypothesisEvent.UserLoggedOutEvent());
 			}
 		});
 		return settings;
@@ -206,7 +202,7 @@ public final class HypothesisMenu extends CustomComponent {
 			setPrimaryStyleName("valo-menu-item");
 			setIcon(view.getIcon());
 			setCaption(view.getCaption());
-			HypothesisEventBus.register(this);
+			MainEventBus.get().register(this);
 			addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(final ClickEvent event) {

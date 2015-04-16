@@ -12,16 +12,17 @@ import org.vaadin.jouni.animator.AnimatorProxy;
 import org.vaadin.jouni.animator.AnimatorProxy.AnimationEvent;
 import org.vaadin.jouni.animator.shared.AnimType;
 
+import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.core.CommandQueue;
 import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.event.AbstractNotificationEvent;
 import com.tilioteo.hypothesis.event.AfterFinishSlideEvent;
 import com.tilioteo.hypothesis.event.AfterPrepareTestEvent;
+import com.tilioteo.hypothesis.event.AfterRenderContentEvent;
 import com.tilioteo.hypothesis.event.CloseTestEvent;
 import com.tilioteo.hypothesis.event.ErrorNotificationEvent;
 import com.tilioteo.hypothesis.event.FinishTestEvent;
-import com.tilioteo.hypothesis.event.ProcessEvent;
-import com.tilioteo.hypothesis.event.ProcessEventListener;
+import com.tilioteo.hypothesis.event.ProcessEventBus;
 import com.tilioteo.hypothesis.event.RenderContentEvent;
 import com.tilioteo.hypothesis.extension.PluginManager;
 import com.tilioteo.hypothesis.model.ProcessModel;
@@ -30,16 +31,16 @@ import com.tilioteo.hypothesis.servlet.ProcessServlet;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.JavaScript;
-import com.vaadin.ui.Window.CloseEvent;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.CloseEvent;
 
 /**
  * @author kamil
@@ -48,7 +49,7 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 @PreserveOnRefresh
-public class ProcessUI extends HUI implements ProcessEventListener,	DetachListener, CommandScheduler {
+public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 
 	private static Logger log = Logger.getLogger(ProcessUI.class);
 
@@ -77,9 +78,11 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 	protected void init(VaadinRequest request) {
 		super.init(request);
 		
+		ProcessEventBus.get().register(this);
+		
 		log.debug("ProcessUI initialization");
 		addDetachListener(this);
-		processModel = new ProcessModel(this);
+		processModel = new ProcessModel();
 		
 		PluginManager.get().registerPlugins();
 		
@@ -133,35 +136,8 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 		}
 	}
 
-	@Override
-	public void handleEvent(ProcessEvent event) {
-		log.debug(String.format("handleEvent: name = %s", event.getName() != null ? event.getName() : "NULL"));
-		if (event instanceof AfterPrepareTestEvent) {
-			showPreparedContent((AfterPrepareTestEvent) event);
-			
-		} else if (event instanceof RenderContentEvent) {
-			renderContent((RenderContentEvent) event);
-
-		} else if (event instanceof AfterFinishSlideEvent) {
-			doAfterFinishSlide((AfterFinishSlideEvent) event);
-
-		} else if (event instanceof FinishTestEvent) {
-			showFinishContent((FinishTestEvent) event);
-
-		} else if (event instanceof AbstractNotificationEvent) {
-			if (event instanceof ErrorNotificationEvent) {
-				showErrorDialog((ErrorNotificationEvent) event);
-
-			} else {
-				showNotification((AbstractNotificationEvent) event);
-			}
-
-		} else if (event instanceof CloseTestEvent) {
-			close();
-		}
-	}
-
-	private void doAfterFinishSlide(final AfterFinishSlideEvent event) {
+	@Subscribe
+	public void doAfterFinishSlide(final AfterFinishSlideEvent event) {
 		log.debug(String.format("doAfterFinishSlide: slide id = %s", event.getSlide() != null ? event.getSlide().getId() : "NULL"));
 		clearContent(animate, new Command() {
 			@Override
@@ -171,7 +147,8 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 		});
 	}
 
-	private void renderContent(RenderContentEvent event) {
+	@Subscribe
+	public void renderContent(RenderContentEvent event) {
 		log.debug("renderContent::");
 		LayoutComponent content = event.getContent();
 		// set slide component to window content
@@ -179,14 +156,16 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 		if (content != null && content.getComponent() != null) {
 			Component component = content.getComponent();
 			setSlideContent(component, event.getTimers(), event.getShortcutKeys());
-			processModel.fireAfterRender(content);
+
+			ProcessEventBus.get().post(new AfterRenderContentEvent(content));
 		} else {
 			log.error("Error while rendering slide.");
 			processModel.fireTestError();
 		}
 	}
 	
-	private void showPreparedContent(final AfterPrepareTestEvent afterPrepareTestEvent) {
+	@Subscribe
+	public void showPreparedContent(final AfterPrepareTestEvent afterPrepareTestEvent) {
 		log.debug(String.format("showPreparedContent: test id = %s", afterPrepareTestEvent.getTest() != null ? afterPrepareTestEvent.getTest().getId() : "NULL"));
 		setContent(new PreparedTestContent(this, new Command() {
 			@Override
@@ -196,22 +175,29 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 		}));
 	}
 
-	private void showFinishContent(final FinishTestEvent finishTestEvent) {
+	@Subscribe
+	public void showFinishContent(final FinishTestEvent finishTestEvent) {
 		log.debug(String.format("showFinishContent: test id = %s", finishTestEvent.getTest() != null ? finishTestEvent.getTest().getId() : "NULL"));
 		clearContent(false, null);
 		
 		setContent(new FinishTestContent(new Command() {
 			@Override
 			public void execute() {
-				processModel.fireClose(finishTestEvent.getTest());
+				ProcessEventBus.get().post(new CloseTestEvent(finishTestEvent.getTest()));
 			}
 		}));
 	}
 
-	private void showNotification(AbstractNotificationEvent event) {
-		log.debug(String.format("showNotification: test id = %s, message = %s", event.getTest() != null ? event.getTest().getId() : "NULL", event.getDescription() != null ? event.getDescription() : "NULL"));
-		Notification notification = event.getNotification();
-		notification.show(Page.getCurrent());
+	@Subscribe
+	public void showNotification(AbstractNotificationEvent event) {
+		if (event instanceof ErrorNotificationEvent) {
+			showErrorDialog((ErrorNotificationEvent) event);
+
+		} else {
+			log.debug(String.format("showNotification: test id = %s, message = %s", event.getTest() != null ? event.getTest().getId() : "NULL", event.getDescription() != null ? event.getDescription() : "NULL"));
+			Notification notification = event.getNotification();
+			notification.show(Page.getCurrent());
+		}
 	}
 
 	private void showErrorDialog(final ErrorNotificationEvent event) {
@@ -220,10 +206,15 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 		errorDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				processModel.fireClose(event.getTest());
+				ProcessEventBus.get().post(new CloseTestEvent(event.getTest()));
 			}
 		});
 		errorDialog.show(this);
+	}
+
+	@Subscribe
+	public void requestClose(final CloseTestEvent event) {
+		close();
 	}
 
 	/**
@@ -278,7 +269,7 @@ public class ProcessUI extends HUI implements ProcessEventListener,	DetachListen
 		processModel.requestBreak();
 		processModel.purgeFactories();
 	}
-
+	
 	@Override
 	public void close() {
 		log.debug("close::");

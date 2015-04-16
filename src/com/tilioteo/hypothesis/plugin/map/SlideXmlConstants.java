@@ -90,9 +90,6 @@ public class SlideXmlConstants {
 	public static final String TEXT_OPACITY = "TextOpacity";
 	public static final String TEXT_FILL_OPACITY = "TextFillOpacity";
 
-	// public static final String ATTRIBUTES = "Attributes";
-	// public static final String ATTRIBUTE = "Attribute";
-
 	public static final StringSet VALID_LAYER_ELEMENTS = new StringSet(
 			new String[] { IMAGE_LAYER, FEATURE_LAYER, WMS_LAYER, IMAGE_SEQUENCE_LAYER });
 

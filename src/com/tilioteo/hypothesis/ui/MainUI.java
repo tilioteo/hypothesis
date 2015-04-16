@@ -14,7 +14,7 @@ import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidLoginEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidUserPermissionEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.UserLoggedOutEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.UserLoginRequestedEvent;
-import com.tilioteo.hypothesis.event.HypothesisEventBus;
+import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.persistence.UserGroupManager;
 import com.tilioteo.hypothesis.servlet.HibernateVaadinServlet;
 import com.tilioteo.hypothesis.ui.view.HypothesisViewType;
@@ -46,25 +46,18 @@ public class MainUI extends UI {
 	private UserGroupManager userGroupManager;
 	
 	private MainView mainView = null;
-	//private LoginView loginView = new LoginView();
 	
 	@Override
 	protected void init(VaadinRequest request) {
 		super.init(request);
 		
-		HypothesisEventBus.register(this);
+		MainEventBus.get().register(this);
 		
 		userGroupManager = UserGroupManager.newInstance();
 		
 		pid = request.getParameter("pid");
 
-		//navigator = new Navigator(this, this);
-		
-		//PacksView packsView = new PacksView(pid);
-		//navigator.addView("/packs", packsView);
-		
 		updateContent();
-		//navigator.navigateTo("/packs");
 	}
 	
 	private MainView getMainView() {
@@ -124,10 +117,10 @@ public class MainUI extends UI {
                	setUser(user);
                	updateContent();
         	} else {
-            	HypothesisEventBus.post(new InvalidUserPermissionEvent());
+        		MainEventBus.get().post(new InvalidUserPermissionEvent());
         	}
         } else {
-        	HypothesisEventBus.post(new InvalidLoginEvent());
+        	MainEventBus.get().post(new InvalidLoginEvent());
         }
     }
 

@@ -15,7 +15,6 @@ import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -63,7 +62,6 @@ public class SimplePacksView extends HypothesisView implements MouseEvents.Click
 		Panel mainPanel = new Panel();
 		mainPanel.setSizeFull();
 		horizontalLayout.addComponent(mainPanel);
-		//horizontalLayout.setExpandRatio(mainPanel, 1.0f);
 		
 		packLayout = new VerticalLayout();
 		packLayout.setHeight(null);
@@ -73,16 +71,11 @@ public class SimplePacksView extends HypothesisView implements MouseEvents.Click
 		
 		List<Pack> packs = (hash != null ? packsModel.getPackByHash(hash) : packsModel.getSimplePublicPacks());
 				
-		int packsCount = packs.size();
-		
 		for (Pack pack : packs) {
 			PackPanel packPanel = new PackPanel(pack);
 			packPanel.addClickListener(this);
 			packPanel.addStartListener(this);
 			
-			if (packsCount == 1) {
-				//packPanel.disableCollapse();
-			}
 			packLayout.addComponent(packPanel);
 		}
 	}
