@@ -11,7 +11,6 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.Field;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.data.Validator;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
@@ -50,7 +49,7 @@ public class ComboBox extends com.vaadin.ui.ComboBox implements SlideComponent,
 	}
 
 	private void addItems(Element element) {
-		List<Element> items = SlideUtility.getItemElements(element);
+		List<Element> items = SlideXmlUtility.getComponentItems(element);
 		for (Element item : items) {
 			addItem(item);
 		}
@@ -73,7 +72,7 @@ public class ComboBox extends com.vaadin.ui.ComboBox implements SlideComponent,
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
 
 		ComponentUtility.setCommonFieldProperties(this, element, properties,
 				parentAlignment);

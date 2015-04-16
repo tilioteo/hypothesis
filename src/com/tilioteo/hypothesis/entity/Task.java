@@ -26,9 +26,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -36,7 +33,7 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.TASK_TABLE)
+@Table(name = TableConstants.TASK_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Task extends SerializableIdObject implements HasList<Slide> {
 	/**
@@ -55,14 +52,14 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.TASK_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.TASK_GENERATOR, sequenceName = EntityTableConstants.TASK_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.TASK_GENERATOR)
+	@SequenceGenerator(name = TableConstants.TASK_GENERATOR, sequenceName = TableConstants.TASK_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = false)
+	@Column(name = FieldConstants.NAME, nullable = false, unique = false)
 	public String getName() {
 		return name;
 	}
@@ -71,7 +68,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 		this.name = name;
 	}
 
-	@Column(name = EntityFieldConstants.NOTE)
+	@Column(name = FieldConstants.NOTE)
 	public String getNote() {
 		return note;
 	}
@@ -80,7 +77,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 		this.note = note;
 	}
 	
-	@Column(name = EntityFieldConstants.RANDOMIZED)
+	@Column(name = FieldConstants.RANDOMIZED)
 	public boolean isRandomized() {
 		return randomized;
 	}
@@ -90,10 +87,10 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = EntityTableConstants.TASK_SLIDE_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.TASK_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.SLIDE_ID))
+	@JoinTable(name = TableConstants.TASK_SLIDE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TASK_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.SLIDE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
-	@OrderColumn(name = EntityFieldConstants.RANK)
+	@OrderColumn(name = FieldConstants.RANK)
 	public List<Slide> getSlides() {
 		return slides;
 	}
@@ -146,15 +143,19 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 			return false;
 		}
 
-		if (name != null && !name.equals(name2)) {
-			return false;
-		} else if (name2 != null) {
+		if (name == null) {
+			if (name2 != null) {
+				return false;
+			}
+		} else if (!name.equals(name2)) {
 			return false;
 		}
 		
-		if (note != null && !note.equals(note2)) {
-			return false;
-		} else if (note2 != null) {
+		if (note == null) {
+			if (note2 != null) {
+				return false;
+			}
+		} else if (!note.equals(note2)) {
 			return false;
 		}
 		

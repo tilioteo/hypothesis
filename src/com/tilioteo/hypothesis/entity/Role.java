@@ -13,9 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -23,7 +20,7 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.ROLE_TABLE)
+@Table(name = TableConstants.ROLE_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Role extends SerializableIdObject {
 
@@ -45,14 +42,14 @@ public final class Role extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.ROLE_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.ROLE_GENERATOR, sequenceName = EntityTableConstants.ROLE_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.ROLE_GENERATOR)
+	@SequenceGenerator(name = TableConstants.ROLE_GENERATOR, sequenceName = TableConstants.ROLE_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
+	@Column(name = FieldConstants.NAME, nullable = false, unique = true)
 	public String getName() {
 		return name;
 	}
@@ -84,15 +81,17 @@ public final class Role extends SerializableIdObject {
 			return false;
 		}
 
-		if (name != null && !name.equals(name2)) {
-			return false;
-		} else if (name2 != null) {
+		if (name == null) {
+			if (name2 != null) {
+				return false;
+			}
+		} else if (!name.equals(name2)) {
 			return false;
 		}
 		
-
 		return true;
 	}
+	
 
 	@Override
 	public int hashCode() {
@@ -105,6 +104,8 @@ public final class Role extends SerializableIdObject {
 		result = prime * result	+ (name != null ? name.hashCode() : 0);
 		return result;
 	}
+	
+	
 
 	@Override
 	public String toString() {

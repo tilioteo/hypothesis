@@ -7,7 +7,7 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
+import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 
@@ -44,7 +44,7 @@ public class Label extends com.vaadin.ui.Label implements SlideComponent {
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
 
 		ComponentUtility.setCommonProperties(this, element, properties,
 				parentAlignment);

@@ -22,17 +22,14 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author kamil
  *
  */
 @Entity
-@Table(name = EntityTableConstants.SLIDE_ORDER_TABLE)
-@org.hibernate.annotations.Table(appliesTo = EntityTableConstants.SLIDE_ORDER_TABLE,
-indexes = { @Index(name = "IX_TEST_TASK", columnNames = { EntityFieldConstants.TEST_ID, EntityFieldConstants.TASK_ID })})
+@Table(name = TableConstants.SLIDE_ORDER_TABLE)
+@org.hibernate.annotations.Table(appliesTo = TableConstants.SLIDE_ORDER_TABLE,
+indexes = { @Index(name = "IX_TEST_TASK", columnNames = { FieldConstants.TEST_ID, FieldConstants.TASK_ID })})
 @Access(AccessType.PROPERTY)
 public final class SlideOrder extends SerializableIdObject {
 
@@ -61,15 +58,15 @@ public final class SlideOrder extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.SLIDE_ORDER_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.SLIDE_ORDER_GENERATOR, sequenceName = EntityTableConstants.SLIDE_ORDER_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.SLIDE_ORDER_GENERATOR)
+	@SequenceGenerator(name = TableConstants.SLIDE_ORDER_GENERATOR, sequenceName = TableConstants.SLIDE_ORDER_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 	
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.TEST_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.TEST_ID, nullable = false)
 	public SimpleTest getTest() {
 		return test;
 	}
@@ -79,7 +76,7 @@ public final class SlideOrder extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.TASK_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.TASK_ID, nullable = false)
 	public Task getTask() {
 		return task;
 	}
@@ -88,7 +85,7 @@ public final class SlideOrder extends SerializableIdObject {
 		this.task = task;
 	}
 
-	@Column(name = EntityFieldConstants.XML_DATA)
+	@Column(name = FieldConstants.XML_DATA)
 	@Type(type="text")
 	protected String getXmlData() {
 		return xmlData;
@@ -164,21 +161,27 @@ public final class SlideOrder extends SerializableIdObject {
 			return false;
 		}
 
-		if (test != null && !test.equals(test2)) {
-			return false;
-		} else if (test2 != null) {
-			return false;
-		}
-		
-		if (task != null && !task.equals(task2)) {
-			return false;
-		} else if (task2 != null) {
+		if (test == null) {
+			if (test2 != null) {
+				return false;
+			}
+		} else if (!test.equals(test2)) {
 			return false;
 		}
 		
-		if (xmlData != null && !xmlData.equals(xmlData2)) {
+		if (task == null) {
+			if (task2 != null) {
+				return false;
+			}
+		} else if (!task.equals(task2)) {
 			return false;
-		} else if (xmlData2 != null) {
+		}
+		
+		if (xmlData == null) {
+			if (xmlData2 != null) {
+				return false;
+			}
+		} else if (!xmlData.equals(xmlData2)) {
 			return false;
 		}
 		

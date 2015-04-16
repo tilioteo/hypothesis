@@ -17,8 +17,8 @@ import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.Field;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
+import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.event.SelectPanelData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
@@ -170,7 +170,7 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 	}
 
 	private void setHandlers(Element element) {
-		List<Element> handlers = SlideUtility.getHandlerElements(element);
+		List<Element> handlers = SlideXmlUtility.getComponentHandlers(element);
 
 		for (Element handler : handlers) {
 			setHandler(handler);
@@ -228,7 +228,7 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
 
 		this.captions = properties.getStringArray(SlideXmlConstants.CAPTIONS);
 

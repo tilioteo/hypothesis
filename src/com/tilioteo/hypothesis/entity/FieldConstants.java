@@ -1,13 +1,13 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.common;
+package com.tilioteo.hypothesis.entity;
 
 /**
  * @author kamil
  *
  */
-public class EntityFieldConstants {
+public class FieldConstants {
 	
 	public static final String ID = "id";
 	public static final String UID = "uid";
@@ -21,6 +21,7 @@ public class EntityFieldConstants {
 	public static final String OWNER_ID = "owner_id";
 	public static final String DESCRIPTION = "description";
 	public static final String PUBLISHED = "published";
+	public static final String JAVA_REQUIRED = "java_required";
 	public static final String ROLE_ID = "role_id";
 	public static final String TIMESTAMP = "timestamp";
 	public static final String DATETIME = "datetime";
@@ -36,7 +37,6 @@ public class EntityFieldConstants {
 	public static final String TASK_ID = "task_id";
 	public static final String SLIDE_ID = "slide_id";
 	public static final String TEST_ID = "test_id";
-	public static final String SLIDE_CONTENT_ID = "slide_content_id";
 	public static final String SLIDE_TEMPLATE_UID = "slide_template_uid";
 	public static final String EVENT_ID = "event_id";
 	public static final String PRODUCTION = "production";

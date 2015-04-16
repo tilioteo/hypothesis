@@ -25,9 +25,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * 
  * @author Kamil Morong - Hypothesis
@@ -36,10 +33,12 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.USER_TABLE)
+@Table(name = TableConstants.USER_TABLE)
 @Access(AccessType.PROPERTY)
 public final class User extends SerializableIdObject {
-
+	
+	public static final User GUEST = new User("Guest");
+	
 	/**
 	 * 
 	 */
@@ -74,20 +73,28 @@ public final class User extends SerializableIdObject {
 	 * user can have another user (id of user) as owner
 	 */
 	private Long ownerId;
+	
+	protected User(String username) {
+		this.username = username;
+	}
+	
+	public User() {
+		
+	}
 
 	/**
 	 * database id is generated
 	 */
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.USER_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.USER_GENERATOR, sequenceName = EntityTableConstants.USER_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.USER_GENERATOR)
+	@SequenceGenerator(name = TableConstants.USER_GENERATOR, sequenceName = TableConstants.USER_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = EntityFieldConstants.USERNAME, nullable = false, unique = true)
+	@Column(name = FieldConstants.USERNAME, nullable = false, unique = true)
 	public String getUsername() {
 		return username;
 	}
@@ -101,7 +108,7 @@ public final class User extends SerializableIdObject {
 		this.username = username;
 	}
 
-	@Column(name = EntityFieldConstants.PASSWORD, nullable = false)
+	@Column(name = FieldConstants.PASSWORD, nullable = false)
 	public String getPassword() {
 		return password;
 	}
@@ -115,7 +122,7 @@ public final class User extends SerializableIdObject {
 		this.password = password;
 	}
 
-	@Column(name = EntityFieldConstants.ENABLED, nullable = false)
+	@Column(name = FieldConstants.ENABLED, nullable = false)
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -124,7 +131,7 @@ public final class User extends SerializableIdObject {
 		this.enabled = enabled;
 	}
 
-	@Column(name = EntityFieldConstants.EXPIRE_DATE)
+	@Column(name = FieldConstants.EXPIRE_DATE)
 	public Date getExpireDate() {
 		return expireDate;
 	}
@@ -133,7 +140,7 @@ public final class User extends SerializableIdObject {
 		this.expireDate = expireDate;
 	}
 
-	@Column(name = EntityFieldConstants.NOTE, nullable = true)
+	@Column(name = FieldConstants.NOTE, nullable = true)
 	public String getNote() {
 		return note;
 	}
@@ -143,7 +150,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = EntityTableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.ROLE_ID))
+	@JoinTable(name = TableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.ROLE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public Set<Role> getRoles() {
@@ -154,9 +161,9 @@ public final class User extends SerializableIdObject {
 		this.roles = roles;
 	}
 
-	@ManyToMany(targetEntity = Group.class, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = EntityTableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.GROUP_ID))
-	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
+	@ManyToMany(/*targetEntity = Group.class,*/ cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.GROUP_ID))
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	public Set<Group> getGroups() {
 		return groups;
@@ -166,7 +173,7 @@ public final class User extends SerializableIdObject {
 		this.groups = groups;
 	}
 
-	@Column(name = EntityFieldConstants.OWNER_ID, nullable = true)
+	@Column(name = FieldConstants.OWNER_ID, nullable = true)
 	public Long getOwnerId() {
 		return ownerId;
 	}
@@ -189,6 +196,10 @@ public final class User extends SerializableIdObject {
 
 	public final void removeGroup(Group group) {
 		getGroups().remove(group);
+	}
+	
+	public final boolean hasRole(Role role) {
+		return getRoles().contains(role);
 	}
 
 	@Override
@@ -224,42 +235,54 @@ public final class User extends SerializableIdObject {
 			return false;
 		}
 
-		if (username != null && !username.equals(username2)) {
-			return false;
-		} else if (username2 != null) {
-			return false;
-		}
-		
-		if (password != null && !password.equals(password2)) {
-			return false;
-		} else if (password2 != null) {
+		if (username == null) {
+			if (username2 != null) {
+				return false;
+			}
+		} else if (!username.equals(username2)) {
 			return false;
 		}
 		
-		if (enabled != null && !enabled.equals(enabled2)) {
-			return false;
-		} else if (enabled2 != null) {
-			return false;
-		}
-		
-		if (expireDate != null && !expireDate.equals(expireDate2)) {
-			return false;
-		} else if (expireDate2 != null) {
+		if (password == null) {
+			if (password2 != null) {
+				return false;
+			}
+		} else if (!password.equals(password2)) {
 			return false;
 		}
 		
-		if (note != null && !note.equals(note2)) {
-			return false;
-		} else if (note2 != null) {
+		if (enabled == null) {
+			if (enabled2 != null) {
+				return false;
+			}
+		} else if (!enabled.equals(enabled2)) {
 			return false;
 		}
 		
-		if (ownerId != null && !ownerId.equals(ownerId2)) {
-			return false;
-		} else if (ownerId2 != null) {
+		if (expireDate == null) {
+			if (expireDate2 != null) {
+				return false;
+			}
+		} else if (!expireDate.equals(expireDate2)) {
 			return false;
 		}
-
+		
+		if (note == null) {
+			if (note2 != null) {
+				return false;
+			}
+		} else if (!note.equals(note2)) {
+			return false;
+		}
+		
+		if (ownerId == null) {
+			if (ownerId2 != null) {
+				return false;
+			}
+		} else if (!ownerId.equals(ownerId2)) {
+			return false;
+		}
+		
 		return true;
 	}
 
@@ -273,7 +296,7 @@ public final class User extends SerializableIdObject {
 		String note = getNote();
 		Long ownerId = getOwnerId();
 		Set<Role> roles = getRoles();
-		Set<Group> groups = getGroups();
+		//Set<Group> groups = getGroups();
 
 		final int prime = 61;
 		int result = 1;
@@ -285,7 +308,7 @@ public final class User extends SerializableIdObject {
 		result = prime * result + (note != null ? note.hashCode() : 0);
 		result = prime * result + (ownerId != null ? ownerId.hashCode() : 0);
 		result = prime * result	+ roles.hashCode();
-		result = prime * result + groups.hashCode();
+		//result = prime * result + groups.hashCode();
 		return result;
 	}
 

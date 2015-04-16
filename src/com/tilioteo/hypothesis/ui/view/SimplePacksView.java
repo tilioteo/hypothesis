@@ -7,9 +7,9 @@ import java.util.List;
 
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.model.PacksModel;
-import com.tilioteo.hypothesis.ui.SimplePackPanel;
-import com.tilioteo.hypothesis.ui.SimplePackPanel.StartEvent;
-import com.tilioteo.hypothesis.ui.SimplePackPanel.StartListener;
+import com.tilioteo.hypothesis.ui.PackPanel;
+import com.tilioteo.hypothesis.ui.PackPanel.StartEvent;
+import com.tilioteo.hypothesis.ui.PackPanel.StartListener;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -53,7 +53,8 @@ public class SimplePacksView extends HypothesisView implements MouseEvents.Click
 		label.setWidth(null);
 		panelLayout.addComponent(label);
 		panelLayout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-		panelLayout.setMargin(true);		
+		panelLayout.setMargin(true);
+		panelLayout.setSpacing(true);
 		HorizontalLayout horizontalLayout = new HorizontalLayout();
 		horizontalLayout.setSizeFull();
 		verticalLayout.addComponent(horizontalLayout);
@@ -75,12 +76,12 @@ public class SimplePacksView extends HypothesisView implements MouseEvents.Click
 		int packsCount = packs.size();
 		
 		for (Pack pack : packs) {
-			SimplePackPanel packPanel = new SimplePackPanel(pack);
+			PackPanel packPanel = new PackPanel(pack);
 			packPanel.addClickListener(this);
 			packPanel.addStartListener(this);
 			
 			if (packsCount == 1) {
-				packPanel.disableCollapse();
+				//packPanel.disableCollapse();
 			}
 			packLayout.addComponent(packPanel);
 		}
@@ -94,7 +95,7 @@ public class SimplePacksView extends HypothesisView implements MouseEvents.Click
 
 	@Override
 	public void click(ClickEvent event) {
-		for (Component component : packLayout) {
+		/*for (Component component : packLayout) {
 			if (component instanceof SimplePackPanel) {
 				SimplePackPanel packPanel = (SimplePackPanel)component;
 				if (packPanel != event.getComponent()) {
@@ -105,12 +106,12 @@ public class SimplePacksView extends HypothesisView implements MouseEvents.Click
 					packPanel.collapse();
 				}
 			}
-		}
+		}*/
 	}
 
 	@Override
 	public void start(StartEvent event) {
-		packsModel.startSimpleTest(event.getPack());
+		//packsModel.startSimpleTest(event.getPack());
 	}
 
 }

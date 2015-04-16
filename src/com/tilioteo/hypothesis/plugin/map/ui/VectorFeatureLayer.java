@@ -14,7 +14,6 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -67,7 +66,7 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = com.tilioteo.hypothesis.dom.SlideXmlUtility.getPropertyValueMap(element);
 		MapUtility utility = MapUtility.getInstance(slideManager);
 		if (utility != null) {
 			utility.setLayerProperties(this, element, properties);
@@ -78,7 +77,7 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 	}
 
 	private void setHandlers(Element element) {
-		List<Element> handlers = SlideUtility.getHandlerElements(element);
+		List<Element> handlers = com.tilioteo.hypothesis.dom.SlideXmlUtility.getComponentHandlers(element);
 
 		for (Element handler : handlers) {
 			setHandler(handler);

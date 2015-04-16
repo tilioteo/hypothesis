@@ -24,9 +24,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -34,7 +31,7 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.GROUP_TABLE)
+@Table(name = TableConstants.GROUP_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Group extends SerializableIdObject {
 
@@ -54,9 +51,9 @@ public final class Group extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.GROUP_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.GROUP_GENERATOR, sequenceName = EntityTableConstants.GROUP_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.GROUP_GENERATOR)
+	@SequenceGenerator(name = TableConstants.GROUP_GENERATOR, sequenceName = TableConstants.GROUP_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
@@ -66,7 +63,7 @@ public final class Group extends SerializableIdObject {
 		super.setId(id);
 	}
 
-	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
+	@Column(name = FieldConstants.NAME, nullable = false, unique = true)
 	public String getName() {
 		return name;
 	}
@@ -75,7 +72,7 @@ public final class Group extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = EntityFieldConstants.NOTE)
+	@Column(name = FieldConstants.NOTE)
 	public String getNote() {
 		return note;
 	}
@@ -84,7 +81,7 @@ public final class Group extends SerializableIdObject {
 		this.note = note;
 	}
 
-	@Column(name = EntityFieldConstants.OWNER_ID, nullable = false)
+	@Column(name = FieldConstants.OWNER_ID, nullable = false)
 	public Long getOwnerId() {
 		return ownerId;
 	}
@@ -94,8 +91,8 @@ public final class Group extends SerializableIdObject {
 	}
 
 	@ManyToMany(targetEntity = User.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = EntityTableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.GROUP_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.USER_ID))
-	@Cascade({ org.hibernate.annotations.CascadeType.MERGE })
+	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.GROUP_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.USER_ID))
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	public Set<User> getUsers() {
 		return users;
@@ -142,21 +139,27 @@ public final class Group extends SerializableIdObject {
 			return false;
 		}
 
-		if (name != null && !name.equals(name2)) {
-			return false;
-		} else if (name2 != null) {
-			return false;
-		}
-		
-		if (note != null && !note.equals(note2)) {
-			return false;
-		} else if (note2 != null) {
+		if (name == null) {
+			if (name2 != null) {
+				return false;
+			}
+		} else if (!name.equals(name2)) {
 			return false;
 		}
 		
-		if (ownerId != null && !ownerId.equals(ownerId2)) {
+		if (note == null) {
+			if (note2 != null) {
+				return false;
+			}
+		} else if (!note.equals(note2)) {
 			return false;
-		} else if (ownerId2 != null) {
+		}
+		
+		if (ownerId == null) {
+			if (ownerId2 != null) {
+				return false;
+			}
+		} else if (!ownerId.equals(ownerId2)) {
 			return false;
 		}
 		
@@ -173,7 +176,7 @@ public final class Group extends SerializableIdObject {
 		String name = getName();
 		String note = getNote();
 		Long ownerId = getOwnerId();
-		Set<User> users = getUsers();
+		//Set<User> users = getUsers();
 		
 		final int prime = 13;
 		int result = 1;
@@ -181,7 +184,7 @@ public final class Group extends SerializableIdObject {
 		result = prime * result	+ (name != null ? name.hashCode() : 0);
 		result = prime * result	+ (note != null ? note.hashCode() : 0);
 		result = prime * result	+ (ownerId != null ? ownerId.hashCode() : 0);
-		result = prime * result + users.hashCode();
+		//result = prime * result + users.hashCode();
 		return result;
 	}
 

@@ -17,16 +17,13 @@ import org.hibernate.annotations.Subselect;
 import org.hibernate.annotations.Synchronize;
 import org.hibernate.annotations.Type;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author kamil
  *
  */
 @Entity
 @Subselect("SELECT e.ID,e.TIMESTAMP,e.TYPE,e.NAME,e.XML_DATA,e.BRANCH_ID,e.TASK_ID,e.SLIDE_ID,t.ID TEST_ID,t.USER_ID,t.PACK_ID,t.CREATED FROM TBL_EVENT e,TBL_TEST t,TBL_TEST_EVENT te WHERE te.EVENT_ID=e.ID AND te.TEST_ID=t.ID")
-@Synchronize({EntityTableConstants.EVENT_TABLE, EntityTableConstants.TEST_TABLE, EntityTableConstants.TEST_EVENT_TABLE })
+@Synchronize({TableConstants.EVENT_TABLE, TableConstants.TEST_TABLE, TableConstants.TEST_EVENT_TABLE })
 @Immutable
 @Access(AccessType.PROPERTY)
 public class ExportEvent extends SerializableIdObject {
@@ -93,12 +90,12 @@ public class ExportEvent extends SerializableIdObject {
 
 	@Override
 	@Id
-	@Column(name = EntityFieldConstants.ID)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = EntityFieldConstants.TIMESTAMP, nullable = false)
+	@Column(name = FieldConstants.TIMESTAMP, nullable = false)
 	protected Long getTimeStamp() {
 		return timeStamp;
 	}
@@ -107,7 +104,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.timeStamp = timeStamp;
 	}
 
-	@Column(name = EntityFieldConstants.TYPE, nullable = false)
+	@Column(name = FieldConstants.TYPE, nullable = false)
 	public Long getType() {
 		return type;
 	}
@@ -116,7 +113,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.type = type;
 	}
 
-	@Column(name = EntityFieldConstants.NAME)
+	@Column(name = FieldConstants.NAME)
 	public String getName() {
 		return name;
 	}
@@ -125,7 +122,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = EntityFieldConstants.XML_DATA)
+	@Column(name = FieldConstants.XML_DATA)
 	@Type(type="text")
 	public String getXmlData() {
 		return xmlData;
@@ -135,7 +132,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.xmlData = xmlData;
 	}
 
-	@Column(name = EntityFieldConstants.BRANCH_ID)
+	@Column(name = FieldConstants.BRANCH_ID)
 	public Long getBranchId() {
 		return branchId;
 	}
@@ -144,7 +141,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.branchId = branchId;
 	}
 
-	@Column(name = EntityFieldConstants.TASK_ID)
+	@Column(name = FieldConstants.TASK_ID)
 	public Long getTaskId() {
 		return taskId;
 	}
@@ -153,7 +150,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.taskId = taskId;
 	}
 
-	@Column(name = EntityFieldConstants.SLIDE_ID)
+	@Column(name = FieldConstants.SLIDE_ID)
 	public Long getSlideId() {
 		return slideId;
 	}
@@ -162,7 +159,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.slideId = slideId;
 	}
 
-	@Column(name = EntityFieldConstants.TEST_ID)
+	@Column(name = FieldConstants.TEST_ID)
 	public Long getTestId() {
 		return testId;
 	}
@@ -171,7 +168,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.testId = testId;
 	}
 
-	@Column(name = EntityFieldConstants.USER_ID)
+	@Column(name = FieldConstants.USER_ID)
 	public Long getUserId() {
 		return userId;
 	}
@@ -180,7 +177,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.userId = userId;
 	}
 
-	@Column(name = EntityFieldConstants.PACK_ID)
+	@Column(name = FieldConstants.PACK_ID)
 	public Long getPackId() {
 		return packId;
 	}
@@ -189,7 +186,7 @@ public class ExportEvent extends SerializableIdObject {
 		this.packId = packId;
 	}
 
-	@Column(name = EntityFieldConstants.CREATED, nullable = false)
+	@Column(name = FieldConstants.CREATED, nullable = false)
 	public Date getCreated() {
 		return created;
 	}

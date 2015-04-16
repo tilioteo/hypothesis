@@ -3,8 +3,14 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Date;
+
 import javax.servlet.annotation.WebServlet;
 
+import org.vaadin.jouni.animator.AnimatorProxy;
+import org.vaadin.jouni.animator.shared.AnimType;
 import org.vaadin.maps.server.Bounds;
 import org.vaadin.maps.server.LonLat;
 import org.vaadin.maps.shared.ui.Style;
@@ -34,6 +40,9 @@ import org.vaadin.websocket.ui.WebSocket.MessageEvent;
 import org.vaadin.websocket.ui.WebSocket.OpenEvent;
 
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
+import com.tilioteo.hypothesis.ui.DeployJava.InstallLink;
+import com.tilioteo.hypothesis.ui.DeployJava.JavaCheckedEvent;
+import com.tilioteo.hypothesis.ui.DeployJava.JavaInfoPanel;
 import com.tilioteo.hypothesis.ui.Image.LoadListener;
 import com.tilioteo.hypothesis.ui.Media.CanPlayThroughEvent;
 import com.tilioteo.hypothesis.ui.Media.StartEvent;
@@ -44,12 +53,22 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.ClassResource;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Resource;
+import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.ui.window.WindowMode;
+import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.Window;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -66,6 +85,9 @@ public class TestUI extends HUI {
 	@VaadinServletConfiguration(productionMode = false, ui = TestUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
 	public static class Servlet extends VaadinServlet {
 	}
+	
+	private boolean isJava = false;
+	private DeployJava deployJava;
 
 	public static final String CODE =
 			"ArrayList<Bubble> foregroundBubbles;"+
@@ -1038,7 +1060,7 @@ public class TestUI extends HUI {
 		*/
 		
 		final MapContainer map = new MapContainer();
-		verticalLayout.addComponent(map);
+		//verticalLayout.addComponent(map);
 		map.setWidth("80%");
 		map.setHeight("80%");
 
@@ -1276,6 +1298,9 @@ public class TestUI extends HUI {
 		verticalLayout.addComponent(buttonSend);
 		verticalLayout.addComponent(buttonClose);
 		verticalLayout.addComponent(socket);*/
+
+		JavaInfoPanel infoPanel = new JavaInfoPanel("1.8.0+");
+		verticalLayout.addComponent(infoPanel);
 }
 
 }

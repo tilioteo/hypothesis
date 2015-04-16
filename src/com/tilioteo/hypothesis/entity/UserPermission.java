@@ -16,9 +16,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -26,8 +23,8 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.USER_PERMISSION_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
-		EntityFieldConstants.USER_ID, EntityFieldConstants.PACK_ID }) })
+@Table(name = TableConstants.USER_PERMISSION_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
+		FieldConstants.USER_ID, FieldConstants.PACK_ID }) })
 @Access(AccessType.PROPERTY)
 public final class UserPermission extends SerializableIdObject {
 
@@ -76,15 +73,15 @@ public final class UserPermission extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.USER_PERMISSION_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.USER_PERMISSION_GENERATOR, sequenceName = EntityTableConstants.USER_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.USER_PERMISSION_GENERATOR)
+	@SequenceGenerator(name = TableConstants.USER_PERMISSION_GENERATOR, sequenceName = TableConstants.USER_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.USER_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.USER_ID, nullable = false)
 	public User getUser() {
 		return user;
 	}
@@ -94,7 +91,7 @@ public final class UserPermission extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
 	public Pack getPack() {
 		return pack;
 	}
@@ -103,7 +100,7 @@ public final class UserPermission extends SerializableIdObject {
 		this.pack = pack;
 	}
 
-	@Column(name = EntityFieldConstants.ENABLED, nullable = false)
+	@Column(name = FieldConstants.ENABLED, nullable = false)
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -112,7 +109,7 @@ public final class UserPermission extends SerializableIdObject {
 		this.enabled = enabled;
 	}
 
-	@Column(name = EntityFieldConstants.PASS)
+	@Column(name = FieldConstants.PASS)
 	public Integer getPass() {
 		return pass;
 	}
@@ -150,30 +147,38 @@ public final class UserPermission extends SerializableIdObject {
 			return false;
 		}
 
-		if (user != null && !user.equals(user2)) {
-			return false;
-		} else if (user2 != null) {
-			return false;
-		}
-		
-		if (pack != null && !pack.equals(pack2)) {
-			return false;
-		} else if (pack2 != null) {
+		if (user == null) {
+			if (user2 != null) {
+				return false;
+			}
+		} else if (!user.equals(user2)) {
 			return false;
 		}
 		
-		if (enabled != null && !enabled.equals(enabled2)) {
-			return false;
-		} else if (enabled2 != null) {
+		if (pack == null) {
+			if (pack2 != null) {
+				return false;
+			}
+		} else if (!pack.equals(pack2)) {
 			return false;
 		}
 		
-		if (pass != null && !pass.equals(pass2)) {
-			return false;
-		} else if (pass2 != null) {
+		if (enabled == null) {
+			if (enabled2 != null) {
+				return false;
+			}
+		} else if (!enabled.equals(enabled2)) {
 			return false;
 		}
-
+		
+		if (pass == null) {
+			if (pass2 != null) {
+				return false;
+			}
+		} else if (!pass.equals(pass2)) {
+			return false;
+		}
+		
 		return true;
 	}
 

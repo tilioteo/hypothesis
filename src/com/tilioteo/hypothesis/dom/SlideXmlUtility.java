@@ -8,10 +8,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
+import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.StringSet;
 import com.tilioteo.hypothesis.common.Strings;
 
@@ -78,7 +80,7 @@ public class SlideXmlUtility {
 
 	}
 
-	public static List<Element> getFieldValidators(Element field) {
+	public static List<Element> getComponentValidators(Element field) {
 		return getElementSubNodeChilds(field, SlideXmlConstants.VALIDATORS,
 				null);
 	}
@@ -445,4 +447,32 @@ public class SlideXmlUtility {
 		return (doc != null && doc.getRootElement() != null && doc
 				.getRootElement().getName().equals(SlideXmlConstants.SLIDE));
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static StringMap getActionAttributesMap(Element element) {
+		StringMap map = new StringMap();
+
+		List<Attribute> attributes = element.attributes();
+		for (Attribute attribute : attributes) {
+			map.put(attribute.getName(), attribute.getValue());
+		}
+
+		return map;
+	}
+
+	public static StringMap getPropertyValueMap(Element component) {
+		StringMap map = new StringMap();
+		List<Element> elements = getComponentProperties(component);
+
+		for (Element element : elements) {
+			String name = element.getName();
+			Attribute value = element.attribute(SlideXmlConstants.VALUE);
+			if (value != null)
+				map.put(name, value.getValue());
+		}
+
+		return map;
+	}
+	
+
 }

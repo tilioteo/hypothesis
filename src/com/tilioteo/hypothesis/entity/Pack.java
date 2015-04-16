@@ -26,9 +26,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -36,7 +33,7 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.PACK_TABLE)
+@Table(name = TableConstants.PACK_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Pack extends SerializableIdObject implements HasList<Branch> {
 
@@ -52,6 +49,12 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	 * pack is published to users
 	 */
 	private Boolean published = false;
+
+	/**
+	 * pack requires java to run
+	 */
+	private Boolean javaRequired = true;
+
 	private String note;
 
 	/**
@@ -61,14 +64,14 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.PACK_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.PACK_GENERATOR, sequenceName = EntityTableConstants.PACK_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.PACK_GENERATOR)
+	@SequenceGenerator(name = TableConstants.PACK_GENERATOR, sequenceName = TableConstants.PACK_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = EntityFieldConstants.NAME, nullable = false, unique = true)
+	@Column(name = FieldConstants.NAME, nullable = false, unique = true)
 	public String getName() {
 		return name;
 	}
@@ -77,7 +80,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		this.name = name;
 	}
 
-	@Column(name = EntityFieldConstants.DESCRIPTION)
+	@Column(name = FieldConstants.DESCRIPTION)
 	public String getDescription() {
 		return description;
 	}
@@ -86,8 +89,8 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		this.description = description;
 	}
 
-	@Column(name = EntityFieldConstants.PUBLISHED)
-	public Boolean getPublished() {
+	@Column(name = FieldConstants.PUBLISHED)
+	public Boolean isPublished() {
 		return published;
 	}
 
@@ -95,7 +98,16 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		this.published = published;
 	}
 
-	@Column(name = EntityFieldConstants.NOTE)
+	@Column(name = FieldConstants.JAVA_REQUIRED)
+	public Boolean isJavaRequired() {
+		return javaRequired;
+	}
+
+	public void setJavaRequired(Boolean javaRequired) {
+		this.javaRequired = javaRequired;
+	}
+
+	@Column(name = FieldConstants.NOTE)
 	public String getNote() {
 		return note;
 	}
@@ -105,10 +117,10 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = EntityTableConstants.PACK_BRANCH_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.PACK_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID))
+	@JoinTable(name = TableConstants.PACK_BRANCH_TABLE, joinColumns = @JoinColumn(name = FieldConstants.PACK_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.BRANCH_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
-	@OrderColumn(name = EntityFieldConstants.RANK)
+	@OrderColumn(name = FieldConstants.RANK)
 	public List<Branch> getBranches() {
 		return branches;
 	}
@@ -149,8 +161,8 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		String name2 = other.getName();
 		String description = getDescription();
 		String description2 = other.getDescription();
-		Boolean published = getPublished();
-		Boolean published2 = other.getPublished();
+		Boolean published = isPublished();
+		Boolean published2 = other.isPublished();
 		String note = getNote();
 		String note2 = other.getNote();
 		//List<Branch> branches = getBranches();
@@ -161,30 +173,38 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 			return false;
 		}
 
-		if (name != null && !name.equals(name2)) {
-			return false;
-		} else if (name2 != null) {
-			return false;
-		}
-		
-		if (description != null && !description.equals(description2)) {
-			return false;
-		} else if (description2 != null) {
+		if (name == null) {
+			if (name2 != null) {
+				return false;
+			}
+		} else if (!name.equals(name2)) {
 			return false;
 		}
 		
-		if (published != null && !published.equals(published2)) {
-			return false;
-		} else if (published2 != null) {
+		if (description == null) {
+			if (description2 != null) {
+				return false;
+			}
+		} else if (!description.equals(description2)) {
 			return false;
 		}
 		
-		if (note != null && !note.equals(note2)) {
-			return false;
-		} else if (note2 != null) {
+		if (published == null) {
+			if (published2 != null) {
+				return false;
+			}
+		} else if (!published.equals(published2)) {
 			return false;
 		}
-
+		
+		if (note == null) {
+			if (note2 != null) {
+				return false;
+			}
+		} else if (!note.equals(note2)) {
+			return false;
+		}
+		
 		return true;
 	}
 
@@ -193,7 +213,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		Long id = getId();
 		String name = getName();
 		String description = getDescription();
-		Boolean published = getPublished();
+		Boolean published = isPublished();
 		String note = getNote();
 		List<Branch> branches = getBranches();
 		

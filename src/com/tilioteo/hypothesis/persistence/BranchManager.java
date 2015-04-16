@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.common.EntityConstants;
 import com.tilioteo.hypothesis.dao.BranchTrekDao;
 import com.tilioteo.hypothesis.entity.Branch;
 import com.tilioteo.hypothesis.entity.BranchMap;

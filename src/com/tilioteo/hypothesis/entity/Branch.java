@@ -22,16 +22,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.dom4j.Document;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
-
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-import com.tilioteo.hypothesis.dom.BranchXmlConstants;
-import com.tilioteo.hypothesis.dom.XmlUtility;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -40,7 +34,7 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.BRANCH_TABLE)
+@Table(name = TableConstants.BRANCH_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Branch extends SerializableIdObject implements HasList<Task> {
 
@@ -61,21 +55,16 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	 */
 	private List<Task> tasks = new LinkedList<Task>();
 
-	/**
-	 * parsed dom document from xml
-	 */
-	private transient Document document = null;
-
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.BRANCH_GENERATOR, sequenceName = EntityTableConstants.BRANCH_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.BRANCH_GENERATOR)
+	@SequenceGenerator(name = TableConstants.BRANCH_GENERATOR, sequenceName = TableConstants.BRANCH_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = EntityFieldConstants.NOTE)
+	@Column(name = FieldConstants.NOTE)
 	public String getNote() {
 		return note;
 	}
@@ -84,48 +73,27 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 		this.note = note;
 	}
 
-	@Column(name = EntityFieldConstants.XML_DATA, nullable = false)
+	@Column(name = FieldConstants.XML_DATA, nullable = false)
 	@Type(type="text")
-	protected String getXmlData() {
+	public String getXmlData() {
 		return xmlData;
 	}
 
-	protected void setXmlData(String xmlData) {
+	public void setXmlData(String xmlData) {
 		this.xmlData = xmlData;
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = EntityTableConstants.BRANCH_TASK_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.BRANCH_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.TASK_ID))
+	@JoinTable(name = TableConstants.BRANCH_TASK_TABLE, joinColumns = @JoinColumn(name = FieldConstants.BRANCH_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.TASK_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
-	@OrderColumn(name = EntityFieldConstants.RANK)
+	@OrderColumn(name = FieldConstants.RANK)
 	public List<Task> getTasks() {
 		return tasks;
 	}
 
 	protected void setTasks(List<Task> list) {
 		this.tasks = list;
-	}
-
-	@Transient
-	public final Document getDocument() {
-		if (document == null) {
-			document = XmlUtility.readString(getXmlData());
-		}
-		return document;
-	}
-
-	public final void setDocument(Document document) {
-		if (document != getDocument()) {
-			if (isValidDocument(document)) {
-				this.document = document;
-				this.xmlData = XmlUtility.writeString(this.document);
-			} else {
-				this.document = null;
-				this.xmlData = null;
-				// throw new InvalidBranchXmlException();
-			}
-		}
 	}
 
 	@Transient
@@ -141,11 +109,6 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 
 	public final void removeTask(Task task) {
 		getTasks().remove(task);
-	}
-
-	private boolean isValidDocument(Document doc) {
-		return (doc != null && doc.getRootElement() != null && doc
-				.getRootElement().getName().equals(BranchXmlConstants.BRANCH));
 	}
 
 	@Override
@@ -173,15 +136,19 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 			return false;
 		}
 
-		if (note != null && !note.equals(note2)) {
-			return false;
-		} else if (note2 != null) {
+		if (note == null) {
+			if (note2 != null) {
+				return false;
+			}
+		} else if (!note.equals(note2)) {
 			return false;
 		}
 		
-		if (xmlData != null && !xmlData.equals(xmlData2)) {
-			return false;
-		} else if (xmlData2 != null) {
+		if (xmlData == null) {
+			if (xmlData2 != null) {
+				return false;
+			}
+		} else if (!xmlData.equals(xmlData2)) {
 			return false;
 		}
 		

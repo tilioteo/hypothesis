@@ -16,15 +16,13 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.dom4j.Document;
+//import org.dom4j.Document;
 import org.hibernate.annotations.Type;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-import com.tilioteo.hypothesis.dom.AbstractSlideXmlException;
-import com.tilioteo.hypothesis.dom.InvalidSlideContentXmlException;
-import com.tilioteo.hypothesis.dom.SlideXmlConstants;
-import com.tilioteo.hypothesis.dom.XmlUtility;
+//import com.tilioteo.hypothesis.dom.AbstractSlideXmlException;
+//import com.tilioteo.hypothesis.dom.InvalidSlideContentXmlException;
+//import com.tilioteo.hypothesis.dom.SlideXmlConstants;
+//import com.tilioteo.hypothesis.dom.XmlUtility;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -33,7 +31,7 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.SLIDE_TABLE)
+@Table(name = TableConstants.SLIDE_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Slide extends SerializableIdObject {
 
@@ -54,10 +52,10 @@ public final class Slide extends SerializableIdObject {
 
 	private String note;
 
-	/**
-	 * parsed dom document from xml
-	 */
-	private transient Document document = null;
+//	/**
+//	 * parsed dom document from xml
+//	 */
+//	private transient Document document = null;
 
 	protected Slide() {
 		super();
@@ -70,9 +68,9 @@ public final class Slide extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.SLIDE_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.SLIDE_GENERATOR, sequenceName = EntityTableConstants.SLIDE_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.SLIDE_GENERATOR)
+	@SequenceGenerator(name = TableConstants.SLIDE_GENERATOR, sequenceName = TableConstants.SLIDE_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
@@ -84,7 +82,7 @@ public final class Slide extends SerializableIdObject {
 	}*/
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = EntityFieldConstants.SLIDE_TEMPLATE_UID, nullable = false)
+	@JoinColumn(name = FieldConstants.SLIDE_TEMPLATE_UID, nullable = false)
 	public SlideTemplate getTemplate() {
 		return template;
 	}
@@ -93,17 +91,17 @@ public final class Slide extends SerializableIdObject {
 		this.template = slideTemplate;
 	}
 
-	@Column(name = EntityFieldConstants.XML_DATA, nullable = false)
+	@Column(name = FieldConstants.XML_DATA, nullable = false)
 	@Type(type="text")
-	protected String getXmlData() {
+	public String getXmlData() {
 		return xmlData;
 	}
 
-	protected void setXmlData(String xmlData) {
+	public void setXmlData(String xmlData) {
 		this.xmlData = xmlData;
 	}
 
-	@Column(name = EntityFieldConstants.NOTE)
+	@Column(name = FieldConstants.NOTE)
 	public String getNote() {
 		return note;
 	}
@@ -112,25 +110,25 @@ public final class Slide extends SerializableIdObject {
 		this.note = note;
 	}
 
-	@Transient
-	public final Document getDocument() {
-		if (document == null) {
-			document = XmlUtility.readString(getXmlData());
-		}
-		return document;
-	}
-
-	public final void setDocument(Document document) throws AbstractSlideXmlException {
-		if (document != getDocument()) {
-			if (isValidDocument(document)) {
-				this.document = document;
-				this.xmlData = XmlUtility.writeString(this.document);
-			} else {
-				throw new InvalidSlideContentXmlException();
-			}
-			// getTemplateUid();
-		}
-	}
+//	@Transient
+//	public final Document getDocument() {
+//		if (document == null) {
+//			document = XmlUtility.readString(getXmlData());
+//		}
+//		return document;
+//	}
+//
+//	public final void setDocument(Document document) throws AbstractSlideXmlException {
+//		if (document != getDocument()) {
+//			if (isValidDocument(document)) {
+//				this.document = document;
+//				this.xmlData = XmlUtility.writeString(this.document);
+//			} else {
+//				throw new InvalidSlideContentXmlException();
+//			}
+//			// getTemplateUid();
+//		}
+//	}
 
 	/**
 	 * get the parent template's unique identificator
@@ -146,25 +144,34 @@ public final class Slide extends SerializableIdObject {
 	 * @return
 	 */
 	@Transient
-	public final Document getTemplateDocument() {
-		return getTemplate() != null ? getTemplate().getDocument() : null;
+	public final String getTemplateXmlData() {
+		return getTemplate() != null ? getTemplate().getXmlData() : null;
 	}
 
-	/**
-	 * this method checks the validity of slide document against the template
-	 * document slide and template must have equal uid
-	 * 
-	 * @param doc
-	 * @return
-	 */
-	private boolean isValidDocument(Document doc) {
-		return (doc != null	&&
-				doc.getRootElement() != null &&
-				doc.getRootElement().getName().equals(SlideXmlConstants.SLIDE_CONTENT) &&
-				getTemplate() != null &&
-				getTemplate().getUid() != null &&
-				doc.getRootElement().attributeValue(SlideXmlConstants.TEMPLATE_UID).equals(getTemplate().getUid()));
-	}
+//	/**
+//	 * get the parent template's document
+//	 * @return
+//	 */
+//	@Transient
+//	public final Document getTemplateDocument() {
+//		return getTemplate() != null ? getTemplate().getDocument() : null;
+//	}
+
+//	/**
+//	 * this method checks the validity of slide document against the template
+//	 * document slide and template must have equal uid
+//	 * 
+//	 * @param doc
+//	 * @return
+//	 */
+//	private boolean isValidDocument(Document doc) {
+//		return (doc != null	&&
+//				doc.getRootElement() != null &&
+//				doc.getRootElement().getName().equals(SlideXmlConstants.SLIDE_CONTENT) &&
+//				getTemplate() != null &&
+//				getTemplate().getUid() != null &&
+//				doc.getRootElement().attributeValue(SlideXmlConstants.TEMPLATE_UID).equals(getTemplate().getUid()));
+//	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -189,21 +196,27 @@ public final class Slide extends SerializableIdObject {
 			return false;
 		}
 
-		if (template != null && !template.equals(template2)) {
-			return false;
-		} else if (template2 != null) {
+		if (template == null) {
+			if (template2 != null) {
+				return false;
+			}
+		} else if (!template.equals(template2)) {
 			return false;
 		}
 		
-		if (xmlData != null && !xmlData.equals(xmlData2)) {
-			return false;
-		} else if (xmlData2 != null) {
+		if (xmlData == null) {
+			if (xmlData2 != null) {
+				return false;
+			}
+		} else if (!xmlData.equals(xmlData2)) {
 			return false;
 		}
-
-		if (note != null && !note.equals(note2)) {
-			return false;
-		} else if (note2 != null) {
+		
+		if (note == null) {
+			if (note2 != null) {
+				return false;
+			}
+		} else if (!note.equals(note2)) {
 			return false;
 		}
 		

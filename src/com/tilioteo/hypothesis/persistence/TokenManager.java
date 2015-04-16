@@ -9,8 +9,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
 import com.tilioteo.hypothesis.dao.TokenDao;
+import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.entity.User;
@@ -56,7 +56,7 @@ public class TokenManager {
 			Date date = new Date();
 			date.setTime(date.getTime() - TOKEN_VALID_TIME);
 			List<Token> tokens = tokenDao.findByCriteria(Restrictions.lt(
-					EntityFieldConstants.DATETIME, date));
+					FieldConstants.DATETIME, date));
 			for (Token invalidToken : tokens) {
 				tokenDao.makeTransient(invalidToken);
 			}

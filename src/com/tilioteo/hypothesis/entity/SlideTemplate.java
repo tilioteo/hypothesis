@@ -9,16 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.dom4j.Document;
 import org.hibernate.annotations.Type;
-
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.dom.SlideXmlConstants;
-import com.tilioteo.hypothesis.dom.XmlUtility;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -27,7 +19,7 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.SLIDE_TEMPLATE_TABLE)
+@Table(name = TableConstants.SLIDE_TEMPLATE_TABLE)
 @Access(AccessType.PROPERTY)
 public final class SlideTemplate extends SerializableUidObject {
 
@@ -43,93 +35,30 @@ public final class SlideTemplate extends SerializableUidObject {
 
 	private String note;
 
-	/**
-	 * parsed dom document from xml
-	 */
-	private transient Document document = null;
-
 	@Override
 	@Id
-	@Column(name = EntityFieldConstants.UID)
+	@Column(name = FieldConstants.UID)
 	public String getUid() {
 		return super.getUid();
 	}
 
-	@Column(name = EntityFieldConstants.XML_DATA, nullable = false)
+	@Column(name = FieldConstants.XML_DATA, nullable = false)
 	@Type(type="text")
-	protected String getXmlData() {
+	public String getXmlData() {
 		return xmlData;
 	}
 
-	protected void setXmlData(String xmlData) {
+	public void setXmlData(String xmlData) {
 		this.xmlData = xmlData;
 	}
 
-	@Column(name = EntityFieldConstants.NOTE)
+	@Column(name = FieldConstants.NOTE)
 	public String getNote() {
 		return note;
 	}
 
 	public void setNote(String note) {
 		this.note = note;
-	}
-
-	/**
-	 * get parsed document
-	 * @return
-	 */
-	@Transient
-	public final Document getDocument() {
-		if (document == null) {
-			document = XmlUtility.readString(getXmlData());
-		}
-		return document;
-	}
-
-	public final void setDocument(Document document) {
-		if (document != getDocument()) {
-			if (isValidDocument(document)) {
-				this.document = document;
-				updateTepmlateXmlAndUid();
-			} else {
-				this.document = null;
-				updateTepmlateXmlAndUid();
-			}
-		}
-	}
-
-	/**
-	 * change unique identificator this method updates uid also in xml
-	 * 
-	 * @param uid
-	 */
-	public final void setNewUid(String uid) {
-		if (isValidDocument(getDocument()) && this.uid != uid) {
-			document.getRootElement().addAttribute(SlideXmlConstants.UID,
-					Strings.isNullOrEmpty(uid) ? "" : uid);
-			updateTepmlateXmlAndUid();
-		}
-	}
-
-	private boolean isValidDocument(Document doc) {
-		return (doc != null && doc.getRootElement() != null && doc
-				.getRootElement().getName()
-				.equals(SlideXmlConstants.SLIDE_TEMPLATE));
-	}
-
-	/**
-	 * internal method to update xml
-	 */
-	private void updateTepmlateXmlAndUid() {
-		if (this.document != null) {
-			setXmlData(XmlUtility.writeString(this.document));
-			String uid = document.getRootElement().attributeValue(
-					SlideXmlConstants.UID);
-			setUid(Strings.isNullOrEmpty(uid) ? null : uid);
-		} else {
-			setXmlData(null);
-			setUid(null);
-		}
 	}
 
 	@Override
@@ -152,21 +81,27 @@ public final class SlideTemplate extends SerializableUidObject {
 		String note = getNote();
 		String note2 = other.getNote();
 		
-		if (uid != null && !uid.equals(uid2)) {
-			return false;
-		} else if (uid2 != null) {
-			return false;
-		}
-
-		if (xmlData != null && !xmlData.equals(xmlData2)) {
-			return false;
-		} else if (xmlData2 != null) {
+		if (uid == null) {
+			if (uid2 != null) {
+				return false;
+			}
+		} else if (!uid.equals(uid2)) {
 			return false;
 		}
-
-		if (note != null && !note.equals(note2)) {
+		
+		if (xmlData == null) {
+			if (xmlData2 != null) {
+				return false;
+			}
+		} else if (!xmlData.equals(xmlData2)) {
 			return false;
-		} else if (note2 != null) {
+		}
+		
+		if (note == null) {
+			if (note2 != null) {
+				return false;
+			}
+		} else if (!note.equals(note2)) {
 			return false;
 		}
 		

@@ -1,7 +1,8 @@
 /* Import the reindeer theme.*/
 /* This only allows us to use the mixins defined in it and does not add any styles by itself. */
-@import "../reindeer/reindeer.scss";
-//@import "../valo/valo.scss";
+//@import "../reindeer/reindeer.scss";
+@import "../valo/valo.scss";
+@import "login.scss";
 
 /* This contains all of your theme.*/
 /* If somebody wants to extend the theme she will include this mixin. */
@@ -9,8 +10,101 @@
 
 @mixin hypothesis {
   /* Include all the styles from the reindeer theme */
-  @include reindeer;
-//  @include valo;
+//  @include reindeer;
+  @include valo;
+  @include hypothesis-login-view;
 
   /* Insert your theme rules here */
+  
+  $color1: #8D9099;
+  $color2: #DFE8F6;
+  $color-packpanel: #F7F7F7;
+  $color-packpanel-nojava: #CACACA;
+  
+  //#A1C2E3
+  //#DFE8F6
+  .v-panel-caption-color1 {
+    @include valo-panel-caption-style($background-color: $color1);
+    font-weight: bold;
+    //height: 25px;
+  }
+  
+  .v-panel-content-color2 {
+    @include valo-panel-style($background-color: $color2);
+    border: none;
+  }
+  
+  .valo-menu-color2 {
+    @include valo-menu-style($bg: $color2);
+  }
+  
+  .v-verticallayout-color2 {
+    background-color: $color2;
+  }
+
+  .v-horizontallayout-color2 {
+    background-color: $color2;
+  }
+  
+  .packpanel .controls {
+    visibility: hidden;
+  }
+
+  .packpanel:hover .controls {
+    visibility: visible;
+  }
+  
+  .packpanel-nojava .controls {
+    visibility: hidden;
+  }
+
+  .packpanel-nojava:hover .controls {
+    visibility: visible;
+  }
+  
+  .v-panel-caption-packpanel {
+    @include valo-panel-caption-style($background-color: $color1);
+    font-weight: bold;
+  }
+  
+  .v-panel-content-packpanel {
+    @include valo-panel-style($background-color: $color-packpanel);
+    border: none;
+    //border-radius: initial;
+  }
+
+  .v-panel-caption-packpanel-nojava {
+    @include valo-panel-caption-style($background-color: $color1);
+    font-weight: bold;
+  }
+  
+  .v-panel-content-packpanel-nojava {
+    @include valo-panel-style($background-color: $color-packpanel-nojava);
+    border: none;
+    //border-radius: initial;
+  }
+  
+  .v-label-red {
+    color: red;
+    font-weight: bold;
+  }
+
+  .v-panel-content-info-nojava {
+    @include valo-panel-style($background-color: #FF9090);
+    color: white;
+    font-weight: bold;
+  }
+  
+  .v-panel-content-info-java {
+    @include valo-panel-style($background-color: #DAFFDA);
+  }
+  
+  .v-panel-hidden {
+    visibility: hidden;
+    height: 0px;
+  }
+
+  .v-slot-hidden {
+    height: 0px;
+  }
 }

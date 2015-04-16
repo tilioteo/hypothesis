@@ -21,9 +21,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -34,7 +31,7 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.EVENT_TABLE)
+@Table(name = TableConstants.EVENT_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Event extends SerializableIdObject {
 
@@ -96,14 +93,14 @@ public final class Event extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.EVENT_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.EVENT_GENERATOR, sequenceName = EntityTableConstants.EVENT_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.EVENT_GENERATOR)
+	@SequenceGenerator(name = TableConstants.EVENT_GENERATOR, sequenceName = TableConstants.EVENT_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = EntityFieldConstants.TIMESTAMP, nullable = false)
+	@Column(name = FieldConstants.TIMESTAMP, nullable = false)
 	protected Long getTimeStamp() {
 		return timeStamp;
 	}
@@ -112,7 +109,7 @@ public final class Event extends SerializableIdObject {
 		this.timeStamp = timeStamp;
 	}
 
-	@Column(name = EntityFieldConstants.TYPE, nullable = false)
+	@Column(name = FieldConstants.TYPE, nullable = false)
 	public Long getType() {
 		return type;
 	}
@@ -121,7 +118,7 @@ public final class Event extends SerializableIdObject {
 		this.type = type;
 	}
 
-	@Column(name = EntityFieldConstants.NAME)
+	@Column(name = FieldConstants.NAME)
 	public String getName() {
 		return name;
 	}
@@ -130,7 +127,7 @@ public final class Event extends SerializableIdObject {
 		this.name = name;
 	}
 
-	@Column(name = EntityFieldConstants.XML_DATA)
+	@Column(name = FieldConstants.XML_DATA)
 	@Type(type="text")
 	public String getXmlData() {
 		return xmlData;
@@ -141,7 +138,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.BRANCH_ID)
+	@JoinColumn(name = FieldConstants.BRANCH_ID)
 	public Branch getBranch() {
 		return branch;
 	}
@@ -151,7 +148,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.TASK_ID)
+	@JoinColumn(name = FieldConstants.TASK_ID)
 	public Task getTask() {
 		return task;
 	}
@@ -161,7 +158,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.SLIDE_ID)
+	@JoinColumn(name = FieldConstants.SLIDE_ID)
 	public Slide getSlide() {
 		return slide;
 	}
@@ -171,9 +168,9 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinTable(name = EntityTableConstants.TEST_EVENT_TABLE,
-		joinColumns = {@JoinColumn(name = EntityFieldConstants.EVENT_ID, insertable = false, updatable = false)},
-		inverseJoinColumns = {@JoinColumn(name = EntityFieldConstants.TEST_ID, insertable = false, updatable = false)})
+	@JoinTable(name = TableConstants.TEST_EVENT_TABLE,
+		joinColumns = {@JoinColumn(name = FieldConstants.EVENT_ID, insertable = false, updatable = false)},
+		inverseJoinColumns = {@JoinColumn(name = FieldConstants.TEST_ID, insertable = false, updatable = false)})
 	public Test getTest() {
 		return test;
 	}
@@ -222,45 +219,59 @@ public final class Event extends SerializableIdObject {
 			return false;
 		}
 
-		if (timeStamp != null && !timeStamp.equals(timeStamp2)) {
-			return false;
-		} else if (timeStamp2 != null) {
-			return false;
-		}
-		
-		if (type != null && !type.equals(type2)) {
-			return false;
-		} else if (type2 != null) {
+		if (timeStamp == null) {
+			if (timeStamp2 != null) {
+				return false;
+			}
+		} else if (!timeStamp.equals(timeStamp2)) {
 			return false;
 		}
 		
-		if (name != null && !name.equals(name2)) {
-			return false;
-		} else if (name2 != null) {
-			return false;
-		}
-		
-		if (xmlData != null && !xmlData.equals(xmlData2)) {
-			return false;
-		} else if (xmlData2 != null) {
+		if (type == null) {
+			if (type2 != null) {
+				return false;
+			}
+		} else if (!type.equals(type2)) {
 			return false;
 		}
 		
-		if (branch != null && !branch.equals(branch2)) {
-			return false;
-		} else if (branch2 != null) {
-			return false;
-		}
-		
-		if (task != null && !task.equals(task2)) {
-			return false;
-		} else if (task2 != null) {
+		if (name == null) {
+			if (name2 != null) {
+				return false;
+			}
+		} else if (!name.equals(name2)) {
 			return false;
 		}
 		
-		if (slide != null && !slide.equals(slide2)) {
+		if (xmlData == null) {
+			if (xmlData2 != null) {
+				return false;
+			}
+		} else if (!xmlData.equals(xmlData2)) {
 			return false;
-		} else if (slide2 != null) {
+		}
+		
+		if (branch == null) {
+			if (branch2 != null) {
+				return false;
+			}
+		} else if (!branch.equals(branch2)) {
+			return false;
+		}
+		
+		if (task == null) {
+			if (task2 != null) {
+				return false;
+			}
+		} else if (!task.equals(task2)) {
+			return false;
+		}
+		
+		if (slide == null) {
+			if (slide2 != null) {
+				return false;
+			}
+		} else if (!slide.equals(slide2)) {
 			return false;
 		}
 		

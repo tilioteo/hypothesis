@@ -24,9 +24,11 @@ public class SlideXmlFactory {
 	private static Logger log = Logger.getLogger(SlideXmlFactory.class);
 
 	@SuppressWarnings("unchecked")
-	private static Document buildSlideXml(Document slideTemplate,
-			Document slideContent) {
+	private static Document buildSlideXml(Document slideTemplate, Document slideContent) {
 		log.debug(String.format("buildSlideXml(...): template UID = %s", getTemplateUID(slideTemplate)));
+		
+		
+		
 		Document doc = XmlUtility.createDocument();
 		Element root = doc.addElement(SlideXmlConstants.SLIDE);
 
@@ -64,22 +66,6 @@ public class SlideXmlFactory {
 			}
 		}
 
-		// TODO
-		// override evaluator
-		/*
-		 * Node slideNode = root.selectSingleNode(SlideXmlConstants.EVALUATION);
-		 * if (slideNode == null) { slideNode =
-		 * root.addElement(SlideXmlConstants.EVALUATION); }
-		 * 
-		 * for (Iterator<Node> i = slideContent.getRootElement().selectNodes(
-		 * String.format("%s/%s", SlideXmlConstants.EVALUATION,
-		 * SlideXmlConstants.EVALUATE)).iterator(); i.hasNext();) { Node
-		 * evalNode = i.next();
-		 * 
-		 * ((Element)slideNode).add((Node)evalNode.clone()); }
-		 */
-
-		//String xmlString = XmlUtility.writeString(doc);
 		return doc;
 	}
 	
@@ -99,8 +85,8 @@ public class SlideXmlFactory {
 		
 		log.debug(String.format("getSlideXml(slide:%d)", slide.getId()));
 
-		Document slideTemplate = slide.getTemplateDocument();
-		Document slideContent = slide.getDocument();
+		Document slideTemplate = XmlUtility.readString(slide.getTemplateXmlData());
+		Document slideContent = XmlUtility.readString(slide.getXmlData());
 
 		if (slideTemplate == null)
 			log.warn(String.format("Template document is NULL (slide:%d)", slide.getId()));

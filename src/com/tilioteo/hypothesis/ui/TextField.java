@@ -10,9 +10,9 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.core.Field;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.data.Validator;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
+import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -48,7 +48,7 @@ public class TextField extends com.vaadin.ui.TextField implements SlideComponent
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
 
 		ComponentUtility.setCommonFieldProperties(this, element, properties,
 				parentAlignment);

@@ -9,11 +9,11 @@ import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
 import com.tilioteo.hypothesis.dao.GroupDao;
 import com.tilioteo.hypothesis.dao.PackDao;
 import com.tilioteo.hypothesis.dao.RoleDao;
 import com.tilioteo.hypothesis.dao.UserDao;
+import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Role;
@@ -57,7 +57,11 @@ public class UserGroupManager {
 
 	private PackDao packDao;
 
-	public UserGroupManager(UserDao userDao, GroupDao groupDao) {
+	public static UserGroupManager newInstance() {
+		return new UserGroupManager(new UserDao(), new GroupDao());
+	}
+	
+	protected UserGroupManager(UserDao userDao, GroupDao groupDao) {
 		this.userDao = userDao;
 		this.groupDao = groupDao;
 		this.roleDao = new RoleDao();
@@ -292,7 +296,7 @@ public class UserGroupManager {
 		try {
 			groupDao.beginTransaction();
 			List<Group> allGroups = groupDao.findByCriteria(Restrictions.eq(
-					EntityFieldConstants.OWNER_ID, owner.getId()));
+					FieldConstants.OWNER_ID, owner.getId()));
 			groupDao.commit();
 			return allGroups;
 		} catch (HibernateException e) {
@@ -308,7 +312,7 @@ public class UserGroupManager {
 		try {
 			userDao.beginTransaction();
 			List<User> allUsers = userDao.findByCriteria(Restrictions.eq(
-					EntityFieldConstants.OWNER_ID, owner.getId()));
+					FieldConstants.OWNER_ID, owner.getId()));
 			userDao.commit();
 			return allUsers;
 		} catch (HibernateException e) {
@@ -323,7 +327,7 @@ public class UserGroupManager {
 		try {
 			roleDao.beginTransaction();
 			List<Role> roles = roleDao.findByCriteria(Restrictions.eq(
-					EntityFieldConstants.NAME, roleName));
+					FieldConstants.NAME, roleName));
 			roleDao.commit();
 			return (roles.isEmpty() || roles.size() > 1) ? null : roles.get(0);
 		} catch (Throwable e) {
@@ -352,7 +356,7 @@ public class UserGroupManager {
 		try {
 			userDao.beginTransaction();
 			List<User> users = userDao.findByCriteria(Restrictions.eq(
-					EntityFieldConstants.USERNAME, username));
+					FieldConstants.USERNAME, username));
 			userDao.commit();
 			return users.get(0);
 		} catch (HibernateException e) {
@@ -368,8 +372,8 @@ public class UserGroupManager {
 		try {
 			userDao.beginTransaction();
 			List<User> usrs = userDao.findByCriteria(Restrictions.and(
-					Restrictions.eq(EntityFieldConstants.USERNAME, username),
-					Restrictions.eq(EntityFieldConstants.PASSWORD, password)));
+					Restrictions.eq(FieldConstants.USERNAME, username),
+					Restrictions.eq(FieldConstants.PASSWORD, password)));
 			userDao.commit();
 
 			if (usrs.isEmpty() || usrs.size() > 1) {
@@ -402,9 +406,9 @@ public class UserGroupManager {
 		try {
 			groupDao.beginTransaction();
 			Criterion crit = (id == null) ? Restrictions.eq(
-					EntityFieldConstants.NAME, name) : Restrictions.and(
-					Restrictions.eq(EntityFieldConstants.NAME, name),
-					Restrictions.ne(EntityFieldConstants.ID, id));
+					FieldConstants.NAME, name) : Restrictions.and(
+					Restrictions.eq(FieldConstants.NAME, name),
+					Restrictions.ne(FieldConstants.ID, id));
 			List<Group> groups = groupDao.findByCriteria(crit);
 			groupDao.commit();
 			return !groups.isEmpty();
@@ -421,9 +425,9 @@ public class UserGroupManager {
 		try {
 			userDao.beginTransaction();
 			Criterion crit = (id == null) ? Restrictions.eq(
-					EntityFieldConstants.USERNAME, username) : Restrictions.and(
-					Restrictions.eq(EntityFieldConstants.USERNAME, username),
-					Restrictions.ne(EntityFieldConstants.ID, id));
+					FieldConstants.USERNAME, username) : Restrictions.and(
+					Restrictions.eq(FieldConstants.USERNAME, username),
+					Restrictions.ne(FieldConstants.ID, id));
 			List<User> users = userDao.findByCriteria(crit);
 			userDao.commit();
 			return !users.isEmpty();

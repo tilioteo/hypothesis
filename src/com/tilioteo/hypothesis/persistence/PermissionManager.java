@@ -14,11 +14,10 @@ import org.hibernate.HibernateException;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.common.EntityConstants;
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
 import com.tilioteo.hypothesis.dao.GroupPermissionDao;
 import com.tilioteo.hypothesis.dao.PackDao;
 import com.tilioteo.hypothesis.dao.UserPermissionDao;
+import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.GroupPermission;
 import com.tilioteo.hypothesis.entity.Pack;
@@ -39,6 +38,8 @@ public class PermissionManager {
 	private GroupPermissionDao groupPermissionDao;
 	private PackDao packDao;
 	private TestManager testManager;
+	
+	private PersistenceManager persistenceManager; 
 
 	public static PermissionManager newInstance() {
 		return new PermissionManager(new UserPermissionDao(), new GroupPermissionDao());
@@ -55,6 +56,8 @@ public class PermissionManager {
 		this.groupPermissionDao = groupPermitionDao;
 		this.packDao = new PackDao();
 		this.testManager = testManager;
+		
+		persistenceManager = PersistenceManager.newInstance();
 	}
 	
 	public TestManager getTestManager() {
@@ -199,17 +202,17 @@ public class PermissionManager {
 		Set<Pack> packs = getUserPacks(user, true, excludeFinished);
 		Set<Pack> disabledPacks = getUserPacks(user, false, null);
 
-		if (!user.getGroups().isEmpty()) {
+		Set<Group> groups = persistenceManager.merge(user).getGroups();
+		if (!groups.isEmpty()) {
 			try {
 				groupPermissionDao.beginTransaction();
-				List<GroupPermission> groupsPermissions = groupPermissionDao
-						.findByCriteria(Restrictions.in(EntityConstants.GROUP,
-								user.getGroups()));
+				List<GroupPermission> groupsPermissions = groupPermissionDao.findByCriteria(Restrictions.in(EntityConstants.GROUP, groups));
 				groupPermissionDao.commit();
 
 				for (GroupPermission groupPermission : groupsPermissions) {
-					if (!disabledPacks.contains(groupPermission.getPack())) {
-						packs.add(groupPermission.getPack());
+					Pack groupPack = groupPermission.getPack();
+					if (!disabledPacks.contains(groupPack)) {
+						packs.add(/*persistenceManager.merge*/(groupPack));
 					}
 				}
 			} catch (Throwable e) {
@@ -350,7 +353,7 @@ public class PermissionManager {
 			List<UserPermission> usrPerms = userPermissionDao
 					.findByCriteria(Restrictions.and(
 							Restrictions.eq(EntityConstants.PACK, pack),
-							Restrictions.eq(EntityFieldConstants.ENABLED, enabled)));
+							Restrictions.eq(FieldConstants.ENABLED, enabled)));
 			userPermissionDao.commit();
 			userPermissions.addAll(usrPerms);
 
@@ -369,15 +372,12 @@ public class PermissionManager {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
 			Set<Pack> packs = new HashSet<Pack>();
 			for (UserPermission userPermission : userPermissions) {
-				if (enabled == null
-						|| userPermission.getEnabled().equals(enabled)) {
+				if (enabled == null	|| userPermission.getEnabled().equals(enabled)) {
 					Pack pack = userPermission.getPack();
-					if (userPermission.getPass() == null
-							|| excludeFinished == null || !excludeFinished) {
+					if (userPermission.getPass() == null || excludeFinished == null || !excludeFinished) {
 						packs.add(pack);
 					} else {
-						List<SimpleTest> finishedTests = testManager.findTestsBy(
-								user, pack, Status.FINISHED);
+						List<SimpleTest> finishedTests = testManager.findTestsBy(user, pack, Status.FINISHED);
 						if (userPermission.getPass() < finishedTests.size()) {
 							packs.add(pack);
 						}
@@ -416,7 +416,7 @@ public class PermissionManager {
 			List<UserPermission> usrsPerms = userPermissionDao
 					.findByCriteria(Restrictions.and(
 							Restrictions.in(EntityConstants.USER, users),
-							Restrictions.eq(EntityFieldConstants.ENABLED, enabled)));
+							Restrictions.eq(FieldConstants.ENABLED, enabled)));
 			userPermissionDao.commit();
 			usersPermissions.addAll(usrsPerms);
 
@@ -434,8 +434,8 @@ public class PermissionManager {
 		try {
 			packDao.beginTransaction();
 			Criteria criteria = packDao.createCriteria();
-			criteria.add(Restrictions.eq(EntityFieldConstants.PUBLISHED, true));
-			criteria.addOrder(Order.asc(EntityFieldConstants.ID));
+			criteria.add(Restrictions.eq(FieldConstants.PUBLISHED, true));
+			criteria.addOrder(Order.asc(FieldConstants.ID));
 			List<Pack> packs = criteria.list();
 			packDao.commit();
 			return packs;
@@ -452,8 +452,8 @@ public class PermissionManager {
 		try {
 			packDao.beginTransaction();
 			Criteria criteria = packDao.createCriteria();
-			criteria.add(Restrictions.eq(EntityFieldConstants.PUBLISHED, true));
-			criteria.addOrder(Order.asc(EntityFieldConstants.ID));
+			criteria.add(Restrictions.eq(FieldConstants.PUBLISHED, true));
+			criteria.addOrder(Order.asc(FieldConstants.ID));
 			List<Pack> packs = criteria.list();
 			packDao.commit();
 			return packs;

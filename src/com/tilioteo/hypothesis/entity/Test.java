@@ -28,15 +28,12 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author kamil
  *
  */
 @Entity
-@Table(name = EntityTableConstants.TEST_TABLE)
+@Table(name = TableConstants.TEST_TABLE)
 @Access(AccessType.PROPERTY)
 public class Test extends SerializableIdObject {
 	/**
@@ -126,14 +123,14 @@ public class Test extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.TEST_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.TEST_GENERATOR, sequenceName = EntityTableConstants.TEST_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.TEST_GENERATOR)
+	@SequenceGenerator(name = TableConstants.TEST_GENERATOR, sequenceName = TableConstants.TEST_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
-	@Column(name = EntityFieldConstants.PRODUCTION, nullable = false)
+	@Column(name = FieldConstants.PRODUCTION, nullable = false)
 	public boolean isProduction() {
 		return production;
 	}
@@ -142,7 +139,7 @@ public class Test extends SerializableIdObject {
 		this.production = production != null ? production : false;
 	}
 
-	@Column(name = EntityFieldConstants.CREATED, nullable = false)
+	@Column(name = FieldConstants.CREATED, nullable = false)
 	public Date getCreated() {
 		return created;
 	}
@@ -151,7 +148,7 @@ public class Test extends SerializableIdObject {
 		this.created = created;
 	}
 
-	@Column(name = EntityFieldConstants.STARTED)
+	@Column(name = FieldConstants.STARTED)
 	public Date getStarted() {
 		return started;
 	}
@@ -160,7 +157,7 @@ public class Test extends SerializableIdObject {
 		this.started = started;
 	}
 
-	@Column(name = EntityFieldConstants.FINISHED)
+	@Column(name = FieldConstants.FINISHED)
 	public Date getFinished() {
 		return finished;
 	}
@@ -169,7 +166,7 @@ public class Test extends SerializableIdObject {
 		this.finished = finished;
 	}
 
-	@Column(name = EntityFieldConstants.BROKEN)
+	@Column(name = FieldConstants.BROKEN)
 	public Date getBroken() {
 		return broken;
 	}
@@ -178,7 +175,7 @@ public class Test extends SerializableIdObject {
 		this.broken = broken;
 	}
 
-	@Column(name = EntityFieldConstants.LAST_ACCESS, nullable = false)
+	@Column(name = FieldConstants.LAST_ACCESS, nullable = false)
 	public Date getLastAccess() {
 		return lastAccess;
 	}
@@ -187,7 +184,7 @@ public class Test extends SerializableIdObject {
 		this.lastAccess = lastAccess;
 	}
 	
-	@Column(name = EntityFieldConstants.STATUS, nullable = false)
+	@Column(name = FieldConstants.STATUS, nullable = false)
 	protected Integer getStatusInternal() {
 		return status;
 	}
@@ -210,7 +207,7 @@ public class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
-	@JoinColumn(name = EntityFieldConstants.USER_ID)
+	@JoinColumn(name = FieldConstants.USER_ID)
 	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public User getUser() {
 		return user;
@@ -221,7 +218,7 @@ public class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
-	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
 	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public Pack getPack() {
 		return pack;
@@ -232,7 +229,7 @@ public class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
-	@JoinColumn(name = EntityFieldConstants.LAST_BRANCH_ID)
+	@JoinColumn(name = FieldConstants.LAST_BRANCH_ID)
 	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public Branch getLastBranch() {
 		return lastBranch;
@@ -243,7 +240,7 @@ public class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
-	@JoinColumn(name = EntityFieldConstants.LAST_TASK_ID)
+	@JoinColumn(name = FieldConstants.LAST_TASK_ID)
 	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public Task getLastTask() {
 		return lastTask;
@@ -254,7 +251,7 @@ public class Test extends SerializableIdObject {
 	}
 
 	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
-	@JoinColumn(name = EntityFieldConstants.LAST_SLIDE_ID)
+	@JoinColumn(name = FieldConstants.LAST_SLIDE_ID)
 	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public Slide getLastSlide() {
 		return lastSlide;
@@ -265,10 +262,10 @@ public class Test extends SerializableIdObject {
 	}
 
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = EntityTableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = EntityFieldConstants.TEST_ID), inverseJoinColumns = @JoinColumn(name = EntityFieldConstants.EVENT_ID))
+	@JoinTable(name = TableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.EVENT_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
-	@OrderColumn(name = EntityFieldConstants.RANK)
+	@OrderColumn(name = FieldConstants.RANK)
 	public List<Event> getEvents() {
 		return events;
 	}
@@ -338,69 +335,91 @@ public class Test extends SerializableIdObject {
 			return false;
 		}
 
-		if (created != null && !created.equals(created2)) {
-			return false;
-		} else if (created2 != null) {
-			return false;
-		}
-		
-		if (started != null && !started.equals(started2)) {
-			return false;
-		} else if (started2 != null) {
+		if (created == null) {
+			if (created2 != null) {
+				return false;
+			}
+		} else if (!created.equals(created2)) {
 			return false;
 		}
 		
-		if (finished != null && !finished.equals(finished2)) {
-			return false;
-		} else if (finished2 != null) {
-			return false;
-		}
-		
-		if (broken != null && !broken.equals(broken2)) {
-			return false;
-		} else if (broken2 != null) {
+		if (started == null) {
+			if (started2 != null) {
+				return false;
+			}
+		} else if (!started.equals(started2)) {
 			return false;
 		}
 		
-		if (lastAccess != null && !lastAccess.equals(lastAccess2)) {
-			return false;
-		} else if (lastAccess2 != null) {
-			return false;
-		}
-		
-		if (status != null && !status.equals(status2)) {
-			return false;
-		} else if (status2 != null) {
+		if (finished == null) {
+			if (finished2 != null) {
+				return false;
+			}
+		} else if (!finished.equals(finished2)) {
 			return false;
 		}
 		
-		if (user != null && !user.equals(user2)) {
-			return false;
-		} else if (user2 != null) {
-			return false;
-		}
-		
-		if (pack != null && !pack.equals(pack2)) {
-			return false;
-		} else if (pack2 != null) {
+		if (broken == null) {
+			if (broken2 != null) {
+				return false;
+			}
+		} else if (!broken.equals(broken2)) {
 			return false;
 		}
 		
-		if (lastBranch != null && !lastBranch.equals(lastBranch2)) {
-			return false;
-		} else if (lastBranch2 != null) {
-			return false;
-		}
-		
-		if (lastTask != null && !lastTask.equals(lastTask2)) {
-			return false;
-		} else if (lastTask2 != null) {
+		if (lastAccess == null) {
+			if (lastAccess2 != null) {
+				return false;
+			}
+		} else if (!lastAccess.equals(lastAccess2)) {
 			return false;
 		}
 		
-		if (lastSlide != null && !lastSlide.equals(lastSlide2)) {
+		if (status == null) {
+			if (status2 != null) {
+				return false;
+			}
+		} else if (!status.equals(status2)) {
 			return false;
-		} else if (lastSlide2 != null) {
+		}
+		
+		if (user == null) {
+			if (user2 != null) {
+				return false;
+			}
+		} else if (!user.equals(user2)) {
+			return false;
+		}
+		
+		if (pack == null) {
+			if (pack2 != null) {
+				return false;
+			}
+		} else if (!pack.equals(pack2)) {
+			return false;
+		}
+		
+		if (lastBranch == null) {
+			if (lastBranch2 != null) {
+				return false;
+			}
+		} else if (!lastBranch.equals(lastBranch2)) {
+			return false;
+		}
+		
+		if (lastTask == null) {
+			if (lastTask2 != null) {
+				return false;
+			}
+		} else if (!lastTask.equals(lastTask2)) {
+			return false;
+		}
+		
+		if (lastSlide == null) {
+			if (lastSlide2 != null) {
+				return false;
+			}
+		} else if (!lastSlide.equals(lastSlide2)) {
 			return false;
 		}
 		

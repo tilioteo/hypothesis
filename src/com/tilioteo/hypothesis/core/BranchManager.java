@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 
+import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Branch;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Slide;
@@ -56,7 +57,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 		clearBranchRelatives();
 		Branch branch = super.current();
 		if (current != null) {
-			branchXml = branch.getDocument();
+			branchXml = XmlUtility.readString(branch.getXmlData());
 			branchFactory.createBranchControls(this);
 		}
 	}

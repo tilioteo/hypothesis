@@ -14,8 +14,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.hibernate.StaleObjectStateException;
 
 /**
@@ -28,7 +27,7 @@ import org.hibernate.StaleObjectStateException;
 		DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR })
 public class HibernateSessionInterceptor implements Filter {
 
-	private static Log log = LogFactory.getLog(HibernateSessionInterceptor.class);
+	private static Logger log = Logger.getLogger(HibernateSessionInterceptor.class);
 
 	@Override
 	public void destroy() {

@@ -9,14 +9,12 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.themes.Reindeer;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -75,7 +73,7 @@ public class Panel extends com.vaadin.ui.Panel implements SlideComponentContaine
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
 
 		ComponentUtility.setCommonProperties(this, element, properties,
 				parentAlignment);
@@ -83,9 +81,9 @@ public class Panel extends com.vaadin.ui.Panel implements SlideComponentContaine
 		// set Panel specific properties
 		// defaults to true
 		boolean border = properties.getBoolean(SlideXmlConstants.BORDER, true);
-		if (!border)
-			setStyleName(Reindeer.PANEL_LIGHT);
-
+		if (!border) {
+			addStyleName("borderless");
+		}
 	}
 
 	@Override

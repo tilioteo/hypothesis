@@ -1,13 +1,13 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.common;
+package com.tilioteo.hypothesis.entity;
 
 /**
  * @author kamil
  *
  */
-public class EntityTableConstants {
+public class TableConstants {
 	
 	public static final String BRANCH_TABLE = "tbl_branch";
 	public static final String BRANCH_TASK_TABLE = "tbl_branch_task";

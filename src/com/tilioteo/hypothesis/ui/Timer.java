@@ -17,7 +17,6 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.event.TimerData;
@@ -476,7 +475,7 @@ public class Timer extends AbstractComponent implements SlideComponent, NonVisua
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
 		
 		setData(SlideXmlUtility.getId(element));
 		setTime(properties.getInteger(SlideXmlConstants.TIME, 0));
@@ -497,7 +496,7 @@ public class Timer extends AbstractComponent implements SlideComponent, NonVisua
 	}
 	
 	private void setHandlers(Element element) {
-		List<Element> handlers = SlideUtility.getHandlerElements(element);
+		List<Element> handlers = SlideXmlUtility.getComponentHandlers(element);
 
 		for (Element handler : handlers) {
 			setHandler(handler);

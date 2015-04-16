@@ -14,7 +14,6 @@ import com.tilioteo.hypothesis.core.ShortcutUtility;
 import com.tilioteo.hypothesis.core.ShortcutUtility.ShortcutKeys;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.data.DateRangeValidator;
 import com.tilioteo.hypothesis.data.EmptyValidator;
 import com.tilioteo.hypothesis.data.IntegerValidator;
@@ -143,7 +142,7 @@ public class ComponentFactory {
 	}
 
 	private static void createViewportHandlers(Element rootElement, SlideManager slideManager) {
-		List<Element> elements = SlideUtility.getHandlerElements(rootElement);
+		List<Element> elements = SlideXmlUtility.getComponentHandlers(rootElement);
 		for (Element handler : elements) {
 			setViewportHandler(handler, slideManager);
 		}
@@ -307,7 +306,7 @@ public class ComponentFactory {
 	}
 	
 	public static List<Validator> createTextFieldValidators(Element element) {
-		List<Element> validatorElements = SlideUtility.getValidatorElements(element);
+		List<Element> validatorElements = SlideXmlUtility.getComponentValidators(element);
 		List<Validator> validators = new ArrayList<Validator>();
 		
 		for (Element validatorElement : validatorElements) {
@@ -333,7 +332,7 @@ public class ComponentFactory {
 	}
 
 	public static List<Validator> createComboBoxValidators(Element element) {
-		List<Element> validatorElements = SlideUtility.getValidatorElements(element);
+		List<Element> validatorElements = SlideXmlUtility.getComponentValidators(element);
 		List<Validator> validators = new ArrayList<Validator>();
 		
 		for (Element validatorElement : validatorElements) {
@@ -353,7 +352,7 @@ public class ComponentFactory {
 	}
 
 	public static List<Validator> createDateFieldValidators(Element element) {
-		List<Element> validatorElements = SlideUtility.getValidatorElements(element);
+		List<Element> validatorElements = SlideXmlUtility.getComponentValidators(element);
 		List<Validator> validators = new ArrayList<Validator>();
 		
 		for (Element validatorElement : validatorElements) {
@@ -375,7 +374,7 @@ public class ComponentFactory {
 	}
 
 	public static List<Validator> createSelectPanelValidators(Element element) {
-		List<Element> validatorElements = SlideUtility.getValidatorElements(element);
+		List<Element> validatorElements = SlideXmlUtility.getComponentValidators(element);
 		List<Validator> validators = new ArrayList<Validator>();
 		
 		for (Element validatorElement : validatorElements) {

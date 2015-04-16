@@ -13,7 +13,7 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
+import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -50,7 +50,7 @@ public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointContro
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
 		MapUtility utility = MapUtility.getInstance(slideManager);
 		if (utility != null) {
 			utility.setDrawFeatureControlProperties(this, element, properties, slideManager);
@@ -60,7 +60,7 @@ public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointContro
 	}
 
 	private void setHandlers(Element element) {
-		List<Element> handlers = SlideUtility.getHandlerElements(element);
+		List<Element> handlers = SlideXmlUtility.getComponentHandlers(element);
 
 		for (Element handler : handlers) {
 			setHandler(handler);

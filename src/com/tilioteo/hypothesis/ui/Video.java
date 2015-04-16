@@ -13,8 +13,8 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
+import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.event.VideoData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
@@ -120,7 +120,7 @@ public class Video extends com.vaadin.ui.Video implements SlideComponent, Maskab
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
 
 		ComponentUtility.setCommonProperties(this, element, properties, parentAlignment);
 
@@ -131,7 +131,7 @@ public class Video extends com.vaadin.ui.Video implements SlideComponent, Maskab
 	}
 
 	private void setHandlers(Element element) {
-		List<Element> handlers = SlideUtility.getHandlerElements(element);
+		List<Element> handlers = SlideXmlUtility.getComponentHandlers(element);
 
 		for (Element handler : handlers) {
 			setHandler(handler);

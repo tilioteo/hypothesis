@@ -15,9 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -26,7 +23,7 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.TOKEN_TABLE)
+@Table(name = TableConstants.TOKEN_TABLE)
 @Access(AccessType.PROPERTY)
 public final class Token extends SerializableUidObject {
 
@@ -68,12 +65,12 @@ public final class Token extends SerializableUidObject {
 
 	@Override
 	@Id
-	@Column(name = EntityFieldConstants.UID)
+	@Column(name = FieldConstants.UID)
 	public String getUid() {
 		return uid;
 	}
 
-	@Column(name = EntityFieldConstants.PRODUCTION, nullable = false)
+	@Column(name = FieldConstants.PRODUCTION, nullable = false)
 	public boolean isProduction() {
 		return production;
 	}
@@ -83,7 +80,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@ManyToOne(/*cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
-	@JoinColumn(name = EntityFieldConstants.USER_ID)
+	@JoinColumn(name = FieldConstants.USER_ID)
 	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	public User getUser() {
 		return user;
@@ -94,7 +91,7 @@ public final class Token extends SerializableUidObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
 	public Pack getPack() {
 		return pack;
 	}
@@ -103,7 +100,7 @@ public final class Token extends SerializableUidObject {
 		this.pack = pack;
 	}
 
-	@Column(name = EntityFieldConstants.DATETIME)
+	@Column(name = FieldConstants.DATETIME)
 	public Date getDatetime() {
 		return datetime;
 	}
@@ -136,31 +133,39 @@ public final class Token extends SerializableUidObject {
 		Date datetime = getDatetime();
 		Date datetime2 = other.getDatetime();
 
-		if (uid != null && !uid.equals(uid2)) {
-			return false;
-		} else if (uid2 != null) {
+		if (uid == null) {
+			if (uid2 != null) {
+				return false;
+			}
+		} else if (!uid.equals(uid2)) {
 			return false;
 		}
-
+		
 		if (production != production2) {
 			return false;
 		}
 
-		if (user != null && !user.equals(user2)) {
-			return false;
-		} else if (user2 != null) {
-			return false;
-		}
-		
-		if (pack != null && !pack.equals(pack2)) {
-			return false;
-		} else if (pack2 != null) {
+		if (user == null) {
+			if (user2 != null) {
+				return false;
+			}
+		} else if (!user.equals(user2)) {
 			return false;
 		}
 		
-		if (datetime != null && !datetime.equals(datetime2)) {
+		if (pack == null) {
+			if (pack2 != null) {
+				return false;
+			}
+		} else if (!pack.equals(pack2)) {
 			return false;
-		} else if (datetime2 != null) {
+		}
+		
+		if (datetime == null) {
+			if (datetime2 != null) {
+				return false;
+			}
+		} else if (!datetime.equals(datetime2)) {
 			return false;
 		}
 		

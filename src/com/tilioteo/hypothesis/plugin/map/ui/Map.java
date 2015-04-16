@@ -15,7 +15,6 @@ import org.vaadin.maps.ui.layer.AbstractLayer;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -104,7 +103,7 @@ public class Map extends MapContainer implements SlideComponent, Maskable {
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = com.tilioteo.hypothesis.dom.SlideXmlUtility.getPropertyValueMap(element);
 		
 		ComponentUtility.setCommonProperties(this, element, properties, parentAlignment);
 

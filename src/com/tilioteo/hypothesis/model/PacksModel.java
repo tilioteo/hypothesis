@@ -5,43 +5,62 @@ package com.tilioteo.hypothesis.model;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Token;
+import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
+import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.TokenManager;
 import com.tilioteo.hypothesis.servlet.ServletUtil;
-import com.tilioteo.hypothesis.ui.BrowserAppletFrame;
-import com.tilioteo.hypothesis.ui.BrowserAppletFrame.ReadyCheckedEvent;
-import com.tilioteo.hypothesis.ui.BrowserAppletFrame.ReadyCheckedListener;
+import com.tilioteo.hypothesis.ui.DeployJava;
 import com.tilioteo.hypothesis.ui.UI;
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.ui.JavaScript;
 
 /**
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
-public class PacksModel implements ReadyCheckedListener {
+public class PacksModel {
 	
 	private PermissionManager permissionManager;
 	private TokenManager tokenManager;
 	
-	private BrowserAppletFrame frame;
+	private PersistenceManager persistenceManager;
+	
 	private Token token = null;
 	
 	public PacksModel() {
 		
 		permissionManager = PermissionManager.newInstance();
 		tokenManager = TokenManager.newInstance();
+		persistenceManager = PersistenceManager.newInstance();
 	}
 
 	public List<Pack> getPublicPacks() {
 		return permissionManager.getPublishedPacks();
+	}
+	
+	public List<Pack> getUserPacks(User user) {
+		if (user != null) {
+			try {
+				user = persistenceManager.merge(user);
+				Set<Pack> packs = permissionManager.findUserPacks(user, true);
+				if (packs != null) {
+					LinkedList<Pack> list = new LinkedList<>();
+					for (Pack pack : packs) {
+						list.add(pack);
+					}
+					return list;
+				}
+			} catch (Throwable e) {}
+		}
+		
+		return null;
 	}
 	
 	public List<Pack> getSimplePublicPacks() {
@@ -84,24 +103,19 @@ public class PacksModel implements ReadyCheckedListener {
 		return digest;
 	}
 
-	public void startTest(Pack pack, BrowserAppletFrame frame, boolean forceLegacy) {
-		this.frame = frame;
+	public void startFeaturedTest(Pack pack) {
 		token = createToken(pack);
 		
 		if (token != null) {
-			if (!forceLegacy) {
-				this.frame.checkReady();
-			} else {
-				startLegacyWindow();
-			}
+			DeployJava.get(UI.getCurrent()).launchJavaWebStart(constructProcessJnlp(token.getUid()));
 		}
 	}
 	
-	public void startSimpleTest(Pack pack) {
+	public void startLegacyTest(CanSetUrl canSetUrl, Pack pack) {
 		token = createToken(pack);
-		
+
 		if (token != null) {
-			navigateToTest();
+			canSetUrl.setUrl(constructProcessUrl(token.getUid(), false));
 		}
 	}
 
@@ -109,37 +123,44 @@ public class PacksModel implements ReadyCheckedListener {
 		return tokenManager.createToken(null, pack, true);
 	}
 	
-	private void startLegacyWindow() {
+	private String constructProcessJnlp(String token) {
+		StringBuilder builder = new StringBuilder();
 		String contextUrl = ServletUtil.getContextURL((VaadinServletRequest)VaadinService.getCurrentRequest());
-		String lang = UI.getCurrentLanguage();
+		builder.append(contextUrl);
+		builder.append("/resource/browserapplication.jnlp?");
+		builder.append("jnlp.app_url=");
+		builder.append(contextUrl);
+		builder.append("/process/");
+		builder.append("&jnlp.close_key=");
+		builder.append("close.html");
+		builder.append("&jnlp.token=");
+		builder.append(token);
 
-		//client debug
-		//String url = String.format("%s/process/?gwt.codesvr=127.0.0.1:9997&%s=%s%s", contextUrl, "token", token.getUid(), "&fs");
-		String url = String.format("%s/process/?%s=%s%s%s", contextUrl, "token", token.getUid(), "&fs", lang != null ? "&lang=" + lang : "");
-		JavaScript javaScript = Page.getCurrent().getJavaScript();
-		javaScript.execute("open(\"" + url + "\",\"_blank\",\"width=800,height=600,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no\")");
-		token = null;
-	}
+		return builder.toString();
+}
 
-	private void navigateToTest() {
+	private String constructProcessUrl(String token, boolean returnBack) {
+		StringBuilder builder = new StringBuilder();
 		String contextUrl = ServletUtil.getContextURL((VaadinServletRequest)VaadinService.getCurrentRequest());
-		String lang = UI.getCurrentLanguage();
-
-		//client debug
-		//String url = String.format("%s/process/?gwt.codesvr=127.0.0.1:9997&%s=%s%s", contextUrl, "token", token.getUid(), "&fs&bk=true");
-		String url = String.format("%s/process/?%s=%s%s%s", contextUrl, "token", token.getUid(), "&fs&bk=true", lang != null ? "&lang=" + lang : "");
-		Page.getCurrent().setLocation(url);
-		token = null;
-	}
-
-	@Override
-	public void readyChecked(ReadyCheckedEvent event) {
-		if (event.isReady()) {
-			frame.startBrowser(token.getUid());
-		} else {
-			startLegacyWindow();
+		builder.append(contextUrl);
+		builder.append("/process/?");
+		
+		// client debug
+		//builder.append("gwt.codesvr=127.0.0.1:9997&");
+		
+		builder.append("token=");
+		builder.append(token);
+		builder.append("&fs");
+		if (returnBack) {
+			builder.append("&bk=true");
 		}
-		token = null;
-		frame = null;
+		String lang = UI.getCurrentLanguage();
+		if (lang != null) {
+			builder.append("&lang=");
+			builder.append(lang);
+		}
+		
+		return builder.toString();
 	}
+
 }

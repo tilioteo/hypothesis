@@ -18,9 +18,6 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Index;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -29,10 +26,10 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.BRANCH_TREK_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
-		EntityFieldConstants.PACK_ID, EntityFieldConstants.KEY, EntityFieldConstants.BRANCH_ID }) })
-@org.hibernate.annotations.Table(appliesTo = EntityTableConstants.BRANCH_TREK_TABLE,
-		indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = { EntityFieldConstants.PACK_ID, EntityFieldConstants.BRANCH_ID }) })
+@Table(name = TableConstants.BRANCH_TREK_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
+		FieldConstants.PACK_ID, FieldConstants.KEY, FieldConstants.BRANCH_ID }) })
+@org.hibernate.annotations.Table(appliesTo = TableConstants.BRANCH_TREK_TABLE,
+		indexes = { @Index(name = "IX_PACK_BRANCH", columnNames = { FieldConstants.PACK_ID, FieldConstants.BRANCH_ID }) })
 @Access(AccessType.PROPERTY)
 public final class BranchTrek extends SerializableIdObject {
 	/**
@@ -59,15 +56,15 @@ public final class BranchTrek extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_TREK_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.BRANCH_TREK_GENERATOR, sequenceName = EntityTableConstants.BRANCH_TREK_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.BRANCH_TREK_GENERATOR)
+	@SequenceGenerator(name = TableConstants.BRANCH_TREK_GENERATOR, sequenceName = TableConstants.BRANCH_TREK_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
 	public Pack getPack() {
 		return pack;
 	}
@@ -76,7 +73,7 @@ public final class BranchTrek extends SerializableIdObject {
 		this.pack = pack;
 	}
 
-	@Column(name = EntityFieldConstants.KEY, nullable = false)
+	@Column(name = FieldConstants.KEY, nullable = false)
 	public String getKey() {
 		return key;
 	}
@@ -86,7 +83,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.BRANCH_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.BRANCH_ID, nullable = false)
 	public Branch getBranch() {
 		return branch;
 	}
@@ -96,7 +93,7 @@ public final class BranchTrek extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.NEXT_BRANCH_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.NEXT_BRANCH_ID, nullable = false)
 	public Branch getNextBranch() {
 		return nextBranch;
 	}
@@ -134,27 +131,35 @@ public final class BranchTrek extends SerializableIdObject {
 			return false;
 		}
 
-		if (pack != null && !pack.equals(pack2)) {
-			return false;
-		} else if (pack2 != null) {
-			return false;
-		}
-		
-		if (key != null && !key.equals(key2)) {
-			return false;
-		} else if (key2 != null) {
+		if (pack == null) {
+			if (pack2 != null) {
+				return false;
+			}
+		} else if (!pack.equals(pack2)) {
 			return false;
 		}
 		
-		if (branch != null && !branch.equals(branch2)) {
-			return false;
-		} else if (branch2 != null) {
+		if (key == null) {
+			if (key2 != null) {
+				return false;
+			}
+		} else if (!key.equals(key2)) {
 			return false;
 		}
 		
-		if (nextBranch != null && !nextBranch.equals(nextBranch2)) {
+		if (branch == null) {
+			if (branch2 != null) {
+				return false;
+			}
+		} else if (!branch.equals(branch2)) {
 			return false;
-		} else if (nextBranch2 != null) {
+		}
+		
+		if (nextBranch == null) {
+			if (nextBranch2 != null) {
+				return false;
+			}
+		} else if (!nextBranch.equals(nextBranch2)) {
 			return false;
 		}
 		

@@ -7,8 +7,8 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
+import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.shared.ui.timerlabel.TimerLabelState;
 
 /**
@@ -47,7 +47,7 @@ public class TimerLabel extends Label {
 	protected void setProperties(Element element) {
 		super.setProperties(element);
 		
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
 
 		// TimerLabel specific properties
 		setTimeFormat(properties.get(SlideXmlConstants.TIME_FORMAT, DEAFAULT_TIME_FORMAT));

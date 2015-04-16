@@ -17,15 +17,12 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.BRANCH_OUTPUT_TABLE)
+@Table(name = TableConstants.BRANCH_OUTPUT_TABLE)
 @Access(AccessType.PROPERTY)
 public final class BranchOutput extends SerializableIdObject {
 
@@ -66,15 +63,15 @@ public final class BranchOutput extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.BRANCH_OUTPUT_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.BRANCH_OUTPUT_GENERATOR, sequenceName = EntityTableConstants.BRANCH_OUTPUT_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.BRANCH_OUTPUT_GENERATOR)
+	@SequenceGenerator(name = TableConstants.BRANCH_OUTPUT_GENERATOR, sequenceName = TableConstants.BRANCH_OUTPUT_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.BRANCH_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.BRANCH_ID, nullable = false)
 	public Branch getBranch() {
 		return branch;
 	}
@@ -84,7 +81,7 @@ public final class BranchOutput extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.TEST_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.TEST_ID, nullable = false)
 	public SimpleTest getTest() {
 		return test;
 	}
@@ -93,7 +90,7 @@ public final class BranchOutput extends SerializableIdObject {
 		this.test = test;
 	}
 
-	@Column(name = EntityFieldConstants.XML_DATA)
+	@Column(name = FieldConstants.XML_DATA)
 	@Type(type="text")
 	public String getXmlData() {
 		return xmlData;
@@ -103,7 +100,7 @@ public final class BranchOutput extends SerializableIdObject {
 		this.xmlData = data;
 	}
 
-	@Column(name = EntityFieldConstants.OUTPUT)
+	@Column(name = FieldConstants.OUTPUT)
 	public String getOutput() {
 		return output;
 	}
@@ -159,26 +156,38 @@ public final class BranchOutput extends SerializableIdObject {
 			return false;
 		}
 
-		if (branch != null && !branch.equals(branch2)) {
-			return false;
-		} else if (branch2 != null) {
-			return false;
-		}
-		if (output != null && !output.equals(output2)) {
-			return false;
-		} else if (output2 != null) {
+		if (branch == null) {
+			if (branch2 != null) {
+				return false;
+			}
+		} else if (!branch.equals(branch2)) {
 			return false;
 		}
-		if (test != null && !test.equals(test2)) {
-			return false;
-		} else if (test2 != null) {
-			return false;
-		}
-		if (xmlData != null && !xmlData.equals(xmlData2)) {
-			return false;
-		} else if (xmlData2 != null) {
+		
+		if (output == null) {
+			if (output2 != null) {
+				return false;
+			}
+		} else if (!output.equals(output2)) {
 			return false;
 		}
+		
+		if (test == null) {
+			if (test2 != null) {
+				return false;
+			}
+		} else if (!test.equals(test2)) {
+			return false;
+		}
+		
+		if (xmlData == null) {
+			if (xmlData2 != null) {
+				return false;
+			}
+		} else if (!xmlData.equals(xmlData2)) {
+			return false;
+		}
+		
 		return true;
 	}
 

@@ -13,7 +13,6 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.SlideUtility;
 import com.tilioteo.hypothesis.plugin.processing.ProcessingComponentFactory;
 import com.tilioteo.hypothesis.plugin.processing.ProcessingUtility;
 import com.tilioteo.hypothesis.plugin.processing.SlideXmlUtility;
@@ -62,7 +61,7 @@ public class Processing extends org.vaadin.tltv.vprocjs.ui.Processing implements
 	}
 
 	protected void setProperties(Element element) {
-		StringMap properties = SlideUtility.getPropertyValueMap(element);
+		StringMap properties = com.tilioteo.hypothesis.dom.SlideXmlUtility.getPropertyValueMap(element);
 		
 		ComponentUtility.setCommonProperties(this, element, properties, parentAlignment);
 

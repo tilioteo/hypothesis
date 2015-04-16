@@ -10,6 +10,7 @@ import com.tilioteo.hypothesis.entity.Branch;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Task;
+import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.servlet.HibernateUtil;
 
 /**
@@ -94,5 +95,59 @@ public class PersistenceManager {
 		}
 		return null;
 	}
+	
+	public User merge(User entity) {
+		log.debug(String.format("merge(user id = %s)", entity != null ? entity.getId() : "NULL"));
+		if (entity != null) {
+			try {
+				HibernateUtil.beginTransaction();
+				User user = (User) HibernateUtil.getSession().merge(entity);
+				Hibernate.initialize(user.getGroups());
+				Hibernate.initialize(user.getRoles());
+				HibernateUtil.commitTransaction();
+
+				return user;
+			} catch (Throwable e) {
+				log.error(e.getMessage());
+				HibernateUtil.rollbackTransaction();
+			}
+		}
+		return null;
+	}
+
+	/*public static <E extends Serializable> E  merge(Class<E> clazz, E entity) {
+		assert(clazz != null) : "Class object is null";
+		assert(clazz.getAnnotation(Table.class) != null) : "Class " + clazz.getName() + " has not javax.persistence.Table annotation";
+		
+		// for log message only
+		String idString = null;
+		if (entity != null) {
+			if (SerializableIdObject.class.isAssignableFrom(clazz)) {
+				Long id = ((SerializableIdObject)entity).getId();
+				if (id != null) {
+					idString = id.toString();
+				}
+			} else if (SerializableUidObject.class.isAssignableFrom(clazz)) {
+				idString = ((SerializableUidObject)entity).getUid();
+			}
+		}
+		log.debug(String.format("merge(%s, %s)", clazz.getName(), (entity != null ? ("entity id="+(idString != null ? idString : "NULL")) : "NULL")));
+		
+		// merge code
+		if (entity != null) {
+			try {
+				HibernateUtil.beginTransaction();
+				@SuppressWarnings("unchecked")
+				E mergedEntity = (E) HibernateUtil.getSession().merge(entity);
+				HibernateUtil.commitTransaction();
+
+				return mergedEntity;
+			} catch (Throwable e) {
+				log.error(e.getMessage());
+				HibernateUtil.rollbackTransaction();
+			}
+		}
+		return null;
+	}*/
 
 }

@@ -12,12 +12,11 @@ import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.common.EntityConstants;
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
 import com.tilioteo.hypothesis.dao.EventDao;
 import com.tilioteo.hypothesis.dao.SlideOrderDao;
 import com.tilioteo.hypothesis.dao.TestDao;
+import com.tilioteo.hypothesis.entity.FieldConstants;
+import com.tilioteo.hypothesis.entity.TableConstants;
 import com.tilioteo.hypothesis.entity.Event;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.SlideOrder;
@@ -60,7 +59,7 @@ public class TestManager {
 			List<SimpleTest> tests = testDao.findByCriteria(Restrictions.and(
 					Restrictions.eq(EntityConstants.PACK, pack), Restrictions
 							.and(Restrictions.eq(EntityConstants.USER, user),
-									Restrictions.in(EntityFieldConstants.STATUS,
+									Restrictions.in(FieldConstants.STATUS,
 											statuses))));
 			testDao.commit();
 			return tests;
@@ -150,10 +149,10 @@ public class TestManager {
 	private int getLastTestEventRank(SimpleTest test) {
 		log.debug("getLastTestEventRank");
 		SQLQuery query = eventDao.getSession().createSQLQuery(
-				"SELECT max("  + EntityFieldConstants.RANK + ") FROM " +
-						EntityTableConstants.TEST_EVENT_TABLE + " WHERE " +
-						EntityFieldConstants.TEST_ID + "=:testId GROUP BY " +
-						EntityFieldConstants.TEST_ID);
+				"SELECT max("  + FieldConstants.RANK + ") FROM " +
+						TableConstants.TEST_EVENT_TABLE + " WHERE " +
+						FieldConstants.TEST_ID + "=:testId GROUP BY " +
+						FieldConstants.TEST_ID);
 		query.setParameter("testId", test.getId());
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		List results = query.list();
@@ -168,10 +167,10 @@ public class TestManager {
 	private void saveTestEventJoin(SimpleTest test, Event event, int rank) {
 		log.debug("saveTestEventJoin");
 		SQLQuery query = eventDao.getSession().createSQLQuery(
-				"INSERT INTO " + EntityTableConstants.TEST_EVENT_TABLE + " (" +
-						EntityFieldConstants.TEST_ID + "," +
-						EntityFieldConstants.EVENT_ID + "," +
-						EntityFieldConstants.RANK +
+				"INSERT INTO " + TableConstants.TEST_EVENT_TABLE + " (" +
+						FieldConstants.TEST_ID + "," +
+						FieldConstants.EVENT_ID + "," +
+						FieldConstants.RANK +
 						") VALUES (:testId,:eventId,:rank)");
 		query.setParameter("testId", test.getId());
 		query.setParameter("eventId", event.getId());

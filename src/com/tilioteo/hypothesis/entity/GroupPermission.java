@@ -16,9 +16,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import com.tilioteo.hypothesis.common.EntityFieldConstants;
-import com.tilioteo.hypothesis.common.EntityTableConstants;
-
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -27,8 +24,8 @@ import com.tilioteo.hypothesis.common.EntityTableConstants;
  * 
  */
 @Entity
-@Table(name = EntityTableConstants.GROUP_PERMISSION_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
-		EntityFieldConstants.GROUP_ID, EntityFieldConstants.PACK_ID }) })
+@Table(name = TableConstants.GROUP_PERMISSION_TABLE, uniqueConstraints = { @UniqueConstraint(columnNames = {
+		FieldConstants.GROUP_ID, FieldConstants.PACK_ID }) })
 @Access(AccessType.PROPERTY)
 public final class GroupPermission extends SerializableIdObject {
 
@@ -52,15 +49,15 @@ public final class GroupPermission extends SerializableIdObject {
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = EntityTableConstants.GROUP_PERMISSION_GENERATOR)
-	@SequenceGenerator(name = EntityTableConstants.GROUP_PERMISSION_GENERATOR, sequenceName = EntityTableConstants.GROUP_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
-	@Column(name = EntityFieldConstants.ID)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.GROUP_PERMISSION_GENERATOR)
+	@SequenceGenerator(name = TableConstants.GROUP_PERMISSION_GENERATOR, sequenceName = TableConstants.GROUP_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.GROUP_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.GROUP_ID, nullable = false)
 	public Group getGroup() {
 		return group;
 	}
@@ -70,7 +67,7 @@ public final class GroupPermission extends SerializableIdObject {
 	}
 
 	@ManyToOne
-	@JoinColumn(name = EntityFieldConstants.PACK_ID, nullable = false)
+	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
 	public Pack getPack() {
 		return pack;
 	}
@@ -104,15 +101,19 @@ public final class GroupPermission extends SerializableIdObject {
 			return false;
 		}
 
-		if (group != null && !group.equals(group2)) {
-			return false;
-		} else if (group2 != null) {
+		if (group == null) {
+			if (group2 != null) {
+				return false;
+			}
+		} else if (!group.equals(group2)) {
 			return false;
 		}
 		
-		if (pack != null && !pack.equals(pack2)) {
-			return false;
-		} else if (pack2 != null) {
+		if (pack == null) {
+			if (pack2 != null) {
+				return false;
+			}
+		} else if (!pack.equals(pack2)) {
 			return false;
 		}
 		

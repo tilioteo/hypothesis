@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.common;
+package com.tilioteo.hypothesis.persistence;
 
 /**
  * @author kamil
