@@ -54,7 +54,7 @@ public class HibernateUtil {
 		} else {
 			log.error("Hibernate SessionFactory not yet initialized.");
 			throw new NullPointerException(
-					Messages.getString("Error.SessionFactoryInitialization"));
+					Messages.getString("Message.Error.SessionFactoryInitialization"));
 		}
 	}
 

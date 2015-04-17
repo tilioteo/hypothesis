@@ -273,6 +273,48 @@ public class DeployJava extends AbstractExtension {
 			});
 		}
 		
+		public String getCheckInfoText() {
+			return checkInfoText;
+		}
+
+		public void setCheckInfoText(String text) {
+			if (label.getValue().equals(this.checkInfoText)) {
+				label.setValue(text);
+			}
+			this.checkInfoText = text;
+		}
+
+		public String getInstallLinkText() {
+			return installLinkText;
+		}
+
+		public void setInstallLinkText(String text) {
+			this.installLinkText = text;
+			link.setCaption(text);
+		}
+
+		public String getJavaNotInstalledText() {
+			return javaNotInstalledText;
+		}
+
+		public void setJavaNotInstalledText(String text) {
+			if (label.getValue().equals(this.javaNotInstalledText)) {
+				label.setValue(text);
+			}
+			this.javaNotInstalledText = text;
+		}
+
+		public String getJavaInstalledText() {
+			return javaInstalledText;
+		}
+
+		public void setJavaInstalledText(String text) {
+			if (label.getValue().equals(this.javaInstalledText)) {
+				label.setValue(text);
+			}
+			this.javaInstalledText = text;
+		}
+
 		public void checkJavaVersion() {
 			link.setVisible(false);
 

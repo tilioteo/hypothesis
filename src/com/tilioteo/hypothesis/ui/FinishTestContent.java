@@ -25,14 +25,14 @@ public class FinishTestContent extends VerticalLayout {
 		setSizeFull();
 		
 		Label heading = new Label("<h2>"
-				+ Messages.getString("Caption.TestFinished")
+				+ Messages.getString("Message.Info.TestFinished")
 				+ "</h2>");
 		heading.setContentMode(ContentMode.HTML);
 		heading.setWidth(null);
 		addComponent(heading);
 		setComponentAlignment(heading, Alignment.MIDDLE_CENTER);
 		
-		Button button = new Button(Messages.getString("Caption.Close"));
+		Button button = new Button(Messages.getString("Caption.Button.Close"));
 		button.addStyleName("big default");
 		if (nextCommand != null) {
 			button.addClickListener(new ClickListener() {

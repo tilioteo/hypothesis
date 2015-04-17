@@ -200,7 +200,7 @@ public class ProcessManager {
 
 		// TODO add some error description
 		ProcessEventBus.get().post(new ErrorNotificationEvent(eventObj.getTest(),
-				Messages.getString("Error.Unspecified")));
+				Messages.getString("Message.Error.Unspecified")));
 	}
 
 	@Subscribe
@@ -411,7 +411,7 @@ public class ProcessManager {
 				ProcessEventBus.get().post(new AfterPrepareTestEvent(test));
 			}
 		} else {
-			ProcessEventBus.get().post(new ErrorNotificationEvent(SimpleTest.DUMMY_TEST, Messages.getString("Error.StartTest")));
+			ProcessEventBus.get().post(new ErrorNotificationEvent(SimpleTest.DUMMY_TEST, Messages.getString("Message.Error.StartTest")));
 		}
 	}
 
@@ -497,13 +497,13 @@ public class ProcessManager {
 			} else {
 				// TODO set localizable resource
 				ProcessEventBus.get().post(new ErrorNotificationEvent(
-						SimpleTest.DUMMY_TEST, Messages.getString("Error.InsufficientRights")));
+						SimpleTest.DUMMY_TEST, Messages.getString("Message.Error.InsufficientRights")));
 			}
 		} else {
 			log.debug("Invalid token.");
 			// TODO set localizable resource
 			ProcessEventBus.get().post(new ErrorNotificationEvent(
-					SimpleTest.DUMMY_TEST, Messages.getString("Error.Token")));
+					SimpleTest.DUMMY_TEST, Messages.getString("Message.Error.Token")));
 		}
 	}
 

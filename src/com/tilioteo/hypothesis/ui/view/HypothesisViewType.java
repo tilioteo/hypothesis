@@ -10,8 +10,8 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 
 public enum HypothesisViewType {
-	PACKS("/packs", "My packs", PacksView.class, FontAwesome.PLAY, true, new Role[] {UserGroupManager.ROLE_USER, UserGroupManager.ROLE_MANAGER, UserGroupManager.ROLE_SUPERUSER}),
-	PUBLIC("/public", "Public packs", PublicPacksView.class, FontAwesome.EYE, true, new Role[] {null, UserGroupManager.ROLE_USER, UserGroupManager.ROLE_MANAGER, UserGroupManager.ROLE_SUPERUSER});
+	PACKS("/packs", "Caption.View.Packs", PacksView.class, FontAwesome.BARS, true, new Role[] {UserGroupManager.ROLE_USER, UserGroupManager.ROLE_MANAGER, UserGroupManager.ROLE_SUPERUSER}),
+	PUBLIC("/public", "Caption.View.Public", PublicPacksView.class, FontAwesome.EYE, true, new Role[] {null, UserGroupManager.ROLE_USER, UserGroupManager.ROLE_MANAGER, UserGroupManager.ROLE_SUPERUSER});
 
 	private final String viewName;
 	private final String caption;

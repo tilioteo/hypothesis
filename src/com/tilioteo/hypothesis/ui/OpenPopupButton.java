@@ -3,7 +3,7 @@
  */
 package com.tilioteo.hypothesis.ui;
 
-import com.tilioteo.hypothesis.model.CanSetUrl;
+import com.tilioteo.hypothesis.model.UrlConsumer;
 import com.tilioteo.hypothesis.shared.ui.openpopupbutton.OpenPopupButtonClientRpc;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
@@ -13,7 +13,7 @@ import com.vaadin.ui.Button;
  *
  */
 @SuppressWarnings("serial")
-public class OpenPopupButton extends Button implements CanSetUrl {
+public class OpenPopupButton extends Button implements UrlConsumer {
 
 	public OpenPopupButton() {
 		super();

@@ -115,7 +115,7 @@ public class Audio extends com.vaadin.ui.Audio implements SlideComponent {
 		ComponentUtility.setMediaSources(this, element);
 		
 		// TODO make localizable
-		setAltText(Messages.getString("Error.AudioSupport"));
+		setAltText(Messages.getString("Message.Error.AudioSupport"));
 	}
 
 	private void setHandlers(Element element) {

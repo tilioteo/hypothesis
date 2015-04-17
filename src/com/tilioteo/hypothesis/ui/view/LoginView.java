@@ -1,6 +1,7 @@
 package com.tilioteo.hypothesis.ui.view;
 
 import com.google.common.eventbus.Subscribe;
+import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.data.EmptyValidator;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidLoginEvent;
@@ -57,7 +58,7 @@ public class LoginView extends VerticalLayout {
 	}
 
 	private Component buildPublicAccessButton() {
-		Button button = new Button("Click here to continue as guest.");
+		Button button = new Button(Messages.getString("Caption.Login.Button.Guest"));
 		button.addStyleName(ValoTheme.BUTTON_BORDERLESS_COLORED);
 		button.setIcon(FontAwesome.ARROW_CIRCLE_RIGHT);
 		button.addClickListener(new ClickListener() {
@@ -74,21 +75,21 @@ public class LoginView extends VerticalLayout {
 		fields.setSpacing(true);
 		fields.addStyleName("fields");
 
-		username = new TextField("Username");
+		username = new TextField(Messages.getString("Caption.Login.Username"));
 		username.setIcon(FontAwesome.USER);
 		username.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
-		username.addValidator(new EmptyValidator("Fill in username"));
+		username.addValidator(new EmptyValidator(Messages.getString("Caption.Login.EmptyUserName")));
 		username.setValidationVisible(false);
 		username.setImmediate(true);
 
-		password = new PasswordField("Password");
+		password = new PasswordField(Messages.getString("Caption.Login.Password"));
 		password.setIcon(FontAwesome.LOCK);
 		password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
-		password.addValidator(new EmptyValidator("Fill in password"));
+		password.addValidator(new EmptyValidator(Messages.getString("Caption.Login.EmptyPassword")));
 		password.setValidationVisible(false);
 		password.setImmediate(true);
 
-		final Button signin = new Button("Sign In");
+		final Button signin = new Button(Messages.getString("Caption.Login.Button.Login"));
 		signin.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		signin.setClickShortcut(KeyCode.ENTER);
 		signin.focus();
@@ -126,13 +127,13 @@ public class LoginView extends VerticalLayout {
 		CssLayout labels = new CssLayout();
 		labels.addStyleName("labels");
 
-		Label welcome = new Label("Welcome");
+		Label welcome = new Label(Messages.getString("Caption.Login.Welcome"));
 		welcome.setSizeUndefined();
 		welcome.addStyleName(ValoTheme.LABEL_H4);
 		welcome.addStyleName(ValoTheme.LABEL_COLORED);
 		labels.addComponent(welcome);
 
-		Label title = new Label("Hypothesis platform");
+		Label title = new Label(Messages.getString("Caption.Login.HypothesisPlatform"));
 		title.setSizeUndefined();
 		title.addStyleName(ValoTheme.LABEL_H3);
 		title.addStyleName(ValoTheme.LABEL_LIGHT);
@@ -158,13 +159,13 @@ public class LoginView extends VerticalLayout {
 	@Subscribe
 	public void invalidLogin(InvalidLoginEvent event) {
 		clearFields();
-		showError("Invalid username or password.");
+		showError(Messages.getString("Message.Error.InvalidLogin"));
 	}
 	
 	@Subscribe
 	public void invalidUserPermission(InvalidUserPermissionEvent event) {
 		clearFields();
-		showError("User access denied.");
+		showError(Messages.getString("Message.Error.AccessDenied"));
 	}
 
 }

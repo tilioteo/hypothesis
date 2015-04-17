@@ -7,7 +7,7 @@ package com.tilioteo.hypothesis.model;
  * @author kamil
  *
  */
-public interface CanSetUrl {
+public interface UrlConsumer {
 	
 	public void setUrl(String url);
 

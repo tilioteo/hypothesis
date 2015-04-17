@@ -31,7 +31,7 @@ public abstract class HUI extends UI {
 	public void setContent(Component content) {
         if (content instanceof NonVisualComponent) {
             throw new IllegalArgumentException(
-                    Messages.getString("Error.NonvisualNoSetContent"));
+                    Messages.getString("Message.Error.NonVisualNoSetContent"));
         }
 
         super.setContent(content);
@@ -63,11 +63,11 @@ public abstract class HUI extends UI {
     public void addTimer(Timer timer) throws IllegalArgumentException, NullPointerException {
 
         if (timer == null) {
-            throw new NullPointerException(Messages.getString("Error.NullArgument"));
+            throw new NullPointerException(Messages.getString("Message.Error.NullArgument"));
         }
 
         if (timer.isAttached()) {
-            throw new IllegalArgumentException(Messages.getString("Error.TimerAttached"));
+            throw new IllegalArgumentException(Messages.getString("Message.Error.TimerAttached"));
         }
 
         attachTimer(timer);
@@ -125,11 +125,11 @@ public abstract class HUI extends UI {
     public void addShortcutKey(ShortcutKey shortcutKey) throws IllegalArgumentException, NullPointerException {
 
         if (shortcutKey == null) {
-            throw new NullPointerException(Messages.getString("Error.NullArgument"));
+            throw new NullPointerException(Messages.getString("Message.Error.NullArgument"));
         }
 
         if (shortcutKey.isAttached()) {
-            throw new IllegalArgumentException(Messages.getString("Error.ShortcutKeyAttached"));
+            throw new IllegalArgumentException(Messages.getString("Message.Error.ShortcutKeyAttached"));
         }
 
         attachShortcutKey(shortcutKey);

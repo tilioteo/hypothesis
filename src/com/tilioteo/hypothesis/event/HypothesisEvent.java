@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import com.tilioteo.hypothesis.entity.Pack;
+import com.tilioteo.hypothesis.model.UrlConsumer;
 import com.tilioteo.hypothesis.ui.view.HypothesisViewType;
 
 /**
@@ -53,4 +55,33 @@ public abstract class HypothesisEvent {
         }
     }
 
+    public static class StartFeaturedTestEvent {
+    	private Pack pack;
+    	
+    	public StartFeaturedTestEvent(Pack pack) {
+    		this.pack = pack;
+    	}
+    	
+    	public Pack getPack() {
+    		return pack;
+    	}
+    }
+
+    public static class StartLegacyTestEvent {
+    	private Pack pack;
+    	private UrlConsumer urlConsumer;
+    	
+    	public StartLegacyTestEvent(Pack pack, UrlConsumer urlConsumer) {
+    		this.pack = pack;
+    		this.urlConsumer = urlConsumer;
+    	}
+    	
+    	public Pack getPack() {
+    		return pack;
+    	}
+
+		public UrlConsumer getUrlConsumer() {
+			return urlConsumer;
+		}
+    }
 }

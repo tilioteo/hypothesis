@@ -6,18 +6,19 @@ package com.tilioteo.hypothesis.ui.view;
 import java.util.Iterator;
 import java.util.List;
 
+import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.Pack;
-import com.tilioteo.hypothesis.model.CanSetUrl;
+import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.model.PacksModel;
 import com.tilioteo.hypothesis.ui.DeployJava;
 import com.tilioteo.hypothesis.ui.DeployJava.JavaCheckedEvent;
 import com.tilioteo.hypothesis.ui.DeployJava.JavaCheckedListener;
 import com.tilioteo.hypothesis.ui.DeployJava.JavaInfoPanel;
 import com.tilioteo.hypothesis.ui.PackPanel;
-import com.tilioteo.hypothesis.ui.PackPanel.StartEvent;
-import com.tilioteo.hypothesis.ui.PackPanel.StartListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,7 +32,7 @@ import com.vaadin.ui.themes.ValoTheme;
  *
  */
 @SuppressWarnings("serial")
-public class PublicPacksView extends HorizontalLayout implements View, StartListener {
+public class PublicPacksView extends HorizontalLayout implements View {
 	
 	protected PacksModel packsModel = new PacksModel();
 	private VerticalLayout mainLayout;
@@ -102,6 +103,11 @@ public class PublicPacksView extends HorizontalLayout implements View, StartList
 		panel.setWidth(100.0f, Unit.PERCENTAGE);
 		panel.addStyleName("hidden");
 		
+		panel.setCheckInfoText(Messages.getString("Message.Info.CheckingJava"));
+		panel.setJavaInstalledText(Messages.getString("Message.Info.JavaInstalled"));
+		panel.setJavaNotInstalledText(Messages.getString("Message.Info.JavaNotInstalled"));
+		panel.setInstallLinkText(Messages.getString("Message.Info.GetJava"));
+		
 		return panel;
 	}
 
@@ -118,6 +124,7 @@ public class PublicPacksView extends HorizontalLayout implements View, StartList
 		addAttachListener(new AttachListener() {
 			@Override
 			public void attach(AttachEvent event) {
+				MainEventBus.get().register(packsModel);
 				DeployJava.get(getUI()).addJavaCheckedListener(javaCheckedListener);
 			}
 		});
@@ -125,6 +132,7 @@ public class PublicPacksView extends HorizontalLayout implements View, StartList
 		addDetachListener(new DetachListener() {
 			@Override
 			public void detach(DetachEvent event) {
+				MainEventBus.get().unregister(packsModel);
 				DeployJava.get(getUI()).removeJavaCheckedListener(javaCheckedListener);
 			}
 		});
@@ -132,7 +140,6 @@ public class PublicPacksView extends HorizontalLayout implements View, StartList
 
 	protected List<Pack> getPacks() {
 		return packsModel.getPublicPacks();
-		//packsModel.getPackByHash(hash)
 	}
 
 	@Override
@@ -162,7 +169,8 @@ public class PublicPacksView extends HorizontalLayout implements View, StartList
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSizeFull();
 		
-		Label label = new Label("There are no packs to run test.");
+		Label label = new Label(FontAwesome.FROWN_O.getHtml() + " " +
+				Messages.getString("Message.Info.NoPacks"), ContentMode.HTML);
 		label.addStyleName(ValoTheme.LABEL_LIGHT);
 		label.addStyleName(ValoTheme.LABEL_LARGE);
 		label.setWidthUndefined();
@@ -176,8 +184,7 @@ public class PublicPacksView extends HorizontalLayout implements View, StartList
 	private void buildPackControls(List<Pack> packs) {
 		for (Pack pack : packs) {
 			PackPanel packPanel = new PackPanel(pack);
-			packPanel.addStartListener(this);
-			packPanel.setHeight(135.0f, Unit.PIXELS);
+			packPanel.setHeight(150.0f, Unit.PIXELS);
 			
 			packPanel.setJavaInstalled(javaInfoPanel.isJavaOk());
 			
@@ -186,6 +193,10 @@ public class PublicPacksView extends HorizontalLayout implements View, StartList
 	}
 
 	private void updateChildren(boolean javaInstalled) {
+		if (!javaInstalled) {
+			javaInfoPanel.removeStyleName("hidden");
+		}
+		
 		if (mainLayout != null) {
 			Iterator<Component> iterator = mainLayout.iterator();
 			for (;iterator.hasNext();) {
@@ -194,15 +205,6 @@ public class PublicPacksView extends HorizontalLayout implements View, StartList
 					((PackPanel)component).setJavaInstalled(javaInstalled);
 				}
 			}
-		}
-	}
-
-	@Override
-	public void start(StartEvent event) {
-		if (event.isPrimary()) {
-			packsModel.startFeaturedTest(event.getPack());
-		} else if (event.getSource() instanceof CanSetUrl) {
-			packsModel.startLegacyTest((CanSetUrl)event.getSource(), event.getPack());
 		}
 	}
 

@@ -65,7 +65,7 @@ public class Method extends Primitive implements HasReference {
 						if (method.isAnnotationPresent(ExpressionScope.class)) {
 							ExpressionScope scope = method.getAnnotation(ExpressionScope.class);
 							if (classPrivateScope || Scope.PRIVATE.equals(scope.value())) {
-								throw new Exception(Messages.getString("Error.MethodEliminated", method.getName(), obj.getClass().getName()));
+								throw new Exception(Messages.getString("Message.Error.MethodEliminated", method.getName(), obj.getClass().getName()));
 							}
 						}
 						// prepare arguments, do conversions if needed

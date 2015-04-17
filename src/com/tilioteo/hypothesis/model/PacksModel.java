@@ -9,9 +9,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.entity.User;
+import com.tilioteo.hypothesis.event.HypothesisEvent.StartFeaturedTestEvent;
+import com.tilioteo.hypothesis.event.HypothesisEvent.StartLegacyTestEvent;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
 import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.TokenManager;
@@ -29,10 +32,7 @@ public class PacksModel {
 	
 	private PermissionManager permissionManager;
 	private TokenManager tokenManager;
-	
 	private PersistenceManager persistenceManager;
-	
-	private Token token = null;
 	
 	public PacksModel() {
 		
@@ -103,19 +103,21 @@ public class PacksModel {
 		return digest;
 	}
 
-	public void startFeaturedTest(Pack pack) {
-		token = createToken(pack);
+	@Subscribe
+	public void startFeaturedTest(StartFeaturedTestEvent event) {
+		Token token = createToken(event.getPack());
 		
 		if (token != null) {
 			DeployJava.get(UI.getCurrent()).launchJavaWebStart(constructProcessJnlp(token.getUid()));
 		}
 	}
 	
-	public void startLegacyTest(CanSetUrl canSetUrl, Pack pack) {
-		token = createToken(pack);
+	@Subscribe
+	public void startLegacyTest(StartLegacyTestEvent event) {
+		Token token = createToken(event.getPack());
 
 		if (token != null) {
-			canSetUrl.setUrl(constructProcessUrl(token.getUid(), false));
+			event.getUrlConsumer().setUrl(constructProcessUrl(token.getUid(), false));
 		}
 	}
 

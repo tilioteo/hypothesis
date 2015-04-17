@@ -8,10 +8,6 @@ import java.util.List;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.model.PacksModel;
 import com.tilioteo.hypothesis.ui.PackPanel;
-import com.tilioteo.hypothesis.ui.PackPanel.StartEvent;
-import com.tilioteo.hypothesis.ui.PackPanel.StartListener;
-import com.vaadin.event.MouseEvents;
-import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -25,7 +21,7 @@ import com.vaadin.ui.VerticalLayout;
  *
  */
 @SuppressWarnings("serial")
-public class SimplePacksView extends HypothesisView implements MouseEvents.ClickListener, StartListener {
+public class SimplePacksView extends HypothesisView {
 	private PacksModel packsModel;
 	private VerticalLayout packLayout;
 	
@@ -73,8 +69,6 @@ public class SimplePacksView extends HypothesisView implements MouseEvents.Click
 				
 		for (Pack pack : packs) {
 			PackPanel packPanel = new PackPanel(pack);
-			packPanel.addClickListener(this);
-			packPanel.addStartListener(this);
 			
 			packLayout.addComponent(packPanel);
 		}
@@ -84,27 +78,6 @@ public class SimplePacksView extends HypothesisView implements MouseEvents.Click
 	public void enter(ViewChangeEvent event) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void click(ClickEvent event) {
-		/*for (Component component : packLayout) {
-			if (component instanceof SimplePackPanel) {
-				SimplePackPanel packPanel = (SimplePackPanel)component;
-				if (packPanel != event.getComponent()) {
-					packPanel.collapse();
-				} else if (packPanel.isCollapsed()) {
-					packPanel.rise();
-				} else {
-					packPanel.collapse();
-				}
-			}
-		}*/
-	}
-
-	@Override
-	public void start(StartEvent event) {
-		//packsModel.startSimpleTest(event.getPack());
 	}
 
 }

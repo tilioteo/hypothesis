@@ -54,7 +54,7 @@ public class Attribute extends Variable implements HasReference {
 					if (field.isAnnotationPresent(ExpressionScope.class)) {
 						ExpressionScope scope = field.getAnnotation(ExpressionScope.class);
 						if (classPrivateScope || Scope.PRIVATE.equals(scope.value())) {
-							throw new Exception(Messages.getString("Error.FieldEliminated", field.getName(), obj.getClass().getName()));
+							throw new Exception(Messages.getString("Message.Error.FieldEliminated", field.getName(), obj.getClass().getName()));
 						}
 					}
 					

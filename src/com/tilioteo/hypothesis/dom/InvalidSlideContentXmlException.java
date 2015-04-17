@@ -17,6 +17,6 @@ public class InvalidSlideContentXmlException extends AbstractSlideXmlException {
 	private static final long serialVersionUID = -1333706555021587586L;
 
 	public InvalidSlideContentXmlException() {
-		super(Messages.getString("Error.InvalidXmlContent"));
+		super(Messages.getString("Message.Error.InvalidXmlContent"));
 	}
 }

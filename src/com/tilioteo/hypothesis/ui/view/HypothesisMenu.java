@@ -1,6 +1,7 @@
 package com.tilioteo.hypothesis.ui.view;
 
 import com.google.common.eventbus.Subscribe;
+import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.PostViewChangeEvent;
@@ -80,7 +81,6 @@ public final class HypothesisMenu extends CustomComponent {
 		settings.addStyleName("user-menu");
 		final User user = getCurrentUser();
 		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
-		updateUserName(/*null*/);
 		/*settingsItem.addItem("Edit Profile", new Command() {
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
@@ -94,9 +94,10 @@ public final class HypothesisMenu extends CustomComponent {
 			}
 		});
 		settingsItem.addSeparator();*/
-		String itemCaption = "Sign Out";
+		String itemCaption = Messages.getString("Caption.Menu.Logout");
 		if (User.GUEST.equals(user)) {
-			itemCaption = "Sing in";
+			itemCaption = Messages.getString("Caption.Menu.LoginOther");
+			user.setUsername(Messages.getString("Caption.User.Guest"));
 		}
 		
 		settingsItem.addItem(itemCaption, new Command() {
@@ -105,6 +106,9 @@ public final class HypothesisMenu extends CustomComponent {
 				MainEventBus.get().post(new HypothesisEvent.UserLoggedOutEvent());
 			}
 		});
+
+		updateUserName(/*null*/);
+		
 		return settings;
 	}
 
@@ -201,7 +205,7 @@ public final class HypothesisMenu extends CustomComponent {
 			this.view = view;
 			setPrimaryStyleName("valo-menu-item");
 			setIcon(view.getIcon());
-			setCaption(view.getCaption());
+			setCaption(Messages.getString(view.getCaption()));
 			MainEventBus.get().register(this);
 			addClickListener(new ClickListener() {
 				@Override

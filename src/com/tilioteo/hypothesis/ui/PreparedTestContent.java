@@ -28,7 +28,7 @@ public class PreparedTestContent extends VerticalLayout {
 		super();
 		setSizeFull();
 		
-		heading = new Label("<h2>" + Messages.getString("Caption.TestReady") + "</h2>");
+		heading = new Label("<h2>" + Messages.getString("Message.Info.TestReady") + "</h2>");
 		heading.setContentMode(ContentMode.HTML);
 		heading.setWidth(null);
 		addComponent(heading);
@@ -41,7 +41,7 @@ public class PreparedTestContent extends VerticalLayout {
 			button = new Button();
 		}
 		
-		button.setCaption(Messages.getString("Caption.Run"));
+		button.setCaption(Messages.getString("Caption.Button.Run"));
 		button.addStyleName("big default");
 		button.addClickListener(new ClickListener() {
 			@Override
