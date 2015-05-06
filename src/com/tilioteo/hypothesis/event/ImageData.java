@@ -6,8 +6,8 @@ package com.tilioteo.hypothesis.event;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.ui.Image;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
+import com.tilioteo.hypothesis.slide.ui.Image;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
@@ -19,8 +19,8 @@ public class ImageData extends AbstractComponentData<Image> {
 	// using 2D coordinates only
 	private Coordinate coordinate;
 
-	public ImageData(Image sender, SlideManager slideManager) {
-		super(sender, slideManager);
+	public ImageData(Image sender, SlideFascia slideFascia) {
+		super(sender, slideFascia);
 	}
 
 	public final Coordinate getCoordinate() {

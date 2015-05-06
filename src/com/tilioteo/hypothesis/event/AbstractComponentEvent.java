@@ -10,17 +10,19 @@ import com.vaadin.ui.AbstractComponent;
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
 public abstract class AbstractComponentEvent<T extends AbstractComponent>
-		extends AbstractRunningEvent implements HasComponentData<T> {
+		extends AbstractUserEvent implements HasComponentData<T> {
+	
+	private AbstractComponentData<T> componentData;
 
 	protected AbstractComponentEvent(AbstractComponentData<T> componentData, ErrorHandler errorHandler) {
-		super(componentData, errorHandler);
+		super(errorHandler);
+		this.componentData = componentData;
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
 	public final AbstractComponentData<T> getComponentData() {
-		return (AbstractComponentData<T>) getSource();
+		return componentData;
 	}
 
 }

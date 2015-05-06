@@ -11,7 +11,6 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
 public abstract class ZoomControlEvent extends AbstractComponentEvent<ZoomControl> {
 
 	protected ZoomControlEvent(ZoomControlData data, ErrorHandler errorHandler) {

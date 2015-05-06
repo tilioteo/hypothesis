@@ -6,14 +6,15 @@ package com.tilioteo.hypothesis.ui.view;
 import java.util.Iterator;
 import java.util.List;
 
+import org.vaadin.jre.ui.DeployJava;
+import org.vaadin.jre.ui.DeployJava.JavaCheckedEvent;
+import org.vaadin.jre.ui.DeployJava.JavaCheckedListener;
+import org.vaadin.jre.ui.DeployJava.JavaInfoPanel;
+
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.model.PacksModel;
-import com.tilioteo.hypothesis.ui.DeployJava;
-import com.tilioteo.hypothesis.ui.DeployJava.JavaCheckedEvent;
-import com.tilioteo.hypothesis.ui.DeployJava.JavaCheckedListener;
-import com.tilioteo.hypothesis.ui.DeployJava.JavaInfoPanel;
 import com.tilioteo.hypothesis.ui.PackPanel;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;

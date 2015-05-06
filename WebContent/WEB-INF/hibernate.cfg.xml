@@ -5,7 +5,7 @@
 	<session-factory>
 		<!-- Database connection settings for PostgreSQL -->
 		<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-		<property name="hibernate.connection.url">jdbc:postgresql://localhost/hypothesis</property>
+		<property name="hibernate.connection.url">jdbc:postgresql://localhost/hypothesis-dbs</property>
 		<!--<property name="hibernate.connection.url">jdbc:postgresql://dbs/hypothesis</property>-->
 		<property name="hibernate.connection.username">hypothesis</property>
 		<!--<property name="hibernate.connection.password">p5h7Jgwl</property>-->

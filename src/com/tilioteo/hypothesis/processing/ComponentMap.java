@@ -5,7 +5,7 @@ package com.tilioteo.hypothesis.processing;
 
 import java.util.HashMap;
 
-import com.tilioteo.hypothesis.ui.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
 
 /**
  * @author Kamil Morong - Hypothesis

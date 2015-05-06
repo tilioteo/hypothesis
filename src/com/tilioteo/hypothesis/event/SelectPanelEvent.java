@@ -3,16 +3,14 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.ui.SelectPanel;
+import com.tilioteo.hypothesis.slide.ui.SelectPanel;
 import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
-public abstract class SelectPanelEvent extends
-		AbstractComponentEvent<SelectPanel> {
+public abstract class SelectPanelEvent extends AbstractComponentEvent<SelectPanel> {
 
 	public static class Click extends SelectPanelEvent {
 

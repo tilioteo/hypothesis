@@ -18,12 +18,12 @@ import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPolygonControl;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageSequenceLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vividsolutions.jts.geom.Geometry;
@@ -36,21 +36,21 @@ import com.vividsolutions.jts.io.WKTReader;
  */
 public class MapUtility {
 	
-	private static HashMap<SlideManager, MapUtility> hashMap = new HashMap<SlideManager, MapUtility>();
+	private static HashMap<SlideFascia, MapUtility> hashMap = new HashMap<SlideFascia, MapUtility>();
 	
-	public static MapUtility newInstance(SlideManager slideManager, Map map) {
+	public static MapUtility newInstance(SlideFascia slideFascia, Map map) {
 		MapUtility utility = new MapUtility(map);
-		hashMap.put(slideManager, utility);
+		hashMap.put(slideFascia, utility);
 		
 		return utility;
 	}
 	
-	public static MapUtility getInstance(SlideManager slideManager) {
-		return hashMap.get(slideManager);
+	public static MapUtility getInstance(SlideFascia slideFascia) {
+		return hashMap.get(slideFascia);
 	}
 	
-	public static void remove(SlideManager slideManager) {
-		hashMap.remove(slideManager);
+	public static void remove(SlideFascia slideFascia) {
+		hashMap.remove(slideFascia);
 	}
 	
 	private Map map = null;
@@ -103,20 +103,20 @@ public class MapUtility {
 	}
 
 	public void setDrawFeatureControlProperties(DrawFeatureControl<?> control, Element element,
-			StringMap properties, SlideManager slideManager) {
+			StringMap properties, SlideFascia slideFascia) {
 		
 		setControlProperties(control, element, properties);
 		setFeatureStyle(control, properties);
 		setCursorStyle(control, properties);
 		
-		SlideComponent component = slideManager.getComponent(properties.get(SlideXmlConstants.LAYER_ID));
+		SlideComponent component = slideFascia.getComponent(properties.get(SlideXmlConstants.LAYER_ID));
 		if (component != null && component instanceof VectorFeatureLayer) {
 			control.setLayer((VectorFeatureLayer) component);
 		}
 	}
 
 	public void setDrawPathControlProperties(DrawPathControl control, Element element,
-			StringMap properties, SlideManager slideManager) {
+			StringMap properties, SlideFascia slideFascia) {
 		
 		setStartPointStyle(control, properties);
 		setLineStyle(control, properties);
@@ -125,7 +125,7 @@ public class MapUtility {
 	}
 
 	public void setDrawPolygonControlProperties(DrawPolygonControl control, Element element,
-			StringMap properties, SlideManager slideManager) {
+			StringMap properties, SlideFascia slideFascia) {
 		
 		setStartPointStyle(control, properties);
 		setLineStyle(control, properties);

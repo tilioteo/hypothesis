@@ -6,8 +6,8 @@ package com.tilioteo.hypothesis.event;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.ui.Audio;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
+import com.tilioteo.hypothesis.slide.ui.Audio;
 
 /**
  * @author kamil
@@ -17,8 +17,8 @@ public class AudioData extends AbstractComponentData<Audio> {
 
 	private double time = 0.0;
 
-	public AudioData(Audio sender, SlideManager slideManager) {
-		super(sender, slideManager);
+	public AudioData(Audio sender, SlideFascia slideFascia) {
+		super(sender, slideFascia);
 	}
 
 	public final double getTime() {

@@ -13,7 +13,8 @@ import org.vaadin.maps.ui.featurecontainer.VectorFeatureContainer.ClickListener;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -22,7 +23,6 @@ import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureLayerData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -32,7 +32,7 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLayer implements SlideComponent {
 	
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	
 	public VectorFeatureLayer() {
 		super();
@@ -53,7 +53,7 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 	private void addFeatures(Element element) {
 		List<Element> elements = SlideXmlUtility.getFeatures(element, SlideXmlConstants.VALID_FEATURE_ELEMENTS);
 		for (Element childElement : elements) {
-			SlideComponent component = MapComponentFactory.createComponentFromElement(childElement, slideManager);
+			SlideComponent component = MapComponentFactory.createComponentFromElement(childElement, slideFascia);
 			if (component instanceof VectorFeature) {
 				addComponent((VectorFeature)component);
 			}
@@ -61,13 +61,13 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 	}
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void setSlideManager(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 	protected void setProperties(Element element) {
 		StringMap properties = com.tilioteo.hypothesis.dom.SlideXmlUtility.getPropertyValueMap(element);
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
 			utility.setLayerProperties(this, element, properties);
 
@@ -87,7 +87,7 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideFascia).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -103,7 +103,7 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 		addClickListener(new ClickListener() {
 			@Override
 			public void click(ClickEvent event) {
-				VectorFeatureLayerData data = new VectorFeatureLayerData(VectorFeatureLayer.this, slideManager);
+				VectorFeatureLayerData data = new VectorFeatureLayerData(VectorFeatureLayer.this, slideFascia);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
 				if (getForLayer() != null) {
 					LonLat lonLat = getForLayer().getViewWorldTransform().viewToWorld(event.getRelativeX(), event.getRelativeY());
@@ -112,8 +112,9 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 					}
 				}
 
-				Command componentEvent = MapComponentFactory.createVectorFeatureLayerClickEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createVectorFeatureLayerClickEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);

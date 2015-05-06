@@ -9,8 +9,9 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
-public abstract class SlideEvent extends AbstractRunningEvent {
+public abstract class SlideEvent extends AbstractUserEvent {
+	
+	private SlideData slideData;
 	
 	public static class Init extends SlideEvent {
 
@@ -61,10 +62,11 @@ public abstract class SlideEvent extends AbstractRunningEvent {
 	}
 
 	protected SlideEvent(SlideData data, ErrorHandler errorHandler) {
-		super(data, errorHandler);
+		super(errorHandler);
+		this.slideData = data;
 	}
 
 	public final SlideData getComponentData() {
-		return (SlideData) getSource();
+		return slideData;
 	}
 }

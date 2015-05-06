@@ -3,7 +3,11 @@
  */
 package com.tilioteo.hypothesis.processing;
 
+import java.util.Map;
+
 import com.tilioteo.hypothesis.evaluable.UnaryExpression;
+import com.tilioteo.hypothesis.interfaces.Evaluable;
+import com.tilioteo.hypothesis.interfaces.Variable;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -17,6 +21,7 @@ public class Expression implements Evaluable {
 		this.internalExpression = expression;
 	}
 
+	@Override
 	public void evaluate() {
 		getValue();
 	}
@@ -48,7 +53,8 @@ public class Expression implements Evaluable {
 		return null;
 	}
 
-	public void setVariables(VariableMap variables) {
+	@Override
+	public void setVariables(Map<String, Variable<?>> variables) {
 		if (internalExpression != null && variables != null) {
 			for (String key : variables.keySet()) {
 				Variable<?> variable = variables.get(key);
@@ -57,7 +63,8 @@ public class Expression implements Evaluable {
 		}
 	}
 
-	public void updateVariables(VariableMap variables) {
+	@Override
+	public void updateVariables(Map<String, Variable<?>> variables) {
 		if (internalExpression != null && variables != null) {
 			for (String key : variables.keySet()) {
 				Variable<?> variable = variables.get(key);
@@ -73,4 +80,5 @@ public class Expression implements Evaluable {
 	public String toString() {
 		return internalExpression != null ? internalExpression.toString() : "<null>";
 	}
+
 }

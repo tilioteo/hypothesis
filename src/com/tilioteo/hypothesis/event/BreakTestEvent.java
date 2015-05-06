@@ -3,7 +3,6 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Status;
 import com.vaadin.server.ErrorHandler;
 
@@ -11,15 +10,14 @@ import com.vaadin.server.ErrorHandler;
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
 public class BreakTestEvent extends AbstractTestEvent {
 
-	public BreakTestEvent(SimpleTest test) {
-		this(test, null);
+	public BreakTestEvent() {
+		this(null);
 	}
 
-	public BreakTestEvent(SimpleTest test, ErrorHandler errorHandler) {
-		super(test, errorHandler);
+	public BreakTestEvent(ErrorHandler errorHandler) {
+		super(errorHandler);
 	}
 
 	@Override

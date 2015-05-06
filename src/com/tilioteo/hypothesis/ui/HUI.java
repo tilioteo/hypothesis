@@ -6,6 +6,10 @@ package com.tilioteo.hypothesis.ui;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
+import org.vaadin.special.ui.NonVisualComponent;
+import org.vaadin.special.ui.ShortcutKey;
+import org.vaadin.special.ui.Timer;
+
 import com.tilioteo.hypothesis.core.Messages;
 import com.vaadin.ui.Component;
 

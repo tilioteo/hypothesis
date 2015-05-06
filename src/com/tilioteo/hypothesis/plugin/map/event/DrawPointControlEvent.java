@@ -11,7 +11,6 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
 public abstract class DrawPointControlEvent extends AbstractComponentEvent<DrawPointControl> {
 
 	protected DrawPointControlEvent(DrawPointControlData componentData, ErrorHandler errorHandler) {

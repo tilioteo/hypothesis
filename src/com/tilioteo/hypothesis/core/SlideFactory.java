@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import org.dom4j.Document;
@@ -33,21 +34,21 @@ import com.tilioteo.hypothesis.event.SlideEvent;
 import com.tilioteo.hypothesis.event.TimerData;
 import com.tilioteo.hypothesis.event.VideoData;
 import com.tilioteo.hypothesis.event.WindowData;
+import com.tilioteo.hypothesis.interfaces.Evaluable;
+import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
+import com.tilioteo.hypothesis.interfaces.Field;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Action;
-import com.tilioteo.hypothesis.processing.CallAction;
+import com.tilioteo.hypothesis.processing.Call;
 import com.tilioteo.hypothesis.processing.Command;
-import com.tilioteo.hypothesis.processing.Evaluable;
 import com.tilioteo.hypothesis.processing.Expression;
-import com.tilioteo.hypothesis.processing.FieldList;
 import com.tilioteo.hypothesis.processing.IfStatement;
-import com.tilioteo.hypothesis.processing.IndexedExpressionMap;
 import com.tilioteo.hypothesis.processing.SwitchStatement;
 import com.tilioteo.hypothesis.processing.Variable;
-import com.tilioteo.hypothesis.processing.VariableMap;
-import com.tilioteo.hypothesis.ui.Button;
-import com.tilioteo.hypothesis.ui.ComponentFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
+import com.tilioteo.hypothesis.slide.ui.Button;
+import com.tilioteo.hypothesis.slide.ui.ComponentFactory;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -55,26 +56,26 @@ import com.tilioteo.hypothesis.ui.SlideComponent;
  */
 public class SlideFactory {
 
-	private static HashMap<SlideManager, SlideFactory> instances = new HashMap<SlideManager, SlideFactory>();
+	private static HashMap<SlideFascia, SlideFactory> instances = new HashMap<SlideFascia, SlideFactory>();
 	
-	public static SlideFactory getInstance(SlideManager slideManager) {
-		SlideFactory slideFactory = instances.get(slideManager);
+	public static SlideFactory getInstance(SlideFascia slideFascia) {
+		SlideFactory slideFactory = instances.get(slideFascia);
 		
 		if (null == slideFactory) {
-			slideFactory = new SlideFactory(slideManager);
-			instances.put(slideManager, slideFactory);
+			slideFactory = new SlideFactory(slideFascia);
+			instances.put(slideFascia, slideFactory);
 		}
 		return slideFactory;
 	}
 	
-	public static void remove(SlideManager slideManager) {
-		instances.remove(slideManager);
+	public static void remove(SlideFascia slideFascia) {
+		instances.remove(slideFascia);
 	}
 
-	private SlideManager slideManager = null;
+	private SlideFascia slideFascia = null;
 
-	private SlideFactory(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	private SlideFactory(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 	public static void writeButtonData(Element sourceElement, ButtonData buttonData) {
@@ -212,7 +213,7 @@ public class SlideFactory {
 	}
 
 	private static void writeSourceData(Element sourceElement, ActionEvent actionEvent) {
-		AbstractBaseAction action = actionEvent.getAction();
+		com.tilioteo.hypothesis.interfaces.Action action = actionEvent.getAction();
 		String id = action.getId();
 		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.ACTION);
 		if (id != null) {
@@ -230,9 +231,9 @@ public class SlideFactory {
 		slideData.writeDataToElement(sourceElement);
 	}
 
-	private void writeFieldsData(Element element, FieldList fields) {
+	private void writeFieldsData(Element element, Map<String, Field> fields) {
 		Element fieldsElement = element.addElement(SlideXmlConstants.FIELDS);
-		for (Field field : fields) {
+		for (Field field : fields.values()) {
 			writeFieldData(fieldsElement, field);
 		}
 	}
@@ -242,9 +243,9 @@ public class SlideFactory {
 		field.writeDataToElement(fieldElement);
 	}
 
-	private void writeVariablesData(Element element, VariableMap variables) {
+	private void writeVariablesData(Element element, Map<String, com.tilioteo.hypothesis.interfaces.Variable<?>> variables) {
 		Element variablesElement = element.addElement(SlideXmlConstants.VARIABLES);
-		for (Variable<?> variable : variables.values()) {
+		for (com.tilioteo.hypothesis.interfaces.Variable<?> variable : variables.values()) {
 			String name = variable.getName();
 			if (!(name.equals(SlideXmlConstants.COMPONENT_DATA) ||
 					name.equals(SlideXmlConstants.NAVIGATOR))) {
@@ -253,7 +254,7 @@ public class SlideFactory {
 		}
 	}
 
-	private void writeVariableData(Element element, Variable<?> variable) {
+	private void writeVariableData(Element element, com.tilioteo.hypothesis.interfaces.Variable<?> variable) {
 		Class<?> type = variable.getType();
 		String typeName = "";
 		if (type.equals(Integer.class)) {
@@ -280,9 +281,9 @@ public class SlideFactory {
 		}
 	}
 
-	private void writeOutputValues(Element element, IndexedExpressionMap outputValues) {
+	private void writeOutputValues(Element element, Map<Integer, ExchangeVariable> outputValues) {
 		Element outputValuesElement = element.addElement(SlideXmlConstants.OUTPUT_VALUES);
-		for (IndexedExpression outputValueExpression : outputValues.values()) {
+		for (ExchangeVariable outputValueExpression : outputValues.values()) {
 			String indexString = "" + outputValueExpression.getIndex();
 			Object value = outputValueExpression.getValue();
 			
@@ -347,7 +348,7 @@ public class SlideFactory {
 							ProcessEventBus.get().post(new ActionEvent(action));
 						}
 					});
-					slideManager.setAction(id, action);
+					slideFascia.setAction(id, action);
 				}
 			}
 		}
@@ -358,7 +359,7 @@ public class SlideFactory {
 			String id = UUID.randomUUID().toString();
 			AbstractBaseAction action = createInnerAction(element, id);
 			if (action != null)
-				slideManager.setAction(id, action);
+				slideFascia.setAction(id, action);
 			return action;
 		}
 		return null;
@@ -367,7 +368,7 @@ public class SlideFactory {
 	@SuppressWarnings("unchecked")
 	private AbstractBaseAction createInnerAction(Element element, String id) {
 		if (element != null && !Strings.isNullOrEmpty(id)) {
-			Action action = new Action(slideManager, id);
+			Action action = new Action(slideFascia, id);
 			List<Element> elements = element.elements();
 			for (Element evaluableElement : elements) {
 				Evaluable evaluable = createEvaluable(evaluableElement);
@@ -379,11 +380,11 @@ public class SlideFactory {
 		return null;
 	}
 
-	private CallAction createCallAction(Element element) {
+	private Call createCall(Element element) {
 		if (element != null && element.getName().equals(SlideXmlConstants.CALL)) {
 			String actionId = SlideXmlUtility.getAction(element);
 			if (!Strings.isNullOrEmpty(actionId)) {
-				return new CallAction(slideManager, actionId);
+				return new Call(slideFascia, actionId);
 			}
 		}
 		return null;
@@ -400,7 +401,7 @@ public class SlideFactory {
 			} else if (name.equals(SlideXmlConstants.SWITCH)) {
 				return createSwitchStatement(element);
 			} else if (name.equals(SlideXmlConstants.CALL)) {
-				return createCallAction(element);
+				return createCall(element);
 			}
 		}
 		return null;
@@ -421,7 +422,7 @@ public class SlideFactory {
 			Expression expression = createExpression(expressionElement);
 
 			if (expression != null) {
-				IfStatement statement = new IfStatement(slideManager,
+				IfStatement statement = new IfStatement(slideFascia,
 						expression);
 
 				for (int i = 0; i < 2; ++i) {
@@ -453,7 +454,7 @@ public class SlideFactory {
 		for (Element inputElement : inputElements) {
 			IndexedExpression inputExpression = createValueExpression(inputElement, SlideXmlConstants.INPUT_VALUE);
 			if (inputExpression != null) {
-				slideManager.getIntputValueExpressions().add(inputExpression);
+				slideFascia.getInputs().put(inputExpression.getIndex(), inputExpression);
 			}
 		}
 	}
@@ -463,13 +464,14 @@ public class SlideFactory {
 		for (Element outputElement : outputElements) {
 			IndexedExpression outputValue = createValueExpression(outputElement, SlideXmlConstants.OUTPUT_VALUE);
 			if (outputValue != null) {
-				slideManager.getOutputValueExpressions().add(outputValue);
+				slideFascia.getOutputs().put(outputValue.getIndex(), outputValue);
 			}
 		}
 	}
 
 	private IndexedExpression createValueExpression(Element element, String prefix) {
 		String indexString = element.getName().replace(prefix, "");
+		
 		if (indexString.isEmpty()) {
 			indexString = "1";
 		}
@@ -485,17 +487,17 @@ public class SlideFactory {
 	}
 
 	public void createSlideControls() {
-		Document doc = slideManager.getSlideXml();
+		Document doc = slideFascia.getSlideXml();
 		if (SlideXmlUtility.isValidSlideXml(doc)) {
 			Element rootElement = doc.getRootElement(); 
 			createActions(rootElement);
-			ComponentFactory.createTimers(rootElement, slideManager);
+			ComponentFactory.createTimers(rootElement, slideFascia);
 
 			createInputExpressions(rootElement);
 			createOutputExpressions(rootElement);
 
-			ComponentFactory.createWindows(rootElement,	slideManager);
-			ComponentFactory.createViewportComponent(rootElement, slideManager);
+			ComponentFactory.createWindows(rootElement,	slideFascia);
+			ComponentFactory.createViewportComponent(rootElement, slideFascia);
 
 			createVariables(rootElement);
 		}
@@ -506,21 +508,21 @@ public class SlideFactory {
 		Element root = doc.getRootElement();
 		// add identification
 		Element sourceElement = root.addElement(SlideXmlConstants.SOURCE);
-		String id = slideManager.getSlide().getId().toString();
+		String id = slideFascia.getSlide().getId().toString();
 		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.SLIDE);
 		sourceElement.addAttribute(SlideXmlConstants.ID, id);
 		
 		// add fields data
-		if (slideManager.getFields().size() > 0) {
-			writeFieldsData(root, slideManager.getFields());
+		if (slideFascia.getFields().size() > 0) {
+			writeFieldsData(root, slideFascia.getFields());
 		}
 		// add variables
-		if (slideManager.getVariables().size() > 0) {
-			writeVariablesData(root, slideManager.getVariables());
+		if (slideFascia.getVariables().size() > 0) {
+			writeVariablesData(root, slideFascia.getVariables());
 		}
 		// add output values
-		if (slideManager.getOutputValueExpressions().size() > 0) {
-			writeOutputValues(root, slideManager.getOutputValueExpressions());
+		if (slideFascia.getOutputs().size() > 0) {
+			writeOutputValues(root, slideFascia.getOutputs());
 		}
 		return doc;
 	}
@@ -535,7 +537,7 @@ public class SlideFactory {
 			Expression expression = createExpression(expressionElement);
 
 			if (expression != null) {
-				SwitchStatement statement = new SwitchStatement(slideManager, expression);
+				SwitchStatement statement = new SwitchStatement(slideFascia, expression);
 
 				for (Element caseElement : caseElements) {
 					String caseValue = SlideXmlUtility.getValue(caseElement);
@@ -573,11 +575,11 @@ public class SlideFactory {
 					if (!Strings.isNullOrEmpty(referenceId)) {
 						SlideComponent component = null;
 						if (reference.getName().equals(SlideXmlConstants.COMPONENT)) {
-							component = slideManager.getComponent(referenceId);
+							component = slideFascia.getComponent(referenceId);
 						} else if (reference.getName().equals(SlideXmlConstants.TIMER)) {
-							component = slideManager.getTimer(referenceId);
+							component = slideFascia.getTimer(referenceId);
 						} else if (reference.getName().equals(SlideXmlConstants.WINDOW)) {
-							component = slideManager.getWindow(referenceId);
+							component = slideFascia.getWindow(referenceId);
 						}
 						
 						if (component != null) {
@@ -665,21 +667,38 @@ public class SlideFactory {
 			if (!Strings.isNullOrEmpty(id)) {
 				Variable<?> variable = createVariable(variableElement);
 				if (variable != null)
-					slideManager.getVariables().put(variable);
+					slideFascia.getVariables().put(variable.getName(), variable);
 			}
 		}
 		// create and add Navigator object variable
-		slideManager.getVariables().put(createNavigatorObject());
+		com.tilioteo.hypothesis.interfaces.Variable<Object> navigator = createNavigatorObject();
+		slideFascia.getVariables().put(navigator.getName(), navigator);
 
 	}
 
-	private Variable<Object> createNavigatorObject() {
+	private com.tilioteo.hypothesis.interfaces.Variable<Object> createNavigatorObject() {
 		// TODO invent naming for system objects and mark navigator like a
 		// system object
 		Variable<Object> variable = new Variable<Object>(SlideXmlConstants.NAVIGATOR);
-		Navigator navigator = new Navigator(slideManager);
+		Navigator navigator = new Navigator(slideFascia);
 		variable.setRawValue(navigator);
 		return variable;
+	}
+
+	public void addComponentDataVariable(AbstractComponentData<?> data) {
+		com.tilioteo.hypothesis.interfaces.Variable<?> variable = slideFascia.getVariables().get(SlideXmlConstants.COMPONENT_DATA);
+		if (null == variable) {
+			variable = new Variable<Object>(SlideXmlConstants.COMPONENT_DATA);
+			slideFascia.getVariables().put(SlideXmlConstants.COMPONENT_DATA, variable);
+		}
+		variable.setRawValue(data);
+	}
+	
+	public void clearComponentDataVariable() {
+		com.tilioteo.hypothesis.interfaces.Variable<?> variable = slideFascia.getVariables().get(SlideXmlConstants.COMPONENT_DATA);
+		if (variable != null) {
+			variable.setRawValue(null);
+		}
 	}
 
 }

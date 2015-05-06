@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.processing;
 
+import com.tilioteo.hypothesis.interfaces.Action;
+
 import java.util.HashMap;
 
 /**
@@ -10,6 +12,6 @@ import java.util.HashMap;
  * 
  */
 @SuppressWarnings("serial")
-public class ActionMap extends HashMap<String, AbstractBaseAction> {
+public class ActionMap extends HashMap<String, Action> {
 
 }

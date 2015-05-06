@@ -28,4 +28,6 @@ public class SlideXmlConstants {
 	public static final String CALLBACK = "Callback";
 	public static final String ARGUMENT = "Argument";
 
+	public static final String HANOI = "Hanoi";
+
 }

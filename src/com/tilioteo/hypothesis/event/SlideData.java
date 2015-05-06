@@ -6,9 +6,9 @@ package com.tilioteo.hypothesis.event;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.XmlDataWriter;
-import com.tilioteo.hypothesis.entity.Slide;
+import com.tilioteo.hypothesis.interfaces.SlideEntity;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
+import com.tilioteo.hypothesis.interfaces.XmlDataWriter;
 
 /**
  * @author kamil
@@ -16,25 +16,25 @@ import com.tilioteo.hypothesis.entity.Slide;
  */
 public class SlideData implements XmlDataWriter {
 
-	private SlideManager slideManager;
-	private Slide sender;
+	private SlideFascia slideFascia;
+	private SlideEntity slide;
 	private String shortcutKey = null;
 
-	public SlideData(Slide sender, SlideManager slideManager) {
-		this.sender = sender;
-		this.slideManager = slideManager;
+	public SlideData(SlideEntity slide, SlideFascia slideFascia) {
+		this.slide = slide;
+		this.slideFascia = slideFascia;
 	}
 
 	public final String getComponentId() {
-		return sender != null ? sender.getId().toString() : null;
+		return slide != null ? slide.getId().toString() : null;
 	}
 
-	public Slide getSender() {
-		return sender;
-	}
+	/*public Slide getSender() {
+		return slide;
+	}*/
 
-	public final SlideManager getSlideManager() {
-		return slideManager;
+	public final SlideFascia getSlideManager() {
+		return slideFascia;
 	}
 
 	public String getShortcutKey() {

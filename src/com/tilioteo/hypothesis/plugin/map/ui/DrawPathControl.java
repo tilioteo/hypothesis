@@ -12,8 +12,9 @@ import org.vaadin.maps.ui.handler.FeatureHandler.DrawFeatureEvent;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -21,7 +22,6 @@ import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -31,7 +31,7 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class DrawPathControl extends org.vaadin.maps.ui.control.DrawPathControl implements SlideComponent {
 
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	
 	public DrawPathControl() {
 		super(null);
@@ -51,12 +51,12 @@ public class DrawPathControl extends org.vaadin.maps.ui.control.DrawPathControl 
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
-			utility.setDrawFeatureControlProperties(this, element, properties, slideManager);
+			utility.setDrawFeatureControlProperties(this, element, properties, slideFascia);
 		
 			// set DrawPathControl specific properties
-			utility.setDrawPathControlProperties(this, element, properties, slideManager);
+			utility.setDrawPathControlProperties(this, element, properties, slideFascia);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class DrawPathControl extends org.vaadin.maps.ui.control.DrawPathControl 
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideFascia).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -87,11 +87,12 @@ public class DrawPathControl extends org.vaadin.maps.ui.control.DrawPathControl 
 		addDrawFeatureListener(new FeatureHandler.DrawFeatureListener() {
 			@Override
 			public void drawFeature(DrawFeatureEvent event) {
-				DrawPathControlData data = new DrawPathControlData(DrawPathControl.this, slideManager);
+				DrawPathControlData data = new DrawPathControlData(DrawPathControl.this, slideFascia);
 				data.setFeature(event.getFeature());
 
-				Command componentEvent = MapComponentFactory.createDrawPathControlEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createDrawPathControlEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
@@ -101,8 +102,8 @@ public class DrawPathControl extends org.vaadin.maps.ui.control.DrawPathControl 
 
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void setSlideManager(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 }

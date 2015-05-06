@@ -6,8 +6,8 @@ package com.tilioteo.hypothesis.event;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.ui.Window;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
+import com.tilioteo.hypothesis.slide.ui.Window;
 
 /**
  * @author kamil
@@ -15,8 +15,8 @@ import com.tilioteo.hypothesis.ui.Window;
  */
 public class WindowData extends AbstractComponentData<Window> {
 
-	public WindowData(Window sender, SlideManager slideManager) {
-		super(sender, slideManager);
+	public WindowData(Window sender, SlideFascia slideFascia) {
+		super(sender, slideFascia);
 	}
 	
 	@Override

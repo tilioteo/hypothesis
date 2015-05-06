@@ -4,11 +4,11 @@
 package com.tilioteo.hypothesis.event;
 
 import org.dom4j.Element;
+import org.vaadin.special.ui.SelectButton;
 
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.ui.SelectButton;
-import com.tilioteo.hypothesis.ui.SelectPanel;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
+import com.tilioteo.hypothesis.slide.ui.SelectPanel;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -18,8 +18,8 @@ public class SelectPanelData extends AbstractComponentData<SelectPanel> {
 
 	private SelectButton button;
 
-	public SelectPanelData(SelectPanel sender, SlideManager slideManager) {
-		super(sender, slideManager);
+	public SelectPanelData(SelectPanel sender, SlideFascia slideFascia) {
+		super(sender, slideFascia);
 	}
 
 	public SelectButton getButton() {

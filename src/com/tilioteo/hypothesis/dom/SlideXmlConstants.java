@@ -80,6 +80,7 @@ public class SlideXmlConstants {
 	public static final String VISIBLE = "Visible";
 	public static final String CLICK = "Click";
 	public static final String LOAD = "Load";
+	public static final String ERROR = "Error";
 	public static final String INIT = "Init";
 	public static final String SHOW = "Show";
 	public static final String SHORTCUT = "Shortcut";

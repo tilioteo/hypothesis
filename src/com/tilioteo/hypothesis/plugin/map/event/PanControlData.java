@@ -5,8 +5,8 @@ package com.tilioteo.hypothesis.plugin.map.event;
 
 import org.dom4j.Element;
 
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.SlideFactory;
 import com.tilioteo.hypothesis.plugin.map.ui.PanControl;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -24,8 +24,8 @@ public class PanControlData extends AbstractComponentData<PanControl> {
 	private Coordinate delta;
 	private Coordinate worldDelta;
 
-	public PanControlData(PanControl sender, SlideManager slideManager) {
-		super(sender, slideManager);
+	public PanControlData(PanControl sender, SlideFascia slideFascia) {
+		super(sender, slideFascia);
 	}
 
 	public final Coordinate getCoordinate() {

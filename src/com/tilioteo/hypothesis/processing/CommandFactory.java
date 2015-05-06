@@ -3,10 +3,12 @@
  */
 package com.tilioteo.hypothesis.processing;
 
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;
 import com.tilioteo.hypothesis.event.AudioData;
@@ -28,6 +30,8 @@ import com.tilioteo.hypothesis.event.VideoData;
 import com.tilioteo.hypothesis.event.VideoEvent;
 import com.tilioteo.hypothesis.event.WindowData;
 import com.tilioteo.hypothesis.event.WindowEvent;
+import com.tilioteo.hypothesis.interfaces.Action;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -37,17 +41,17 @@ public class CommandFactory {
 
 	private static Logger log = Logger.getLogger(CommandFactory.class);
 
-	public static Command createActionCommand(final SlideManager slideManager, final String actionId, final AbstractComponentData<?> data) {
-		if (slideManager != null) {
+	public static Command createActionCommand(final SlideFascia slideFascia, final String actionId, final AbstractComponentData<?> data) {
+		if (slideFascia != null) {
 			if (!Strings.isNullOrEmpty(actionId)) {
 				return new Command() {
 					public void execute() {
-						AbstractBaseAction action = slideManager.getAction(actionId);
+						Action action = slideFascia.getAction(actionId);
 						if (action != null) {
 							log.debug("Execute action command.");
-							slideManager.addComponentDataVariable(data);
+							SlideFactory.getInstance(slideFascia).addComponentDataVariable(data);
 							action.execute();
-							slideManager.clearComponentDataVariable();
+							SlideFactory.getInstance(slideFascia).clearComponentDataVariable();
 						} else {
 							log.error("Action " + actionId + " IS NULL!");
 						}
@@ -57,18 +61,18 @@ public class CommandFactory {
 				log.error("createActionCommand: actionId IS NULL OR EMPTY!");
 			}
 		} else {
-			log.error("createActionCommand: slideManager IS NULL!");
+			log.error("createActionCommand: slideFascia IS NULL!");
 		}
 		
 		return null;
 	}
 
-	public static Command createSlideActionCommand(final SlideManager slideManager, final String actionId, final SlideData data) {
+	public static Command createSlideActionCommand(final SlideFascia slideManager, final String actionId, final SlideData data) {
 		if (slideManager != null) {
 			if (!Strings.isNullOrEmpty(actionId)) {
 				return new Command() {
 					public void execute() {
-						AbstractBaseAction action = slideManager.getAction(actionId);
+						Action action = slideManager.getAction(actionId);
 						if (action != null) {
 							log.debug("Execute action command.");
 							action.execute();
@@ -81,7 +85,7 @@ public class CommandFactory {
 				log.error("createActionCommand: actionId IS NULL OR EMPTY!");
 			}
 		} else {
-			log.error("createActionCommand: slideManager IS NULL!");
+			log.error("createActionCommand: slideFascia IS NULL!");
 		}
 		
 		return null;
@@ -105,128 +109,169 @@ public class CommandFactory {
 		};
 	}
 
-	public static Command createButtonClickEventCommand(ButtonData data) {
+	public static Command createButtonClickEventCommand(ButtonData data, Date timestamp, Date clientTimestamp) {
 		ButtonEvent event = new ButtonEvent.Click(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createButtonPanelClickEventCommand(ButtonPanelData data) {
+	public static Command createButtonPanelClickEventCommand(ButtonPanelData data, Date timestamp, Date clientTimestamp) {
 		ButtonPanelEvent event = new ButtonPanelEvent.Click(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createImageClickEventCommand(ImageData data) {
+	public static Command createImageClickEventCommand(ImageData data, Date timestamp, Date clientTimestamp) {
 		ImageEvent event = new ImageEvent.Click(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createImageLoadEventCommand(ImageData data) {
+	public static Command createImageLoadEventCommand(ImageData data, Date timestamp, Date clientTimestamp) {
 		ImageEvent event = new ImageEvent.Load(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createSelectPanelClickEventCommand(SelectPanelData data) {
+	public static Command createImageErrorEventCommand(ImageData data, Date timestamp, Date clientTimestamp) {
+		ImageEvent event = new ImageEvent.Error(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
+
+		return createComponentEventCommand(event);
+	}
+
+	public static Command createSelectPanelClickEventCommand(SelectPanelData data, Date timestamp, Date clientTimestamp) {
 		SelectPanelEvent event = new SelectPanelEvent.Click(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createTimerStartEventCommand(TimerData data) {
+	public static Command createTimerStartEventCommand(TimerData data/*, Date timestamp*/) {
 		TimerEvent event = new TimerEvent.Start(data);
+		//event.setTimestamp(timestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createTimerStopEventCommand(TimerData data) {
+	public static Command createTimerStopEventCommand(TimerData data/*, Date timestamp*/) {
 		TimerEvent event = new TimerEvent.Stop(data);
+		//event.setTimestamp(timestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createTimerUpdateEventCommand(TimerData data) {
+	public static Command createTimerUpdateEventCommand(TimerData data/*, Date timestamp*/) {
 		TimerEvent event = new TimerEvent.Update(data);
+		//event.setTimestamp(timestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createVideoClickEventCommand(VideoData data) {
+	public static Command createVideoClickEventCommand(VideoData data, Date timestamp, Date clientTimestamp) {
 		VideoEvent event = new VideoEvent.Click(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createVideoLoadEventCommand(VideoData data) {
+	public static Command createVideoLoadEventCommand(VideoData data, Date timestamp, Date clientTimestamp) {
 		VideoEvent event = new VideoEvent.Load(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createVideoStartEventCommand(VideoData data) {
+	public static Command createVideoStartEventCommand(VideoData data, Date timestamp, Date clientTimestamp) {
 		VideoEvent event = new VideoEvent.Start(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createVideoStopEventCommand(VideoData data) {
+	public static Command createVideoStopEventCommand(VideoData data, Date timestamp, Date clientTimestamp) {
 		VideoEvent event = new VideoEvent.Stop(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createAudioLoadEventCommand(AudioData data) {
+	public static Command createAudioLoadEventCommand(AudioData data, Date timestamp, Date clientTimestamp) {
 		AudioEvent event = new AudioEvent.Load(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createAudioStartEventCommand(AudioData data) {
+	public static Command createAudioStartEventCommand(AudioData data, Date timestamp, Date clientTimestamp) {
 		AudioEvent event = new AudioEvent.Start(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createAudioStopEventCommand(AudioData data) {
+	public static Command createAudioStopEventCommand(AudioData data, Date timestamp, Date clientTimestamp) {
 		AudioEvent event = new AudioEvent.Stop(data);
+		event.setTimestamp(timestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createWindowInitEventCommand(WindowData data) {
+	public static Command createWindowInitEventCommand(WindowData data/*, Date timestamp*/) {
 		WindowEvent event = new WindowEvent.Init(data);
+		//event.setTimestamp(timestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createWindowOpenEventCommand(WindowData data) {
+	public static Command createWindowOpenEventCommand(WindowData data/*, Date timestamp*/) {
 		WindowEvent event = new WindowEvent.Open(data);
+		//event.setTimestamp(timestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createWindowCloseEventCommand(WindowData data) {
+	public static Command createWindowCloseEventCommand(WindowData data/*, Date timestamp*/) {
 		WindowEvent event = new WindowEvent.Close(data);
+		//event.setTimestamp(timestamp);
 
 		return createComponentEventCommand(event);
 	}
 
-	public static Command createSlideInitEventCommand(SlideData data) {
+	public static Command createSlideInitEventCommand(SlideData data, Date timestamp) {
 		SlideEvent event = new SlideEvent.Init(data);
+		event.setTimestamp(timestamp);
 
 		return createSlideEventCommand(event);
 	}
 
-	public static Command createSlideShowEventCommand(SlideData data) {
+	public static Command createSlideShowEventCommand(SlideData data, Date timestamp) {
 		SlideEvent event = new SlideEvent.Show(data);
+		event.setTimestamp(timestamp);
 
 		return createSlideEventCommand(event);
 	}
 
-	public static Command createSlideShortcutKeyEventCommand(SlideData data) {
+	public static Command createSlideShortcutKeyEventCommand(SlideData data/*, Date timestamp*/) {
 		SlideEvent event = new SlideEvent.ShortcutKey(data);
+		//event.setTimestamp(timestamp);
 
 		return createSlideEventCommand(event);
 	}

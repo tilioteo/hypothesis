@@ -11,23 +11,27 @@ import org.apache.log4j.Logger;
 import org.vaadin.jouni.animator.AnimatorProxy;
 import org.vaadin.jouni.animator.AnimatorProxy.AnimationEvent;
 import org.vaadin.jouni.animator.shared.AnimType;
+import org.vaadin.special.ui.ShortcutKey;
 
 import com.google.common.eventbus.Subscribe;
-import com.tilioteo.hypothesis.core.CommandQueue;
-import com.tilioteo.hypothesis.core.CommandScheduler;
 import com.tilioteo.hypothesis.event.AbstractNotificationEvent;
 import com.tilioteo.hypothesis.event.AfterFinishSlideEvent;
 import com.tilioteo.hypothesis.event.AfterPrepareTestEvent;
 import com.tilioteo.hypothesis.event.AfterRenderContentEvent;
 import com.tilioteo.hypothesis.event.CloseTestEvent;
 import com.tilioteo.hypothesis.event.ErrorNotificationEvent;
+import com.tilioteo.hypothesis.event.FinishSlideEvent.Direction;
 import com.tilioteo.hypothesis.event.FinishTestEvent;
+import com.tilioteo.hypothesis.event.NextSlideEvent;
+import com.tilioteo.hypothesis.event.PriorSlideEvent;
 import com.tilioteo.hypothesis.event.ProcessEventBus;
 import com.tilioteo.hypothesis.event.RenderContentEvent;
 import com.tilioteo.hypothesis.extension.PluginManager;
 import com.tilioteo.hypothesis.model.ProcessModel;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.servlet.ProcessServlet;
+import com.tilioteo.hypothesis.slide.ui.Timer;
+import com.tilioteo.hypothesis.slide.ui.Window;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -49,7 +53,7 @@ import com.vaadin.ui.Window.CloseEvent;
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 @PreserveOnRefresh
-public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
+public class ProcessUI extends HUI implements DetachListener/*, CommandScheduler*/ {
 
 	private static Logger log = Logger.getLogger(ProcessUI.class);
 
@@ -72,7 +76,7 @@ public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 	
 	private String lastToken = null;
 	
-	private CommandQueue commandQueue = new CommandQueue();
+	//private CommandQueue commandQueue = new CommandQueue();
 	
 	@Override
 	protected void init(VaadinRequest request) {
@@ -126,7 +130,7 @@ public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 		}
 	}
 
-	public void scheduleCommand(Command command) {
+	/*public void scheduleCommand(Command command) {
 		if (command != null) {
 			try {
 				commandQueue.put(command);
@@ -134,15 +138,14 @@ public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 
 	@Subscribe
 	public void doAfterFinishSlide(final AfterFinishSlideEvent event) {
-		log.debug(String.format("doAfterFinishSlide: slide id = %s", event.getSlide() != null ? event.getSlide().getId() : "NULL"));
 		clearContent(animate, new Command() {
 			@Override
 			public void execute() {
-				processModel.processSlideFollowing(event.getSlide(), event.getDirection());
+				ProcessEventBus.get().post((Direction.NEXT.equals(event.getDirection())) ? new NextSlideEvent() : new PriorSlideEvent());
 			}
 		});
 	}
@@ -150,14 +153,11 @@ public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 	@Subscribe
 	public void renderContent(RenderContentEvent event) {
 		log.debug("renderContent::");
-		LayoutComponent content = event.getContent();
-		// set slide component to window content
-		// Alignment is ignored here
-		if (content != null && content.getComponent() != null) {
-			Component component = content.getComponent();
+		Component component = event.getComponent();
+		if (component != null) {
 			setSlideContent(component, event.getTimers(), event.getShortcutKeys());
 
-			ProcessEventBus.get().post(new AfterRenderContentEvent(content));
+			ProcessEventBus.get().post(new AfterRenderContentEvent(component));
 		} else {
 			log.error("Error while rendering slide.");
 			processModel.fireTestError();
@@ -176,14 +176,13 @@ public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 	}
 
 	@Subscribe
-	public void showFinishContent(final FinishTestEvent finishTestEvent) {
-		log.debug(String.format("showFinishContent: test id = %s", finishTestEvent.getTest() != null ? finishTestEvent.getTest().getId() : "NULL"));
+	public void showFinishContent(FinishTestEvent event) {
 		clearContent(false, null);
 		
 		setContent(new FinishTestContent(new Command() {
 			@Override
 			public void execute() {
-				ProcessEventBus.get().post(new CloseTestEvent(finishTestEvent.getTest()));
+				ProcessEventBus.get().post(new CloseTestEvent());
 			}
 		}));
 	}
@@ -194,19 +193,17 @@ public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 			showErrorDialog((ErrorNotificationEvent) event);
 
 		} else {
-			log.debug(String.format("showNotification: test id = %s, message = %s", event.getTest() != null ? event.getTest().getId() : "NULL", event.getDescription() != null ? event.getDescription() : "NULL"));
 			Notification notification = event.getNotification();
 			notification.show(Page.getCurrent());
 		}
 	}
 
 	private void showErrorDialog(final ErrorNotificationEvent event) {
-		log.debug(String.format("showErrorDialog: test id = %s, message = %s", event.getTest() != null ? event.getTest().getId() : "NULL", event.getDescription() != null ? event.getDescription() : "NULL"));
 		ErrorDialog errorDialog = new ErrorDialog("Error", event.getCaption());
 		errorDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				ProcessEventBus.get().post(new CloseTestEvent(event.getTest()));
+				ProcessEventBus.get().post(new CloseTestEvent());
 			}
 		});
 		errorDialog.show(this);
@@ -233,7 +230,6 @@ public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 					@Override
 					public void onAnimation(AnimationEvent event) {
 						setContent(clearLayout);
-						//scheduleCommand(nextCommand);
 						Command.Executor.execute(nextCommand);
 					}
 				});
@@ -242,7 +238,6 @@ public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 			}
 		} else {
 			setContent(clearLayout);
-			//scheduleCommand(nextCommand);
 			Command.Executor.execute(nextCommand);
 		}
 	}
@@ -266,19 +261,22 @@ public class ProcessUI extends HUI implements DetachListener, CommandScheduler {
 	public void detach(DetachEvent event) {
 		log.debug("ProcessUI detached.");
 		
+		ProcessEventBus.get().unregister(this);
 		processModel.requestBreak();
-		processModel.purgeFactories();
+		processModel.clean();
 	}
 	
 	@Override
 	public void close() {
 		log.debug("close::");
 		super.close();
-
+		
 		if (!requestBack) {
-			log.debug("Setting close url.");
+			log.debug("Closing window.");
 			String path = VaadinServlet.getCurrent().getServletContext().getContextPath();
 			Page.getCurrent().setLocation(path + CLOSE_URL);
+			// this is also possible way but not for SWT browser
+			//Page.getCurrent().getJavaScript().execute("window.setTimeout(function(){/*window.open('','_self','');*/window.close();},10);");
 		} else {
 			log.debug("History back.");
 			JavaScript javaScript = Page.getCurrent().getJavaScript();

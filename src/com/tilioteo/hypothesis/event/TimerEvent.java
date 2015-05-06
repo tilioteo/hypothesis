@@ -3,14 +3,13 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.ui.Timer;
+import com.tilioteo.hypothesis.slide.ui.Timer;
 import com.vaadin.server.ErrorHandler;
 
 /**
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
 public abstract class TimerEvent extends AbstractComponentEvent<Timer> {
 
 	public static class Start extends TimerEvent {

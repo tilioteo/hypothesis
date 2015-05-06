@@ -11,10 +11,10 @@ import java.util.Set;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringSet;
-import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.extension.SlideComponentPlugin;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideComponentPlugin;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.event.MapEventTypes;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 
 /**
  * @author kamil
@@ -79,8 +79,8 @@ public class MapPlugin implements SlideComponentPlugin {
 	}
 
 	@Override
-	public SlideComponent createComponentFromElement(Element element, SlideManager slideManager) {
-		return MapComponentFactory.createComponentFromElement(element, slideManager);
+	public SlideComponent createComponentFromElement(Element element, SlideFascia slideFascia) {
+		return MapComponentFactory.createComponentFromElement(element, slideFascia);
 	}
 
 }

@@ -3,16 +3,15 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.ui.ButtonPanel;
+import org.vaadin.special.ui.ButtonPanel;
+
 import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
-public abstract class ButtonPanelEvent extends
-		AbstractComponentEvent<ButtonPanel> {
+public abstract class ButtonPanelEvent extends AbstractComponentEvent<ButtonPanel> {
 
 	public static class Click extends ButtonPanelEvent {
 

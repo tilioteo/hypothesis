@@ -6,8 +6,8 @@ package com.tilioteo.hypothesis.plugin.map.event;
 import org.dom4j.Element;
 import org.vaadin.maps.ui.feature.VectorFeature;
 
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.SlideFactory;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPointControl;
 
@@ -19,8 +19,8 @@ public class DrawPointControlData extends AbstractComponentData<DrawPointControl
 	
 	private VectorFeature feature = null;
 
-	public DrawPointControlData(DrawPointControl sender, SlideManager slideManager) {
-		super(sender, slideManager);
+	public DrawPointControlData(DrawPointControl sender, SlideFascia slideFascia) {
+		super(sender, slideFascia);
 	}
 	
 	public VectorFeature getFeature() {

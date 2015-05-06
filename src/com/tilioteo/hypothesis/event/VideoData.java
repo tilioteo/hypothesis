@@ -6,8 +6,8 @@ package com.tilioteo.hypothesis.event;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.ui.Video;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
+import com.tilioteo.hypothesis.slide.ui.Video;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
@@ -19,8 +19,8 @@ public class VideoData extends AbstractComponentData<Video> {
 	private Coordinate coordinate;
 	private double time = 0.0;
 
-	public VideoData(Video sender, SlideManager slideManager) {
-		super(sender, slideManager);
+	public VideoData(Video sender, SlideFascia slideFascia) {
+		super(sender, slideFascia);
 	}
 
 	public final Coordinate getCoordinate() {

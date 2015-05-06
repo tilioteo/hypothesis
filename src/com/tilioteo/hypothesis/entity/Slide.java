@@ -18,6 +18,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
+import com.tilioteo.hypothesis.interfaces.SlideEntity;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -27,7 +29,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = TableConstants.SLIDE_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Slide extends SerializableIdObject {
+public final class Slide extends SerializableIdObject implements SlideEntity {
 
 	/**
 	 * 

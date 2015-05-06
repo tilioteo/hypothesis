@@ -3,13 +3,16 @@
  */
 package com.tilioteo.hypothesis.processing;
 
+import com.tilioteo.hypothesis.interfaces.Action;
+import com.tilioteo.hypothesis.interfaces.HasVariables;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
  *         Base class for action
  * 
  */
-public abstract class AbstractBaseAction extends AbstractVariableContainer {
+public abstract class AbstractBaseAction extends AbstractVariableContainer implements Action {
 
 	private String id;
 	private Command executeCommand = null;
@@ -23,6 +26,7 @@ public abstract class AbstractBaseAction extends AbstractVariableContainer {
 		this.executeCommand = command;
 	}
 
+	@Override
 	public void execute() {
 		Command.Executor.execute(executeCommand);
 	}

@@ -6,85 +6,77 @@ package com.tilioteo.hypothesis.core;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
+import org.vaadin.special.ui.ShortcutKey;
 
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Slide;
 import com.tilioteo.hypothesis.entity.Task;
-import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.event.ViewportEvent;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
 import com.tilioteo.hypothesis.event.ViewportEventManager;
-import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.tilioteo.hypothesis.interfaces.Action;
+import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
+import com.tilioteo.hypothesis.interfaces.Field;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.processing.ActionMap;
 import com.tilioteo.hypothesis.processing.ComponentMap;
-import com.tilioteo.hypothesis.processing.FieldList;
-import com.tilioteo.hypothesis.processing.HasActions;
-import com.tilioteo.hypothesis.processing.HasVariables;
-import com.tilioteo.hypothesis.processing.IndexedExpressionMap;
+import com.tilioteo.hypothesis.processing.FieldMap;
+import com.tilioteo.hypothesis.processing.ExchangeVariableMap;
 import com.tilioteo.hypothesis.processing.TimerMap;
 import com.tilioteo.hypothesis.processing.Variable;
 import com.tilioteo.hypothesis.processing.VariableMap;
 import com.tilioteo.hypothesis.processing.WindowMap;
-import com.tilioteo.hypothesis.ui.LayoutComponent;
-import com.tilioteo.hypothesis.ui.ShortcutKey;
-import com.tilioteo.hypothesis.ui.SlideComponent;
-import com.tilioteo.hypothesis.ui.Timer;
-import com.tilioteo.hypothesis.ui.Window;
+import com.tilioteo.hypothesis.slide.ui.Timer;
+import com.tilioteo.hypothesis.slide.ui.Window;
+import com.vaadin.ui.Component;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class SlideManager extends ListManager<Task, Slide> implements
-		HasVariables, HasActions {
+public class SlideManager extends ListManager<Task, Slide> implements SlideFascia {
 	
-	private static Logger log = Logger.getLogger(SlideManager.class);
-
-	@SuppressWarnings("serial")
-	public static class InitEvent extends ViewportEvent {
-		public InitEvent(Object source) {
-			super(source);
-		}
-	}
-	@SuppressWarnings("serial")
-	public static class ShowEvent extends ViewportEvent {
-		public ShowEvent(Object source) {
-			super(source);
-		}
-	}
+	private static Logger log = Logger.getLogger(SlideFascia.class);
 
 	private ViewportEventManager viewportEventManager = new ViewportEventManager();
 
 	private SlideFactory slideFactory;
 
-	private FieldList fields = new FieldList();
+	private FieldMap fields = new FieldMap();
 	private ComponentMap components = new ComponentMap();
 	private WindowMap windows = new WindowMap();
 	private TimerMap timers = new TimerMap();
 	private VariableMap variables = new VariableMap();
 	private ActionMap actions = new ActionMap();
 	private HashSet<ShortcutKey> shortcuts = new HashSet<ShortcutKey>();
-	private IndexedExpressionMap outputValueExpressions = new IndexedExpressionMap(); 
-	private IndexedExpressionMap inputValueExpressions = new IndexedExpressionMap(); 
+	private ExchangeVariableMap outputValues = new ExchangeVariableMap(); 
+	private ExchangeVariableMap inputValues = new ExchangeVariableMap(); 
 	private HashMap<Integer, Object> nextInputValues = new HashMap<Integer, Object>();
 
 	private Document slideXml = null;
 	private Slide current = null;
-	private LayoutComponent viewport = null;
+	private Component viewportComponent = null;
 
 
 	public SlideManager() {
 		slideFactory = SlideFactory.getInstance(this);
 	}
 
-	public void addViewportEventListener(Class<? extends ViewportEvent> eventClass,	ViewportEventListener listener) {
-		viewportEventManager.addListener(eventClass, listener);
+	@Override
+	public void addViewportInitListener(ViewportEventListener listener) {
+		viewportEventManager.addListener(ViewportEvent.Init.class, listener);
+	}
+	
+	@Override
+	public void addViewportShowListener(ViewportEventListener listener) {
+		viewportEventManager.addListener(ViewportEvent.Show.class, listener);
 	}
 	
 	private void buildSlide() {
@@ -94,7 +86,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 			slideXml = SlideXmlFactory.buildSlideXml(current);
 			slideFactory.createSlideControls();
 			setInputValues();
-			fireEvent(new InitEvent(current));
+			fireEvent(new ViewportEvent.Init(current));
 		}
 	}
 
@@ -106,7 +98,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		log.debug("clearSlideRelatives");
 		
 		slideXml = null;
-		viewport = null;
+		viewportComponent = null;
 		
 		components.clear();
 		windows.clear();
@@ -115,8 +107,8 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		actions.clear();
 		timers.clear();
 		shortcuts.clear();
-		outputValueExpressions.clear();
-		inputValueExpressions.clear();
+		outputValues.clear();
+		inputValues.clear();
 		
 		clearListeners();
 	}
@@ -138,26 +130,29 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	}
 
 	@Override
-	public final void setAction(String id, AbstractBaseAction action) {
+	public final void setAction(String id, Action action) {
 		actions.put(id, action);
 	}
 	
 	@Override
-	public final AbstractBaseAction getAction(String id) {
+	public final Action getAction(String id) {
 		return actions.get(id);
 	}
 
-	public final FieldList getFields() {
+	@Override
+	public final FieldMap getFields() {
 		return fields;
 	}
 
-	public final IndexedExpressionMap getIntputValueExpressions() {
-		return inputValueExpressions;
+	@Override
+	public final Map<Integer, ExchangeVariable> getInputs() {
+		return inputValues;
 	}
 
-	public final IndexedExpressionMap getOutputValueExpressions() {
-		outputValueExpressions.setVariables(variables);
-		return outputValueExpressions;
+	@Override
+	public final Map<Integer, ExchangeVariable> getOutputs() {
+		outputValues.setVariables(variables);
+		return outputValues;
 	}
 
 	public String getSerializedSlideData() {
@@ -165,16 +160,19 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		return XmlUtility.writeString(doc);
 	}
 
+	@Override
 	public final Document getSlideXml() {
 		return slideXml;
 	}
 
+	@Override
 	public final VariableMap getVariables() {
 		return variables;
 	}
 	
-	public final LayoutComponent getViewport() {
-		return viewport;
+	@Override
+	public final Component getViewportComponent() {
+		return viewportComponent;
 	}
 	
 	@Override
@@ -194,9 +192,9 @@ public class SlideManager extends ListManager<Task, Slide> implements
 	private void saveOutputValuesForNext() {
 		nextInputValues.clear();
 		
-		IndexedExpressionMap list = getOutputValueExpressions();
-		for (Integer index : list.keySet()) {
-			IndexedExpression outputValueExpression = outputValueExpressions.get(index);
+		Map<Integer, ExchangeVariable> map = getOutputs();
+		for (Integer index : map.keySet()) {
+			ExchangeVariable outputValueExpression = outputValues.get(index);
 			Object value = outputValueExpression.getValue();
 			if (value != null) {
 				nextInputValues.put(index, value);
@@ -206,48 +204,58 @@ public class SlideManager extends ListManager<Task, Slide> implements
 
 	@SuppressWarnings("rawtypes")
 	private void setInputValues() {
-		for (IndexedExpression inputIndexedExpression : inputValueExpressions.values()) {
-			if (inputIndexedExpression != null && inputIndexedExpression.getExpression() != null) {
-				int index = inputIndexedExpression.getIndex();
-				String name = inputIndexedExpression.getExpression().getSimpleVariableName();
-				Object value = nextInputValues.get(index);
-				if (name != null && value != null) {
-					Variable<?> variable = this.variables.get(name);
-					if (variable != null)
-						variable.setRawValue(value);
-					else {
-						variable = new Variable(name);
-						variable.setRawValue(value);
-						this.variables.put(variable);
+		for (ExchangeVariable inputValueExpression : inputValues.values()) {
+			if (inputValueExpression != null && inputValueExpression instanceof IndexedExpression) {
+				IndexedExpression inputExpression = (IndexedExpression)inputValueExpression;
+				if (inputExpression.getExpression() != null) {
+					int index = inputExpression.getIndex();
+					String name = inputExpression.getExpression().getSimpleVariableName();
+					Object value = nextInputValues.get(index);
+					if (name != null && value != null) {
+						com.tilioteo.hypothesis.interfaces.Variable<?> variable = this.variables.get(name);
+						if (variable != null)
+							variable.setRawValue(value);
+						else {
+							variable = new Variable(name);
+							variable.setRawValue(value);
+							this.variables.put(variable);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	public final void setViewport(LayoutComponent component) {
-		this.viewport = component;
+	@Override
+	public final void setViewportComponent(Component component) {
+		this.viewportComponent = component;
 	}
 
-	public final void registerComponent(String id, SlideComponent component) {
+	@Override
+	public final void registerComponent(String id, Component component) {
 		if (!Strings.isNullOrEmpty(id)) {
-			components.put(id, component);
-		}
-		if (component instanceof Field) {
-			fields.add((Field) component);
+			if (component instanceof Window) {
+				windows.put(id, (Window) component);
+			} else if (component instanceof Timer) {
+				timers.put(id, (Timer) component);
+			} else if (component instanceof SlideComponent) {
+				components.put(id, (SlideComponent) component);
+			}
+
+			if (component instanceof Field) {
+				fields.put(id, (Field) component);
+			}
+		} else if (component instanceof ShortcutKey) {
+			shortcuts.add((ShortcutKey) component);
 		}
 	}
 	
+	@Override
 	public final SlideComponent getComponent(String id) {
 		return components.get(id);
 	}
 	
-	public final void registerTimer(String id, Timer timer) {
-		if (!Strings.isNullOrEmpty(id)) {
-			timers.put(id, timer);
-		}
-	}
-	
+	@Override
 	public final Timer getTimer(String id) {
 		return timers.get(id);
 	}
@@ -256,48 +264,24 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		return timers.values();
 	}
 	
-	public final void registerShortcutKey(ShortcutKey shortcutKey) {
-		shortcuts.add(shortcutKey);
-	}
-	
 	public Collection<ShortcutKey> getShortcutKeys() {
 		return shortcuts;
 	}
 
-	public final void registerWindow(String id, Window window) {
-		if (!Strings.isNullOrEmpty(id)) {
-			windows.put(id, window);
-		}
-	}
-	
+	@Override
 	public final Window getWindow(String id) {
 		return windows.get(id);
 	}
 	
+	@Override
 	public final boolean hasValidFields() {
 		boolean valid = true;
 		
-		for (Field field : fields) {
+		for (Field field : fields.values()) {
 			valid = valid && field.isValid();
 		}
 		
 		return valid;
-	}
-
-	public void addComponentDataVariable(AbstractComponentData<?> data) {
-		Variable<?> variable = (Variable<?>)variables.get(SlideXmlConstants.COMPONENT_DATA);
-		if (null == variable) {
-			variable = new Variable<Object>(SlideXmlConstants.COMPONENT_DATA);
-			variables.put(SlideXmlConstants.COMPONENT_DATA, variable);
-		}
-		variable.setRawValue(data);
-	}
-	
-	public void clearComponentDataVariable() {
-		Variable<?> variable = (Variable<?>)variables.get(SlideXmlConstants.COMPONENT_DATA);
-		if (variable != null) {
-			variable.setRawValue(null);
-		}
 	}
 
 	public void finishSlide() {
@@ -315,6 +299,7 @@ public class SlideManager extends ListManager<Task, Slide> implements
 		}
 	}
 	
+	@Override
 	public Slide getSlide() {
 		return current;
 	}

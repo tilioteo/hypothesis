@@ -3,10 +3,13 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import org.vaadin.special.shared.ui.timer.TimerState.Direction;
+import org.vaadin.special.ui.Timer.StopEvent;
+
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.processing.Command;
-import com.tilioteo.hypothesis.shared.ui.timer.TimerState.Direction;
-import com.tilioteo.hypothesis.ui.Timer.StopEvent;
+import com.tilioteo.hypothesis.slide.ui.Timer;
+import com.tilioteo.hypothesis.slide.ui.TimerLabel;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button.ClickEvent;

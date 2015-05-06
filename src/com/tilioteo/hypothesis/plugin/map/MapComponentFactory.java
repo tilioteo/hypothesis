@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.plugin.map;
 
 import java.beans.Introspector;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 
 import org.dom4j.Attribute;
@@ -12,7 +13,8 @@ import org.dom4j.Element;
 import org.vaadin.maps.shared.ui.Style;
 
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlEvent;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlData;
@@ -36,18 +38,17 @@ import com.tilioteo.hypothesis.plugin.map.event.ZoomControlEvent;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPointControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPolygonControl;
+import com.tilioteo.hypothesis.plugin.map.ui.ImageLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageSequenceLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.Map;
 import com.tilioteo.hypothesis.plugin.map.ui.PanControl;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeature;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeatureLayer;
-import com.tilioteo.hypothesis.plugin.map.ui.ImageLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.WMSLayer;
 import com.tilioteo.hypothesis.plugin.map.ui.ZoomControl;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.ComponentFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
+import com.tilioteo.hypothesis.slide.ui.ComponentFactory;
 
 /**
  * @author kamil
@@ -55,136 +56,163 @@ import com.tilioteo.hypothesis.ui.SlideComponent;
  */
 public class MapComponentFactory {
 
-	public static SlideComponent createComponentFromElement(Element element,
-			SlideManager slideManager) {
+	public static SlideComponent createComponentFromElement(Element element, SlideFascia slideFascia) {
 		if (element != null) {
 			String name = element.getName();
 			SlideComponent component = null;
 
 			if (name.equals(SlideXmlConstants.MAP))
 				component = ComponentFactory.<Map> createFromElement(
-						Map.class, element, slideManager);
+						Map.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.IMAGE_LAYER))
 				component = ComponentFactory.<ImageLayer> createFromElement(
-						ImageLayer.class, element, slideManager);
+						ImageLayer.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.WMS_LAYER))
 				component = ComponentFactory.<WMSLayer> createFromElement(
-						WMSLayer.class, element, slideManager);
+						WMSLayer.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.IMAGE_SEQUENCE_LAYER))
 				component = ComponentFactory.<ImageSequenceLayer> createFromElement(
-						ImageSequenceLayer.class, element, slideManager);
+						ImageSequenceLayer.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.FEATURE_LAYER))
 				component = ComponentFactory.<VectorFeatureLayer> createFromElement(
-								VectorFeatureLayer.class, element, slideManager);
+								VectorFeatureLayer.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.DRAW_POINT))
 				component = ComponentFactory.<DrawPointControl> createFromElement(
-								DrawPointControl.class, element, slideManager);
+								DrawPointControl.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.DRAW_PATH))
 				component = ComponentFactory.<DrawPathControl> createFromElement(
-								DrawPathControl.class, element, slideManager);
+								DrawPathControl.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.DRAW_POLYGON))
 				component = ComponentFactory.<DrawPolygonControl> createFromElement(
-								DrawPolygonControl.class, element, slideManager);
+								DrawPolygonControl.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.PAN))
 				component = ComponentFactory.<PanControl> createFromElement(
-						PanControl.class, element, slideManager);
+						PanControl.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.ZOOM))
 				component = ComponentFactory.<ZoomControl> createFromElement(
-						ZoomControl.class, element, slideManager);
+						ZoomControl.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.FEATURE))
 				component = ComponentFactory.<VectorFeature> createFromElement(
-						VectorFeature.class, element, slideManager);
+						VectorFeature.class, element, slideFascia);
 
 			// TODO create other components
 
 			String id = SlideXmlUtility.getId(element);
-			slideManager.registerComponent(id, component);
+			slideFascia.registerComponent(id, component);
 
 			return component;
 		}
 		return null;
 	}
 
-	public static Command createWMSLayerClickEventCommand(WMSLayerData data) {
+	public static Command createWMSLayerClickEventCommand(WMSLayerData data, Date timestamp, Date clientTimestamp) {
 		WMSLayerEvent event = new WMSLayerEvent.Click(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createImageLayerClickEventCommand(ImageLayerData data) {
+	public static Command createImageLayerClickEventCommand(ImageLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageLayerEvent event = new ImageLayerEvent.Click(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createImageLayerLoadEventCommand(ImageLayerData data) {
+	public static Command createImageLayerLoadEventCommand(ImageLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageLayerEvent event = new ImageLayerEvent.Load(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createImageSequenceLayerClickEventCommand(ImageSequenceLayerData data) {
+	public static Command createImageSequenceLayerClickEventCommand(ImageSequenceLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Click(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createImageSequenceLayerLoadEventCommand(ImageSequenceLayerData data) {
+	public static Command createImageSequenceLayerLoadEventCommand(ImageSequenceLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Load(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createImageSequenceLayerChangeEventCommand(ImageSequenceLayerData data) {
+	public static Command createImageSequenceLayerChangeEventCommand(ImageSequenceLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Change(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createVectorFeatureLayerClickEventCommand(VectorFeatureLayerData data) {
+	public static Command createVectorFeatureLayerClickEventCommand(VectorFeatureLayerData data, Date timestamp, Date clientTimestamp) {
 		VectorFeatureLayerEvent event = new VectorFeatureLayerEvent.Click(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createVectorFeatureClickEventCommand(VectorFeatureData data) {
+	public static Command createVectorFeatureClickEventCommand(VectorFeatureData data, Date timestamp, Date clientTimestamp) {
 		VectorFeatureEvent event = new VectorFeatureEvent.Click(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createDrawPointControlEventCommand(DrawPointControlData data) {
+	public static Command createDrawPointControlEventCommand(DrawPointControlData data, Date timestamp, Date clientTimestamp) {
 		DrawPointControlEvent event = new DrawPointControlEvent.DrawPoint(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createDrawPathControlEventCommand(DrawPathControlData data) {
+	public static Command createDrawPathControlEventCommand(DrawPathControlData data, Date timestamp, Date clientTimestamp) {
 		DrawPathControlEvent event = new DrawPathControlEvent.DrawPath(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createDrawPolygonControlEventCommand(DrawPolygonControlData data) {
+	public static Command createDrawPolygonControlEventCommand(DrawPolygonControlData data, Date timestamp, Date clientTimestamp) {
 		DrawPolygonControlEvent event = new DrawPolygonControlEvent.DrawPolygon(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createPanControlPanStartEventCommand(PanControlData data) {
+	public static Command createPanControlPanStartEventCommand(PanControlData data, Date timestamp, Date clientTimestamp) {
 		PanControlEvent event = new PanControlEvent.PanStart(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createPanControlPanEndEventCommand(PanControlData data) {
+	public static Command createPanControlPanEndEventCommand(PanControlData data, Date timestamp, Date clientTimestamp) {
 		PanControlEvent event = new PanControlEvent.PanEnd(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}
 
-	public static Command createZoomControlZoomChangeEventCommand(ZoomControlData data) {
+	public static Command createZoomControlZoomChangeEventCommand(ZoomControlData data, Date timestamp, Date clientTimestamp) {
 		ZoomControlEvent event = new ZoomControlEvent.ZoomChange(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
 	}

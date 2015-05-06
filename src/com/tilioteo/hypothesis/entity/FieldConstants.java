@@ -24,6 +24,7 @@ public class FieldConstants {
 	public static final String JAVA_REQUIRED = "java_required";
 	public static final String ROLE_ID = "role_id";
 	public static final String TIMESTAMP = "timestamp";
+	public static final String CLIENT_TIMESTAMP = "client_timestamp";
 	public static final String DATETIME = "datetime";
 	public static final String RANDOMIZED = "randomized";
 

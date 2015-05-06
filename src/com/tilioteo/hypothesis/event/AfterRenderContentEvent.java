@@ -3,22 +3,21 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.ui.LayoutComponent;
 import com.vaadin.server.ErrorHandler;
+import com.vaadin.ui.Component;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
 public class AfterRenderContentEvent extends AbstractContentEvent {
 
-	public AfterRenderContentEvent(LayoutComponent content) {
-		this(content, null);
+	public AfterRenderContentEvent(Component component) {
+		this(component, null);
 	}
 
-	public AfterRenderContentEvent(LayoutComponent content, ErrorHandler errorHandler) {
-		super(content, errorHandler);
+	public AfterRenderContentEvent(Component component, ErrorHandler errorHandler) {
+		super(component, errorHandler);
 	}
 
 	@Override

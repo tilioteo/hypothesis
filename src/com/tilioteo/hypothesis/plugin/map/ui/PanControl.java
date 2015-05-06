@@ -15,8 +15,9 @@ import org.vaadin.maps.ui.layer.ForLayer;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -24,7 +25,6 @@ import com.tilioteo.hypothesis.plugin.map.event.PanControlData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -34,7 +34,7 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class PanControl extends org.vaadin.maps.ui.control.PanControl implements SlideComponent {
 
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	
 	public PanControl() {
 		super(null);
@@ -54,7 +54,7 @@ public class PanControl extends org.vaadin.maps.ui.control.PanControl implements
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
 			utility.setNavigateControlProperties(this, element, properties);
 		
@@ -73,7 +73,7 @@ public class PanControl extends org.vaadin.maps.ui.control.PanControl implements
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideFascia).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -91,7 +91,7 @@ public class PanControl extends org.vaadin.maps.ui.control.PanControl implements
 		addPanStartListener(new PanHandler.PanStartListener() {
 			@Override
 			public void panStart(PanStartEvent event) {
-				PanControlData data = new PanControlData(PanControl.this, slideManager);
+				PanControlData data = new PanControlData(PanControl.this, slideFascia);
 				data.setXY(event.getX(), event.getY());
 				if (getLayout() != null && getLayout() instanceof ForLayer) {
 					ForLayer forLayer = (ForLayer)getLayout();
@@ -101,8 +101,9 @@ public class PanControl extends org.vaadin.maps.ui.control.PanControl implements
 					}
 				}
 
-				Command componentEvent = MapComponentFactory.createPanControlPanStartEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createPanControlPanStartEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
@@ -114,7 +115,7 @@ public class PanControl extends org.vaadin.maps.ui.control.PanControl implements
 		addPanEndListener(new PanHandler.PanEndListener() {
 			@Override
 			public void panEnd(PanEndEvent event) {
-				PanControlData data = new PanControlData(PanControl.this, slideManager);
+				PanControlData data = new PanControlData(PanControl.this, slideFascia);
 				data.setDeltaXY(event.getDeltaX(), event.getDeltaY());
 				if (getLayout() != null && getLayout() instanceof ForLayer) {
 					ForLayer forLayer = (ForLayer)getLayout();
@@ -127,8 +128,9 @@ public class PanControl extends org.vaadin.maps.ui.control.PanControl implements
 					}
 				}
 
-				Command componentEvent = MapComponentFactory.createPanControlPanEndEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createPanControlPanEndEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
@@ -137,8 +139,8 @@ public class PanControl extends org.vaadin.maps.ui.control.PanControl implements
 	}
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void setSlideManager(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 }

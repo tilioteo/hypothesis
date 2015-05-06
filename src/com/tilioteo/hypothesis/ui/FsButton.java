@@ -3,7 +3,8 @@
  */
 package com.tilioteo.hypothesis.ui;
 
-import com.tilioteo.hypothesis.shared.ui.fsbutton.FsButtonState;
+import org.vaadin.button.shared.ui.fullscreenbutton.FullscreenButtonState;
+
 import com.vaadin.ui.Button;
 
 /**
@@ -26,8 +27,8 @@ public class FsButton extends Button {
 	}
 	
 	@Override
-	protected FsButtonState getState() {
-		return (FsButtonState)super.getState();
+	protected FullscreenButtonState getState() {
+		return (FullscreenButtonState)super.getState();
 	}
 
 	public void setEnableFullscreen(boolean value) {

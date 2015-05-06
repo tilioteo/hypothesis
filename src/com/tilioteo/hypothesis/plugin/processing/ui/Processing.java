@@ -12,7 +12,8 @@ import org.json.JSONException;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.processing.ProcessingComponentFactory;
 import com.tilioteo.hypothesis.plugin.processing.ProcessingUtility;
 import com.tilioteo.hypothesis.plugin.processing.SlideXmlUtility;
@@ -20,11 +21,10 @@ import com.tilioteo.hypothesis.plugin.processing.event.ProcessingData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.ComponentUtility;
-import com.tilioteo.hypothesis.ui.Mask;
-import com.tilioteo.hypothesis.ui.Maskable;
-import com.tilioteo.hypothesis.ui.ParentAlignment;
-import com.tilioteo.hypothesis.ui.SlideComponent;
+import com.tilioteo.hypothesis.slide.ui.ComponentUtility;
+import com.tilioteo.hypothesis.slide.ui.Mask;
+import com.tilioteo.hypothesis.slide.ui.Maskable;
+import com.tilioteo.hypothesis.slide.ui.ParentAlignment;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
@@ -36,7 +36,7 @@ import com.vaadin.ui.JavaScriptFunction;
 @SuppressWarnings("serial")
 public class Processing extends org.vaadin.tltv.vprocjs.ui.Processing implements SlideComponent, Maskable {
 
-	private SlideManager slideManager;
+	private SlideFascia slideManager;
 	private ParentAlignment parentAlignment;
 	private Mask mask = null;
 	
@@ -44,7 +44,7 @@ public class Processing extends org.vaadin.tltv.vprocjs.ui.Processing implements
 		this.parentAlignment = new ParentAlignment();
 	}
 	
-	public Processing(SlideManager slideManager) {
+	public Processing(SlideFascia slideManager) {
 		this();
 		setSlideManager(slideManager);
 	}
@@ -109,7 +109,7 @@ public class Processing extends org.vaadin.tltv.vprocjs.ui.Processing implements
 	}
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
+	public void setSlideManager(SlideFascia slideManager) {
 		if (this.slideManager != slideManager) {
 			this.slideManager = slideManager;
 		}

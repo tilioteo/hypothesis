@@ -6,14 +6,17 @@ package com.tilioteo.hypothesis.plugin.map.ui;
 import java.util.List;
 
 import org.dom4j.Element;
+import org.vaadin.maps.event.MouseEvents.ClickEvent;
+import org.vaadin.maps.event.MouseEvents.ClickListener;
 import org.vaadin.maps.server.LonLat;
 import org.vaadin.maps.server.WMSConstants;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -21,9 +24,6 @@ import com.tilioteo.hypothesis.plugin.map.event.WMSLayerData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
-import com.vaadin.event.MouseEvents.ClickEvent;
-import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -32,7 +32,7 @@ import com.vaadin.ui.Alignment;
  */
 @SuppressWarnings("serial")
 public class WMSLayer extends org.vaadin.maps.ui.layer.WMSLayer implements SlideComponent {
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	
 	public WMSLayer() {
 		super();
@@ -50,13 +50,13 @@ public class WMSLayer extends org.vaadin.maps.ui.layer.WMSLayer implements Slide
 	}
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void setSlideManager(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
 			utility.setLayerProperties(this, element, properties);
 		}
@@ -79,7 +79,7 @@ public class WMSLayer extends org.vaadin.maps.ui.layer.WMSLayer implements Slide
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideFascia).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -97,7 +97,7 @@ public class WMSLayer extends org.vaadin.maps.ui.layer.WMSLayer implements Slide
 		addClickListener(new ClickListener() {
 			@Override
 			public void click(ClickEvent event) {
-				WMSLayerData data = new WMSLayerData(WMSLayer.this, slideManager);
+				WMSLayerData data = new WMSLayerData(WMSLayer.this, slideFascia);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
 				if (getForLayer() != null) {
 					LonLat lonLat = getForLayer().getViewWorldTransform().viewToWorld(event.getRelativeX(), event.getRelativeY());
@@ -106,8 +106,9 @@ public class WMSLayer extends org.vaadin.maps.ui.layer.WMSLayer implements Slide
 					}
 				}
 
-				Command componentEvent = MapComponentFactory.createWMSLayerClickEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createWMSLayerClickEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
@@ -119,9 +120,9 @@ public class WMSLayer extends org.vaadin.maps.ui.layer.WMSLayer implements Slide
 		addLoadListener(new LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
-				WMSLayerData data = new WMSLayerData(ImageLayer.this, slideManager);
+				WMSLayerData data = new WMSLayerData(ImageLayer.this, slideFascia);
 				Command componentEvent = MapComponentFactory.createWMSLayerLoadEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 				
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);

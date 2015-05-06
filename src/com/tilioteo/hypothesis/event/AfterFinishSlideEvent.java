@@ -3,7 +3,6 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.entity.Slide;
 import com.tilioteo.hypothesis.event.FinishSlideEvent.Direction;
 import com.vaadin.server.ErrorHandler;
 
@@ -11,17 +10,16 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
 public class AfterFinishSlideEvent extends AbstractRunningEvent {
 
 	private Direction direction;
 	
-	public AfterFinishSlideEvent(Slide slide, Direction direction) {
-		this(slide, direction, null);
+	public AfterFinishSlideEvent(Direction direction) {
+		this(direction, null);
 	}
 
-	public AfterFinishSlideEvent(Slide slide, Direction direction, ErrorHandler errorHandler) {
-		super(slide, errorHandler);
+	public AfterFinishSlideEvent(Direction direction, ErrorHandler errorHandler) {
+		super(errorHandler);
 		this.direction = direction;
 	}
 
@@ -30,10 +28,6 @@ public class AfterFinishSlideEvent extends AbstractRunningEvent {
 		return ProcessEventTypes.Null;
 	}
 
-	public Slide getSlide() {
-		return (Slide) getSource();
-	}
-	
 	public Direction getDirection() {
 		return direction;
 	}

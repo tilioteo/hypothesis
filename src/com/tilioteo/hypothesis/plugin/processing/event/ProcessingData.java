@@ -9,8 +9,8 @@ import org.dom4j.Element;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.processing.SlideFactory;
 import com.tilioteo.hypothesis.plugin.processing.SlideXmlConstants;
 import com.tilioteo.hypothesis.plugin.processing.ui.Processing;
@@ -25,7 +25,7 @@ public class ProcessingData extends AbstractComponentData<Processing> {
 	private JSONArray arguments;
 	private List<String> argumentTypes;
 
-	public ProcessingData(Processing sender, SlideManager slideManager) {
+	public ProcessingData(Processing sender, SlideFascia slideManager) {
 		super(sender, slideManager);
 	}
 	

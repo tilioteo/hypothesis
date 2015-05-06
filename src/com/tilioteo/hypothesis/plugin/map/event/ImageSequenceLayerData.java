@@ -5,8 +5,8 @@ package com.tilioteo.hypothesis.plugin.map.event;
 
 import org.dom4j.Element;
 
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.SlideFactory;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageSequenceLayer;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -23,8 +23,8 @@ public class ImageSequenceLayerData extends AbstractComponentData<ImageSequenceL
 	private int imageIndex = 0;
 	private String imageTag = null;
 
-	public ImageSequenceLayerData(ImageSequenceLayer sender, SlideManager slideManager) {
-		super(sender, slideManager);
+	public ImageSequenceLayerData(ImageSequenceLayer sender, SlideFascia slideFascia) {
+		super(sender, slideFascia);
 		// TODO Auto-generated constructor stub
 	}
 

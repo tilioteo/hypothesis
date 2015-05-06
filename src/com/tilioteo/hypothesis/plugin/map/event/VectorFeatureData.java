@@ -5,8 +5,8 @@ package com.tilioteo.hypothesis.plugin.map.event;
 
 import org.dom4j.Element;
 
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.SlideFactory;
 import com.tilioteo.hypothesis.plugin.map.ui.VectorFeature;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -20,8 +20,8 @@ public class VectorFeatureData extends AbstractComponentData<VectorFeature> {
 	// using 2D coordinates only
 	private Coordinate coordinate;
 
-	public VectorFeatureData(VectorFeature sender, SlideManager slideManager) {
-		super(sender, slideManager);
+	public VectorFeatureData(VectorFeature sender, SlideFascia slideFascia) {
+		super(sender, slideFascia);
 	}
 
 	public final Coordinate getCoordinate() {

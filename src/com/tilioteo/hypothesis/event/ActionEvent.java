@@ -3,22 +3,24 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.processing.AbstractBaseAction;
+import com.tilioteo.hypothesis.interfaces.Action;
 import com.vaadin.server.ErrorHandler;
 
 /**
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
-public class ActionEvent extends AbstractRunningEvent {
+public class ActionEvent extends AbstractUserEvent {
+	
+	private Action action;
 
-	public ActionEvent(AbstractBaseAction source) {
-		this(source, null);
+	public ActionEvent(Action action) {
+		this(action, null);
 	}
 
-	public ActionEvent(AbstractBaseAction source, ErrorHandler errorHandler) {
-		super(source, errorHandler);
+	public ActionEvent(Action action, ErrorHandler errorHandler) {
+		super(errorHandler);
+		this.action = action;
 	}
 
 	@Override
@@ -26,7 +28,7 @@ public class ActionEvent extends AbstractRunningEvent {
 		return ProcessEventTypes.Action;
 	}
 	
-	public AbstractBaseAction getAction() {
-		return (AbstractBaseAction) getSource();
+	public Action getAction() {
+		return action;
 	}
 }

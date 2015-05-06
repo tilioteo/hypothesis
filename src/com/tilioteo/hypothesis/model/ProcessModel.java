@@ -5,10 +5,8 @@ package com.tilioteo.hypothesis.model;
 
 import com.tilioteo.hypothesis.core.ProcessManager;
 import com.tilioteo.hypothesis.entity.SimpleTest;
-import com.tilioteo.hypothesis.entity.Slide;
 import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.event.ErrorNotificationEvent;
-import com.tilioteo.hypothesis.event.FinishSlideEvent.Direction;
 import com.tilioteo.hypothesis.event.ProcessEventBus;
 import com.tilioteo.hypothesis.persistence.TokenManager;
 
@@ -45,7 +43,7 @@ public class ProcessModel {
 	 * @param caption Error description
 	 */
 	public void fireError(String caption) {
-		ProcessEventBus.get().post(new ErrorNotificationEvent(SimpleTest.DUMMY_TEST, caption));
+		ProcessEventBus.get().post(new ErrorNotificationEvent(caption));
 	}
 
 	public void requestBreak() {
@@ -56,11 +54,13 @@ public class ProcessModel {
 		processManager.processTest(test);
 	}
 	
-	public void processSlideFollowing(Slide slide, Direction direction) {
-		processManager.processSlideFollowing(slide, direction);
-	}
+	/*public void processSlideFollowing(Direction direction) {
+		processManager.processSlideFollowing(direction);
+	}*/
 	
-	public void purgeFactories() {
+	public void clean() {
+		processManager.clean();
 		processManager.purgeFactories();
 	}
+	
 }

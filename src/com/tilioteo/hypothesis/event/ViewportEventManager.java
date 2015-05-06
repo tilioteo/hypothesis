@@ -39,10 +39,10 @@ public class ViewportEventManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	private EventListenerList findListeners(Class<? extends EventObject> eventClass) {
+	private EventListenerList findListeners(Class<? extends ViewportEvent> eventClass) {
 		EventListenerList listeners = listenersMap.get(eventClass);
 		if (listeners == null && !eventClass.getSuperclass().equals(EventObject.class))
-			return findListeners((Class<? extends EventObject>) eventClass.getSuperclass());
+			return findListeners((Class<? extends ViewportEvent>) eventClass.getSuperclass());
 
 		return listeners;
 	}

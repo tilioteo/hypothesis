@@ -12,8 +12,9 @@ import org.vaadin.maps.ui.handler.FeatureHandler.DrawFeatureEvent;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -21,7 +22,6 @@ import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -31,7 +31,7 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointControl implements SlideComponent {
 
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	
 	public DrawPointControl() {
 		super(null);
@@ -51,9 +51,9 @@ public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointContro
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
-			utility.setDrawFeatureControlProperties(this, element, properties, slideManager);
+			utility.setDrawFeatureControlProperties(this, element, properties, slideFascia);
 
 			// set DrawPointControl specific properties
 		}
@@ -70,7 +70,7 @@ public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointContro
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideFascia).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -86,11 +86,12 @@ public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointContro
 		addDrawFeatureListener(new FeatureHandler.DrawFeatureListener() {
 			@Override
 			public void drawFeature(DrawFeatureEvent event) {
-				DrawPointControlData data = new DrawPointControlData(DrawPointControl.this, slideManager);
+				DrawPointControlData data = new DrawPointControlData(DrawPointControl.this, slideFascia);
 				data.setFeature(event.getFeature());
 
-				Command componentEvent = MapComponentFactory.createDrawPointControlEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createDrawPointControlEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
@@ -100,8 +101,8 @@ public class DrawPointControl extends org.vaadin.maps.ui.control.DrawPointContro
 
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void setSlideManager(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 }

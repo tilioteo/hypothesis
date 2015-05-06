@@ -3,7 +3,6 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
@@ -11,25 +10,18 @@ import com.vaadin.ui.Notification.Type;
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
 public class ErrorNotificationEvent extends AbstractNotificationEvent {
 
-	public ErrorNotificationEvent(SimpleTest test, String caption) {
-		super(test, caption);
+	public ErrorNotificationEvent(String caption) {
+		super(caption);
 	}
 
-	public ErrorNotificationEvent(SimpleTest test, String caption, String description) {
-		super(test, caption, description);
-	}
-
-	@Override
-	public String getName() {
-		return ProcessEventTypes.Null;
+	public ErrorNotificationEvent(String caption, String description) {
+		super(caption, description);
 	}
 
 	@Override
 	public Notification getNotification() {
-		return new Notification(caption, description,
-				Type.ERROR_MESSAGE);
+		return new Notification(caption, description, Type.ERROR_MESSAGE);
 	}
 }

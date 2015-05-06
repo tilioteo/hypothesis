@@ -3,31 +3,24 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.vaadin.ui.Notification;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
-public abstract class AbstractNotificationEvent extends AbstractProcessEvent {
+public abstract class AbstractNotificationEvent {
 
 	protected String caption;
 	protected String description;
 
-	protected AbstractNotificationEvent(SimpleTest test, String caption) {
-		this(test, caption, null);
+	protected AbstractNotificationEvent(String caption) {
+		this(caption, null);
 	}
 
-	protected AbstractNotificationEvent(SimpleTest test, String caption, String description) {
-		super(test, null);
+	protected AbstractNotificationEvent(String caption, String description) {
 		this.caption = caption;
 		this.description = description;
-	}
-	
-	public SimpleTest getTest() {
-		return (SimpleTest)getSource();
 	}
 	
 	public String getCaption() {

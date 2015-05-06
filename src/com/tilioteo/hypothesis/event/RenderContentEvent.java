@@ -5,27 +5,27 @@ package com.tilioteo.hypothesis.event;
 
 import java.util.Collection;
 
-import com.tilioteo.hypothesis.ui.LayoutComponent;
-import com.tilioteo.hypothesis.ui.ShortcutKey;
-import com.tilioteo.hypothesis.ui.Timer;
+import org.vaadin.special.ui.ShortcutKey;
+
+import com.tilioteo.hypothesis.slide.ui.Timer;
 import com.vaadin.server.ErrorHandler;
+import com.vaadin.ui.Component;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
 public class RenderContentEvent extends AbstractContentEvent {
 
 	Collection<Timer> timers;
 	Collection<ShortcutKey> shortcutKeys;
 	
-	public RenderContentEvent(LayoutComponent content, Collection<Timer> timers, Collection<ShortcutKey> shortcutKeys) {
-		this(content, timers, shortcutKeys, null);
+	public RenderContentEvent(Component component, Collection<Timer> timers, Collection<ShortcutKey> shortcutKeys) {
+		this(component, timers, shortcutKeys, null);
 	}
 
-	public RenderContentEvent(LayoutComponent content, Collection<Timer> timers, Collection<ShortcutKey> shortcutKeys, ErrorHandler errorHandler) {
-		super(content, errorHandler);
+	public RenderContentEvent(Component component, Collection<Timer> timers, Collection<ShortcutKey> shortcutKeys, ErrorHandler errorHandler) {
+		super(component, errorHandler);
 		this.timers = timers;
 		this.shortcutKeys = shortcutKeys;
 	}

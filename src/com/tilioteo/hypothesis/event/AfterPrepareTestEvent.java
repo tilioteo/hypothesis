@@ -10,16 +10,17 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
 public class AfterPrepareTestEvent extends AbstractProcessEvent {
 
+	private SimpleTest test;
 	
 	public AfterPrepareTestEvent(SimpleTest source) {
 		this(source, null);
 	}
 
-	public AfterPrepareTestEvent(SimpleTest source, ErrorHandler errorHandler) {
-		super(source, errorHandler);
+	public AfterPrepareTestEvent(SimpleTest test, ErrorHandler errorHandler) {
+		super(errorHandler);
+		this.test = test;
 	}
 
 	@Override
@@ -28,7 +29,7 @@ public class AfterPrepareTestEvent extends AbstractProcessEvent {
 	}
 	
 	public SimpleTest getTest() {
-		return (SimpleTest) super.getSource();
+		return test;
 	}
 
 }

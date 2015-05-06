@@ -45,6 +45,7 @@ public class ProcessEventTypes {
 	public static final String SelectPanelClick = "SELECTPANEL_CLICK";
 	public static final String ImageClick = "IMAGE_CLICK";
 	public static final String ImageLoad = "IMAGE_LOAD";
+	public static final String ImageError = "IMAGE_ERROR";
 	public static final String TimerStart = "TIMER_START";
 	public static final String TimerStop = "TIMER_STOP";
 	public static final String TimerUpdate = "TIMER_UPDATE";
@@ -107,7 +108,8 @@ public class ProcessEventTypes {
 		registerEvent(AudioLoad); // 117
 		registerEvent(AudioStart); // 118
 		registerEvent(AudioStop); // 119
-		//nextId += 881; // plugin events begin from 1000
+		registerEvent(ImageError); // 120
+		//nextId += 880; // plugin events begin from 1000
 	}
 
 	private static long generateId() {

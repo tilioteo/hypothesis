@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.servlet.HibernateVaadinServlet;
+import com.tilioteo.hypothesis.slide.ui.VerticalLayout;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.VaadinRequest;

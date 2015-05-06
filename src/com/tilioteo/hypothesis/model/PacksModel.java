@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.vaadin.jre.ui.DeployJava;
+
 import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Token;
@@ -19,7 +21,6 @@ import com.tilioteo.hypothesis.persistence.PermissionManager;
 import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.TokenManager;
 import com.tilioteo.hypothesis.servlet.ServletUtil;
-import com.tilioteo.hypothesis.ui.DeployJava;
 import com.tilioteo.hypothesis.ui.UI;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;

@@ -11,10 +11,10 @@ import java.util.Set;
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringSet;
-import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.extension.SlideComponentPlugin;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideComponentPlugin;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.processing.event.ProcessingEventTypes;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 
 /**
  * @author kamil
@@ -23,7 +23,8 @@ import com.tilioteo.hypothesis.ui.SlideComponent;
 public class ProcessingPlugin implements SlideComponentPlugin {
 
 	private StringSet elements = new StringSet(
-			SlideXmlConstants.PROCESSING
+			SlideXmlConstants.PROCESSING,
+			SlideXmlConstants.HANOI
 			);
 
 	private StringSet eventTypes = new StringSet(
@@ -36,6 +37,7 @@ public class ProcessingPlugin implements SlideComponentPlugin {
 		HashSet<ValidParentGroup> parentGroups = new HashSet<ValidParentGroup>();
 		parentGroups.add(ValidParentGroup.CONTAINER);
 		elementParentGroups.put(getNamespace() + ":" + SlideXmlConstants.PROCESSING, parentGroups);
+		elementParentGroups.put(getNamespace() + ":" + SlideXmlConstants.HANOI, parentGroups);
 	}
 	
 	@Override
@@ -59,7 +61,7 @@ public class ProcessingPlugin implements SlideComponentPlugin {
 	}
 
 	@Override
-	public SlideComponent createComponentFromElement(Element element, SlideManager slideManager) {
+	public SlideComponent createComponentFromElement(Element element, SlideFascia slideManager) {
 		return ProcessingComponentFactory.createComponentFromElement(element, slideManager);
 	}
 

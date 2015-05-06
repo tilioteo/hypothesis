@@ -14,16 +14,16 @@ import org.vaadin.maps.ui.control.AbstractControl;
 import org.vaadin.maps.ui.layer.AbstractLayer;
 
 import com.tilioteo.hypothesis.common.StringMap;
-import com.tilioteo.hypothesis.core.SlideManager;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlUtility;
-import com.tilioteo.hypothesis.ui.ComponentUtility;
-import com.tilioteo.hypothesis.ui.Mask;
-import com.tilioteo.hypothesis.ui.Maskable;
-import com.tilioteo.hypothesis.ui.ParentAlignment;
-import com.tilioteo.hypothesis.ui.SlideComponent;
+import com.tilioteo.hypothesis.slide.ui.ComponentUtility;
+import com.tilioteo.hypothesis.slide.ui.Mask;
+import com.tilioteo.hypothesis.slide.ui.Maskable;
+import com.tilioteo.hypothesis.slide.ui.ParentAlignment;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -33,7 +33,7 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class Map extends MapContainer implements SlideComponent, Maskable {
 
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	private ParentAlignment parentAlignment;
 	private Mask mask = null;
 	
@@ -41,7 +41,7 @@ public class Map extends MapContainer implements SlideComponent, Maskable {
 		this.parentAlignment = new ParentAlignment();
 	}
 	
-	public Map(SlideManager slideManager) {
+	public Map(SlideFascia slideManager) {
 		this();
 		setSlideManager(slideManager);
 	}
@@ -73,7 +73,7 @@ public class Map extends MapContainer implements SlideComponent, Maskable {
 	private void addLayers(Element element) {
 		List<Element> elements = SlideXmlUtility.getLayers(element, SlideXmlConstants.VALID_LAYER_ELEMENTS);
 		for (Element childElement : elements) {
-			SlideComponent component = MapComponentFactory.createComponentFromElement(childElement, slideManager);
+			SlideComponent component = MapComponentFactory.createComponentFromElement(childElement, slideFascia);
 			if (component instanceof AbstractLayer<?>) {
 				addLayer((AbstractLayer<?>)component);
 			}
@@ -83,7 +83,7 @@ public class Map extends MapContainer implements SlideComponent, Maskable {
 	private void addControls(Element element) {
 		List<Element> elements = SlideXmlUtility.getControls(element, SlideXmlConstants.VALID_CONTROL_ELEMENTS);
 		for (Element childElement : elements) {
-			SlideComponent component = MapComponentFactory.createComponentFromElement(childElement, slideManager);
+			SlideComponent component = MapComponentFactory.createComponentFromElement(childElement, slideFascia);
 			if (component instanceof AbstractControl) {
 				if (component instanceof HasLayerLayout) {
 					((HasLayerLayout)component).setLayout(this);
@@ -94,11 +94,11 @@ public class Map extends MapContainer implements SlideComponent, Maskable {
 	}
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		if (this.slideManager != slideManager) {
-			MapUtility.remove(this.slideManager);
-			this.slideManager = slideManager;
-			MapUtility.newInstance(slideManager, this);
+	public void setSlideManager(SlideFascia slideFascia) {
+		if (this.slideFascia != slideFascia) {
+			MapUtility.remove(this.slideFascia);
+			this.slideFascia = slideFascia;
+			MapUtility.newInstance(slideFascia, this);
 		}
 	}
 
@@ -129,7 +129,7 @@ public class Map extends MapContainer implements SlideComponent, Maskable {
 
 	@Override
 	protected void finalize() throws Throwable {
-		MapUtility.remove(slideManager);
+		MapUtility.remove(slideFascia);
 		
 		super.finalize();
 	}

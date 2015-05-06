@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.ui;
 
+import org.vaadin.button.ui.OpenPopupButton;
+
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartFeaturedTestEvent;

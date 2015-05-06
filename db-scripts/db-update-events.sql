@@ -9,3 +9,5 @@ WHERE a.test_id=b.test_id AND a.slide_id=b.slide_id AND a.num=b.num) s
 WHERE tbl_event.id=s.event_id;
 
 DROP TABLE IF EXISTS "public"."tbl_slide_output" CASCADE;
+
+ALTER TABLE "public"."tbl_event" ADD COLUMN "client_timestamp" BIGINT;

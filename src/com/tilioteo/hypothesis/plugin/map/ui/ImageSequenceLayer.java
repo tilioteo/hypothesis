@@ -17,8 +17,9 @@ import org.vaadin.maps.ui.tile.ImageSequenceTile.LoadListener;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -26,7 +27,6 @@ import com.tilioteo.hypothesis.plugin.map.event.ImageSequenceLayerData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -36,7 +36,7 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLayer implements SlideComponent {
 
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	
 	private final ArrayList<String> imageTags = new ArrayList<String>();
 	
@@ -56,8 +56,8 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 	}
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void setSlideManager(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 	public void addSource(String url, String tag) {
@@ -67,7 +67,7 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
 			utility.setLayerProperties(this, element, properties);
 
@@ -87,7 +87,7 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideFascia).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -108,13 +108,14 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 			
 			@Override
 			public void click(ClickEvent event) {
-				ImageSequenceLayerData data = new ImageSequenceLayerData(ImageSequenceLayer.this, slideManager);
+				ImageSequenceLayerData data = new ImageSequenceLayerData(ImageSequenceLayer.this, slideFascia);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
 				data.setImageIndex(event.getIndex());
 				data.setImageTag(imageTags.get(event.getIndex()));
 
-				Command componentEvent = MapComponentFactory.createImageSequenceLayerClickEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createImageSequenceLayerClickEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
@@ -126,9 +127,10 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 		addLoadListener(new LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
-				ImageSequenceLayerData data = new ImageSequenceLayerData(ImageSequenceLayer.this, slideManager);
-				Command componentEvent = MapComponentFactory.createImageSequenceLayerLoadEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				ImageSequenceLayerData data = new ImageSequenceLayerData(ImageSequenceLayer.this, slideFascia);
+				Command componentEvent = MapComponentFactory.createImageSequenceLayerLoadEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 				
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
@@ -140,12 +142,13 @@ public class ImageSequenceLayer extends org.vaadin.maps.ui.layer.ImageSequenceLa
 		addChangeListener(new ChangeListener() {
 			@Override
 			public void change(ChangeEvent event) {
-				ImageSequenceLayerData data = new ImageSequenceLayerData(ImageSequenceLayer.this, slideManager);
+				ImageSequenceLayerData data = new ImageSequenceLayerData(ImageSequenceLayer.this, slideFascia);
 				data.setImageIndex(event.getIndex());
 				data.setImageTag(imageTags.get(event.getIndex()));
 
-				Command componentEvent = MapComponentFactory.createImageSequenceLayerChangeEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createImageSequenceLayerChangeEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 				
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);

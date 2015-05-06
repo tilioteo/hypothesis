@@ -6,6 +6,8 @@ package com.tilioteo.hypothesis.plugin.map.ui;
 import java.util.List;
 
 import org.dom4j.Element;
+import org.vaadin.maps.event.MouseEvents.ClickEvent;
+import org.vaadin.maps.event.MouseEvents.ClickListener;
 import org.vaadin.maps.server.LonLat;
 import org.vaadin.maps.ui.tile.AbstractProxyTile.LoadEvent;
 import org.vaadin.maps.ui.tile.AbstractProxyTile.LoadListener;
@@ -13,8 +15,9 @@ import org.vaadin.maps.ui.tile.AbstractProxyTile.LoadListener;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -22,9 +25,6 @@ import com.tilioteo.hypothesis.plugin.map.event.ImageLayerData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
-import com.vaadin.event.MouseEvents.ClickEvent;
-import com.vaadin.event.MouseEvents.ClickListener;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -34,7 +34,7 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements SlideComponent {
 
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	
 	public ImageLayer() {
 		super();
@@ -52,13 +52,13 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 	}
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void setSlideManager(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
 			utility.setLayerProperties(this, element, properties);
 		}
@@ -78,7 +78,7 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideFascia).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -96,7 +96,7 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 		addClickListener(new ClickListener() {
 			@Override
 			public void click(ClickEvent event) {
-				ImageLayerData data = new ImageLayerData(ImageLayer.this, slideManager);
+				ImageLayerData data = new ImageLayerData(ImageLayer.this, slideFascia);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
 				if (getForLayer() != null) {
 					LonLat lonLat = getForLayer().getViewWorldTransform().viewToWorld(event.getRelativeX(), event.getRelativeY());
@@ -105,8 +105,9 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 					}
 				}
 
-				Command componentEvent = MapComponentFactory.createImageLayerClickEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createImageLayerClickEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
@@ -118,9 +119,10 @@ public class ImageLayer extends org.vaadin.maps.ui.layer.ImageLayer implements S
 		addLoadListener(new LoadListener() {
 			@Override
 			public void load(LoadEvent event) {
-				ImageLayerData data = new ImageLayerData(ImageLayer.this, slideManager);
-				Command componentEvent = MapComponentFactory.createImageLayerLoadEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				ImageLayerData data = new ImageLayerData(ImageLayer.this, slideFascia);
+				Command componentEvent = MapComponentFactory.createImageLayerLoadEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 				
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);

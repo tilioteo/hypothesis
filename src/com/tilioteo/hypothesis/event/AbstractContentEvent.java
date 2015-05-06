@@ -3,21 +3,23 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.ui.LayoutComponent;
 import com.vaadin.server.ErrorHandler;
+import com.vaadin.ui.Component;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
-public abstract class AbstractContentEvent extends AbstractProcessEvent {
+public abstract class AbstractContentEvent extends AbstractRunningEvent {
+	
+	private Component component;
 
-	protected AbstractContentEvent(LayoutComponent content, ErrorHandler errorHandler) {
-		super(content, errorHandler);
+	protected AbstractContentEvent(Component component, ErrorHandler errorHandler) {
+		super(errorHandler);
+		this.component = component;
 	}
 
-	public LayoutComponent getContent() {
-		return (LayoutComponent) getSource();
+	public Component getComponent() {
+		return component;
 	}
 }

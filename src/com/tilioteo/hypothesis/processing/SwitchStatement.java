@@ -6,6 +6,11 @@ package com.tilioteo.hypothesis.processing;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.tilioteo.hypothesis.interfaces.Evaluable;
+import com.tilioteo.hypothesis.interfaces.HasVariables;
+import com.tilioteo.hypothesis.interfaces.Variable;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -48,13 +53,15 @@ public class SwitchStatement implements Evaluable {
 		}
 	}
 
-	public void setVariables(VariableMap variables) {
+	@Override
+	public void setVariables(Map<String, Variable<?>> variables) {
 		if (expression != null) {
 			expression.setVariables(variables);
 		}
 	}
 
-	public void updateVariables(VariableMap variables) {
+	@Override
+	public void updateVariables(Map<String, Variable<?>> variables) {
 		if (expression != null) {
 			expression.updateVariables(variables);
 		}
@@ -74,4 +81,5 @@ public class SwitchStatement implements Evaluable {
 		builder.append("}");
 		return builder.toString();
 	}
+
 }

@@ -10,8 +10,9 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -19,7 +20,6 @@ import com.tilioteo.hypothesis.plugin.map.event.VectorFeatureData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -29,7 +29,7 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature implements SlideComponent {
 
-	private SlideManager slideManager = null;
+	private SlideFascia slideFascia = null;
 
 	@Override
 	public Alignment getAlignment() {
@@ -44,13 +44,13 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 	}
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void setSlideManager(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
 			utility.setFeatureProperties(this, element, properties);
 		}
@@ -58,7 +58,7 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 	}
 
 	private void setTextProperties(Element element) {
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
 			utility.setFeatureText(this, element);
 		}
@@ -75,7 +75,7 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideFascia).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -91,11 +91,12 @@ public class VectorFeature extends org.vaadin.maps.ui.feature.VectorFeature impl
 		addClickListener(new ClickListener() {
 			@Override
 			public void click(ClickEvent event) {
-				VectorFeatureData data = new VectorFeatureData(VectorFeature.this, slideManager);
+				VectorFeatureData data = new VectorFeatureData(VectorFeature.this, slideFascia);
 				data.setXY(event.getRelativeX(), event.getRelativeY());
 
-				Command componentEvent = MapComponentFactory.createVectorFeatureClickEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createVectorFeatureClickEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);

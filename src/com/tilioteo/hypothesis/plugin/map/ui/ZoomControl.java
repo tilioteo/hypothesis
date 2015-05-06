@@ -12,8 +12,9 @@ import org.vaadin.maps.ui.handler.ZoomHandler.ZoomChangeEvent;
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.core.SlideFactory;
-import com.tilioteo.hypothesis.core.SlideManager;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.interfaces.SlideComponent;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;
 import com.tilioteo.hypothesis.plugin.map.MapUtility;
 import com.tilioteo.hypothesis.plugin.map.SlideXmlConstants;
@@ -21,7 +22,6 @@ import com.tilioteo.hypothesis.plugin.map.event.ZoomControlData;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
-import com.tilioteo.hypothesis.ui.SlideComponent;
 import com.vaadin.ui.Alignment;
 
 /**
@@ -31,7 +31,7 @@ import com.vaadin.ui.Alignment;
 @SuppressWarnings("serial")
 public class ZoomControl extends org.vaadin.maps.ui.control.ZoomControl implements SlideComponent {
 
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	
 	public ZoomControl() {
 		super(null);
@@ -51,7 +51,7 @@ public class ZoomControl extends org.vaadin.maps.ui.control.ZoomControl implemen
 
 	protected void setProperties(Element element) {
 		StringMap properties = SlideXmlUtility.getPropertyValueMap(element);
-		MapUtility utility = MapUtility.getInstance(slideManager);
+		MapUtility utility = MapUtility.getInstance(slideFascia);
 		if (utility != null) {
 			utility.setNavigateControlProperties(this, element, properties);
 		
@@ -70,7 +70,7 @@ public class ZoomControl extends org.vaadin.maps.ui.control.ZoomControl implemen
 	protected void setHandler(Element element) {
 		String name = element.getName();
 		String action = null;
-		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideManager).createAnonymousAction(element);
+		AbstractBaseAction anonymousAction = SlideFactory.getInstance(slideFascia).createAnonymousAction(element);
 		if (anonymousAction != null)
 			action = anonymousAction.getId();
 
@@ -86,11 +86,12 @@ public class ZoomControl extends org.vaadin.maps.ui.control.ZoomControl implemen
 		addZoomChangeListener(new ZoomHandler.ZoomChangeListener() {
 			@Override
 			public void zoomChange(ZoomChangeEvent event) {
-				ZoomControlData data = new ZoomControlData(ZoomControl.this, slideManager);
+				ZoomControlData data = new ZoomControlData(ZoomControl.this, slideFascia);
 				data.setZoomStep(event.getZoomStep());
 
-				Command componentEvent = MapComponentFactory.createZoomControlZoomChangeEventCommand(data);
-				Command action = CommandFactory.createActionCommand(slideManager, actionId, data);
+				Command componentEvent = MapComponentFactory.createZoomControlZoomChangeEventCommand(data,
+						event.getServerDatetime(), event.getClientDatetime());
+				Command action = CommandFactory.createActionCommand(slideFascia, actionId, data);
 
 				Command.Executor.execute(componentEvent);
 				Command.Executor.execute(action);
@@ -99,8 +100,8 @@ public class ZoomControl extends org.vaadin.maps.ui.control.ZoomControl implemen
 	}
 
 	@Override
-	public void setSlideManager(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public void setSlideManager(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 
 }

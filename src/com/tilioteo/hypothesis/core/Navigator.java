@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.core;
 import com.tilioteo.hypothesis.event.FinishSlideEvent;
 import com.tilioteo.hypothesis.event.FinishSlideEvent.Direction;
 import com.tilioteo.hypothesis.event.ProcessEventBus;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
 
 /**
  * @author kamil
@@ -13,20 +14,20 @@ import com.tilioteo.hypothesis.event.ProcessEventBus;
  */
 public class Navigator {
 	
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	
-	public Navigator(SlideManager slideManager) {
-		this.slideManager = slideManager;
+	public Navigator(SlideFascia slideFascia) {
+		this.slideFascia = slideFascia;
 	}
 	
 	public void next() {
-		if (slideManager.hasValidFields()) {
-			ProcessEventBus.get().post(new FinishSlideEvent(slideManager.current(), Direction.NEXT));
+		if (slideFascia.hasValidFields()) {
+			ProcessEventBus.get().post(new FinishSlideEvent(Direction.NEXT));
 		}
 	}
 	
 	public void prior() {
-		ProcessEventBus.get().post(new FinishSlideEvent(slideManager.current(), Direction.PRIOR));
+		ProcessEventBus.get().post(new FinishSlideEvent(Direction.PRIOR));
 	}
 
 }

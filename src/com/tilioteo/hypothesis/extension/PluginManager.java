@@ -12,7 +12,9 @@ import java.util.Set;
 
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.event.ProcessEventTypes;
-import com.tilioteo.hypothesis.extension.SlideComponentPlugin.ValidParentGroup;
+import com.tilioteo.hypothesis.interfaces.Plugin;
+import com.tilioteo.hypothesis.interfaces.SlideComponentPlugin;
+import com.tilioteo.hypothesis.interfaces.SlideComponentPlugin.ValidParentGroup;
 import com.tilioteo.hypothesis.plugin.map.MapPlugin;
 import com.tilioteo.hypothesis.plugin.processing.ProcessingPlugin;
 

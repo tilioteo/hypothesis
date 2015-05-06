@@ -9,7 +9,7 @@ import java.util.Locale;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class Variable<T> {
+public class Variable<T> implements com.tilioteo.hypothesis.interfaces.Variable<T> {
 
 	private String name;
 	private T value;
@@ -23,10 +23,12 @@ public class Variable<T> {
 		this.value = value;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public T getValue() {
 		return value;
 	}
@@ -43,6 +45,7 @@ public class Variable<T> {
 		this.value = value;
 	}
 	
+	@Override
 	public Class<?> getType() {
 		if (value != null) {
 			Class<?> type = value.getClass();
@@ -67,6 +70,7 @@ public class Variable<T> {
 	 * public void setName(String name) { this.name = name; }
 	 */
 	
+	@Override
 	public String getStringValue() {
 		if (value != null) {
 			Class<?> type = getType();

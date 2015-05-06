@@ -11,7 +11,6 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
-@SuppressWarnings("serial")
 public abstract class DrawPathControlEvent extends AbstractComponentEvent<DrawPathControl> {
 
 	protected DrawPathControlEvent(DrawPathControlData componentData, ErrorHandler errorHandler) {

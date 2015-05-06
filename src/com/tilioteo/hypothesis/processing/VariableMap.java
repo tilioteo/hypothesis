@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.processing;
 
+import com.tilioteo.hypothesis.interfaces.Variable;
+
 import java.util.HashMap;
 
 /**

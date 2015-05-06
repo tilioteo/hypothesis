@@ -3,8 +3,8 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import com.tilioteo.hypothesis.core.SlideManager;
-import com.tilioteo.hypothesis.core.XmlDataWriter;
+import com.tilioteo.hypothesis.interfaces.SlideFascia;
+import com.tilioteo.hypothesis.interfaces.XmlDataWriter;
 import com.vaadin.ui.AbstractComponent;
 
 /**
@@ -13,12 +13,12 @@ import com.vaadin.ui.AbstractComponent;
  */
 public abstract class AbstractComponentData<T extends AbstractComponent> implements XmlDataWriter {
 
-	private SlideManager slideManager;
+	private SlideFascia slideFascia;
 	private T sender = null;
 
-	protected AbstractComponentData(T sender, SlideManager slideManager) {
+	protected AbstractComponentData(T sender, SlideFascia slideFascia) {
 		this.sender = sender;
-		this.slideManager = slideManager;
+		this.slideFascia = slideFascia;
 	}
 
 	public final String getComponentId() {
@@ -29,7 +29,7 @@ public abstract class AbstractComponentData<T extends AbstractComponent> impleme
 		return sender;
 	}
 
-	public final SlideManager getSlideManager() {
-		return slideManager;
+	public final SlideFascia getSlideManager() {
+		return slideFascia;
 	}
 }

@@ -41,9 +41,14 @@ public final class Event extends SerializableIdObject {
 	private static final long serialVersionUID = 1958866075625431131L;
 
 	/**
-	 * timestamp of event
+	 * server timestamp of event
 	 */
 	private Long timeStamp;
+
+	/**
+	 * client timestamp of event
+	 */
+	private Long clientTimeStamp;
 
 	/**
 	 * code of event type
@@ -85,10 +90,15 @@ public final class Event extends SerializableIdObject {
 	}
 
 	public Event(long type, String name, Date datetime) {
+		this(type, name, datetime, null);
+	}
+
+	public Event(long type, String name, Date datetime, Date clientDatetime) {
 		this();
 		this.type = type;
 		this.name = name;
-		this.timeStamp = datetime.getTime();
+		this.timeStamp = datetime != null ? datetime.getTime() : null;
+		this.clientTimeStamp = clientDatetime != null ? clientDatetime.getTime() : null;
 	}
 
 	@Override
@@ -107,6 +117,15 @@ public final class Event extends SerializableIdObject {
 
 	protected void setTimeStamp(Long timeStamp) {
 		this.timeStamp = timeStamp;
+	}
+
+	@Column(name = FieldConstants.CLIENT_TIMESTAMP)
+	public Long getClientTimeStamp() {
+		return clientTimeStamp;
+	}
+
+	public void setClientTimeStamp(Long clientTimeStamp) {
+		this.clientTimeStamp = clientTimeStamp;
 	}
 
 	@Column(name = FieldConstants.TYPE, nullable = false)

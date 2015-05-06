@@ -3,6 +3,11 @@
  */
 package com.tilioteo.hypothesis.processing;
 
+import java.util.Map;
+
+import com.tilioteo.hypothesis.interfaces.HasVariables;
+import com.tilioteo.hypothesis.interfaces.Variable;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -10,7 +15,7 @@ package com.tilioteo.hypothesis.processing;
  * 
  * 
  */
-public abstract class AbstractVariableContainer {
+public abstract class AbstractVariableContainer implements HasVariables {
 
 	private HasVariables variables;
 
@@ -18,8 +23,8 @@ public abstract class AbstractVariableContainer {
 		this.variables = variables;
 	}
 
-	protected HasVariables getVariables() {
-		return variables;
+	public Map<String, Variable<?>> getVariables() {
+		return variables.getVariables();
 	}
 
 	protected void setVariables(HasVariables variables) {

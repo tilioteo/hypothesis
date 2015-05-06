@@ -9,13 +9,14 @@ import com.tilioteo.hypothesis.entity.Token;
  * @author Kamil Morong - Hypothesis
  * 
  */
-@SuppressWarnings("serial")
 public class PrepareTestEvent extends AbstractProcessEvent {
 
+	private Token token;
 	private boolean startAllowed;
 
 	public PrepareTestEvent(Token token, boolean startAllowed) {
-		super(token, null);
+		super(null);
+		this.token = token;
 		this.startAllowed = startAllowed;
 	}
 
@@ -25,7 +26,7 @@ public class PrepareTestEvent extends AbstractProcessEvent {
 	}
 
 	public Token getToken() {
-		return (Token) getSource();
+		return token;
 	}
 
 	public boolean isStartAllowed() {

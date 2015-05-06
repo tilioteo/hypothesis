@@ -5,6 +5,10 @@ package com.tilioteo.hypothesis.processing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import com.tilioteo.hypothesis.interfaces.Evaluable;
+import com.tilioteo.hypothesis.interfaces.HasVariables;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -26,9 +30,9 @@ public class Action extends AbstractBaseAction {
 		super.execute();
 		
 		for (Evaluable evaluable : evaluables) {
-			VariableMap variables = null;
+			Map<String, com.tilioteo.hypothesis.interfaces.Variable<?>> variables = null;
 			if (getVariables() != null)
-				variables = getVariables().getVariables();
+				variables = getVariables();
 
 			if (variables != null)
 				evaluable.setVariables(variables);

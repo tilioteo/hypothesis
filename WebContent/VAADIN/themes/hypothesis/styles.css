@@ -12221,6 +12221,17 @@ div.v-layout.v-horizontal.v-widget {
 	border: none;
 }
 
+.hypothesis .v-panel-content-gradient {
+	background: url(img/h-snail.png) left bottom no-repeat, url(img/h-gradient.png) left bottom repeat;
+	background-position: 160px;
+	border: none;
+}
+
+.hypothesis .v-label-toptitle {
+	margin-left: 290px;
+	text-shadow: 2px 2px 35px #019fe0;
+}
+
 .hypothesis .valo-menu-color2 {
 	height: 100%;
 	background-color: #DFE8F6;
