@@ -9,9 +9,11 @@ import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidUserPermissionEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -20,6 +22,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.PasswordField;
@@ -50,11 +53,28 @@ public class LoginView extends VerticalLayout {
 		Responsive.makeResponsive(loginPanel);
 		loginPanel.addStyleName("login-panel");
 
+		loginPanel.addComponent(buildLanguageLinks());
+
 		loginPanel.addComponent(buildLabels());
 		loginPanel.addComponent(buildFields());
 		//loginPanel.addComponent(new CheckBox("Remember me", true));
 		loginPanel.addComponent(buildPublicAccessButton());
 		return loginPanel;
+	}
+
+	private Component buildLanguageLinks() {
+		CssLayout links = new CssLayout();
+		links.addStyleName("v-component-group");
+		
+		Link english = new Link(null, new ExternalResource("?lang=en"));
+		english.setIcon(new ThemeResource("img/en.png"));
+		links.addComponent(english);
+		
+		Link czech = new Link(null, new ExternalResource("?lang=cs"));
+		czech.setIcon(new ThemeResource("img/cs.png"));
+		links.addComponent(czech);
+
+		return links;
 	}
 
 	private Component buildPublicAccessButton() {
@@ -81,6 +101,7 @@ public class LoginView extends VerticalLayout {
 		username.addValidator(new EmptyValidator(Messages.getString("Caption.Login.EmptyUserName")));
 		username.setValidationVisible(false);
 		username.setImmediate(true);
+		username.focus();
 
 		password = new PasswordField(Messages.getString("Caption.Login.Password"));
 		password.setIcon(FontAwesome.LOCK);
@@ -92,7 +113,6 @@ public class LoginView extends VerticalLayout {
 		final Button signin = new Button(Messages.getString("Caption.Login.Button.Login"));
 		signin.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		signin.setClickShortcut(KeyCode.ENTER);
-		signin.focus();
 
 		fields.addComponents(username, password, signin);
 		fields.setComponentAlignment(signin, Alignment.BOTTOM_LEFT);

@@ -56,4 +56,26 @@ public class FieldConstants {
 	public static final String EXPIRE_DATE = "expire_date";
 	public static final String PASS = "pass";
 
+	public static final String USERS = "users";
+	public static final String AVAILABLE_PACKS = "available_packs";
+	public static final String PACK = "pack";
+	public static final String TEST = "test";
+	public static final String SLIDE = "slide";
+	public static final String ENABLED_PACKS = "enabled_packs";
+	public static final String ROLES = "roles";
+	public static final String GROUPS = "groups";
+	public static final String TEST_STATE = "test_state";
+	public static final String TEST_ENABLER = "test_enabler";
+	public static final String ENABLER = "enabler";
+	public static final String SELECTED = "selected";
+	
+	public static final String PROPERTY_PACK_ID = "packId";
+	public static final String PROPERTY_TEST_ID = "testId";
+	public static final String PROPERTY_USER_ID = "userId";
+	public static final String PROPERTY_OWNER_ID = "ownerId";
+	public static final String PROPERTY_EVENT_ID = "eventId";
+
+	private static final String NESTED_USER = "user.";
+	public static final String NESTED_USER_ID = NESTED_USER + ID;
+	public static final String NESTED_USER_USERNAME = NESTED_USER + USERNAME;
 }

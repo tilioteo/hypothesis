@@ -5,7 +5,9 @@ import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.PostViewChangeEvent;
+import com.tilioteo.hypothesis.event.HypothesisEvent.ProfileUpdatedEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
+import com.tilioteo.hypothesis.ui.UserSettingsWindow;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
@@ -41,6 +43,8 @@ public final class HypothesisMenu extends CustomComponent {
 		// There's only one DashboardMenu per UI so this doesn't need to be
 		// unregistered from the UI-scoped DashboardEventBus.
 		//HypothesisEventBus.register(this);
+		
+		MainEventBus.get().register(this);
 
 		setCompositionRoot(buildContent());
 	}
@@ -81,19 +85,18 @@ public final class HypothesisMenu extends CustomComponent {
 		settings.addStyleName("user-menu");
 		final User user = getCurrentUser();
 		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
-		/*settingsItem.addItem("Edit Profile", new Command() {
-			@Override
-			public void menuSelected(final MenuItem selectedItem) {
-				ProfilePreferencesWindow.open(user, false);
-			}
-		});*/
-		/*settingsItem.addItem("Preferences", new Command() {
-			@Override
-			public void menuSelected(final MenuItem selectedItem) {
-				ProfilePreferencesWindow.open(user, true);
-			}
-		});
-		settingsItem.addSeparator();*/
+
+		if (!User.GUEST.equals(user)) {
+			settingsItem.addItem(Messages.getString("Caption.Menu.EditProfile"), new Command() {
+				@Override
+				public void menuSelected(final MenuItem selectedItem) {
+					UserSettingsWindow.open(user);
+				}
+			});
+			
+			settingsItem.addSeparator();
+		}
+		
 		String itemCaption = Messages.getString("Caption.Menu.Logout");
 		if (User.GUEST.equals(user)) {
 			itemCaption = Messages.getString("Caption.Menu.LoginOther");
@@ -107,7 +110,7 @@ public final class HypothesisMenu extends CustomComponent {
 			}
 		});
 
-		updateUserName(/*null*/);
+		updateUserName(new ProfileUpdatedEvent());
 		
 		return settings;
 	}
@@ -189,8 +192,8 @@ public final class HypothesisMenu extends CustomComponent {
 		reportsBadge.setVisible(event.getCount() > 0);
 	}*/
 
-	//@Subscribe
-	public void updateUserName(/*final ProfileUpdatedEvent event*/) {
+	@Subscribe
+	public void updateUserName(final ProfileUpdatedEvent event) {
 		User user = getCurrentUser();
 		settingsItem.setText(user.getUsername());
 	}

@@ -4,12 +4,15 @@
 package com.tilioteo.hypothesis.persistence;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import com.tilioteo.hypothesis.dao.AbstractHibernateDao;
@@ -37,9 +40,10 @@ public class TestManager {
 	private TestDao testDao;
 	private EventDao eventDao;
 	private SlideOrderDao slideOrderDao;
-
+	
 	public static TestManager newInstance() {
-		return new TestManager(new TestDao(), new EventDao(), new SlideOrderDao());
+		return new TestManager(new TestDao(), new EventDao(),
+				new SlideOrderDao());
 	}
 	
 	protected TestManager(TestDao testDao, EventDao eventDao, SlideOrderDao slideOrderDao) {
@@ -70,7 +74,44 @@ public class TestManager {
 		}
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<SimpleTest> findTestsBy(Pack pack, Collection<User> users, Date dateFrom, Date dateTo) {
+		log.debug("findTestsBy");
+		try {
+			testDao.beginTransaction();
 
+			Criteria criteria = testDao.createCriteria();
+			
+			criteria.add(Restrictions.eq(EntityConstants.PACK, pack));
+			
+			if (users != null) {
+				criteria.add(Restrictions.in(EntityConstants.USER, users));
+			}
+			
+			if (dateFrom != null) {
+				criteria.add(Restrictions.ge(FieldConstants.CREATED, dateFrom));
+			}
+			
+			if (dateTo != null) {
+				criteria.add(Restrictions.le(FieldConstants.CREATED, dateTo));
+			}
+			
+			criteria.addOrder(Order.asc(FieldConstants.ID));
+			
+			List<SimpleTest> tests = criteria.list();
+			testDao.commit();
+			
+			return tests;
+			
+		} catch (Throwable e) {
+			testDao.rollback();
+			log.error(e.getMessage());
+		}
+		
+		return null;
+	}
+	
 	public SimpleTest getUnattendedTest(User user, Pack pack, boolean production) {
 		log.debug("getUnattendedTest");
 		try {
@@ -152,8 +193,8 @@ public class TestManager {
 		SQLQuery query = AbstractHibernateDao.getSession().createSQLQuery(
 				"SELECT max("  + FieldConstants.RANK + ") FROM " +
 						TableConstants.TEST_EVENT_TABLE + " WHERE " +
-						FieldConstants.TEST_ID + "=:testId GROUP BY " +
-						FieldConstants.TEST_ID);
+						FieldConstants.PROPERTY_TEST_ID + "=:testId GROUP BY " +
+						FieldConstants.PROPERTY_TEST_ID);
 		query.setParameter("testId", test.getId());
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		List results = query.list();
@@ -169,8 +210,8 @@ public class TestManager {
 		log.debug("saveTestEventJoin");
 		SQLQuery query = AbstractHibernateDao.getSession().createSQLQuery(
 				"INSERT INTO " + TableConstants.TEST_EVENT_TABLE + " (" +
-						FieldConstants.TEST_ID + "," +
-						FieldConstants.EVENT_ID + "," +
+						FieldConstants.PROPERTY_TEST_ID + "," +
+						FieldConstants.PROPERTY_EVENT_ID + "," +
 						FieldConstants.RANK +
 						") VALUES (:testId,:eventId,:rank)");
 		query.setParameter("testId", test.getId());
@@ -216,4 +257,5 @@ public class TestManager {
 			}
 		}
 	}
+	
 }

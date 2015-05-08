@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 
 import com.tilioteo.hypothesis.entity.Branch;
+import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Task;
@@ -107,6 +108,23 @@ public class PersistenceManager {
 				HibernateUtil.commitTransaction();
 
 				return user;
+			} catch (Throwable e) {
+				log.error(e.getMessage());
+				HibernateUtil.rollbackTransaction();
+			}
+		}
+		return null;
+	}
+
+	public Group merge(Group entity) {
+		log.debug(String.format("merge(group id = %s)", entity != null ? entity.getId() : "NULL"));
+		if (entity != null) {
+			try {
+				HibernateUtil.beginTransaction();
+				Group group = (Group) HibernateUtil.getSession().merge(entity);
+				Hibernate.initialize(group.getUsers());
+				HibernateUtil.commitTransaction();
+				return group;
 			} catch (Throwable e) {
 				log.error(e.getMessage());
 				HibernateUtil.rollbackTransaction();

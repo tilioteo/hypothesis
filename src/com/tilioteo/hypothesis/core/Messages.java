@@ -24,7 +24,11 @@ public class Messages {
 			MessageSource messageSource = applicationContext.getBean(ReloadableResourceBundleMessageSource.class);
 			
 			Locale locale = current.getLocale();
-			return messageSource.getMessage(key, arguments, locale);
+			try {
+				return messageSource.getMessage(key, arguments, locale);
+			} catch (Throwable e) {
+				return key;
+			}
 		}
 		return key;
 	}

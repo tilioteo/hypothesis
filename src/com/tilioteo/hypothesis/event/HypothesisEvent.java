@@ -3,7 +3,9 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.Pack;
+import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.model.UrlConsumer;
 import com.tilioteo.hypothesis.ui.view.HypothesisViewType;
 
@@ -43,45 +45,109 @@ public abstract class HypothesisEvent {
 	public static class UserLoggedOutEvent {
 	}
 
-    public static final class PostViewChangeEvent {
-        private final HypothesisViewType view;
+	public static final class PostViewChangeEvent {
+		private final HypothesisViewType view;
 
-        public PostViewChangeEvent(final HypothesisViewType view) {
-            this.view = view;
-        }
+		public PostViewChangeEvent(final HypothesisViewType view) {
+			this.view = view;
+		}
 
-        public HypothesisViewType getView() {
-            return view;
-        }
-    }
+		public HypothesisViewType getView() {
+			return view;
+		}
+	}
 
-    public static class StartFeaturedTestEvent {
-    	private Pack pack;
-    	
-    	public StartFeaturedTestEvent(Pack pack) {
-    		this.pack = pack;
-    	}
-    	
-    	public Pack getPack() {
-    		return pack;
-    	}
-    }
+	public static class StartFeaturedTestEvent {
+		private Pack pack;
 
-    public static class StartLegacyTestEvent {
-    	private Pack pack;
-    	private UrlConsumer urlConsumer;
-    	
-    	public StartLegacyTestEvent(Pack pack, UrlConsumer urlConsumer) {
-    		this.pack = pack;
-    		this.urlConsumer = urlConsumer;
-    	}
-    	
-    	public Pack getPack() {
-    		return pack;
-    	}
+		public StartFeaturedTestEvent(Pack pack) {
+			this.pack = pack;
+		}
+
+		public Pack getPack() {
+			return pack;
+		}
+	}
+
+	public static class StartLegacyTestEvent {
+		private Pack pack;
+		private UrlConsumer urlConsumer;
+
+		public StartLegacyTestEvent(Pack pack, UrlConsumer urlConsumer) {
+			this.pack = pack;
+			this.urlConsumer = urlConsumer;
+		}
+
+		public Pack getPack() {
+			return pack;
+		}
 
 		public UrlConsumer getUrlConsumer() {
 			return urlConsumer;
 		}
-    }
+	}
+
+	public static final class CloseOpenWindowsEvent {
+	}
+
+	public static final class ProfileUpdatedEvent {
+	}
+
+	public static final class UserAddedEvent {
+		private final User user;
+
+		public UserAddedEvent(final User user) {
+			this.user = user;
+		}
+
+		public User getUser() {
+			return user;
+		}
+	}
+
+	public static final class UserSelectionChangedEvent {
+	}
+
+	public static final class GroupUsersChangedEvent {
+		private final Group group;
+
+		public GroupUsersChangedEvent(final Group group) {
+			this.group = group;
+		}
+
+		public Group getGroup() {
+			return group;
+		}
+	}
+
+	public static final class GroupAddedEvent {
+		private final Group group;
+
+		public GroupAddedEvent(final Group group) {
+			this.group = group;
+		}
+
+		public Group getGroup() {
+			return group;
+		}
+	}
+
+	public static final class GroupSelectionChangedEvent {
+	}
+
+	public static final class UserGroupsChangedEvent {
+		private final User user;
+
+		public UserGroupsChangedEvent(final User user) {
+			this.user = user;
+		}
+
+		public User getUser() {
+			return user;
+		}
+	}
+
+	public static final class TestSelectionChangedEvent {
+	}
+
 }

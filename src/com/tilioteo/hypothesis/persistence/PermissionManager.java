@@ -247,7 +247,7 @@ public class PermissionManager {
 		try {
 			// Set<Pack> packs = new HashSet<Pack>();
 			Hashtable<Long, Pack> packs = new Hashtable<Long, Pack>();
-
+			user = persistenceManager.merge(user);
 			if (!user.getGroups().isEmpty()) {
 				Set<GroupPermission> groupsPermissions = getGroupsPermissions(user
 						.getGroups());

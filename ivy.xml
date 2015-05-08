@@ -40,5 +40,11 @@
 		<!-- Compiler for custom widget sets. Should not be deployed -->
 		<dependency org="com.vaadin" name="vaadin-client-compiler"
 			rev="&vaadin.version;" conf="widgetset-compile->default" />
+
+		<!-- Vaadin ConfirmDialog -->
+		<dependency org="org.vaadin.addon" name="confirmdialog" rev="2.1.2" />
+
+		<!-- Apache POI - Java API To Access Microsoft Format Files -->
+		<dependency org="org.apache.poi" name="poi-ooxml" rev="3.11" />
 	</dependencies>
 </ivy-module>

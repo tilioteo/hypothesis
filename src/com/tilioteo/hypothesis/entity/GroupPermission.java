@@ -16,6 +16,9 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
@@ -58,6 +61,7 @@ public final class GroupPermission extends SerializableIdObject {
 
 	@ManyToOne
 	@JoinColumn(name = FieldConstants.GROUP_ID, nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	public Group getGroup() {
 		return group;
 	}

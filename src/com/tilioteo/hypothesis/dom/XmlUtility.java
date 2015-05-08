@@ -29,7 +29,7 @@ import com.tilioteo.hypothesis.common.Strings;
 public class XmlUtility {
 	
 	private static final String ENCODING_UTF8	=	"utf-8";
-	private static final String DESCENDANT_FMT	=	"descendant::%s";
+	public static final String DESCENDANT_FMT	=	"descendant::%s";
 	
 	@SuppressWarnings("unchecked")
 	public static void clearAllChilds(Node parent) {
