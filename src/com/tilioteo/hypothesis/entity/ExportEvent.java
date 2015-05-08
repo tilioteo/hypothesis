@@ -22,8 +22,38 @@ import org.hibernate.annotations.Type;
  *
  */
 @Entity
-@Subselect("SELECT e.ID,e.TIMESTAMP,e.TYPE,e.NAME,e.XML_DATA,e.BRANCH_ID,e.TASK_ID,e.SLIDE_ID,t.ID TEST_ID,t.USER_ID,t.PACK_ID,t.CREATED FROM TBL_EVENT e,TBL_TEST t,TBL_TEST_EVENT te WHERE te.EVENT_ID=e.ID AND te.TEST_ID=t.ID")
-@Synchronize({TableConstants.EVENT_TABLE, TableConstants.TEST_TABLE, TableConstants.TEST_EVENT_TABLE })
+@Subselect("SELECT e."+FieldConstants.ID+
+		",e."+FieldConstants.TIMESTAMP+
+		",e."+FieldConstants.CLIENT_TIMESTAMP+
+		",e."+FieldConstants.TYPE+
+		",e."+FieldConstants.NAME+
+		",e."+FieldConstants.XML_DATA+
+		",e."+FieldConstants.BRANCH_ID+
+		",e."+FieldConstants.TASK_ID+
+		",e."+FieldConstants.SLIDE_ID+
+		",t."+FieldConstants.ID+" "+FieldConstants.TEST_ID+
+		",t."+FieldConstants.USER_ID+
+		",t."+FieldConstants.PACK_ID+
+		",t."+FieldConstants.CREATED+
+		",p."+FieldConstants.NAME+" "+FieldConstants.PACK_NAME+
+		",b."+FieldConstants.NOTE+" "+FieldConstants.BRANCH_NAME+
+		",ta."+FieldConstants.NAME+" "+FieldConstants.TASK_NAME+
+		",s."+FieldConstants.NOTE+" "+FieldConstants.SLIDE_NAME+
+		" FROM "+TableConstants.EVENT_TABLE+" e,"+
+		TableConstants.TEST_TABLE+" t,"+
+		TableConstants.TEST_EVENT_TABLE+" te,"+
+		TableConstants.PACK_TABLE+" p,"+
+		TableConstants.BRANCH_TABLE+" b,"+
+		TableConstants.TASK_TABLE+" ta,"+
+		TableConstants.SLIDE_TABLE+" s WHERE te."+
+		FieldConstants.EVENT_ID+"=e."+FieldConstants.ID+" AND te."+
+		FieldConstants.TEST_ID+"=t."+FieldConstants.ID+" AND t."+
+		FieldConstants.PACK_ID+"=p."+FieldConstants.ID+" AND e."+
+		FieldConstants.BRANCH_ID+"=b."+FieldConstants.ID+" AND e."+
+		FieldConstants.TASK_ID+"=ta."+FieldConstants.ID+" AND e."+
+		FieldConstants.SLIDE_ID+"=s."+FieldConstants.ID)
+@Synchronize({TableConstants.EVENT_TABLE, TableConstants.TEST_TABLE, TableConstants.TEST_EVENT_TABLE,
+	TableConstants.PACK_TABLE, TableConstants.BRANCH_TABLE, TableConstants.TASK_TABLE, TableConstants.SLIDE_TABLE })
 @Immutable
 @Access(AccessType.PROPERTY)
 public class ExportEvent extends SerializableIdObject {
@@ -37,6 +67,11 @@ public class ExportEvent extends SerializableIdObject {
 	 * timestamp of event
 	 */
 	private Long timeStamp;
+
+	/**
+	 * client timestamp of event (if possible)
+	 */
+	private Long clientTimeStamp;
 
 	/**
 	 * code of event type
@@ -54,19 +89,34 @@ public class ExportEvent extends SerializableIdObject {
 	private String xmlData;
 
 	/**
-	 * current processing branch id
+	 * processed branch id
 	 */
 	private Long branchId;
 
 	/**
-	 * current processing task id
+	 * processed branch name
+	 */
+	private String branchName;
+
+	/**
+	 * processed task id
 	 */
 	private Long taskId;
 
 	/**
-	 * current processing slide id
+	 * processed task name
+	 */
+	private String taskName;
+
+	/**
+	 * processed slide id
 	 */
 	private Long slideId;
+
+	/**
+	 * processed slide name
+	 */
+	private String slideName;
 
 	/**
 	 * current processing test id
@@ -82,6 +132,11 @@ public class ExportEvent extends SerializableIdObject {
 	 * current processing pack id
 	 */
 	private Long packId;
+
+	/**
+	 * current processing pack name
+	 */
+	private String packName;
 
 	/**
 	 * timestamp test created at
@@ -102,6 +157,15 @@ public class ExportEvent extends SerializableIdObject {
 
 	protected void setTimeStamp(Long timeStamp) {
 		this.timeStamp = timeStamp;
+	}
+
+	@Column(name = FieldConstants.CLIENT_TIMESTAMP)
+	protected Long getClientTimeStamp() {
+		return clientTimeStamp;
+	}
+
+	protected void setClientTimeStamp(Long clientTimeStamp) {
+		this.clientTimeStamp = clientTimeStamp;
 	}
 
 	@Column(name = FieldConstants.TYPE, nullable = false)
@@ -141,6 +205,15 @@ public class ExportEvent extends SerializableIdObject {
 		this.branchId = branchId;
 	}
 
+	@Column(name = FieldConstants.BRANCH_NAME)
+	public String getBranchName() {
+		return branchName;
+	}
+
+	protected void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
+
 	@Column(name = FieldConstants.TASK_ID)
 	public Long getTaskId() {
 		return taskId;
@@ -150,6 +223,15 @@ public class ExportEvent extends SerializableIdObject {
 		this.taskId = taskId;
 	}
 
+	@Column(name = FieldConstants.TASK_NAME)
+	public String getTaskName() {
+		return taskName;
+	}
+
+	protected void setTaskName(String taskName) {
+		this.taskName = taskName;
+	}
+
 	@Column(name = FieldConstants.SLIDE_ID)
 	public Long getSlideId() {
 		return slideId;
@@ -157,6 +239,15 @@ public class ExportEvent extends SerializableIdObject {
 
 	protected void setSlideId(Long slideId) {
 		this.slideId = slideId;
+	}
+
+	@Column(name = FieldConstants.SLIDE_NAME)
+	public String getSlideName() {
+		return slideName;
+	}
+
+	protected void setSlideName(String slideName) {
+		this.slideName = slideName;
 	}
 
 	@Column(name = FieldConstants.TEST_ID)
@@ -186,6 +277,15 @@ public class ExportEvent extends SerializableIdObject {
 		this.packId = packId;
 	}
 
+	@Column(name = FieldConstants.PACK_NAME)
+	public String getPackName() {
+		return packName;
+	}
+
+	protected void setPackName(String packName) {
+		this.packName = packName;
+	}
+
 	@Column(name = FieldConstants.CREATED, nullable = false)
 	public Date getCreated() {
 		return created;
@@ -198,5 +298,10 @@ public class ExportEvent extends SerializableIdObject {
 	@Transient
 	public final Date getDatetime() {
 		return new Date(getTimeStamp());
+	}
+
+	@Transient
+	public final Date getClientDatetime() {
+		return getClientTimeStamp() != null ? new Date(getClientTimeStamp()) : null;
 	}
 }

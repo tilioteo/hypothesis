@@ -32,6 +32,7 @@ public class UserManager {
 		log.debug("addUser");
 		try {
 			userDao.beginTransaction();
+			userDao.clear();
 			user = persistenceManager.merge(user);
 			user = userDao.makePersistent(user);
 			userDao.commit();
@@ -71,6 +72,7 @@ public class UserManager {
 		log.debug("deleteUser");
 		try {
 			userDao.beginTransaction();
+			userDao.clear();
 			user = persistenceManager.merge(user);
 			userDao.makeTransient(user);
 			userDao.commit();

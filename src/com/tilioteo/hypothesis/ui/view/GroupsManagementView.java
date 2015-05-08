@@ -87,12 +87,14 @@ public class GroupsManagementView extends VerticalLayout
 		groupManager = GroupManager.newInstance();
 		persistenceManager = PersistenceManager.newInstance();
 		
-		loggedUser = (User) VaadinSession.getCurrent()
-        		.getAttribute(User.class.getName());
+		loggedUser = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
 		
 		MainEventBus.get().register(this);
 		
 		setSizeFull();
+		setMargin(true);
+		setSpacing(true);
+		
 		addComponent(buildHeader());
 		table = buildTable();
 		addComponent(table);
@@ -103,7 +105,6 @@ public class GroupsManagementView extends VerticalLayout
         HorizontalLayout header = new HorizontalLayout();
         header.setWidth("100%");
         header.setSpacing(true);
-        header.setMargin(true);
 
         Label title = new Label(Messages.getString("Caption.Label.GroupsManagement"));
         title.addStyleName("huge");
@@ -278,8 +279,7 @@ public class GroupsManagementView extends VerticalLayout
 		table.setColumnCollapsingAllowed(true);
 		table.setSortContainerPropertyId(FieldConstants.NAME);
 		
-		BeanContainer<Long, Group> dataSource =
-				new BeanContainer<Long, Group>(Group.class);
+		BeanContainer<Long, Group> dataSource = new BeanContainer<Long, Group>(Group.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
 		List<Group> groups;
@@ -446,13 +446,15 @@ public class GroupsManagementView extends VerticalLayout
 	@Subscribe
 	public void addGroupIntoTable(final HypothesisEvent.GroupAddedEvent event) {
 		Group group = event.getGroup();
-		BeanContainer<Long, Group> container =
-				(BeanContainer<Long, Group>) table.getContainerDataSource();
-		
-		container.removeItem(group.getId());
-		container.addItem(group.getId(), group);
-		
-		table.sort();
+		if (group != null) {
+			BeanContainer<Long, Group> container =
+					(BeanContainer<Long, Group>) table.getContainerDataSource();
+			
+			container.removeItem(group.getId());
+			container.addItem(group.getId(), group);
+			
+			table.sort();
+		}
 	}
 	
 	@Subscribe

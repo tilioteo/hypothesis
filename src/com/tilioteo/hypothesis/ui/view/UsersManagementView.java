@@ -100,6 +100,9 @@ public class UsersManagementView extends VerticalLayout
 		MainEventBus.get().register(this);
 		
 		setSizeFull();
+		setMargin(true);
+		setSpacing(true);
+
 		addComponent(buildHeader());
 		table = buildTable();
 		addComponent(table);
@@ -110,7 +113,6 @@ public class UsersManagementView extends VerticalLayout
         HorizontalLayout header = new HorizontalLayout();
         header.setWidth("100%");
         header.setSpacing(true);
-        header.setMargin(true);
 
         Label title = new Label(Messages.getString("Caption.Label.UsersManagement"));
         title.addStyleName("huge");

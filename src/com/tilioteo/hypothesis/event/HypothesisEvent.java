@@ -147,7 +147,30 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static final class TestSelectionChangedEvent {
+	public static final class PackSelectionChangedEvent {
 	}
 
+	public static final class ExportFinishedEvent {
+		private final boolean canceled;
+		
+		public ExportFinishedEvent(final boolean canceled) {
+			this.canceled = canceled;
+		}
+		
+		public boolean isCanceled() {
+			return canceled;
+		}
+	}
+	
+	public static final class ExportProgressEvent {
+		private final float progress;
+		
+		public ExportProgressEvent(final float progress) {
+			this.progress = progress;
+		}
+		
+		public float getProgress() {
+			return progress;
+		}
+	}
 }

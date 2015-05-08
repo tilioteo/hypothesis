@@ -32,6 +32,7 @@ public class GroupManager {
 		log.debug("addGroup");
 		try {
 			groupDao.beginTransaction();
+			groupDao.clear();
 			group = persistenceManager.merge(group);
 			group = groupDao.makePersistent(group);
 			groupDao.commit();

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.WrappedHttpSession;
 import com.vaadin.server.WrappedSession;
@@ -31,6 +32,11 @@ public class UI extends com.vaadin.ui.UI {
 
 	public String getLanguage() {
 		return language;
+	}
+	
+	@Override
+	public void setResource(String key, Resource resource) {
+		super.setResource(key, resource);
 	}
 	
 	@Override

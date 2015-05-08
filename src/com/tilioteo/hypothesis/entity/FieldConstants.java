@@ -56,6 +56,11 @@ public class FieldConstants {
 	public static final String EXPIRE_DATE = "expire_date";
 	public static final String PASS = "pass";
 
+	public static final String PACK_NAME = "pack_name";
+	public static final String BRANCH_NAME = "branch_name";
+	public static final String TASK_NAME = "task_name";
+	public static final String SLIDE_NAME = "slide_name";
+
 	public static final String USERS = "users";
 	public static final String AVAILABLE_PACKS = "available_packs";
 	public static final String PACK = "pack";
