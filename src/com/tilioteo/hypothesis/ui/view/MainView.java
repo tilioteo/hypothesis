@@ -13,6 +13,8 @@ import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
 public class MainView extends VerticalLayout {
+	
+	private static final String VERSION = "1.3.0";
 
 	public MainView() {
 		setSizeFull();
@@ -78,7 +80,7 @@ public class MainView extends VerticalLayout {
 		layout.setSizeFull();
 		panel.setContent(layout);
 		
-		Label label = new Label("Hypothesis&emsp;v.1.2.5&emsp;&emsp;&emsp;© 2013-2015 Tilioteo Ltd");
+		Label label = new Label("Hypothesis&emsp;v."+VERSION+"&emsp;&emsp;&emsp;© 2013-2015 Tilioteo Ltd");
 		label.setContentMode(ContentMode.HTML);
 		label.setWidthUndefined();
 		label.addStyleName(ValoTheme.LABEL_TINY);
