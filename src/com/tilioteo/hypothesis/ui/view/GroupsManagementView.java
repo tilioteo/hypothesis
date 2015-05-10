@@ -289,7 +289,8 @@ public class GroupsManagementView extends VerticalLayout
 			groups = groupManager.findOwnerGroups(loggedUser);
 		}	
 		for (Group group : groups) {
-			persistenceManager.merge(group);
+			//group = groupManager.merge(group);
+			group = persistenceManager.merge(group);
 			dataSource.addBean(group);
 		}
 		table.setContainerDataSource(dataSource);
@@ -335,8 +336,11 @@ public class GroupsManagementView extends VerticalLayout
 	@Override
 	public Object generateCell(Table source, Object itemId, Object columnId) {
 		if (columnId.equals(FieldConstants.USERS)) {
-			Set<User> users = (Set<User>) source.getItem(itemId)
-					.getItemProperty(columnId).getValue();
+			Group group = ((BeanItem<Group>) source.getItem(itemId)).getBean();
+			//group = groupManager.merge(group);
+			group = persistenceManager.merge(group);
+			
+			Set<User> users = group.getUsers();
 			List<String> sortedUsers = new ArrayList<String>();
 			for (User user : users) {
 				sortedUsers.add(user.getUsername());
@@ -413,10 +417,19 @@ public class GroupsManagementView extends VerticalLayout
         
 		for (Iterator<Group> iterator = groups.iterator(); iterator.hasNext(); ) {
 			Group group = iterator.next();
-
+			group = persistenceManager.merge(group);
+			Set<User> users = new HashSet<User>();
+			for (User user : group.getUsers()) {
+				users.add(user);
+			}
+			
+			/*for (User user : users) {
+				group.removeUser(user);
+			}*/
+			
 			groupManager.delete(group);
 			
-			for (User user : group.getUsers()) {
+			for (User user : users) {
 				MainEventBus.get().post(new HypothesisEvent.
 						UserGroupsChangedEvent(user));
 			}

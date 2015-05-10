@@ -1,7 +1,9 @@
 package com.tilioteo.hypothesis.persistence;
 
 import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
@@ -28,12 +30,32 @@ public class GroupManager {
 		persistenceManager = PersistenceManager.newInstance();
 	}
 
+	/*public Group merge(Group group) {
+		try {
+			groupDao.beginTransaction();
+			group = mergeInit(group);
+			groupDao.commit();
+			return group;
+		} catch (HibernateException e) {
+			log.error(e.getMessage());
+			groupDao.rollback();
+		}
+		return null;
+	}*/
+	
+	/*private Group mergeInit(Group group) {
+		groupDao.clear();
+		group = groupDao.merge(group);
+		Hibernate.initialize(group.getUsers());
+		return group;
+	}*/
+
 	public Group add(Group group) {
 		log.debug("addGroup");
 		try {
 			groupDao.beginTransaction();
+			//group = mergeInit(group);
 			groupDao.clear();
-			group = persistenceManager.merge(group);
 			group = groupDao.makePersistent(group);
 			groupDao.commit();
 			return group;
@@ -41,8 +63,8 @@ public class GroupManager {
 			log.error(e.getMessage());
 			groupDao.rollback();
 			//throw e;
-			return null;
 		}
+		return null;
 	}
 
 	public void deleteAll() {
@@ -61,7 +83,8 @@ public class GroupManager {
 		log.debug("deleteGroup");
 		try {
 			groupDao.beginTransaction();
-			group = persistenceManager.merge(group);
+			//group = mergeInit(group);
+			groupDao.clear();
 			groupDao.makeTransient(group);
 			groupDao.commit();
 		} catch (Throwable e) {

@@ -6,6 +6,11 @@ package com.tilioteo.hypothesis.persistence;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 
+import com.tilioteo.hypothesis.dao.BranchDao;
+import com.tilioteo.hypothesis.dao.GroupDao;
+import com.tilioteo.hypothesis.dao.PackDao;
+import com.tilioteo.hypothesis.dao.TaskDao;
+import com.tilioteo.hypothesis.dao.UserDao;
 import com.tilioteo.hypothesis.entity.Branch;
 import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.Pack;
@@ -21,9 +26,25 @@ import com.tilioteo.hypothesis.servlet.HibernateUtil;
 public class PersistenceManager {
 	
 	private static Logger log = Logger.getLogger(PersistenceManager.class);
+	
+	//private PackDao packDao;
+	//private BranchDao branchDao;
+	//private TaskDao taskDao;
+	//private SimpleTestDao;
+	//private UserDao userDao;
+	//private GroupDao groupDao;
 
 	public static PersistenceManager newInstance() {
 		return new PersistenceManager();
+	}
+	
+	protected PersistenceManager() {
+		//packDao = new PackDao();
+		//branchDao = new BranchDao();
+		//taskDao = new TaskDao();
+		
+		//userDao = new UserDao();
+		//groupDao = new GroupDao();
 	}
 	
 	public Pack merge(Pack entity) {
@@ -31,6 +52,7 @@ public class PersistenceManager {
 		if (entity != null) {
 			try {
 				HibernateUtil.beginTransaction();
+				//HibernateUtil.getSession().clear();
 				Pack pack = (Pack)HibernateUtil.getSession().merge(entity);
 				Hibernate.initialize(pack.getBranches());
 				HibernateUtil.commitTransaction();
@@ -49,6 +71,7 @@ public class PersistenceManager {
 		if (entity != null) {
 			try {
 				HibernateUtil.beginTransaction();
+				//HibernateUtil.getSession().clear();
 				Branch branch = (Branch) HibernateUtil.getSession().merge(entity);
 				Hibernate.initialize(branch.getTasks());
 				HibernateUtil.commitTransaction();
@@ -67,6 +90,7 @@ public class PersistenceManager {
 		if (entity != null) {
 			try {
 				HibernateUtil.beginTransaction();
+				//HibernateUtil.getSession().clear();
 				Task task = (Task) HibernateUtil.getSession().merge(entity);
 				Hibernate.initialize(task.getSlides());
 				HibernateUtil.commitTransaction();
@@ -85,6 +109,7 @@ public class PersistenceManager {
 		if (entity != null) {
 			try {
 				HibernateUtil.beginTransaction();
+				//HibernateUtil.getSession().clear();
 				SimpleTest test = (SimpleTest) HibernateUtil.getSession().merge(entity);
 				HibernateUtil.commitTransaction();
 
@@ -102,6 +127,7 @@ public class PersistenceManager {
 		if (entity != null) {
 			try {
 				HibernateUtil.beginTransaction();
+				HibernateUtil.getSession().clear();
 				User user = (User) HibernateUtil.getSession().merge(entity);
 				Hibernate.initialize(user.getGroups());
 				Hibernate.initialize(user.getRoles());
@@ -121,6 +147,7 @@ public class PersistenceManager {
 		if (entity != null) {
 			try {
 				HibernateUtil.beginTransaction();
+				HibernateUtil.getSession().clear();
 				Group group = (Group) HibernateUtil.getSession().merge(entity);
 				Hibernate.initialize(group.getUsers());
 				HibernateUtil.commitTransaction();

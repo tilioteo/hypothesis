@@ -164,6 +164,12 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 		getSession().delete(entity);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public T merge(T entity) {
+		clear();
+		return (T) getSession().merge(entity);
+	}
+	
 	@Override
 	public void rollback() {
 		//HibernateUtil.rollbackTransaction();

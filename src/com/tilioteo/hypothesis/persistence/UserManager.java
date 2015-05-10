@@ -3,12 +3,14 @@ package com.tilioteo.hypothesis.persistence;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
 import com.tilioteo.hypothesis.dao.UserDao;
 import com.tilioteo.hypothesis.entity.FieldConstants;
+import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.User;
 
 public class UserManager {
@@ -27,13 +29,34 @@ public class UserManager {
 		this.userDao = userDao;
 		persistenceManager = PersistenceManager.newInstance();
 	}
+	
+	/*public User merge(User user) {
+		try {
+			userDao.beginTransaction();
+			user = mergeInit(user);
+			userDao.commit();
+			return user;
+		} catch (HibernateException e) {
+			log.error(e.getMessage());
+			userDao.rollback();
+		}
+		return null;
+	}*/
+
+	/*private User mergeInit(User user) {
+		userDao.clear();
+		user = userDao.merge(user);
+		Hibernate.initialize(user.getGroups());
+		Hibernate.initialize(user.getRoles());
+		return user;
+	}*/
 
 	public User add(User user) {
 		log.debug("addUser");
 		try {
 			userDao.beginTransaction();
+			//user = mergeInit(user);
 			userDao.clear();
-			user = persistenceManager.merge(user);
 			user = userDao.makePersistent(user);
 			userDao.commit();
 			return user;
@@ -72,8 +95,8 @@ public class UserManager {
 		log.debug("deleteUser");
 		try {
 			userDao.beginTransaction();
+			//user = mergeInit(user);
 			userDao.clear();
-			user = persistenceManager.merge(user);
 			userDao.makeTransient(user);
 			userDao.commit();
 		} catch (HibernateException e) {
