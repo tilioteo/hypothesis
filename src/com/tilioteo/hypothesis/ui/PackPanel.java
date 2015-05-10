@@ -7,11 +7,13 @@ import org.vaadin.button.ui.OpenPopupButton;
 
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.Pack;
+import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartFeaturedTestEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartLegacyTestEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -159,7 +161,7 @@ public class PackPanel extends Panel {
 			button.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					MainEventBus.get().post(new StartFeaturedTestEvent(pack));
+					MainEventBus.get().post(new StartFeaturedTestEvent(getNoGuestUser(), pack));
 				}
 			});
 		} else {
@@ -167,6 +169,14 @@ public class PackPanel extends Panel {
 		}
 		
 		return button;
+	}
+	
+	private User getNoGuestUser() {
+		User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+		if (!User.GUEST.equals(user)) {
+			return user;
+		}
+		return null;
 	}
 
 	private Label buildNoJavaLabel() {
@@ -205,7 +215,7 @@ public class PackPanel extends Panel {
 		button.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				MainEventBus.get().post(new StartLegacyTestEvent(pack, button));
+				MainEventBus.get().post(new StartLegacyTestEvent(getNoGuestUser(), pack, button));
 			}
 		});
 		

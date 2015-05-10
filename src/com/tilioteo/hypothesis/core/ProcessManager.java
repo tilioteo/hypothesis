@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -86,6 +87,8 @@ public class ProcessManager {
 	private Branch currentBranch = null;
 	private Task currentTask = null;
 	private Slide currentSlide = null;
+	
+	private User currentUser = null;
 
 	public ProcessManager() {
 		
@@ -115,21 +118,21 @@ public class ProcessManager {
 	}
 
 	private boolean checkUserPack(User user, Pack pack) {
-		return true;
-
-		// TODO use code bellow when the security will be implemented
-		
-		/*Collection<Pack> packs;
-		if (null != user) {
+		Collection<Pack> packs;
+		if (user != null) {
 			packs = permissionManager.findUserPacks(user, true);
-		} else {
-			packs = permissionManager.getPublishedPacks();
+			for (Pack allowedPack : packs) {
+				if (allowedPack.getId().equals(pack.getId()))
+					return true;
+			}
 		}
-		for (Pack pack2 : packs) {
-			if (pack2.getId().equals(pack.getId()))
+
+		packs = permissionManager.getPublishedPacks();
+		for (Pack allowedPack : packs) {
+			if (allowedPack.getId().equals(pack.getId()))
 				return true;
 		}
-		return false;*/
+		return false;
 	}
 
 	@Subscribe
@@ -150,6 +153,8 @@ public class ProcessManager {
 
 		currentTest = null;
 		testProcessing = false;
+		
+		currentUser = null;
 	}
 
 	@Subscribe
@@ -238,6 +243,8 @@ public class ProcessManager {
 		
 		currentTest = null;
 		testProcessing = false;
+		
+		currentUser = null;
 	}
 
 	@Subscribe
@@ -364,6 +371,8 @@ public class ProcessManager {
 
 		SimpleTest test = testManager.getUnattendedTest(token.getUser(), token.getPack(), token.isProduction());
 		if (test != null) {
+			currentUser = token.getUser();
+			
 			if (event.isStartAllowed()) {
 				log.debug(String.format("Test start allowed (test id = %s).", test.getId() != null ? test.getId() : "NULL"));
 				processTest(test);
@@ -614,5 +623,6 @@ public class ProcessManager {
 	
 	public void clean() {
 		ProcessEventBus.get().unregister(this);
+		currentUser = null;
 	}
 }

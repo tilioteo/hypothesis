@@ -20,6 +20,7 @@ import com.tilioteo.hypothesis.event.HypothesisEvent.StartLegacyTestEvent;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
 import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.TokenManager;
+import com.tilioteo.hypothesis.persistence.UserManager;
 import com.tilioteo.hypothesis.servlet.ServletUtil;
 import com.tilioteo.hypothesis.ui.UI;
 import com.vaadin.server.VaadinService;
@@ -34,12 +35,14 @@ public class PacksModel {
 	private PermissionManager permissionManager;
 	private TokenManager tokenManager;
 	private PersistenceManager persistenceManager;
+	//private UserManager userManager;
 	
 	public PacksModel() {
 		
 		permissionManager = PermissionManager.newInstance();
 		tokenManager = TokenManager.newInstance();
 		persistenceManager = PersistenceManager.newInstance();
+		//userManager = UserManager.newInstance();
 	}
 
 	public List<Pack> getPublicPacks() {
@@ -49,6 +52,7 @@ public class PacksModel {
 	public List<Pack> getUserPacks(User user) {
 		if (user != null) {
 			try {
+				//user = userManager.merge(user);
 				user = persistenceManager.merge(user);
 				Set<Pack> packs = permissionManager.findUserPacks(user, true);
 				if (packs != null) {
@@ -106,7 +110,7 @@ public class PacksModel {
 
 	@Subscribe
 	public void startFeaturedTest(StartFeaturedTestEvent event) {
-		Token token = createToken(event.getPack());
+		Token token = createToken(event.getUser(), event.getPack());
 		
 		if (token != null) {
 			DeployJava.get(UI.getCurrent()).launchJavaWebStart(constructProcessJnlp(token.getUid()));
@@ -115,15 +119,16 @@ public class PacksModel {
 	
 	@Subscribe
 	public void startLegacyTest(StartLegacyTestEvent event) {
-		Token token = createToken(event.getPack());
+		Token token = createToken(event.getUser(), event.getPack());
 
 		if (token != null) {
 			event.getUrlConsumer().setUrl(constructProcessUrl(token.getUid(), false));
 		}
 	}
 
-	private Token createToken(Pack pack) {
-		return tokenManager.createToken(null, pack, true);
+	private Token createToken(User user, Pack pack) {
+		
+		return tokenManager.createToken(user, pack, true);
 	}
 	
 	private String constructProcessJnlp(String token) {
