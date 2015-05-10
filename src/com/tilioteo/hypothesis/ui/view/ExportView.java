@@ -16,6 +16,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -27,6 +30,7 @@ import com.tilioteo.hypothesis.entity.ExportEvent;
 import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.SimpleTest;
+import com.tilioteo.hypothesis.entity.Status;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
@@ -96,7 +100,7 @@ public class ExportView extends VerticalLayout implements View {
 	
 	boolean allTestsSelected = false;
 
-	private CssLayout exportControlLayout;
+	private HorizontalLayout toolsLayout;
 	private ExportThread currentExport = null;
 	private ProgressBar exportProgressBar = null;
 
@@ -137,36 +141,51 @@ public class ExportView extends VerticalLayout implements View {
     }
 	
 	private Component buildTools() {
-		HorizontalLayout tools = new HorizontalLayout();
-		tools.setSpacing(true);
-        
-		exportControlLayout = new CssLayout();
-		exportControlLayout.addStyleName("v-component-group");
+		toolsLayout = new HorizontalLayout();
+		toolsLayout.setSpacing(true);
         
         buildExportControls();
         
         setExportSelection();
         
-        tools.addComponent(exportControlLayout);
-        
-        return tools;
+        return toolsLayout;
     }
 	
 	private void setExportSelection() {
-		exportControlLayout.removeAllComponents();
-		exportControlLayout.addComponent(exportSelectionType);
-		exportControlLayout.addComponent(exportButton);
+		toolsLayout.removeAllComponents();
+		
+		CssLayout layout = new CssLayout();
+		layout.addStyleName("v-component-group");
+
+		layout.addComponent(exportSelectionType);
+		layout.addComponent(exportButton);
+		
+		toolsLayout.addComponent(layout);
 	}
 	
-	private void setExportProgress() {
-		exportControlLayout.removeAllComponents();
+	private void setExportProgressIndeterminate() {
+		toolsLayout.removeAllComponents();
 		
 		exportProgressBar.setValue(0f);
 		exportProgressBar.setIndeterminate(true);
-		cancelExportButton.setEnabled(false);
+		CssLayout layout = new CssLayout();
+		layout.addComponent(exportProgressBar);
 		
-		exportControlLayout.addComponent(exportProgressBar);
-		exportControlLayout.addComponent(cancelExportButton);
+		cancelExportButton.setEnabled(false);
+
+		toolsLayout.addComponent(layout);
+		toolsLayout.addComponent(cancelExportButton);
+	}
+
+	private void setExportProgress() {
+		toolsLayout.removeAllComponents();
+		
+		exportProgressBar.setIndeterminate(false);
+		
+		cancelExportButton.setEnabled(true);
+
+		toolsLayout.addComponent(exportProgressBar);
+		toolsLayout.addComponent(cancelExportButton);
 	}
 
 	private void buildExportControls() {
@@ -177,7 +196,7 @@ public class ExportView extends VerticalLayout implements View {
 	}
 	
 	private void buildExportCancelButton() {
-		cancelExportButton = new Button("Cancel", new ClickListener() {
+		cancelExportButton = new Button(Messages.getString("Caption.Button.Cancel"), new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				MainEventBus.get().post(new HypothesisEvent.ExportFinishedEvent(true));
@@ -187,7 +206,7 @@ public class ExportView extends VerticalLayout implements View {
 
 	private void buildProgress() {
 		exportProgressBar = new ProgressBar();
-		exportProgressBar.setCaption("Exporting...");
+		exportProgressBar.setCaption(Messages.getString("Caption.Label.ExportProgress"));
 		exportProgressBar.setWidth("200px");
 	}
 	
@@ -225,7 +244,7 @@ public class ExportView extends VerticalLayout implements View {
 	}
 
 	private void startExport() {
-		setExportProgress();
+		setExportProgressIndeterminate();
 		
 		Collection<Long> testIds = null;
 		if (allTestsSelected) {
@@ -418,19 +437,47 @@ public class ExportView extends VerticalLayout implements View {
 			}
 		});
 
+		table.addGeneratedColumn(FieldConstants.STATUS, new ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId,
+					Object columnId) {
+				SimpleTest test = dataSource.getItem(itemId).getBean();
+				Status status = test.getStatus();
+				if (status != null) {
+					switch (status) {
+					case CREATED:
+						return Messages.getString("Status.Created");
+					case STARTED:
+						return Messages.getString("Status.Started");
+					case BROKEN_BY_CLIENT:
+						return Messages.getString("Status.BrokenClient");
+					case BROKEN_BY_ERROR:
+						return Messages.getString("Status.BrokenError");
+					case FINISHED:
+						return Messages.getString("Status.Finished");
+					default:
+						break;
+					}
+				}
+				return null;
+			}
+		});
+
 		table.setVisibleColumns(FieldConstants.ID,
 				FieldConstants.USER_ID,
-				FieldConstants.USERNAME,
-				FieldConstants.NESTED_USER_ID,
-				FieldConstants.NESTED_USER_USERNAME,
-				FieldConstants.CREATED);
+				//FieldConstants.USERNAME,
+				//FieldConstants.NESTED_USER_ID,
+				//FieldConstants.NESTED_USER_USERNAME,
+				FieldConstants.CREATED,
+				FieldConstants.STATUS);
 		
 		table.setColumnHeaders(Messages.getString("Caption.Field.TestID"),
 				Messages.getString("Caption.Field.UserID"),
-    			Messages.getString("Caption.Field.Username"),
-				Messages.getString("Caption.Field.UserID"),
-    			Messages.getString("Caption.Field.Username"),
-    			Messages.getString("Caption.Field.Created"));
+    			//Messages.getString("Caption.Field.Username"),
+				//Messages.getString("Caption.Field.UserID"),
+    			//Messages.getString("Caption.Field.Username"),
+    			Messages.getString("Caption.Field.Created"),
+    			Messages.getString("Caption.Field.Status"));
 		
 		table.addValueChangeListener(new ValueChangeListener() {
             @Override
@@ -459,22 +506,31 @@ public class ExportView extends VerticalLayout implements View {
 	@Subscribe
 	public void updateExportProgress(final HypothesisEvent.ExportProgressEvent event) {
 		if (exportProgressBar.isIndeterminate() && event.getProgress() >= 0) {
-			exportProgressBar.setIndeterminate(false);
-			cancelExportButton.setEnabled(true);
+			setExportProgress();
 		}
 		exportProgressBar.setValue(event.getProgress());
 	}
 	
-	@Subscribe
-	public void exportFinished(final HypothesisEvent.ExportFinishedEvent event) {
+	private void afterExportFinnished(boolean canceled) {
 		if (currentExport != null) {
-			if (event.isCanceled()) {
+			if (canceled) {
 				currentExport.cancel();
 			}
 			currentExport = null;
 		}
 		setExportSelection();
 		UI.getCurrent().setPollInterval(-1);
+	}
+	
+	@Subscribe
+	public void exportFinished(final HypothesisEvent.ExportFinishedEvent event) {
+		afterExportFinnished(event.isCanceled());
+	}
+	
+	@Subscribe
+	public void exportError(final HypothesisEvent.ExportErrorEvent event) {
+		afterExportFinnished(false);
+		Notification.show("Export failed", null, Type.WARNING_MESSAGE);
 	}
 
 	private static class ExportThread extends Thread {
@@ -504,6 +560,14 @@ public class ExportView extends VerticalLayout implements View {
 				});
 				
 				Page.getCurrent().open(reference.getURL(), null);
+			} else {
+				
+				UI.getCurrent().access(new Runnable() {
+					@Override
+					public void run() {
+						MainEventBus.get().post(new HypothesisEvent.ExportErrorEvent());
+					}
+				});
 			}
 			
 		}
@@ -540,20 +604,25 @@ public class ExportView extends VerticalLayout implements View {
 			try {
 				List<ExportEvent> events = exportManager.findExportEventsByTestId(testIds);
 
-				/*ExportManager exportManager = ExportManager.newInstance();
-				List<ExportEvent> events = exportManager.findExportEventsBy(
-						pack.getId(), dateFrom, dateTo);
-				//log.debug(String.format("pack id = %d, test count = %d", selectedPack.getId(), tests.size()));
-				// prepare xlsx*/
-
 				try {
 					File tempFile = File.createTempFile("htsm", null);
 
-					SXSSFWorkbook workbook = new SXSSFWorkbook(100);
-					Sheet sheet = workbook.createSheet();
+					// maps hold informations for legend creation
+					HashMap<String, String> fieldCaptionMap = new HashMap<String, String>();
+					HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<String, HashMap<String,String>>();
 
-					// write header
+					SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
+					Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.TestSheetName"));
+					
+					// create cell style for date cell
+					CreationHelper createHelper = workbook.getCreationHelper();
+					CellStyle dateCellStyle = workbook.createCellStyle();
+					dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat(Messages.getString("Format.Export.DateTime")));
+
+					// create header row and freeze it
 					Row header = sheet.createRow(0);
+					sheet.createFreezePane(0, 1);
+					
 					header.createCell(0).setCellValue("test_id");
 					header.createCell(1).setCellValue("date");
 					header.createCell(2).setCellValue("user_id");
@@ -585,7 +654,7 @@ public class ExportView extends VerticalLayout implements View {
 					header.createCell(27).setCellValue("output_value8");
 					header.createCell(28).setCellValue("output_value9");
 					header.createCell(29).setCellValue("output_value10");
-
+					
 					if (events != null) {
 						int size = events.size();
 						float counter = 0f;
@@ -602,6 +671,7 @@ public class ExportView extends VerticalLayout implements View {
 						long diffTime = 0;
 
 						HashMap<String, Integer> fieldColumnMap = new HashMap<String, Integer>();
+						
 						int outputValueCol = 20;
 						int fieldCol = outputValueCol + 10;
 
@@ -674,61 +744,104 @@ public class ExportView extends VerticalLayout implements View {
 
 							Row row = sheet.createRow(rowNr++);
 
-							row.createCell(0).setCellValue(testId);
-							row.createCell(1).setCellValue(eventDate);
+							Cell cell = row.createCell(0);
+							cell.setCellValue(testId);
+							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+							
+							cell = row.createCell(1);
+							cell.setCellValue(eventDate);
+							cell.setCellStyle(dateCellStyle);
 
 							if (userId != null) {
-								row.createCell(2).setCellValue(userId);
+								cell = row.createCell(2);
+								cell.setCellValue(userId);
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 
-							row.createCell(3).setCellValue(event.getId());
-							row.createCell(4).setCellValue(event.getPackId());
-							row.createCell(5).setCellValue(event.getPackName());
+							cell = row.createCell(3);
+							cell.setCellValue(event.getId());
+							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+
+							cell = row.createCell(4);
+							cell.setCellValue(event.getPackId());
+							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+
+							cell = row.createCell(5);
+							cell.setCellValue(event.getPackName());
+							cell.setCellType(Cell.CELL_TYPE_STRING);
 
 							if (branchId != null) {
-								row.createCell(6).setCellValue(branchId);
+								cell = row.createCell(6);
+								cell.setCellValue(branchId);
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							if (branchName != null) {
-								row.createCell(7).setCellValue(branchName);
+								cell = row.createCell(7);
+								cell.setCellValue(branchName);
+								cell.setCellType(Cell.CELL_TYPE_STRING);
 							}
 							if (taskId != null) {
-								row.createCell(8).setCellValue(taskId);
+								cell = row.createCell(8);
+								cell.setCellValue(taskId);
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							if (taskName != null) {
-								row.createCell(9).setCellValue(taskName);
+								cell = row.createCell(9);
+								cell.setCellValue(taskName);
+								cell.setCellType(Cell.CELL_TYPE_STRING);
 							}
 							if (slideId != null) {
-								row.createCell(10).setCellValue(slideId);
+								cell = row.createCell(10);
+								cell.setCellValue(slideId);
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							if (slideName != null) {
-								row.createCell(11).setCellValue(slideName);
+								cell = row.createCell(11);
+								cell.setCellValue(slideName);
+								cell.setCellType(Cell.CELL_TYPE_STRING);
 							}
 							
 							if (branchId != null) {
-								row.createCell(12).setCellValue(branchOrder);
+								cell = row.createCell(12);
+								cell.setCellValue(branchOrder);
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							if (taskId != null) {
-								row.createCell(13).setCellValue(taskOrder);
+								cell = row.createCell(13);
+								cell.setCellValue(taskOrder);
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							if (slideId != null) {
-								row.createCell(14).setCellValue(slideOrder);
+								cell = row.createCell(14);
+								cell.setCellValue(slideOrder);
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							
-							// TODO event_timestamp
 							relativeTime = eventTime - startTestTime;
-							row.createCell(15).setCellValue(relativeTime);
+							cell = row.createCell(15);
+							cell.setCellValue(relativeTime);
+							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							
 							if (lastEventTime > 0) {
 								diffTime = eventTime - lastEventTime;
-								row.createCell(16).setCellValue(diffTime);
+								cell = row.createCell(16);
+								cell.setCellValue(diffTime);
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							lastEventTime = eventTime;
 							
-							row.createCell(17).setCellValue(event.getType());
-							row.createCell(18).setCellValue(eventName);
+							cell = row.createCell(17);
+							cell.setCellValue(event.getType());
+							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+
+							cell = row.createCell(18);
+							cell.setCellValue(eventName);
+							cell.setCellType(Cell.CELL_TYPE_STRING);
 							
 							String xmlData = event.getXmlData();
-							row.createCell(19).setCellValue(xmlData);
+							cell = row.createCell(19);
+							cell.setCellValue(xmlData);
+							cell.setCellType(Cell.CELL_TYPE_STRING);
 
 							if (slideId != null && xmlData != null && "FINISH_SLIDE".equalsIgnoreCase(eventName)) {
 								// write slide output properties
@@ -742,16 +855,40 @@ public class ExportView extends VerticalLayout implements View {
 									++colNr;
 								}
 
-								Map<String, String> fieldMap = SlideDataParser.parseFields(xmlData);
-								for (String fieldName : fieldMap.keySet()) {
+								SlideDataParser.FieldWrapper wrapper = SlideDataParser.parseFields(xmlData);
+								Map<String, String> fieldCaptions = wrapper.getFieldCaptionMap();
+								Map<String, String> fieldValues = wrapper.getFieldValueMap();
+								Map<String, Map<String, String>> fieldValueCaptions = wrapper.getFieldValueCaptionMap();
+
+								for (String fieldName : fieldCaptions.keySet()) {
 									if (fieldColumnMap.containsKey(fieldName)) {
 										colNr = fieldColumnMap.get(fieldName);
 									} else {
 										colNr = fieldCol++;
 										fieldColumnMap.put(fieldName, colNr);
+										String fieldCaption = fieldCaptions.get(fieldName);
+										if (fieldCaption != null) {
+											fieldCaptionMap.put(fieldName, fieldCaption);
+										}
 										header.createCell(colNr).setCellValue(fieldName);
 									}
-									row.createCell(colNr).setCellValue(fieldMap.get(fieldName));
+									String fieldValue = fieldValues.get(fieldName);
+									
+									Map<String, String> valueCaptions = fieldValueCaptions.get(fieldName);
+									if (valueCaptions != null) {
+										String valueCaption = valueCaptions.get(fieldValue);
+										if (valueCaption != null) {
+											HashMap<String, String> valueCaptionMap = fieldValueCaptionMap.get(fieldName);
+											if (null == valueCaptionMap) {
+												valueCaptionMap = new HashMap<String, String>();
+												fieldValueCaptionMap.put(fieldName, valueCaptionMap);
+											}
+											if (!valueCaptionMap.containsKey(fieldValue)) {
+												valueCaptionMap.put(fieldValue, valueCaption);
+											}
+										}
+									}
+									row.createCell(colNr).setCellValue(fieldValue);
 								}
 							}
 							
@@ -774,14 +911,62 @@ public class ExportView extends VerticalLayout implements View {
 							}
 						}
 					}
+					
+					// create legend sheet only if there are some informations gathered
+					if (!fieldCaptionMap.isEmpty() || !fieldValueCaptionMap.isEmpty()) {
+						sheet = workbook.createSheet(Messages.getString("Caption.Export.LegendSheetName"));
+						int rowNr = 0;
+						Row row;
+						if (!fieldCaptionMap.isEmpty()) {
+							row = sheet.createRow(rowNr++);
+							row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumns"));
+							
+							row = sheet.createRow(rowNr++);
+							row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
+							row.createCell(1).setCellValue(Messages.getString("Caption.Export.ColumnDescription"));
+							
+							for (String fieldName : fieldCaptionMap.keySet()) {
+								row = sheet.createRow(rowNr++);
+								row.createCell(0).setCellValue(fieldName);
+								row.createCell(1).setCellValue(fieldCaptionMap.get(fieldName));
+							}
+							++rowNr;
+						}
+						
+						if (!fieldValueCaptionMap.isEmpty()) {
+							row = sheet.createRow(rowNr++);
+							row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumnValues"));
+							
+							for (String fieldName : fieldValueCaptionMap.keySet()) {
+								row = sheet.createRow(rowNr++);
+								row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
+								row.createCell(1).setCellValue(fieldName);
+								
+								row = sheet.createRow(rowNr++);
+								row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserValue"));
+								row.createCell(1).setCellValue(Messages.getString("Caption.Export.UserValueDescription"));
+								
+								HashMap<String, String> valueCaptions = fieldValueCaptionMap.get(fieldName);
+								for (String value : valueCaptions.keySet()) {
+									row = sheet.createRow(rowNr++);
+									row.createCell(0).setCellValue(value);
+									row.createCell(1).setCellValue(valueCaptions.get(value));
+								}
+								++rowNr;
+							}
+							
+						}
+						sheet.autoSizeColumn(0);
+						sheet.autoSizeColumn(1);
+					}
 
+					// finalize file creation
 					FileOutputStream output = new FileOutputStream(tempFile);
 		            workbook.write(output);
 		            workbook.close();
 		            output.close();
 
 		            return new FileInputStream(tempFile);
-					//return new FileResource(tempFile);
 
 				} catch (IOException e) {
 					log.error(e.getMessage());

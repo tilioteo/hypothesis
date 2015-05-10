@@ -39,19 +39,13 @@ import org.hibernate.annotations.Type;
 		",b."+FieldConstants.NOTE+" "+FieldConstants.BRANCH_NAME+
 		",ta."+FieldConstants.NAME+" "+FieldConstants.TASK_NAME+
 		",s."+FieldConstants.NOTE+" "+FieldConstants.SLIDE_NAME+
-		" FROM "+TableConstants.EVENT_TABLE+" e,"+
-		TableConstants.TEST_TABLE+" t,"+
-		TableConstants.TEST_EVENT_TABLE+" te,"+
-		TableConstants.PACK_TABLE+" p,"+
-		TableConstants.BRANCH_TABLE+" b,"+
-		TableConstants.TASK_TABLE+" ta,"+
-		TableConstants.SLIDE_TABLE+" s WHERE te."+
-		FieldConstants.EVENT_ID+"=e."+FieldConstants.ID+" AND te."+
-		FieldConstants.TEST_ID+"=t."+FieldConstants.ID+" AND t."+
-		FieldConstants.PACK_ID+"=p."+FieldConstants.ID+" AND e."+
-		FieldConstants.BRANCH_ID+"=b."+FieldConstants.ID+" AND e."+
-		FieldConstants.TASK_ID+"=ta."+FieldConstants.ID+" AND e."+
-		FieldConstants.SLIDE_ID+"=s."+FieldConstants.ID)
+		" FROM "+TableConstants.EVENT_TABLE+" e JOIN "+
+		TableConstants.TEST_EVENT_TABLE+" te ON te."+FieldConstants.EVENT_ID+"=e."+FieldConstants.ID+" JOIN "+
+		TableConstants.TEST_TABLE+" t ON te."+FieldConstants.TEST_ID+"=t."+FieldConstants.ID+" LEFT JOIN "+
+		TableConstants.PACK_TABLE+" p ON t."+FieldConstants.PACK_ID+"=p."+FieldConstants.ID+" LEFT JOIN "+
+		TableConstants.BRANCH_TABLE+" b ON e."+FieldConstants.BRANCH_ID+"=b."+FieldConstants.ID+" LEFT JOIN "+
+		TableConstants.TASK_TABLE+" ta ON e."+FieldConstants.TASK_ID+"=ta."+FieldConstants.ID+" LEFT JOIN "+
+		TableConstants.SLIDE_TABLE+" s ON e."+FieldConstants.SLIDE_ID+"=s."+FieldConstants.ID)
 @Synchronize({TableConstants.EVENT_TABLE, TableConstants.TEST_TABLE, TableConstants.TEST_EVENT_TABLE,
 	TableConstants.PACK_TABLE, TableConstants.BRANCH_TABLE, TableConstants.TASK_TABLE, TableConstants.SLIDE_TABLE })
 @Immutable

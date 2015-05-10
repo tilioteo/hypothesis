@@ -48,8 +48,9 @@ public class SlideDataParser {
 		return list;
 	}
 	
-	public static Map<String, String> parseFields(String xmlString) {
-		HashMap<String, String> map = new HashMap<String, String>();
+	public static FieldWrapper parseFields(String xmlString) {
+		FieldWrapper wrapper = new FieldWrapper();
+
 		Document doc = XmlUtility.readString(xmlString);
 		if (doc != null) {
 			@SuppressWarnings("unchecked")
@@ -57,28 +58,57 @@ public class SlideDataParser {
 			for (Element element : elements) {
 				String id = element.attributeValue(SlideXmlConstants.ID);
 				
-				String caption = "";
+				String caption = null;
 				Element captionElement = (Element) element.selectSingleNode(SlideXmlConstants.CAPTION);
 				if (captionElement != null) {
 					caption = captionElement.getTextTrim();
 				}
 				
-				if (!caption.isEmpty()) {
-					id += " [" + caption + "]";
-				}
+				wrapper.fieldCaptionMap.put(id, caption.isEmpty() ? null : caption);
 
-				String valueId = "";
+				String valueId = null;
 				Element valueElement = (Element) element.selectSingleNode(SlideXmlConstants.VALUE);
 				if (valueElement != null) {
 					valueId = valueElement.attributeValue(SlideXmlConstants.ID);
 					String value = valueElement.getText();
 					if (valueId != null && !valueId.isEmpty()) {
-						value = valueId + " [" + value + "]";
+						wrapper.fieldValueMap.put(id, valueId);
+						if (!valueId.equals(value) && !value.isEmpty()) {
+							Map<String, String> valueCaptionMap = wrapper.fieldValueCaptionMap.get(id);
+							
+							if (null == valueCaptionMap) {
+								valueCaptionMap = new HashMap<String, String>();
+								wrapper.fieldValueCaptionMap.put(id, valueCaptionMap);
+							}
+							valueCaptionMap.put(valueId, value);
+						}
+					} else {
+						wrapper.fieldValueMap.put(id, value);
 					}
-					map.put(id, value);
 				}
 			}
 		}
-		return map;
+		return wrapper;
+	}
+	
+	public static final class FieldWrapper {
+		private HashMap<String, String> fieldCaptionMap = new HashMap<String, String>();
+		private HashMap<String, String> fieldValueMap = new HashMap<String, String>();
+		private HashMap<String, Map<String, String>> fieldValueCaptionMap = new HashMap<String, Map<String, String>>();
+		
+		protected FieldWrapper() {
+		}
+		
+		public Map<String, String> getFieldCaptionMap() {
+			return fieldCaptionMap;
+		}
+
+		public Map<String, String> getFieldValueMap() {
+			return fieldValueMap;
+		}
+
+		public Map<String, Map<String, String>> getFieldValueCaptionMap() {
+			return fieldValueCaptionMap;
+		}
 	}
 }

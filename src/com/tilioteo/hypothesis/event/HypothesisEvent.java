@@ -58,22 +58,30 @@ public abstract class HypothesisEvent {
 	}
 
 	public static class StartFeaturedTestEvent {
+		private User user;
 		private Pack pack;
 
-		public StartFeaturedTestEvent(Pack pack) {
+		public StartFeaturedTestEvent(User user, Pack pack) {
+			this.user = user;
 			this.pack = pack;
 		}
 
 		public Pack getPack() {
 			return pack;
 		}
+		
+		public User getUser() {
+			return user;
+		}
 	}
 
 	public static class StartLegacyTestEvent {
+		private User user;
 		private Pack pack;
 		private UrlConsumer urlConsumer;
 
-		public StartLegacyTestEvent(Pack pack, UrlConsumer urlConsumer) {
+		public StartLegacyTestEvent(User user, Pack pack, UrlConsumer urlConsumer) {
+			this.user = user;
 			this.pack = pack;
 			this.urlConsumer = urlConsumer;
 		}
@@ -84,6 +92,10 @@ public abstract class HypothesisEvent {
 
 		public UrlConsumer getUrlConsumer() {
 			return urlConsumer;
+		}
+
+		public User getUser() {
+			return user;
 		}
 	}
 
@@ -161,7 +173,10 @@ public abstract class HypothesisEvent {
 			return canceled;
 		}
 	}
-	
+
+	public static final class ExportErrorEvent {
+	}
+
 	public static final class ExportProgressEvent {
 		private final float progress;
 		
