@@ -18,7 +18,6 @@ import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.persistence.GroupManager;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.RoleManager;
 import com.tilioteo.hypothesis.persistence.UserManager;
 import com.tilioteo.hypothesis.ui.form.UserFormFields;
@@ -74,8 +73,6 @@ public class UserWindow extends Window {
 	private RoleManager roleManager;
 	private PermissionManager permissionManager;
 	
-	private PersistenceManager persistenceManager;
-	
 	private TabSheet tabSheet;
 	private Component userDetailsTab;
 	
@@ -111,8 +108,6 @@ public class UserWindow extends Window {
         permissionManager = PermissionManager.newInstance();
         userForm = new UserFormFields();
         
-        persistenceManager = PersistenceManager.newInstance();
-
         center();
         setCloseShortcut(KeyCode.ESCAPE, null);
         setResizable(false);
@@ -237,8 +232,7 @@ public class UserWindow extends Window {
 	}
 	
 	private void fillFields(User user) {
-		//user = userManager.merge(user);
-		user = persistenceManager.merge(user);
+		user = userManager.merge(user);
 
 		userForm.getIdField().setValue(user.getId().toString());
 		userForm.getUsernameField().setValue(user.getUsername());
@@ -609,8 +603,7 @@ public class UserWindow extends Window {
 		if (state.equals(State.CREATE)) {
         	user.setOwnerId(loggedUser.getId());
 		} else {
-			//user = userManager.merge(user);
-			user = persistenceManager.merge(user);
+			user = userManager.merge(user);
 		}
 	
 		if (includeGenerableFields) {

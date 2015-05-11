@@ -90,9 +90,9 @@ public final class Group extends SerializableIdObject {
 		this.ownerId = ownerId;
 	}
 
-	@ManyToMany(targetEntity = User.class, cascade = {CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(targetEntity = User.class/*, cascade = {CascadeType.PERSIST, CascadeType.MERGE }*/)
 	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.GROUP_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.USER_ID))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	//@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	public Set<User> getUsers() {
 		return users;

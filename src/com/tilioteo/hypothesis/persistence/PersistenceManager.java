@@ -122,7 +122,7 @@ public class PersistenceManager {
 		return null;
 	}
 	
-	public User merge(User entity) {
+	/*public User merge(User entity) {
 		log.debug(String.format("merge(user id = %s)", entity != null ? entity.getId() : "NULL"));
 		if (entity != null) {
 			try {
@@ -140,9 +140,9 @@ public class PersistenceManager {
 			}
 		}
 		return null;
-	}
+	}*/
 
-	public Group merge(Group entity) {
+	/*public Group merge(Group entity) {
 		log.debug(String.format("merge(group id = %s)", entity != null ? entity.getId() : "NULL"));
 		if (entity != null) {
 			try {
@@ -158,7 +158,7 @@ public class PersistenceManager {
 			}
 		}
 		return null;
-	}
+	}*/
 
 	/*public static <E extends Serializable> E  merge(Class<E> clazz, E entity) {
 		assert(clazz != null) : "Class object is null";
