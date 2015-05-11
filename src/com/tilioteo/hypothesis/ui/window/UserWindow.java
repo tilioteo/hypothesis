@@ -717,7 +717,7 @@ public class UserWindow extends Window {
 
 	private void addField(GridLayout form, final Component field) {
 		if (state.equals(State.MULTIUPDATE)) {
-			final CheckBox enabler = new CheckBox();
+			final CheckBox enabler = new CheckBox(field.getCaption());
 			enabler.addValueChangeListener(new ValueChangeListener() {
 				public void valueChange(Property.ValueChangeEvent event) {
 					field.setVisible(enabler.getValue());
