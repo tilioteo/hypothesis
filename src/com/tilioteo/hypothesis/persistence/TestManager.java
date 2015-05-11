@@ -193,8 +193,8 @@ public class TestManager {
 		SQLQuery query = AbstractHibernateDao.getSession().createSQLQuery(
 				"SELECT max("  + FieldConstants.RANK + ") FROM " +
 						TableConstants.TEST_EVENT_TABLE + " WHERE " +
-						FieldConstants.PROPERTY_TEST_ID + "=:testId GROUP BY " +
-						FieldConstants.PROPERTY_TEST_ID);
+						FieldConstants.TEST_ID + "=:testId GROUP BY " +
+						FieldConstants.TEST_ID);
 		query.setParameter("testId", test.getId());
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		List results = query.list();
