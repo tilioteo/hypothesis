@@ -50,6 +50,7 @@ public class Variable extends Primitive {
 		if (value != null) {
 			if (type.isAssignableFrom(value.getClass())) {
 				super.setValue(value);
+				trySetPrimitiveType(value);
 				assigned = true;
 			} else if (value.getClass() == String.class) {
 				String strValue = (String)value;
@@ -74,11 +75,27 @@ public class Variable extends Primitive {
 						assigned = true;
 					}
 				}
+				
+				if (Object.class == type) {
+					trySetPrimitiveType(getValue());
+				}
 			}
 		}
 		
 		if (!assigned) {
 			super.setValue(null);
+		}
+	}
+
+	private void trySetPrimitiveType(Object value) {
+		if (value instanceof Integer || value instanceof Byte || value instanceof Short) {
+			type = Integer.class;
+		} else if (value instanceof Double || value instanceof Float || value instanceof Long) {
+			type = Double.class;
+		} else if (value instanceof Boolean) {
+			type = Boolean.class;
+		} else if (value instanceof String) {
+			type = String.class;
 		}
 	}
 
