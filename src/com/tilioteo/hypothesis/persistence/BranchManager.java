@@ -45,7 +45,7 @@ public class BranchManager {
 			for (BranchTrek branchTrek : branchTreks) {
 				branchMap.put(branchTrek.getKey(), branchTrek.getNextBranch());
 			}
-
+			branchTrekDao.commit();
 			return branchMap;
 		} catch (Throwable e) {
 			log.error(e.getMessage());
