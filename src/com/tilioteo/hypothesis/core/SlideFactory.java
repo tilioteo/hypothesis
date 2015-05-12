@@ -19,6 +19,7 @@ import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.evaluable.ExpressionFactory;
 import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.event.AbstractComponentEvent;
@@ -106,6 +107,12 @@ public class SlideFactory {
 		Element root = doc.getRootElement();
 		Element sourceElement = root.addElement(SlideXmlConstants.SOURCE);
 		writeSourceData(sourceElement, actionEvent);
+		if (actionEvent.getAction() instanceof Action) {
+			Action action = (Action)actionEvent.getAction();
+			if (action.getOutputs().size() > 0) {
+				writeOutputValues(root, action.getOutputs());
+			}
+		}
 	}
 
 	public static void writeComponentData(Element element, AbstractComponentEvent<?> componentEvent) {
@@ -281,7 +288,7 @@ public class SlideFactory {
 		}
 	}
 
-	private void writeOutputValues(Element element, Map<Integer, ExchangeVariable> outputValues) {
+	private static void writeOutputValues(Element element, Map<Integer, ExchangeVariable> outputValues) {
 		Element outputValuesElement = element.addElement(SlideXmlConstants.OUTPUT_VALUES);
 		for (ExchangeVariable outputValueExpression : outputValues.values()) {
 			String indexString = "" + outputValueExpression.getIndex();
@@ -295,14 +302,21 @@ public class SlideFactory {
 		}
 	}
 
-	private void writeOutputValue(Element element, Object value) {
-		Class<?> type = value.getClass();
+	private static void writeOutputValue(Element element, Object value) {
+		Class<?> type;
+		if (value instanceof com.tilioteo.hypothesis.evaluable.Variable) {
+			com.tilioteo.hypothesis.evaluable.Variable variable = (com.tilioteo.hypothesis.evaluable.Variable)value;
+			type = variable.getType();
+			value = variable.getValue();
+		} else {
+			type = value.getClass();
+		}
 		
 		if (type == double.class || type == float.class || type.isAssignableFrom(Double.class)) {
 			element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.FLOAT);
 			// use Locale.ROOT for locale neutral formating of decimals
 			element.addText(String.format(Locale.ROOT, "%g", ((Double) value).doubleValue()));
-		} else if (type == int.class || type == short.class || type.isAssignableFrom(Integer.class)) {
+		} else if (type == byte.class || type == int.class || type == short.class || type.isAssignableFrom(Integer.class)) {
 			element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.INTEGER);
 			element.addText(((Integer) value).toString());
 		} else if (type == long.class || type.isAssignableFrom(Long.class)) {
@@ -375,6 +389,8 @@ public class SlideFactory {
 				if (evaluable != null)
 					action.add(evaluable);
 			}
+			createActionOutputValues(action, element);
+
 			return action;
 		}
 		return null;
@@ -465,6 +481,17 @@ public class SlideFactory {
 			IndexedExpression outputValue = createValueExpression(outputElement, SlideXmlConstants.OUTPUT_VALUE);
 			if (outputValue != null) {
 				slideFascia.getOutputs().put(outputValue.getIndex(), outputValue);
+			}
+		}
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void createActionOutputValues(Action action, Element element) {
+		List<Element> outputElements = (List<Element>)(List)XmlUtility.findNodesByNameStarting(element, SlideXmlConstants.OUTPUT_VALUE);
+		for (Element outputElement : outputElements) {
+			IndexedExpression outputValue = createValueExpression(outputElement, SlideXmlConstants.OUTPUT_VALUE);
+			if (outputValue != null) {
+				action.getOutputs().put(outputValue.getIndex(), outputValue);
 			}
 		}
 	}

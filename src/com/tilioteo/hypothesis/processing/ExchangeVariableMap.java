@@ -4,8 +4,10 @@
 package com.tilioteo.hypothesis.processing;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
+import com.tilioteo.hypothesis.interfaces.Variable;
 
 /**
  * @author kamil
@@ -14,7 +16,7 @@ import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class ExchangeVariableMap extends LinkedHashMap<Integer, ExchangeVariable> {
 
-	public void setVariables(VariableMap variables) {
+	public void setVariables(Map<String, Variable<?>> variables) {
 		for (ExchangeVariable variable : this.values()) {
 			variable.setVariables(variables);
 		}

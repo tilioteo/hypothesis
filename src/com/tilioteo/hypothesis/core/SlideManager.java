@@ -56,8 +56,8 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 	private VariableMap variables = new VariableMap();
 	private ActionMap actions = new ActionMap();
 	private HashSet<ShortcutKey> shortcuts = new HashSet<ShortcutKey>();
-	private ExchangeVariableMap outputValues = new ExchangeVariableMap(); 
-	private ExchangeVariableMap inputValues = new ExchangeVariableMap(); 
+	private ExchangeVariableMap outputValues = new ExchangeVariableMap();
+	private ExchangeVariableMap inputValues = new ExchangeVariableMap();
 	private HashMap<Integer, Object> nextInputValues = new HashMap<Integer, Object>();
 
 	private Document slideXml = null;

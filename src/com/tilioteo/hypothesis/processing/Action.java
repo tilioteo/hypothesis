@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tilioteo.hypothesis.interfaces.Evaluable;
+import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
 import com.tilioteo.hypothesis.interfaces.HasVariables;
 
 /**
@@ -15,6 +16,8 @@ import com.tilioteo.hypothesis.interfaces.HasVariables;
  * 
  */
 public class Action extends AbstractBaseAction {
+	
+	private ExchangeVariableMap outputValues = new ExchangeVariableMap();
 	private List<Evaluable> evaluables = new ArrayList<Evaluable>();
 
 	public Action(HasVariables variables, String id) {
@@ -50,5 +53,12 @@ public class Action extends AbstractBaseAction {
 		}
 		builder.append("}");
 		return builder.toString();
+	}
+	
+	public Map<Integer, ExchangeVariable> getOutputs() {
+		if (getVariables() != null) {
+			outputValues.setVariables(getVariables());
+		}
+		return outputValues;
 	}
 }

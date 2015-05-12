@@ -843,18 +843,23 @@ public class ExportView extends VerticalLayout implements View {
 							cell.setCellValue(xmlData);
 							cell.setCellType(Cell.CELL_TYPE_STRING);
 
-							if (slideId != null && xmlData != null && "FINISH_SLIDE".equalsIgnoreCase(eventName)) {
-								// write slide output properties
+							if (slideId != null && xmlData != null) {
 								int colNr = outputValueCol;
 
-								List<String> outputValues = SlideDataParser.parseOutputValues(xmlData);
-								for (String outputValue : outputValues) {
-									if (outputValue != null) {
-										row.createCell(colNr).setCellValue(outputValue);
+								if ("FINISH_SLIDE".equalsIgnoreCase(eventName) ||
+										"ACTION".equalsIgnoreCase(eventName)) {
+									// write output properties
+	
+									List<String> outputValues = SlideDataParser.parseOutputValues(xmlData);
+									for (String outputValue : outputValues) {
+										if (outputValue != null) {
+											row.createCell(colNr).setCellValue(outputValue);
+										}
+										++colNr;
 									}
-									++colNr;
 								}
 
+								if ("FINISH_SLIDE".equalsIgnoreCase(eventName)) {
 								SlideDataParser.FieldWrapper wrapper = SlideDataParser.parseFields(xmlData);
 								Map<String, String> fieldCaptions = wrapper.getFieldCaptionMap();
 								Map<String, String> fieldValues = wrapper.getFieldValueMap();
@@ -890,6 +895,7 @@ public class ExportView extends VerticalLayout implements View {
 									}
 									row.createCell(colNr).setCellValue(fieldValue);
 								}
+							}
 							}
 							
 							if ("FINISH_BRANCH".equalsIgnoreCase(eventName)) {
