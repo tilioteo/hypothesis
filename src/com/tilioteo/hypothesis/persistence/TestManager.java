@@ -157,6 +157,8 @@ public class TestManager {
 		if (test != null) {
 			try {
 				testDao.beginTransaction();
+				testDao.clear();
+				test = testDao.merge(test);
 				testDao.makePersistent(test);
 				testDao.commit();
 				log.debug("test update finished");
@@ -210,8 +212,8 @@ public class TestManager {
 		log.debug("saveTestEventJoin");
 		SQLQuery query = AbstractHibernateDao.getSession().createSQLQuery(
 				"INSERT INTO " + TableConstants.TEST_EVENT_TABLE + " (" +
-						FieldConstants.PROPERTY_TEST_ID + "," +
-						FieldConstants.PROPERTY_EVENT_ID + "," +
+						FieldConstants.TEST_ID + "," +
+						FieldConstants.EVENT_ID + "," +
 						FieldConstants.RANK +
 						") VALUES (:testId,:eventId,:rank)");
 		query.setParameter("testId", test.getId());
