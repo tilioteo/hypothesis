@@ -66,7 +66,7 @@ public class SelectPanel extends MultipleComponentPanel<SelectButton> implements
             return Collections.unmodifiableCollection(selectedButtons);
         }
 	}
-
+	
 	public void setLabelPosition(LabelPosition labelPosition) {
 		if (this.labelPosition != labelPosition) {
 			this.labelPosition = labelPosition;
