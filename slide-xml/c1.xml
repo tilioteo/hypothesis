@@ -1,99 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SlideContent xmlns:maps="http://hypothesis.cz/xml/maps"
-	TemplateUID="E01DAC6E-EA48-4580-806C-9A7514A123E7">
+  TemplateUID="A79ACF72-629A-41C8-8A08-642BCA76CBC0">
 	<Bindings>
 		<Bind>
-			<Label Id="explanation">
-				<Properties>
-					<Caption
-						Value="&lt;center&gt;&lt;i&gt;&lt;font size='4'&gt;
-          Nakreslete čáru vedoucí z jeho horní hrany tak, aby měla stejnou &lt;b&gt;absolutní délku&lt;/b&gt;, jako čára v předchozím čtverci.&lt;br/&gt; 
-          Kreslit čáru začnete kliknutím myši na vyznačené místo na horní hraně čtverce a kresbu dokončíte současným stiskem tlačítka ALT a kliknutím myši.
-          &lt;/font&gt;&lt;/i&gt;&lt;/center&gt;" />
-				</Properties>
-			</Label>
-		</Bind>
-		<Bind>
-			<maps:Map Id="map1">
-				<Properties>
-					<Width Value="833" />
-					<Height Value="625" />
-				</Properties>
-
-				<Layers>
-					<ImageLayer Id="image_layer">
-						<Properties>
-							<Url Value="http://stampach.wz.cz/obr/TP1.png" />
-						</Properties>
-					</ImageLayer>
-
-					<FeatureLayer Id="feature_layer">
-						<Features>
-							<Feature Id="buffer">
-								<Properties>
-									<Hidden Value="false" />
-								</Properties>
-								<Geometry Value="POLYGON ((635 90,635 270,675 270,675 90,635 90))" />
-							</Feature>
-
-							<!-- pro testovaci ucely, potom ho cely zakomentuji -->
-							<Feature Id="start_point_visible">
-								<Properties>
-									<Hidden Value="false" />
-									<Style Value="point" />
-								</Properties>
-								<!--stred horni strany 655, 100 -->
-								<Geometry Value="POLYGON ((645 90,645 110,665 110,665 90,645 90))" />
-							</Feature>
-							<!-- tento je pro funkci kliknuti -->
-							<Feature Id="start_point">
-								<Properties>
-									<Hidden Value="true" />
-									<Style Value="point" />
-								</Properties>
-								<!--stred horni strany 655, 100 -->
-								<Geometry Value="POLYGON ((645 90,645 110,665 110,665 90,645 90))" />
-								<Handlers>
-									<Click>
-										<Expression>c=ComponentData->getCoordinate()</Expression>
-										<Expression>x1=c->x</Expression>
-										<Call Action="start_click" />
-									</Click>
-								</Handlers>
-							</Feature>
-						</Features>
-						<Handlers>
-							<Click>
-								<Call Action="click_count" />
-							</Click>
-						</Handlers>
-					</FeatureLayer>
-				</Layers>
-
-				<Styles>
-					<Style Id="point">
-						<StrokeColor Value="black" />
-						<StrokeWidth Value="3" />
-						<FillOpacity Value="0" />
-						<FontFamily Value="Arial" />
-						<FontSize Value="30" />
-						<TextColor Value="yellow" />
-					</Style>
-				</Styles>
-
-				<Controls>
-					<DrawPath Id="draw_path">
-						<Properties>
-							<LayerId Value="feature_layer" />
-						</Properties>
-						<Handlers>
-							<Draw>
-								<Call Action="draw_finished" />
-							</Draw>
-						</Handlers>
-					</DrawPath>
-				</Controls>
-			</maps:Map>
-		</Bind>
-	</Bindings>
+			<ImageSequenceLayer Id="sequence_layer">
+				<Images>
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10005/mapa_prazdna.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/mapa_staty.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/mapa_reky.png" />
+					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/mapa_mesta.png" />
+				</Images>
+			</ImageSequenceLayer>
+		</Bind>	</Bindings>
 </SlideContent>

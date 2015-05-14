@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SlideTemplate
-	xmlns:maps="http://hypothesis.cz/xml/maps"
-	UID="CF440686-3CC7-4656-9C7A-3D990545251A">
+<SlideTemplate xmlns:maps="http://hypothesis.cz/xml/maps"
+	UID="A80ACF72-629A-41C8-8A08-642BCA76CBC0">
 	<Viewport>
 		<VerticalLayout Id="ct001">
 			<Properties>
@@ -9,126 +8,447 @@
 				<Height Value="100%" />
 			</Properties>
 			<Components>
-				<HorizontalLayout Id="ct001_ct002">
+				<!--vrchná lišta -->
+				<HorizontalLayout Id="ct001_ct001">
 					<Properties>
 						<Width Value="100%" />
-						<Height Value="100%" />
+						<Height Value="10%" />
 						<Alignment Value="mc" />
 					</Properties>
 					<Components>
-						<maps:Map Id="map">
+						<Panel Id="ct001_ct001_ct001">  <!--popisok -->
 							<Properties>
-								<Width Value="675px" />
-								<Height Value="675px" />
+								<Border Value="True" />
+								<Width Value="90%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<VerticalLayout Id="ct001_ct001_ct001_ct001">
+									<Properties>
+										<Width Value="100%" />
+										<Height Value="100%" />
+										<Alignment Value="mc" />
+									</Properties>
+									<Components>
+										<Label Id="title">
+											<Properties>
+												<Caption Value="Záznam území výběrem států. Vyberte státy." />
+											</Properties>
+										</Label>
+									</Components>
+								</VerticalLayout>
+							</Components>
+						</Panel>
+
+						<HorizontalLayout Id="ct001_ct001_ct002">  <!--tlačítko - nápoveda -->
+							<Properties>
+								<Width Value="10%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+							<Components>
+								<Button Id="napoveda">
+									<Properties>
+										<Width Value="100%" />
+										<Height Value="100%" />
+										<Caption Value="Nápověda" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="showHelp" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+					</Components>
+				</HorizontalLayout>
+
+				<!--stred - na vyplnenie -->
+				<HorizontalLayout Id="ct001_ct002">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="75%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<HorizontalLayout Id="ct001_ct002_ct001">  <!--ľavý okraj -->
+							<Properties>
+								<Width Value="10%" />
+								<Height Value="100%" />
+							</Properties>
+						</HorizontalLayout>
+
+						<FormLayout Id="ct001_ct002_ct002">  <!--selectpanel 1 -->
+							<Properties>
+								<Border Value="True" />
+								<Width Value="10%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<SelectPanel Id="sp1">
+									<Properties>
+										<Width Value="95%" />
+										<Height Value="95%" />
+										<Orientation Value="Vertical" />
+										<MultiSelect Value="True" />
+										<Captions
+											Value="'Albánie','Andorra','Belgie','Bělorusko','Bosna a Her.',
+                                      'Bulharsko','Černá Hora','Česko','Dánsko','Estonsko',
+                                      'Finsko','Francie','Chorvatsko','Irsko','Island'" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Expression>selectPanel=spOne</Expression>
+											<Expression>indexArray=indexOne</Expression>
+											<Expression>index=ComponentData->getButtonIndex()</Expression>
+											<Expression>index=index-1</Expression>
+											<Call Action="selectClick" />
+										</Click>
+									</Handlers>
+								</SelectPanel>
+							</Components>
+						</FormLayout>
+
+						<FormLayout Id="ct001_ct002_ct003">  <!--selectpanel 2 -->
+							<Properties>
+								<Border Value="True" />
+								<Width Value="10%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<SelectPanel Id="sp2">
+									<Properties>
+										<Width Value="95%" />
+										<Height Value="95%" />
+										<Orientation Value="Vertical" />
+										<MultiSelect Value="True" />
+										<Captions
+											Value="'Itálie','Kosovo','Kypr','Lichtenštejnsko','Litva',
+                                      'Lotyšsko','Lucembursko','Maďarsko','Makedonie','Malta',
+                                      'Moldavsko','Německo','Nizozemsko','Norsko','Polsko'" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Expression>selectPanel=spTwo</Expression>
+											<Expression>indexArray=indexTwo</Expression>
+											<Expression>index=ComponentData->getButtonIndex()</Expression>
+											<Expression>index=index-1</Expression>
+											<Call Action="selectClick" />
+										</Click>
+									</Handlers>
+								</SelectPanel>
+							</Components>
+						</FormLayout>
+
+						<FormLayout Id="ct001_ct002_ct004">  <!--selectpanel 3 -->
+							<Properties>
+								<Border Value="True" />
+								<Width Value="10%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<SelectPanel Id="sp3">
+									<Properties>
+										<Width Value="95%" />
+										<Height Value="95%" />
+										<Orientation Value="Vertical" />
+										<MultiSelect Value="True" />
+										<Captions
+											Value="'Portugalsko','Rakousko','Rumunsko','Rusko','Řecko',
+                                      'San Marino','Slovensko','Slovinsko','Spojené Králov.','Srbsko',
+                                      'Španělsko','Švédsko','Švýcarsko','Ukrajina','Vatikán'" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Expression>selectPanel=spThree</Expression>
+											<Expression>indexArray=indexThree</Expression>
+											<Expression>index=ComponentData->getButtonIndex()</Expression>
+											<Expression>index=index-1</Expression>
+											<Call Action="selectClick" />
+										</Click>
+									</Handlers>
+								</SelectPanel>
+							</Components>
+						</FormLayout>
+
+						<HorizontalLayout Id="ct001_ct002_ct005">  <!--stredný okraj -->
+							<Properties>
+								<Width Value="5%" />
+								<Height Value="100%" />
+							</Properties>
+						</HorizontalLayout>
+
+						<maps:Map Id="map">               <!--mapa -->
+							<Properties>
+								<Width Value="553px" />
+								<Height Value="523px" />
+								<Alignment Value="mc" />
 							</Properties>
 							<Layers>
-								<ImageSequenceLayer Id="sequence_layer">
-									<Handlers>
-										<Load>
-											<Expression>map->unmask()</Expression>
-										</Load>
-										<Change>
-											<Call Action="tile_change" />
-										</Change>
-									</Handlers>
-								</ImageSequenceLayer>
+								<ImageLayer Id="image_layer">
+								</ImageLayer>
 								<FeatureLayer Id="feature_layer">
+									<Properties>
+										<Style Value="yellow" />
+										<HoverStyle Value="yellow_hover" />
+									</Properties>
 									<Features>
-										<Feature Id="ok_sign">
-											<Geometry Value="LINESTRING (100 100,150 150,250 50)" />
-											<Properties>
-												<Hidden Value="true" />
-												<Style Value="ok_style" />
-											</Properties>
+										<Feature Id="fr">
+											<Geometry Value="POLYGON ((186 271, 195 286, 227 306, 218 324, 213 324, 203 336, 211 340, 211 353, 208 360, 214 374, 202 380, 185 374, 168 375, 166 385, 154 381, 129 370, 125 361, 132 351, 138 327, 129 305, 118 296, 118 288, 132 289, 144 295, 145 278, 152 287, 174 280, 176 269, 186 271))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spOne</Expression>
+													<Expression>index=11</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
 										</Feature>
-										<Feature Id="fail_sign">
-											<Geometry Value="MULTILINESTRING ((100 100,150 150),(100 150,150 100))" />
-											<Properties>
-												<Hidden Value="true" />
-												<Style Value="fail_style" />
-											</Properties>
+
+										<Feature Id="es">
+											<Geometry Value="POLYGON ((166 386, 156 398, 141 396, 126 414, 129 426, 119 430, 117 438, 108 438, 100 445, 73 438, 60 441, 53 427, 47 422, 55 410, 56 391, 75 372, 75 365, 59 362, 62 354, 53 354, 53 343, 70 337, 86 349, 108 357, 127 361, 129 371, 166 386))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spThree</Expression>
+													<Expression>index=10</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
+										</Feature>
+
+										<Feature Id="pt">
+											<Geometry Value="POLYGON ((74 366, 75 374, 55 393, 54 413, 45 422, 39 424, 29 420, 38 403, 32 396, 36 385, 45 378, 51 370, 51 354, 63 356, 60 363, 74 366))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spThree</Expression>
+													<Expression>index=0</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
+										</Feature>
+
+										<Feature Id="gb">
+											<Geometry Value="POLYGON ((167 164, 154 175, 171 178, 167 189, 155 197, 165 201, 167 219, 171 222, 173 243, 184 249, 178 257, 176 260, 176 267, 167 271, 156 268, 141 269, 141 264, 130 269, 125 267, 114 268, 115 262, 139 254, 127 250, 127 243, 137 242, 134 233, 136 224, 147 229, 153 222, 150 212, 138 208, 145 199, 142 193, 136 200, 138 185, 138 176, 154 157, 167 164))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spThree</Expression>
+													<Expression>index=8</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
+										</Feature>
+
+										<Feature Id="is">
+											<Geometry Value="POLYGON ((82 25, 94 29, 98 40, 108 37, 113 44, 124 41, 135 46, 126 51, 130 66, 118 70, 93 70, 72 51, 80 48, 74 38, 85 40, 85 38, 75 30, 82 25))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spOne</Expression>
+													<Expression>index=14</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
+										</Feature>
+
+										<Feature Id="no">
+											<Geometry Value="POLYGON ((261 170, 245 184, 233 185, 223 176, 228 133, 240 123, 267 108, 296 64, 324 40, 340 39, 347 27, 358 28, 366 27, 381 31, 375 36, 382 43, 368 51, 370 41, 362 38, 355 42, 351 58, 330 51, 323 56, 322 62, 312 60, 310 65, 304 65, 297 87, 285 104, 290 108, 285 115, 280 114, 273 124, 272 143, 277 151, 274 165, 262 178, 261 170))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spTwo</Expression>
+													<Expression>index=13</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
+										</Feature>
+
+										<Feature Id="se">
+											<Geometry Value="POLYGON ((327 55, 344 68, 345 85, 350 91, 334 93, 331 104, 333 112, 310 131, 306 149, 312 159, 320 166, 310 182, 302 182, 301 207, 295 217, 287 215, 283 225, 274 226, 273 214, 266 193, 262 176, 277 167, 279 150, 273 141, 274 119, 284 114, 287 116, 292 109, 286 105, 298 87, 305 66, 311 66, 314 60, 324 61, 327 55))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spThree</Expression>
+													<Expression>index=11</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
+										</Feature>
+
+										<Feature Id="fi">
+											<Geometry Value="POLYGON ((368 53, 370 61, 377 63, 374 76, 385 89, 380 101, 389 109, 389 118, 398 123, 397 128, 380 156, 366 157, 344 168, 341 159, 334 156, 336 142, 332 132, 339 113, 358 100, 356 92, 348 91, 345 86, 345 69, 327 55, 333 51, 352 58, 356 40, 366 38, 372 42, 368 53))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spOne</Expression>
+													<Expression>index=10</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
+										</Feature>
+
+										<Feature Id="de">
+											<Geometry Value="POLYGON ((241 229, 250 229, 252 235, 260 239, 258 242, 272 238, 283 246, 281 258, 287 283, 280 283, 263 291, 266 301, 274 312, 267 318, 269 331, 262 327, 239 328, 228 321, 219 323, 227 304, 214 295, 213 288, 214 277, 216 265, 220 264, 227 242, 235 243, 238 249, 241 239, 241 229))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spTwo</Expression>
+													<Expression>index=11</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
+										</Feature>
+
+										<Feature Id="pl">
+											<Geometry Value="POLYGON ((283 247, 312 230, 321 236, 319 240, 352 239, 358 251, 360 260, 354 263, 364 290, 357 293, 352 301, 353 310, 345 303, 336 304, 331 302, 328 307, 324 302, 318 304, 317 297, 309 296, 311 292, 303 290, 302 294, 298 292, 297 286, 287 284, 280 256, 283 247))" />
+											<Handlers>
+												<Click>
+													<Expression>selectPanel=spTwo</Expression>
+													<Expression>index=14</Expression>
+													<Expression>feature=ComponentData->getSender()</Expression>
+													<Call Action="featureClick" />
+												</Click>
+											</Handlers>
 										</Feature>
 									</Features>
 								</FeatureLayer>
 							</Layers>
 							<Styles>
-								<Style Id="ok_style">
-									<StrokeColor Value="#00ff00" />
-									<StrokeWidth Value="5" />
-									<FillOpacity Value="0" />
+								<Style Id="yellow">
+									<StrokeColor Value="yellow" />
+									<FillColor Value="yellow" />
+									<StrokeWidth Value="3" />
+									<FillOpacity Value="0.1" />
 								</Style>
-								<Style Id="fail_style">
-									<StrokeColor Value="red" />
+								<Style Id="yellow_hover">
+									<StrokeColor Value="yellow" />
+									<FillColor Value="yellow" />
 									<StrokeWidth Value="5" />
-									<FillOpacity Value="0" />
+									<FillOpacity Value="0.3" />
+								</Style>
+								<Style Id="red">
+									<StrokeColor Value="red" />
+									<FillColor Value="red" />
+									<StrokeWidth Value="3" />
+									<FillOpacity Value="0.3" />
+								</Style>
+								<Style Id="red_hover">
+									<StrokeColor Value="red" />
+									<FillColor Value="red" />
+									<StrokeWidth Value="5" />
+									<FillOpacity Value="0.5" />
 								</Style>
 							</Styles>
 						</maps:Map>
+
+						<HorizontalLayout Id="ct001_ct002_ct007">  <!--pravý okraj -->
+							<Properties>
+								<Width Value="10%" />
+								<Height Value="100%" />
+							</Properties>
+						</HorizontalLayout>
 					</Components>
+				</HorizontalLayout>
+
+				<!--spodná lišta -->
+				<HorizontalLayout Id="ct001_ct003">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="10%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct003_ct001">  <!--miesto naľavo od tlačítka -->
+							<Properties>
+								<Border Value="False" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+
+						<HorizontalLayout Id="ct001_ct003_ct002">  <!--tlačítko - pokračovanie ďalej -->
+							<Properties>
+								<Width Value="10%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+							<Components>
+								<Button Id="button">
+									<Properties>
+										<Width Value="80%" />
+										<Height Value="80%" />
+										<Caption Value="pokračování dále" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="nextSlide" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+
+						<Panel Id="ct001_ct003_ct003">  <!--miesto napravo od tlačítka -->
+							<Properties>
+								<Border Value="False" />
+								<Width Value="10%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+
+					</Components>
+				</HorizontalLayout>
+
+				<!--zápätie (voľný priestor na spodku) -->
+				<HorizontalLayout Id="ct001_ct004">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="5%" />
+						<Alignment Value="mc" />
+					</Properties>
 				</HorizontalLayout>
 			</Components>
 		</VerticalLayout>
 	</Viewport>
 	<Handlers>
 		<Init>
-			<Expression>map->mask()</Expression>
-			<Expression>tilesCount=seqLayer->getTilesCount()</Expression>
+			<Expression>styleYellow=map->getStyle("yellow")</Expression>
+			<Expression>styleYellowH=map->getStyle("yellow_hover")</Expression>
+			<Expression>styleRed=map->getStyle("red")</Expression>
+			<Expression>styleRedH=map->getStyle("red_hover")</Expression>
 		</Init>
-		<Shortcut Key="Left">
-			<Expression>key=1</Expression>
-			<Call Action="key_press" />
-		</Shortcut>
-		<Shortcut Key="Right">
-			<Expression>key=2</Expression>
-			<Call Action="key_press" />
-		</Shortcut>
-		<Shortcut Key="Up">
-			<Expression>key=3</Expression>
-			<Call Action="key_press" />
-		</Shortcut>
-		<Shortcut Key="Down">
-			<Expression>key=4</Expression>
-			<Call Action="key_press" />
-		</Shortcut>
 	</Handlers>
-	<Timers>
-		<Timer Id="tile_timer">
+
+	<Windows>
+		<Window Id="help_window">
 			<Properties>
-				<Time Value="5000" />
+				<Width Value="1101" />
+				<Height Value="440" />
 			</Properties>
-			<Handlers>
-				<Stop>
-					<Call Action="next_tile" />
-				</Stop>
-			</Handlers>
-		</Timer>
-	</Timers>
+			<Components>
+				<HorizontalLayout Id="ct002_ct001">
+					<Components>
+						<Image Id="help_image">
+							<Properties>
+								<Width Value="991" />
+								<Height Value="330" />
+								<Url
+									Value="http://hypothesis.cz/gallery/albums/userpics/10005/informace.png" />
+							</Properties>
+						</Image>
+					</Components>
+				</HorizontalLayout>
+			</Components>
+		</Window>
+	</Windows>
+
 	<Variables>
-		<Variable Id="result" Type="Float" Value="0" />
-		<Variable Id="rightCount" Type="Float" Value="0" />
-		<Variable Id="tilesCount" Type="Integer" Value="0" />
-		<Variable Id="index" Type="Integer" Value="0" />
-		<Variable Id="key" Type="Integer" Value="0" />
-		<Variable Id="answerKey" Type="Integer" Value="0" />
-		<Variable Id="keysDisabled" Type="Boolean" Value="true" />
-		<Variable Id="tileTimer" Type="Object">
+		<Variable Id="napoveda" Type="Object">
 			<Reference>
-				<Timer Id="tile_timer" />
-			</Reference>
-		</Variable>
-		<Variable Id="okMarker" Type="Object">
-			<Reference>
-				<Component Id="ok_sign" />
-			</Reference>
-		</Variable>
-		<Variable Id="failMarker" Type="Object">
-			<Reference>
-				<Component Id="fail_sign" />
-			</Reference>
-		</Variable>
-		<Variable Id="seqLayer" Type="Object">
-			<Reference>
-				<Component Id="sequence_layer" />
+				<Window Id="help_window" />
 			</Reference>
 		</Variable>
 		<Variable Id="map" Type="Object">
@@ -136,73 +456,94 @@
 				<Component Id="map" />
 			</Reference>
 		</Variable>
-		<Variable Id="answerKeys" Type="IntegerArray" />
+		<Variable Id="spOne" Type="Object">
+			<Reference>
+				<Component Id="sp1" />
+			</Reference>
+		</Variable>
+		<Variable Id="spTwo" Type="Object">
+			<Reference>
+				<Component Id="sp2" />
+			</Reference>
+		</Variable>
+		<Variable Id="spThree" Type="Object">
+			<Reference>
+				<Component Id="sp3" />
+			</Reference>
+		</Variable>
+		<Variable Id="indexOne" Type="StringArray" Values="'al','an','be','bl','bh','bg','mn','cz','dk','ee','fi','fr','cr','ir','is'"/>
+		<Variable Id="indexTwo" Type="StringArray" Values="'it','ko','cy','li','lt','lv','lx','hu','mk','ma','mo','de','nl','no','pl'"/>
+		<Variable Id="indexThree" Type="StringArray" Values="'pt','at','ro','ru','gr','sm','sk','sl','gb','sr','es','se','sw','ua','va'"/>
+		
+		<Variable Id="index" Type="Integer" Value="0" />
+		<Variable Id="calc" Type="Integer" Value="0" />
+		<Variable Id="isSelected" Type="Boolean" Value="false" />
+		<Variable Id="notNull" Type="Boolean" Value="false" />
+		<Variable Id="featureId" Type="String" Value="" />
+		<Variable Id="selectPanel" Type="Object" />
+		<Variable Id="indexArray" Type="Object" />
+		<Variable Id="feature" Type="Object" />
+		<Variable Id="NULL" Type="Object" /> <!-- variable s hodnotou null -->
+		<Variable Id="styleYellow" Type="Object" />
+		<Variable Id="styleYellowH" Type="Object" />
+		<Variable Id="styleRed" Type="Object" />
+		<Variable Id="styleRedH" Type="Object" />
 	</Variables>
+
 	<Actions>
 		<Action Id="nextSlide">
 			<Expression>Navigator->next()</Expression>
 		</Action>
-		<Action Id="calc_result">
-			<Expression>result=rightCount/tilesCount</Expression>
+		<Action Id="showHelp">
+			<Expression>napoveda->open()</Expression>
 		</Action>
-		<Action Id="hide_markers">
-			<Expression>okMarker->setHidden(true)</Expression>
-			<Expression>failMarker->setHidden(true)</Expression>
-		</Action>
-		<Action Id="disable_keys">
-			<Expression>keysDisabled=true</Expression>
-		</Action>
-		<Action Id="enable_keys">
-			<Expression>keysDisabled=false</Expression>
-		</Action>
-		<Action Id="show_ok_marker">
-			<Expression>okMarker->setHidden(false)</Expression>
-		</Action>
-		<Action Id="show_fail_marker">
-			<Expression>failMarker->setHidden(false)</Expression>
-		</Action>
-		<Action Id="start_tile_timer">
-			<Expression>tileTimer->start()</Expression>
-		</Action>
-		<Action Id="tile_change">
-			<Call Action="enable_keys" />
-			<Expression>index=seqLayer->getTileIndex()</Expression>
-			<Expression>answerKey=answerKeys->get(index)</Expression>
-			<Call Action="start_tile_timer" />
-		</Action>
-		<Action Id="key_press">
+		<Action Id="setSelectedStyle">
+			<Expression>notNull=feature!=NULL</Expression>
 			<If>
-				<Expression>!keysDisabled</Expression>
+				<Expression>notNull</Expression>
 				<True>
-					<Call Action="disable_keys" />
-					<If>
-						<Expression>answerKey==key</Expression>
-						<True>
-							<Expression>rightCount=rightCount+1</Expression>
-							<Call Action="show_ok_marker" />
-						</True>
-						<False>
-							<Call Action="show_fail_marker" />
-						</False>
-					</If>
+					<Expression>feature->setStyle(styleRed)</Expression>
+					<Expression>feature->setHoverStyle(styleRedH)</Expression>
 				</True>
 			</If>
 		</Action>
-		<Action Id="next_tile">
-			<Call Action="hide_markers" />
+		<Action Id="setNormalStyle">
+			<Expression>notNull=feature!=NULL</Expression>
 			<If>
-				<Expression>index&lt;tilesCount-1</Expression>
+				<Expression>notNull</Expression>
 				<True>
-					<Expression>seqLayer->nextTile()</Expression>
+					<Expression>feature->setStyle(styleYellow)</Expression>
+					<Expression>feature->setHoverStyle(styleYellowH)</Expression>
+				</True>
+			</If>
+		</Action>
+		<Action Id="featureClick">
+			<Expression>isSelected=selectPanel->isSelected(index)</Expression>
+			<If>
+				<Expression>isSelected</Expression>
+				<True>
+					<Expression>selectPanel->setSelected(index, false)</Expression>
+					<Call Action="setNormalStyle" />
 				</True>
 				<False>
-					<Call Action="calc_result" />
-					<Call Action="nextSlide" />
+					<Expression>selectPanel->setSelected(index, true)</Expression>
+					<Call Action="setSelectedStyle" />
+				</False>
+			</If>
+		</Action>
+		<Action Id="selectClick">
+			<Expression>featureId=indexArray->get(index)</Expression>
+			<Expression>feature=Document->getComponentById(featureId)</Expression>
+			<Expression>isSelected=selectPanel->isSelected(index)</Expression>
+			<If>
+				<Expression>isSelected</Expression>
+				<True>
+					<Call Action="setSelectedStyle" />
+				</True>
+				<False>
+					<Call Action="setNormalStyle" />
 				</False>
 			</If>
 		</Action>
 	</Actions>
-	<OutputValue>
-		<Expression>result</Expression>
-	</OutputValue>
 </SlideTemplate>

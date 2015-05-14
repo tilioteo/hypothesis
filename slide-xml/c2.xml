@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SlideContent TemplateUID="2C2A3A99-12E2-4373-8B31-114B7306D50A">
+<SlideContent TemplateUID="E5A92D1C-EB1C-45B3-B8A0-64645DAB3E5E">
 	<Bindings>
 		<Bind>
-			<ImageSequenceLayer Id="sequence_layer">
-				<Images>
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_cervena.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_modra.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_zelena.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_dole.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_nahore.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_dole_tlacitko.png" />
-					<Image Url="http://hypothesis.cz/gallery/albums/userpics/10001/normal_nahore_tlacitko.png" />
-				</Images>
-			</ImageSequenceLayer>
+			<Label Id="title">
+				<Properties>
+					<Caption Value="&lt;h2&gt;Zakreslete bod, linii a polygon.&lt;/h2&gt;&lt;h3&gt;Poslední bod linie zadejte dvojklikem, polygonu kliknutím s klávesou Alt.&lt;/h3&gt;" />
+				</Properties>
+			</Label>
 		</Bind>
 		<Bind>
-			<Variable Id="answerKeys" Values="1,2,3,4,3,4,3" />
+			<ImageLayer Id="image_layer">
+				<Properties>
+					<Url Value="http://hypothesis.cz/gallery/albums/userpics/10005/mapa_prazdna.png" />
+				</Properties>
+			</ImageLayer>
 		</Bind>
 	</Bindings>
 </SlideContent>

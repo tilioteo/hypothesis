@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SlideTemplate xmlns:maps="http://hypothesis.cz/xml/maps"
-	UID="E01DAC6E-EA48-4580-806C-9A7514A123E7">
+	UID="A79ACF72-629A-41C8-8A08-642BCA76CBC0">
 	<Viewport>
 		<VerticalLayout Id="ct001">
 			<Properties>
@@ -9,129 +9,258 @@
 			</Properties>
 			<Components>
 
-				<HorizontalLayout Id="ct001_ct001">	<!--nadpis a zahlavi -->
+				<!--vrchná lišta -->
+				<HorizontalLayout Id="ct001_ct001">
 					<Properties>
 						<Width Value="100%" />
-						<Height Value="6%" />
+						<Height Value="10%" />
 						<Alignment Value="mc" />
 					</Properties>
 					<Components>
-						<VerticalLayout Id="ct001_ct001_ct001">
-							<Properties>
-								<Width Value="100%" />
-								<Height Value="100%" />
-								<Alignment Value="mc" />
-							</Properties>
-							<Components>
-								<Label Id="title">
-								</Label>
-							</Components>
-						</VerticalLayout>
-					</Components>
-				</HorizontalLayout>
 
-				<HorizontalLayout Id="ct001_ct002"> <!--vysvetlivky -->
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="15%" />
-					</Properties>
-					<Components>
-						<Panel Id="ct001_ct002_ct001">
+						<Panel Id="ct001_ct001_ct001">  <!--popisok -->
 							<Properties>
-								<Width Value="100%" />
+								<Border Value="True" />
+								<Width Value="90%" />
 								<Height Value="100%" />
 							</Properties>
 							<Components>
-								<VerticalLayout Id="ct001_ct002_ct001_ct001">
+								<VerticalLayout Id="ct001_ct001_ct001_ct001">
 									<Properties>
 										<Width Value="100%" />
 										<Height Value="100%" />
+										<Alignment Value="mc" />
 									</Properties>
 									<Components>
-										<Label Id="explanation">
+										<Label Id="title">
 											<Properties>
-												<Width Value="90%" />
+												<Caption Value="Možnost nastavení map. obsahu" />
 											</Properties>
 										</Label>
 									</Components>
 								</VerticalLayout>
 							</Components>
 						</Panel>
-					</Components>
-				</HorizontalLayout>
 
-				<HorizontalLayout Id="ct001_ct003">
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="73%" />
-						<Alignment Value="mc" />
-					</Properties>
-					<Components>
-						<maps:Map Id="map1">
+						<HorizontalLayout Id="ct001_ct001_ct002"> <!--tlačítko - nápoveda -->
 							<Properties>
-								<Width Value="80%" />
-							</Properties>
-						</maps:Map>
-					</Components>
-				</HorizontalLayout>
-
-				<HorizontalLayout Id="ct001_ct004">	<!-- zapati -->
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="6%" />
-						<Alignment Value="mc" />
-					</Properties>
-					<Components>
-						<VerticalLayout Id="ct001_ct004_ct001">
-							<Properties>
-								<Width Value="100%" />
+								<Width Value="10%" />
 								<Height Value="100%" />
 								<Alignment Value="mc" />
 							</Properties>
-						</VerticalLayout>
+							<Components>
+								<Button Id="napoveda">
+									<Properties>
+										<Width Value="100%" />
+										<Height Value="100%" />
+										<Caption Value="Nápověda" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="showHelp" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+
 					</Components>
+				</HorizontalLayout>
+
+
+				<!--stred - na vyplnenie -->
+				<HorizontalLayout Id="ct001_ct002">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="75%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+
+						<HorizontalLayout Id="ct001_ct002_ct001">  <!--ľavý okraj -->
+							<Properties>
+								<Width Value="10%" />
+								<Height Value="100%" />
+							</Properties>
+						</HorizontalLayout>
+
+						<FormLayout Id="ct001_ct002_ct002"> <!--selectpanel -->
+							<Properties>
+								<Border Value="True" />
+								<Width Value="30%" />
+								<Height Value="60%" />
+							</Properties>
+							<Components>
+								<SelectPanel Id="sp">
+									<Properties>
+										<Width Value="95%" />
+										<Height Value="60%" />
+										<Orientation Value="Vertical" />
+										<Caption Value="Zvolte vrstvy mapy:" />
+										<Captions
+											Value="'státy','názvy / zkratky států','vodní toky','významná města'" />
+									</Properties>
+									<Validators>
+										<Empty>
+											<Message>Musí být vybráno.</Message>
+										</Empty>
+									</Validators>
+									<Handlers>
+										<Click>
+											<Expression>mapIndex=ComponentData->getButtonIndex()</Expression>
+											<Call Action="selectMap" />
+										</Click>
+									</Handlers>
+								</SelectPanel>
+							</Components>
+						</FormLayout>
+
+						<HorizontalLayout Id="ct001_ct002_ct003">  <!--stredný okraj -->
+							<Properties>
+								<Width Value="5%" />
+								<Height Value="100%" />
+							</Properties>
+						</HorizontalLayout>
+
+						<maps:Map Id="ct001_ct002_ct004">               <!--mapa -->
+							<Properties>
+								<Width Value="45%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+							<Layers>
+								<ImageSequenceLayer Id="sequence_layer">
+								</ImageSequenceLayer>
+							</Layers>
+						</maps:Map>
+
+						<HorizontalLayout Id="ct001_ct002_ct005">  <!--pravý okraj -->
+							<Properties>
+								<Width Value="10%" />
+								<Height Value="100%" />
+							</Properties>
+						</HorizontalLayout>
+
+					</Components>
+				</HorizontalLayout>
+
+
+				<!--spodná lišta -->
+				<HorizontalLayout Id="ct001_ct003">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="10%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+
+						<Panel Id="ct001_ct003_ct001">  <!--miesto naľavo od tlačítka -->
+							<Properties>
+								<Border Value="False" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+
+						<HorizontalLayout Id="ct001_ct003_ct002"> <!--tlačítko - pokračovanie ďalej -->
+							<Properties>
+								<Width Value="10%" />
+								<Height Value="100%" />
+								<Alignment Value="mc" />
+							</Properties>
+							<Components>
+								<Button Id="button">
+									<Properties>
+										<Width Value="80%" />
+										<Height Value="80%" />
+										<Caption Value="pokračování dále" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="nextSlide" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+
+						<Panel Id="ct001_ct003_ct003">  <!--miesto napravo od tlačítka -->
+							<Properties>
+								<Border Value="False" />
+								<Width Value="10%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+
+					</Components>
+				</HorizontalLayout>
+
+
+				<!--zápätie (voľný priestor na spodku) -->
+				<HorizontalLayout Id="ct001_ct003">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="5%" />
+						<Alignment Value="mc" />
+					</Properties>
 				</HorizontalLayout>
 
 			</Components>
 		</VerticalLayout>
 	</Viewport>
 
-	<Handlers>
-		<Show>
-			<!--<Call Action="activatePath" /> -->
-		</Show>
-	</Handlers>
-
 	<Variables>
-		<Variable Id="cara" Type="Object">
+		<Variable Id="napoveda" Type="Object">
 			<Reference>
-				<Component Id="draw_path" />
+				<Window Id="help_window" />
 			</Reference>
 		</Variable>
-		<Variable Id="clickCounter" Type="Integer" Value="0" />
-		<Variable Id="vysledek" Type="Integer" Value="0" />
-		<Variable Id="started" Type="Boolean" Value="false" />
+		<Variable Id="mapIndex" Type="Integer" Value="0" />
+		<Variable Id="calc" Type="Integer" Value="0" />
+		<Variable Id="seqLayer" Type="Object">
+			<Reference>
+				<Component Id="sequence_layer" />
+			</Reference>
+		</Variable>
 	</Variables>
 
 	<Actions>
-		<Action Id="activatePath">
-			<Expression>cara->activate()</Expression>
-		</Action>
-		<Action Id="click_count">
-			<Expression>clickCounter=clickCounter+1</Expression>
-		</Action>
-		<Action Id="start_click">
-			<Expression>started=true</Expression>
-		</Action>
-		<Action Id="draw_finished">
-			<Call Action="nextSlide" />
-		</Action>
 		<Action Id="nextSlide">
 			<Expression>Navigator->next()</Expression>
 		</Action>
+		<Action Id="showHelp">
+			<Expression>napoveda->open()</Expression>
+		</Action>
+		<Action Id="selectMap">
+			<Expression>calc=mapIndex-1</Expression>
+			<Expression>seqLayer->setTileIndex(calc)</Expression>
+		</Action>
 	</Actions>
 
-	<OutputValue>
-		<Expression>clickCounter</Expression>
-	</OutputValue>
+	<Windows>
+		<Window Id="help_window">
+			<Properties>
+				<Width Value="1101" />
+				<Height Value="440" />
+			</Properties>
+			<Components>
+				<HorizontalLayout Id="ct002_ct001">
+					<Components>
+						<Image Id="help_image">
+							<Properties>
+								<Width Value="991" />
+								<Height Value="330" />
+								<Url
+									Value="http://hypothesis.cz/gallery/albums/userpics/10005/informace.png" />
+							</Properties>
+						</Image>
+					</Components>
+				</HorizontalLayout>
+			</Components>
+		</Window>
+	</Windows>
+	
+	<OutputValue1>
+		<Expression>mapIndex</Expression>
+	</OutputValue1>
 </SlideTemplate>

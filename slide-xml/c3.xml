@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SlideContent TemplateUID="3E42107E-8ED9-11E1-B333-CDEFBAE59B18">
+<SlideContent xmlns:maps="http://hypothesis.cz/xml/maps"
+	TemplateUID="A80ACF72-629A-41C8-8A08-642BCA76CBC0">
 	<Bindings>
 		<Bind>
-			<Panel Id="ct001_ct001_ct001">
+			<ImageLayer Id="image_layer">
 				<Properties>
-					<Caption Value="Klikněte na křížek" />
+					<Url Value="http://hypothesis.cz/gallery/albums/userpics/10005/mapa_prazdna.png" />
 				</Properties>
-			</Panel>
-		</Bind>
-		<Bind>
-			<Image Id="ct001_ct002_ct001">
-				<Properties>
-					<Width Value="907" />
-					<Height Value="581" />
-					<Url Value="http://www.imagehosting.cz/images/zacvicnaul.jpg" />
-				</Properties>
-			</Image>
+			</ImageLayer>
 		</Bind>
 	</Bindings>
 </SlideContent>

@@ -306,8 +306,7 @@ public class UsersManagementView extends VerticalLayout
 			users = userManager.findOwnerUsers(loggedUser);
 		}	
 		for (User user : users) {
-			//user = userManager.merge(user);
-			user = persistenceManager.merge(user);
+			user = userManager.merge(user);
 			dataSource.addBean(user);
 		}
 		table.setContainerDataSource(dataSource);
@@ -369,8 +368,7 @@ public class UsersManagementView extends VerticalLayout
 	public Object generateCell(Table source, Object itemId, Object columnId) {
 		if (columnId.equals(FieldConstants.ROLES)) {
 			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
-			//user = userManager.merge(user);
-			user = persistenceManager.merge(user);
+			user = userManager.merge(user);
 			
 			Set<Role> roles = user.getRoles();
 			List<String> sortedRoles = new ArrayList<String>();
@@ -398,8 +396,7 @@ public class UsersManagementView extends VerticalLayout
 		
 		else if (columnId.equals(FieldConstants.GROUPS)) {
 			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
-			//user = userManager.merge(user);
-			user = persistenceManager.merge(user);
+			user = userManager.merge(user);
 			
 			Set<Group> groups = user.getGroups();
 			List<String> sortedGroups = new ArrayList<String>();
@@ -506,7 +503,7 @@ public class UsersManagementView extends VerticalLayout
 		
 		for (Iterator<User> iterator = users.iterator(); iterator.hasNext(); ) {
 			User user = iterator.next();
-			user = persistenceManager.merge(user);
+			user = userManager.merge(user);
 
 			userManager.delete(user);
 			

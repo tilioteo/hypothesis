@@ -16,7 +16,6 @@ import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.persistence.GroupManager;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.RoleManager;
 import com.tilioteo.hypothesis.persistence.UserManager;
 import com.tilioteo.hypothesis.ui.form.GroupFormFields;
@@ -68,8 +67,6 @@ public class GroupWindow extends Window {
 	private UserManager userManager;
 	private PermissionManager permissionManager;
 	
-	private PersistenceManager persistenceManager;
-	
 	private TabSheet tabSheet;
 	private Component groupDetailsTab;
 
@@ -102,8 +99,6 @@ public class GroupWindow extends Window {
         permissionManager = PermissionManager.newInstance();
         groupForm = new GroupFormFields();
         
-        persistenceManager = PersistenceManager.newInstance();
-
         center();
         setCloseShortcut(KeyCode.ESCAPE, null);
         setResizable(false);
@@ -197,7 +192,7 @@ public class GroupWindow extends Window {
 
 	private void fillFields(Group group) {
 		//group = groupManager.merge(group);
-		group = persistenceManager.merge(group);
+		group = groupManager.merge(group);
 		
 		groupForm.getIdField().setValue(group.getId().toString());
 		groupForm.getNameField().setValue(group.getName());
@@ -444,7 +439,7 @@ public class GroupWindow extends Window {
         	group.setOwnerId(loggedUser.getId());
         } else {
     		//group = groupManager.merge(group);
-    		group = persistenceManager.merge(group);
+    		group = groupManager.merge(group);
         }
 		
 		if (!(state.equals(State.MULTIUPDATE))) {
