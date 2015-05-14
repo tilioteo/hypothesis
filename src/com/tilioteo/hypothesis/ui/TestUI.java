@@ -13,10 +13,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
-import com.tilioteo.hypothesis.intercom.HasEventBus;
-import com.tilioteo.hypothesis.intercom.HasUIMap;
-import com.tilioteo.hypothesis.intercom.UIMap;
-import com.tilioteo.hypothesis.intercom.UIWrapper;
+import com.tilioteo.hypothesis.broadcast.Broadcaster;
+import com.tilioteo.hypothesis.broadcast.Broadcaster.BroadcastListener;
 import com.tilioteo.hypothesis.slide.ui.VerticalLayout;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
@@ -33,25 +31,11 @@ import com.vaadin.ui.Notification;
 @SuppressWarnings({ "serial", "unused" })
 @Theme("hypothesis")
 @Push
-public class TestUI extends HUI implements HasEventBus {
+public class TestUI extends HUI implements BroadcastListener /*HasEventBus*/ {
 
 	@WebServlet(value = "/test/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = TestUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
-	public static class Servlet extends VaadinServlet implements HasUIMap {
-		
-		private UIMap uiMap;
-
-		@Override
-		public void init(ServletConfig servletConfig) throws ServletException {
-			super.init(servletConfig);
-			
-			uiMap = new UIMap();
-		}
-		
-		@Override
-		public UIMap getUIMap() {
-			return uiMap;
-		}
+	public static class Servlet extends VaadinServlet {
 	}
 	
 	EventBus eventBus = new EventBus(new SubscriberExceptionHandler() {
@@ -80,24 +64,12 @@ public class TestUI extends HUI implements HasEventBus {
 		setContent(verticalLayout);
 		
 		
-		UIMap uiMap = HasUIMap.Getter.getCurrentUIMap();
-		if (uiMap != null) {
-			uiMap.extractFromRequest(request);
-			
-			Collection<UIWrapper> uiWrappers = uiMap.values();
-			
-			for (UIWrapper uiWrapper : uiWrappers) {
-				Class<?> clazz = uiWrapper.getUi().getClass();
-				String s = clazz.getName();
-			}
-		}
-		
-		eventBus.register(this);
+		Broadcaster.register(this);
 		
 		Button button = new Button("Broadcast", new Button.ClickListener() {
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				HasUIMap.Broadcaster.post(new TestEvent());
+				Broadcaster.broadcastExcept(TestUI.this, "Button pushed.");
 			}
 		});
 		
@@ -105,11 +77,6 @@ public class TestUI extends HUI implements HasEventBus {
 		
 	}
 
-	@Override
-	public void post(Object event) {
-		eventBus.post(event);
-	}
-	
 	@Subscribe
 	public void onTestEvent(TestEvent event) {
 		getUI().access(new Runnable() {
@@ -122,5 +89,22 @@ public class TestUI extends HUI implements HasEventBus {
 
 	public static class TestEvent {
 		
+	}
+
+	@Override
+	public void receiveBroadcast(final String message) {
+		// Must lock the session to execute logic safely
+		access(new Runnable() {
+			@Override
+			public void run() {
+				Notification.show("Broadcast event recieved: " + message);
+			}
+		});
+	}
+	
+	@Override
+	public void detach() {
+		Broadcaster.unregister(this);
+		super.detach();
 	}
 }
