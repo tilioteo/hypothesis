@@ -56,6 +56,8 @@ public class DeployJava extends AbstractExtension {
 			} catch (Exception e) {
 				fireEvent(new JavaCheckedEvent(ui, null));
 			}
+			
+			getUI().setPollInterval(-1);
 		}
 	};
 
@@ -188,7 +190,7 @@ public class DeployJava extends AbstractExtension {
 		private int checkCount = 0;
 		private Label label = new Label();
 		private InstallLink link = new InstallLink(installLinkText);
-		private Timer timer = new Timer();
+		private transient Timer timer = new Timer();
 		
 		private DeployJava deployJava;
 		private String javaVersion;
@@ -248,6 +250,14 @@ public class DeployJava extends AbstractExtension {
 			}
 			
 		};
+		
+		@Override
+		public void detach() {
+			getUI().setPollInterval(-1);
+			timer.cancel();
+			
+			super.detach();
+		}
 		
 		private JavaWindowClosedListener closedListener = new JavaWindowClosedListener() {
 			@Override
