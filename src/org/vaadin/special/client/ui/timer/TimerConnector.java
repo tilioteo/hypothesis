@@ -112,7 +112,7 @@ public class TimerConnector extends AbstractNonVisualComponentConnector implemen
 
 	@Override
 	public void update(final UpdateEvent event) {
-		//getRpcProxy(TimerServerRpc.class).update(event.getTime(), event.getDirection().name(), event.getInterval());
+		getRpcProxy(TimerServerRpc.class).update(event.getTime(), event.getDirection().name(), event.getInterval());
 	}
 
 }

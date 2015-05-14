@@ -96,4 +96,12 @@ public class VTimer extends Widget {
 		return timer.getHandledIntervals();
 	}
 
+	@Override
+	protected void onDetach() {
+		if (timer != null) {
+			timer.stop(true);
+		}
+		
+		super.onDetach();
+	}
 }

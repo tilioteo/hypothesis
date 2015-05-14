@@ -39,18 +39,18 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 
 		@Override
 		public void stopped(long timestamp, long time, String direction, boolean paused) {
-			clientStopped(timestamp, paused);
+			//clientStopped(timestamp, paused);
 			//fireEvent(new StopEvent(Timer.this, time, Direction.valueOf(direction), paused));
 		}
 
-		/*@Override
+		@Override
 		public void update(long time, String direction, long interval) {
-			EventRouter eventRouter = eventRouterMap.get(interval);
+			/*EventRouter eventRouter = eventRouterMap.get(interval);
 			if (eventRouter != null) {
 				log.debug("TimerServerRpc: update() interval:" + interval);
 				eventRouter.fireEvent(new UpdateEvent(Timer.this, time, Direction.valueOf(direction), interval));
-			}
-		}*/
+			}*/
+		}
 
 	};
 	
@@ -66,7 +66,7 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 	private boolean infinite = false;
 	private long time = 0;
 	
-	private java.util.Timer internalTimer;
+	private transient java.util.Timer internalTimer;
 	
 	protected long serverStartTimestamp;
 	protected long clientStartTimestamp;
@@ -432,5 +432,12 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 		if (needRepaint && eventRouterMap.isEmpty())
         	ComponentStateUtil.removeRegisteredEventListener(getState(), UpdateEvent.EVENT_ID);
 	}
+	
+	/*@Override
+	public void detach() {
+		stop(true);
+
+		super.detach();
+	}*/
 	
 }
