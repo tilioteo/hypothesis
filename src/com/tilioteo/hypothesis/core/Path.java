@@ -3,30 +3,33 @@
  */
 package com.tilioteo.hypothesis.core;
 
-import com.tilioteo.hypothesis.entity.Slide;
-import com.tilioteo.hypothesis.processing.AbstractBaseFormula;
+import java.util.Map;
+
+import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
+import com.tilioteo.hypothesis.processing.Formula;
 import com.tilioteo.hypothesis.processing.DefaultPath;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class Path extends DefaultPath {
 
-	private AbstractBaseFormula abstractBaseFormula;
+	private Formula abstractBaseFormula;
 
-	public AbstractBaseFormula getAbstractBaseFormula() {
+	public Formula getAbstractBaseFormula() {
 		return abstractBaseFormula;
 	}
 
-	public boolean isValid(PairList<Slide, Object> results) {
+	public boolean isValid(Map<Long, Map<Integer, ExchangeVariable>> outputs) {
 		if (abstractBaseFormula != null) {
-			return abstractBaseFormula.evaluate(results);
+			return abstractBaseFormula.evaluate(outputs);
 		}
 		return false;
 	}
 
-	public void setAbstractBaseFormula(AbstractBaseFormula abstractBaseFormula) {
+	public void setAbstractBaseFormula(Formula abstractBaseFormula) {
 		this.abstractBaseFormula = abstractBaseFormula;
 	}
 }

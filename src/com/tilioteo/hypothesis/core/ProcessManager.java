@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -63,7 +64,8 @@ import com.tilioteo.hypothesis.persistence.TestManager;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class ProcessManager {
+@SuppressWarnings("serial")
+public class ProcessManager implements Serializable {
 	
 	private static Logger log = Logger.getLogger(ProcessManager.class);
 
@@ -151,8 +153,13 @@ public class ProcessManager {
 	public void processBreakTest(BreakTestEvent event) {
 		saveRunningEvent(event);
 
-		currentTest = null;
 		testProcessing = false;
+		slideProcessing = false;
+		currentTest = null;
+		currentPack = null;
+		currentBranch = null;
+		currentTask = null;
+		currentSlide = null;
 		
 		currentUser = null;
 	}
@@ -217,6 +224,10 @@ public class ProcessManager {
 
 		slideProcessing = false;
 		
+		if (Direction.NEXT.equals(event.getDirection())) {
+			branchManager.addSlideOutputs(currentSlide, slideManager.getOutputs());
+		}
+		
 		if (autoSlideShow) {
 			processSlideFollowing(event.getDirection());
 		} else {
@@ -260,7 +271,7 @@ public class ProcessManager {
 		}
 
 		if (nextBranch != null) {
-			currentBranch = persistenceManager.merge(branchManager.find(nextBranch));
+			currentBranch = persistenceManager.merge(nextBranch);
 
 			if (currentBranch != null) {
 			
@@ -479,11 +490,9 @@ public class ProcessManager {
 	private void saveBranchOutput() {
 		String data = branchManager.getSerializedData();
 
-		String output = branchManager.getNextBranchKey();
-
 		BranchOutput branchOutput = new BranchOutput(currentTest, currentBranch);
 		branchOutput.setXmlData(data);
-		branchOutput.setOutput(output);
+		branchOutput.setOutput(data);
 
 		outputManager.saveBranchOutput(branchOutput);
 	}
