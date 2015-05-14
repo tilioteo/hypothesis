@@ -3,11 +3,13 @@
  */
 package com.tilioteo.hypothesis.interfaces;
 
+import java.io.Serializable;
+
 /**
  * @author kamil
  *
  */
-public interface Variable<T> {
+public interface Variable<T> extends Serializable {
 
 	public String getName();
 

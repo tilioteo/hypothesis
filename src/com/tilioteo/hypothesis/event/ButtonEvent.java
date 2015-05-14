@@ -10,6 +10,7 @@ import com.vaadin.server.ErrorHandler;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public abstract class ButtonEvent extends AbstractComponentEvent<Button> {
 
 	public static class Click extends ButtonEvent {

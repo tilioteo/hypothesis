@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.persistence;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +20,8 @@ import com.tilioteo.hypothesis.entity.FieldConstants;
  * @author kamil
  *
  */
-public class ExportManager {
+@SuppressWarnings("serial")
+public class ExportManager implements Serializable {
 
 	private ExportEventDao exportEventDao;
 

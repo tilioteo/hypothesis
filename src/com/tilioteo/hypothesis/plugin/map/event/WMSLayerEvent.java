@@ -11,6 +11,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class WMSLayerEvent extends AbstractComponentEvent<WMSLayer> {
 
 	protected WMSLayerEvent(WMSLayerData data, ErrorHandler errorHandler) {

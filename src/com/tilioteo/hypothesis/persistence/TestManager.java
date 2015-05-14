@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.persistence;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -33,7 +34,8 @@ import com.tilioteo.hypothesis.entity.User;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class TestManager {
+@SuppressWarnings("serial")
+public class TestManager implements Serializable {
 
 	private static Logger log = Logger.getLogger(TestManager.class);
 
@@ -192,7 +194,7 @@ public class TestManager {
 	@SuppressWarnings("rawtypes")
 	private int getLastTestEventRank(SimpleTest test) {
 		log.debug("getLastTestEventRank");
-		SQLQuery query = AbstractHibernateDao.getSession().createSQLQuery(
+		SQLQuery query = testDao.getSession().createSQLQuery(
 				"SELECT max("  + FieldConstants.RANK + ") FROM " +
 						TableConstants.TEST_EVENT_TABLE + " WHERE " +
 						FieldConstants.TEST_ID + "=:testId GROUP BY " +
@@ -210,7 +212,7 @@ public class TestManager {
 	
 	private void saveTestEventJoin(SimpleTest test, Event event, int rank) {
 		log.debug("saveTestEventJoin");
-		SQLQuery query = AbstractHibernateDao.getSession().createSQLQuery(
+		SQLQuery query = testDao.getSession().createSQLQuery(
 				"INSERT INTO " + TableConstants.TEST_EVENT_TABLE + " (" +
 						FieldConstants.TEST_ID + "," +
 						FieldConstants.EVENT_ID + "," +

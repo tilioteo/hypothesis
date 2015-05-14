@@ -15,6 +15,7 @@ import com.tilioteo.hypothesis.interfaces.Variable;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class IfStatement implements Evaluable {
 
 	private HasVariables variables;

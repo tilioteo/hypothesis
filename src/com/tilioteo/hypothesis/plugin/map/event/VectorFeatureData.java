@@ -15,6 +15,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class VectorFeatureData extends AbstractComponentData<VectorFeature> {
 
 	// using 2D coordinates only

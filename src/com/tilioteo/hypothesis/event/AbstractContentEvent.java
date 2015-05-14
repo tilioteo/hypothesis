@@ -10,6 +10,7 @@ import com.vaadin.ui.Component;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public abstract class AbstractContentEvent extends AbstractRunningEvent {
 	
 	private Component component;

@@ -13,6 +13,7 @@ import com.tilioteo.hypothesis.slide.ui.Button;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class ButtonData extends AbstractComponentData<Button> {
 
 	public ButtonData(Button sender, SlideFascia slideFascia) {

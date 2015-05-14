@@ -15,6 +15,7 @@ import com.tilioteo.hypothesis.plugin.map.ui.DrawPolygonControl;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class DrawPolygonControlData extends AbstractComponentData<DrawPolygonControl> {
 
 	private VectorFeature feature = null;

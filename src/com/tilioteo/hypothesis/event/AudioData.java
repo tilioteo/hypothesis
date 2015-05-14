@@ -13,6 +13,7 @@ import com.tilioteo.hypothesis.slide.ui.Audio;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class AudioData extends AbstractComponentData<Audio> {
 
 	private double time = 0.0;

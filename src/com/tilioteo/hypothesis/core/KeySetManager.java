@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,7 +15,8 @@ import com.tilioteo.hypothesis.entity.HasList;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> {
+@SuppressWarnings("serial")
+public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implements Serializable {
 
 	private LinkedHashMap<K, E> keyset = new LinkedHashMap<K, E>();
 

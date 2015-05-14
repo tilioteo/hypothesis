@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.interfaces;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.dom4j.Document;
@@ -14,7 +15,7 @@ import com.vaadin.ui.Component;
  * @author kamil
  *
  */
-public interface SlideFascia extends HasVariables, HasActions {
+public interface SlideFascia extends HasVariables, HasActions, Serializable {
 
 	public void registerComponent(String id, Component component);
 

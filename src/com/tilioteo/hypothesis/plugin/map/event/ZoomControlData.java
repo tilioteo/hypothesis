@@ -14,6 +14,7 @@ import com.tilioteo.hypothesis.plugin.map.ui.ZoomControl;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class ZoomControlData extends AbstractComponentData<ZoomControl> {
 
 	private double zoomStep;

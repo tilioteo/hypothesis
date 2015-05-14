@@ -3,11 +3,14 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import java.io.Serializable;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class ProcessEventType {
+@SuppressWarnings("serial")
+public class ProcessEventType implements Serializable {
 	private long id;
 	private String name;
 

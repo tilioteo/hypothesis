@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.entity;
 
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
  * @author kamil
  *
  */
-public enum Status {
+public enum Status implements Serializable {
 	CREATED(1), STARTED(2), FINISHED(3), BROKEN_BY_CLIENT(4), BROKEN_BY_ERROR(5);
 
 	private static final Map<Integer, Status> lookup = new HashMap<Integer, Status>();

@@ -10,6 +10,7 @@ import com.tilioteo.hypothesis.common.Strings;
  * @author Kamil Morong - Hypothesis
  *
  */
+@SuppressWarnings("serial")
 public class Variable extends Primitive {
 
 	private int refCount;

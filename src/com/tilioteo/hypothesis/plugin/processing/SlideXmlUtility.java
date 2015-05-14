@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.plugin.processing;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,8 @@ import com.tilioteo.hypothesis.common.Strings;
  * @author kamil
  *
  */
-public class SlideXmlUtility {
+@SuppressWarnings("serial")
+public class SlideXmlUtility implements Serializable {
 
 	//private static Logger log = Logger.getLogger(SlideXmlUtility.class);
 

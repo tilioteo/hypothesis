@@ -3,11 +3,14 @@
  */
 package com.tilioteo.hypothesis.processing;
 
+import java.io.Serializable;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public abstract class AbstractBasePath {
+@SuppressWarnings("serial")
+public abstract class AbstractBasePath implements Serializable {
 
 	public abstract String getBranchKey();
 

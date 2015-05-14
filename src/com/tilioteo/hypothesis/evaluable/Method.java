@@ -17,6 +17,7 @@ import com.tilioteo.hypothesis.core.Messages;
  * @author Kamil Morong - Hypothesis
  *
  */
+@SuppressWarnings("serial")
 public class Method extends Primitive implements HasReference {
 	
 	private static Logger log = Logger.getLogger(Method.class);

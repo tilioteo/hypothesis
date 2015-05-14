@@ -7,6 +7,7 @@ package com.tilioteo.hypothesis.evaluable;
  * @author Kamil Morong - Hypothesis
  *
  */
+@SuppressWarnings("serial")
 public class BinaryExpression extends UnaryExpression {
 	
 	protected Primitive leftSide;
@@ -228,6 +229,10 @@ public class BinaryExpression extends UnaryExpression {
 							return left.compareTo(right) <= 0;
 						}
 					}
+				} else if (Operator.EQUALS.equals(operator)) {
+					return leftValue == rightValue;
+				} else if (Operator.NOT_EQUALS.equals(operator)) {
+					return leftValue != rightValue;
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 package com.tilioteo.hypothesis.persistence;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,8 @@ import com.tilioteo.hypothesis.dao.RoleDao;
 import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.Role;
 
-public class RoleManager {
+@SuppressWarnings("serial")
+public class RoleManager implements Serializable {
 
 	private static Logger log = Logger.getLogger(RoleManager.class);
 

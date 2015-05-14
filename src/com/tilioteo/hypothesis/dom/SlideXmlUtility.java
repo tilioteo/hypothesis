@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.dom;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +22,8 @@ import com.tilioteo.hypothesis.common.Strings;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class SlideXmlUtility {
+@SuppressWarnings("serial")
+public class SlideXmlUtility implements Serializable {
 
 	private static Logger log = Logger.getLogger(SlideXmlUtility.class);
 

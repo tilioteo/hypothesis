@@ -7,6 +7,7 @@ package com.tilioteo.hypothesis.evaluable;
  * @author Kamil Morong - Hypothesis
  *
  */
+@SuppressWarnings("serial")
 public abstract class Expression extends Primitive {
 
 	protected Expression parent;

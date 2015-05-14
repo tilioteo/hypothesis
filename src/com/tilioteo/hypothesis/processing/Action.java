@@ -15,6 +15,7 @@ import com.tilioteo.hypothesis.interfaces.HasVariables;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class Action extends AbstractBaseAction {
 	
 	private ExchangeVariableMap outputValues = new ExchangeVariableMap();

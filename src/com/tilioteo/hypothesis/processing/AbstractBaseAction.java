@@ -12,6 +12,7 @@ import com.tilioteo.hypothesis.interfaces.HasVariables;
  *         Base class for action
  * 
  */
+@SuppressWarnings("serial")
 public abstract class AbstractBaseAction extends AbstractVariableContainer implements Action {
 
 	private String id;

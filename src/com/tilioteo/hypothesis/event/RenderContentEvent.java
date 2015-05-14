@@ -15,6 +15,7 @@ import com.vaadin.ui.Component;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class RenderContentEvent extends AbstractContentEvent {
 
 	Collection<Timer> timers;

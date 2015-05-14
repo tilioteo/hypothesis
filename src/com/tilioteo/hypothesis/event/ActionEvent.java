@@ -10,6 +10,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class ActionEvent extends AbstractUserEvent {
 	
 	private Action action;

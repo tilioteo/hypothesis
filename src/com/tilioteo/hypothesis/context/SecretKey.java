@@ -3,13 +3,16 @@
  */
 package com.tilioteo.hypothesis.context;
 
+import java.io.Serializable;
+
 import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author kamil
  * 
  */
-public class SecretKey {
+@SuppressWarnings("serial")
+public class SecretKey implements Serializable {
 
 	private String method;
 

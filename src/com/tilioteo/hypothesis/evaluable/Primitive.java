@@ -3,11 +3,14 @@
  */
 package com.tilioteo.hypothesis.evaluable;
 
+import java.io.Serializable;
+
 /**
  * @author Kamil Morong - Hypothesis
  *
  */
-public abstract class Primitive {
+@SuppressWarnings("serial")
+public abstract class Primitive implements Serializable {
 	
 	private Object value;
 	

@@ -20,6 +20,7 @@ import com.tilioteo.hypothesis.plugin.processing.event.ProcessingEventTypes;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class ProcessingPlugin implements SlideComponentPlugin {
 
 	private StringSet elements = new StringSet(

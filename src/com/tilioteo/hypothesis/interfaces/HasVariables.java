@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.interfaces;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Map;
  *         interface for classes which provide variables
  * 
  */
-public interface HasVariables {
+public interface HasVariables extends Serializable {
 
 	Map<String, Variable<?>> getVariables();
 

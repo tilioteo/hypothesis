@@ -20,6 +20,7 @@ import com.tilioteo.hypothesis.plugin.map.event.MapEventTypes;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class MapPlugin implements SlideComponentPlugin {
 	
 	private StringSet elements = new StringSet(

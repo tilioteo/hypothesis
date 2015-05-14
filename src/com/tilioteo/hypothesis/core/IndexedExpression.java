@@ -13,6 +13,7 @@ import com.tilioteo.hypothesis.processing.Expression;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class IndexedExpression implements ExchangeVariable {
 	
 	private int index;

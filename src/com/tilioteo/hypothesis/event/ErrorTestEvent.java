@@ -10,6 +10,7 @@ import com.vaadin.server.ErrorHandler;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class ErrorTestEvent extends AbstractTestEvent {
 
 	// TODO add reason

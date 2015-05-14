@@ -15,6 +15,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class ImageSequenceLayerData extends AbstractComponentData<ImageSequenceLayer> {
 
 	// using 2D coordinates only

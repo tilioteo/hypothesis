@@ -14,6 +14,7 @@ import com.tilioteo.hypothesis.core.Messages;
  * @author Kamil Morong - Hypothesis
  *
  */
+@SuppressWarnings("serial")
 public class Attribute extends Variable implements HasReference {
 	
 	private static Logger log = Logger.getLogger(Attribute.class);

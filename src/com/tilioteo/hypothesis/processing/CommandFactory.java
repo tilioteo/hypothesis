@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.processing;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -37,7 +38,8 @@ import com.tilioteo.hypothesis.interfaces.SlideFascia;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class CommandFactory {
+@SuppressWarnings("serial")
+public class CommandFactory implements Serializable {
 
 	private static Logger log = Logger.getLogger(CommandFactory.class);
 

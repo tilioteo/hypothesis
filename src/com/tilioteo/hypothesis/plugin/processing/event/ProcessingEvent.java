@@ -11,6 +11,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class ProcessingEvent extends AbstractComponentEvent<Processing> {
 
 	protected ProcessingEvent(ProcessingData componentData, ErrorHandler errorHandler) {

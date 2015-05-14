@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.plugin.map;
 
 import java.beans.Introspector;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +55,8 @@ import com.tilioteo.hypothesis.slide.ui.ComponentFactory;
  * @author kamil
  * 
  */
-public class MapComponentFactory {
+@SuppressWarnings("serial")
+public class MapComponentFactory implements Serializable {
 
 	public static SlideComponent createComponentFromElement(Element element, SlideFascia slideFascia) {
 		if (element != null) {

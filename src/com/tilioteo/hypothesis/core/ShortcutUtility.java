@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.tilioteo.hypothesis.common.Strings;
@@ -13,7 +14,8 @@ import com.tilioteo.hypothesis.common.Strings;
  */
 public class ShortcutUtility {
 	
-	public static class ShortcutKeys {
+	@SuppressWarnings("serial")
+	public static class ShortcutKeys implements Serializable {
 		
 		public ShortcutKeys(int keyCode, int... modifiers) {
 			this.keyCode = keyCode;

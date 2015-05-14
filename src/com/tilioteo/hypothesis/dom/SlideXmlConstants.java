@@ -131,6 +131,7 @@ public class SlideXmlConstants {
 	public static final String SLIDE_OUTPUT = "SlideOutput";
 	public static final String COMPONENT_DATA = "ComponentData";
 	public static final String NAVIGATOR = "Navigator";
+	public static final String DOCUMENT = "Document";
 	public static final String SOURCES = "Sources";
 	public static final String SOURCE = "Source";
 	public static final String SELECTED = "Selected";

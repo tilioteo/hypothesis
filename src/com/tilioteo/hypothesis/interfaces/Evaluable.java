@@ -3,13 +3,14 @@
  */
 package com.tilioteo.hypothesis.interfaces;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public interface Evaluable {
+public interface Evaluable extends Serializable {
 
 	public void evaluate();
 

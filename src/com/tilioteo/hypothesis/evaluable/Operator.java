@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.evaluable;
 
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,7 @@ import com.tilioteo.hypothesis.common.StringConstants;
  * @author Kamil Morong - Hypothesis
  *
  */
-enum Operator {
+enum Operator implements Serializable {
 	
 	DECLASS(StringConstants.STR_OP_DECLASS, 1),
 	NOT(StringConstants.STR_OP_NOT, 2),

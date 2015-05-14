@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.persistence;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -30,7 +31,8 @@ import com.tilioteo.hypothesis.entity.UserPermission;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class PermissionManager {
+@SuppressWarnings("serial")
+public class PermissionManager implements Serializable {
 
 	private static Logger log = Logger.getLogger(PermissionManager.class);
 

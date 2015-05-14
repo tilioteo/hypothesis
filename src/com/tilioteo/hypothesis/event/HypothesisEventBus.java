@@ -1,5 +1,7 @@
 package com.tilioteo.hypothesis.event;
 
+import java.io.Serializable;
+
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.SubscriberExceptionContext;
 import com.google.common.eventbus.SubscriberExceptionHandler;
@@ -8,7 +10,8 @@ import com.google.common.eventbus.SubscriberExceptionHandler;
  * A simple wrapper for Guava event bus. Defines static convenience methods for
  * relevant actions.
  */
-public class HypothesisEventBus implements SubscriberExceptionHandler {
+@SuppressWarnings("serial")
+public class HypothesisEventBus implements SubscriberExceptionHandler, Serializable {
 
     private final EventBus eventBus = new EventBus(this);
     

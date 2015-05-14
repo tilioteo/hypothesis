@@ -14,6 +14,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class VideoData extends AbstractComponentData<Video> {
 
 	private Coordinate coordinate;

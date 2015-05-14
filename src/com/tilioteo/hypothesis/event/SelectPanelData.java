@@ -14,6 +14,7 @@ import com.tilioteo.hypothesis.slide.ui.SelectPanel;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class SelectPanelData extends AbstractComponentData<SelectPanel> {
 
 	private SelectButton button;

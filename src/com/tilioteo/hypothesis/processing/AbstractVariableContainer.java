@@ -15,6 +15,7 @@ import com.tilioteo.hypothesis.interfaces.Variable;
  * 
  * 
  */
+@SuppressWarnings("serial")
 public abstract class AbstractVariableContainer implements HasVariables {
 
 	private HasVariables variables;

@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.plugin.processing;
 
+import java.io.Serializable;
+
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.interfaces.SlideComponent;
@@ -19,7 +21,8 @@ import com.tilioteo.hypothesis.slide.ui.ComponentFactory;
  * @author kamil
  *
  */
-public class ProcessingComponentFactory {
+@SuppressWarnings("serial")
+public class ProcessingComponentFactory implements Serializable {
 
 	public static SlideComponent createComponentFromElement(Element element, SlideFascia slideManager) {
 		if (element != null) {

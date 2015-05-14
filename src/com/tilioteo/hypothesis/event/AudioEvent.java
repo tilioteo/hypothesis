@@ -10,6 +10,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class AudioEvent extends AbstractComponentEvent<Audio> {
 
 	public static class Load extends AudioEvent {

@@ -41,6 +41,7 @@ import com.vaadin.ui.Component;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class SlideManager extends ListManager<Task, Slide> implements SlideFascia {
 	
 	private static Logger log = Logger.getLogger(SlideFascia.class);

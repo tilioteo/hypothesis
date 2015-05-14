@@ -15,6 +15,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class WMSLayerData extends AbstractComponentData<WMSLayer> {
 
 	// using 2D coordinates only

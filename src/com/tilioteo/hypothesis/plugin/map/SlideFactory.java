@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.plugin.map;
 
+import java.io.Serializable;
 import java.util.Locale;
 
 import org.dom4j.Element;
@@ -23,7 +24,8 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author kamil
  *
  */
-public class SlideFactory {
+@SuppressWarnings("serial")
+public class SlideFactory implements Serializable {
 
 	public static void writeImageLayerData(Element sourceElement, ImageLayerData data) {
 		String id = data.getComponentId();

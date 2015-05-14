@@ -11,6 +11,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class VectorFeatureLayerEvent extends AbstractComponentEvent<VectorFeatureLayer> {
 
 	protected VectorFeatureLayerEvent(VectorFeatureLayerData data, ErrorHandler errorHandler) {

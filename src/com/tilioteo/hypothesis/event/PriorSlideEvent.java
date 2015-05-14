@@ -9,6 +9,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class PriorSlideEvent extends AbstractRunningEvent {
 
 	public PriorSlideEvent() {

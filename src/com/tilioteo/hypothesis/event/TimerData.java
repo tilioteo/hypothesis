@@ -13,6 +13,7 @@ import com.tilioteo.hypothesis.slide.ui.Timer;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class TimerData extends AbstractComponentData<Timer> {
 
 	private long time;

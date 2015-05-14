@@ -10,6 +10,7 @@ import com.vaadin.ui.Component;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class AfterRenderContentEvent extends AbstractContentEvent {
 
 	public AfterRenderContentEvent(Component component) {

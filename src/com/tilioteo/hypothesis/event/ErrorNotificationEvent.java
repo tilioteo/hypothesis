@@ -10,6 +10,7 @@ import com.vaadin.ui.Notification.Type;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class ErrorNotificationEvent extends AbstractNotificationEvent {
 
 	public ErrorNotificationEvent(String caption) {

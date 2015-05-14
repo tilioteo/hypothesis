@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.dom;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,8 @@ import com.tilioteo.hypothesis.entity.Slide;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class SlideXmlFactory {
+@SuppressWarnings("serial")
+public class SlideXmlFactory implements Serializable {
 
 	private static Logger log = Logger.getLogger(SlideXmlFactory.class);
 

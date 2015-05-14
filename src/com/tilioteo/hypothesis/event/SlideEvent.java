@@ -9,6 +9,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class SlideEvent extends AbstractUserEvent {
 	
 	private SlideData slideData;

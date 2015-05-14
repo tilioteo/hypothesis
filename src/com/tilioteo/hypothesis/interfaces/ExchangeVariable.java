@@ -3,13 +3,14 @@
  */
 package com.tilioteo.hypothesis.interfaces;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * @author kamil
  *
  */
-public interface ExchangeVariable {
+public interface ExchangeVariable extends Serializable {
 	
 	public int getIndex();
 	

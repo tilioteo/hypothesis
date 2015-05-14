@@ -10,7 +10,7 @@ import java.util.List;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public interface GenericDao<T, ID extends Serializable> {
+public interface GenericDao<T, ID extends Serializable> extends Serializable {
 	
 	void beginTransaction();
 

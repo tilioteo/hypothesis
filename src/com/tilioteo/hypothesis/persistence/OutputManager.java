@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.persistence;
 
+import java.io.Serializable;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 
@@ -13,7 +15,8 @@ import com.tilioteo.hypothesis.entity.BranchOutput;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class OutputManager {
+@SuppressWarnings("serial")
+public class OutputManager implements Serializable {
 
 	private static Logger log = Logger.getLogger(OutputManager.class);
 

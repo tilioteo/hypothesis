@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import java.io.Serializable;
 import java.util.EventObject;
 import java.util.HashMap;
 
@@ -15,7 +16,8 @@ import javax.swing.event.EventListenerList;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class ViewportEventManager {
+@SuppressWarnings("serial")
+public class ViewportEventManager implements Serializable {
 
 	private HashMap<Class<? extends ViewportEvent>, EventListenerList> listenersMap = new HashMap<Class<? extends ViewportEvent>, EventListenerList>();
 

@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.plugin.map;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.dom4j.Element;
@@ -12,7 +13,8 @@ import com.tilioteo.hypothesis.common.StringSet;
  * @author kamil
  *
  */
-public class SlideXmlUtility {
+@SuppressWarnings("serial")
+public class SlideXmlUtility implements Serializable {
 
 	//private static Logger log = Logger.getLogger(SlideXmlUtility.class);
 

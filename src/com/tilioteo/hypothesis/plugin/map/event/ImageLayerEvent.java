@@ -11,6 +11,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class ImageLayerEvent extends AbstractComponentEvent<ImageLayer> {
 
 	protected ImageLayerEvent(ImageLayerData data, ErrorHandler errorHandler) {

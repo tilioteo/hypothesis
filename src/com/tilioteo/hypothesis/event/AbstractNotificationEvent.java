@@ -3,13 +3,16 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import java.io.Serializable;
+
 import com.vaadin.ui.Notification;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public abstract class AbstractNotificationEvent {
+@SuppressWarnings("serial")
+public abstract class AbstractNotificationEvent implements Serializable {
 
 	protected String caption;
 	protected String description;

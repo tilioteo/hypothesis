@@ -14,6 +14,7 @@ import com.tilioteo.hypothesis.entity.Role;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class RoleDao extends AbstractHibernateDao<Role, Long> {
 
 	public Role findByNameIgnoreCase(String name) {

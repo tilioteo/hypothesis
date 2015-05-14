@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +92,8 @@ public class SlideDataParser {
 		return wrapper;
 	}
 	
-	public static final class FieldWrapper {
+	@SuppressWarnings("serial")
+	public static final class FieldWrapper implements Serializable {
 		private HashMap<String, String> fieldCaptionMap = new HashMap<String, String>();
 		private HashMap<String, String> fieldValueMap = new HashMap<String, String>();
 		private HashMap<String, Map<String, String>> fieldValueCaptionMap = new HashMap<String, Map<String, String>>();

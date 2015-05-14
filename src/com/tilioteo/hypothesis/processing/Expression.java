@@ -13,6 +13,7 @@ import com.tilioteo.hypothesis.interfaces.Variable;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class Expression implements Evaluable {
 
 	private com.tilioteo.hypothesis.evaluable.Expression internalExpression;

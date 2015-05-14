@@ -10,6 +10,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class WindowEvent extends AbstractComponentEvent<Window> {
 	
 	public static class Init extends WindowEvent {

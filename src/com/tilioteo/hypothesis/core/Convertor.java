@@ -9,6 +9,7 @@ import com.tilioteo.hypothesis.common.Strings;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class Convertor implements CoreObject {
 	
 	public Integer stringToInt(String string) {

@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.dom;
 
 import java.io.File;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -26,7 +27,8 @@ import com.tilioteo.hypothesis.common.Strings;
  * @author Kamil Morong - Hypothesis
  *
  */
-public class XmlUtility {
+@SuppressWarnings("serial")
+public class XmlUtility implements Serializable {
 	
 	private static final String ENCODING_UTF8	=	"utf-8";
 	public static final String DESCENDANT_FMT	=	"descendant::%s";

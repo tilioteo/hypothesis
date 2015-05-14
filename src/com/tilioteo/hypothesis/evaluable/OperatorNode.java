@@ -7,6 +7,7 @@ package com.tilioteo.hypothesis.evaluable;
  * @author Kamil Morong - Hypothesis
  *
  */
+@SuppressWarnings("serial")
 final class OperatorNode implements HasOperatorNode {
 	
 	private int position;

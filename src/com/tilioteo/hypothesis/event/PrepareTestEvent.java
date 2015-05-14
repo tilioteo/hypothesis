@@ -9,6 +9,7 @@ import com.tilioteo.hypothesis.entity.Token;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class PrepareTestEvent extends AbstractProcessEvent {
 
 	private Token token;

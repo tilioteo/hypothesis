@@ -1,5 +1,6 @@
 package com.tilioteo.hypothesis.persistence;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -13,7 +14,8 @@ import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.User;
 
-public class GroupManager {
+@SuppressWarnings("serial")
+public class GroupManager implements Serializable {
 
 	private static Logger log = Logger.getLogger(GroupManager.class);
 

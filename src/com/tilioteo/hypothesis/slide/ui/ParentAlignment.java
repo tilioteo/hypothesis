@@ -3,13 +3,16 @@
  */
 package com.tilioteo.hypothesis.slide.ui;
 
+import java.io.Serializable;
+
 import com.vaadin.ui.Alignment;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class ParentAlignment {
+@SuppressWarnings("serial")
+public class ParentAlignment implements Serializable {
 
 	private Alignment alignment = null;
 

@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.plugin.processing;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.dom4j.Element;
@@ -16,7 +17,8 @@ import com.tilioteo.hypothesis.plugin.processing.ui.Processing;
  * @author kamil
  *
  */
-public class ProcessingUtility {
+@SuppressWarnings("serial")
+public class ProcessingUtility implements Serializable {
 
 	public static List<Element> getCallbackElements(Element component) {
 		return com.tilioteo.hypothesis.dom.SlideXmlUtility.getElementSubNodeChilds(component, SlideXmlConstants.CALLBACKS,

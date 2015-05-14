@@ -10,6 +10,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class TimerEvent extends AbstractComponentEvent<Timer> {
 
 	public static class Start extends TimerEvent {

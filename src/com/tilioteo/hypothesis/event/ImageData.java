@@ -14,6 +14,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class ImageData extends AbstractComponentData<Image> {
 
 	// using 2D coordinates only

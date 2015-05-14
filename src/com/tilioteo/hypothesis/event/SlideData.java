@@ -14,6 +14,7 @@ import com.tilioteo.hypothesis.interfaces.XmlDataWriter;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class SlideData implements XmlDataWriter {
 
 	private SlideFascia slideFascia;

@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.persistence;
 
+import java.io.Serializable;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 
@@ -23,7 +25,8 @@ import com.tilioteo.hypothesis.servlet.HibernateUtil;
  * @author kamil
  *
  */
-public class PersistenceManager {
+@SuppressWarnings("serial")
+public class PersistenceManager implements Serializable {
 	
 	private static Logger log = Logger.getLogger(PersistenceManager.class);
 	

@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.plugin.processing;
 
+import java.io.Serializable;
+
 import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.plugin.processing.event.ProcessingData;
@@ -11,7 +13,8 @@ import com.tilioteo.hypothesis.plugin.processing.event.ProcessingData;
  * @author kamil
  *
  */
-public class SlideFactory {
+@SuppressWarnings("serial")
+public class SlideFactory implements Serializable {
 
 	public static void writeProcessingData(Element sourceElement, ProcessingData data) {
 		String id = data.getComponentId();

@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.persistence;
 
+import java.io.Serializable;
+
 import org.apache.log4j.Logger;
 
 import com.tilioteo.hypothesis.dao.PackDao;
@@ -12,7 +14,8 @@ import com.tilioteo.hypothesis.entity.Pack;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class PackManager {
+@SuppressWarnings("serial")
+public class PackManager implements Serializable {
 
 	private static Logger log = Logger.getLogger(PackManager.class);
 

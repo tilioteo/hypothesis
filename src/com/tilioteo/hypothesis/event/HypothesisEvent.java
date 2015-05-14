@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.event;
 
+import java.io.Serializable;
+
 import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.User;
@@ -13,9 +15,10 @@ import com.tilioteo.hypothesis.ui.view.HypothesisViewType;
  * @author kamil
  * 
  */
-public abstract class HypothesisEvent {
+@SuppressWarnings("serial")
+public abstract class HypothesisEvent implements Serializable {
 
-	public static final class UserLoginRequestedEvent {
+	public static final class UserLoginRequestedEvent implements Serializable {
 		private final String userName, password;
 
 		public UserLoginRequestedEvent(final String userName,
@@ -33,19 +36,19 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static class GuestAccessRequestedEvent {
+	public static class GuestAccessRequestedEvent implements Serializable {
 	}
 
-	public static class InvalidLoginEvent {
+	public static class InvalidLoginEvent implements Serializable {
 	}
 
-	public static class InvalidUserPermissionEvent {
+	public static class InvalidUserPermissionEvent implements Serializable {
 	}
 
-	public static class UserLoggedOutEvent {
+	public static class UserLoggedOutEvent implements Serializable {
 	}
 
-	public static final class PostViewChangeEvent {
+	public static final class PostViewChangeEvent implements Serializable {
 		private final HypothesisViewType view;
 
 		public PostViewChangeEvent(final HypothesisViewType view) {
@@ -57,7 +60,7 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static class StartFeaturedTestEvent {
+	public static class StartFeaturedTestEvent implements Serializable {
 		private User user;
 		private Pack pack;
 
@@ -75,7 +78,7 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static class StartLegacyTestEvent {
+	public static class StartLegacyTestEvent implements Serializable {
 		private User user;
 		private Pack pack;
 		private UrlConsumer urlConsumer;
@@ -99,13 +102,13 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static final class CloseOpenWindowsEvent {
+	public static final class CloseOpenWindowsEvent implements Serializable {
 	}
 
-	public static final class ProfileUpdatedEvent {
+	public static final class ProfileUpdatedEvent implements Serializable {
 	}
 
-	public static final class UserAddedEvent {
+	public static final class UserAddedEvent implements Serializable {
 		private final User user;
 
 		public UserAddedEvent(final User user) {
@@ -117,10 +120,10 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static final class UserSelectionChangedEvent {
+	public static final class UserSelectionChangedEvent implements Serializable {
 	}
 
-	public static final class GroupUsersChangedEvent {
+	public static final class GroupUsersChangedEvent implements Serializable {
 		private final Group group;
 
 		public GroupUsersChangedEvent(final Group group) {
@@ -132,7 +135,7 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static final class GroupAddedEvent {
+	public static final class GroupAddedEvent implements Serializable {
 		private final Group group;
 
 		public GroupAddedEvent(final Group group) {
@@ -144,10 +147,10 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static final class GroupSelectionChangedEvent {
+	public static final class GroupSelectionChangedEvent implements Serializable {
 	}
 
-	public static final class UserGroupsChangedEvent {
+	public static final class UserGroupsChangedEvent implements Serializable {
 		private final User user;
 
 		public UserGroupsChangedEvent(final User user) {
@@ -159,10 +162,10 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static final class PackSelectionChangedEvent {
+	public static final class PackSelectionChangedEvent implements Serializable {
 	}
 
-	public static final class ExportFinishedEvent {
+	public static final class ExportFinishedEvent implements Serializable {
 		private final boolean canceled;
 		
 		public ExportFinishedEvent(final boolean canceled) {
@@ -174,10 +177,10 @@ public abstract class HypothesisEvent {
 		}
 	}
 
-	public static final class ExportErrorEvent {
+	public static final class ExportErrorEvent implements Serializable {
 	}
 
-	public static final class ExportProgressEvent {
+	public static final class ExportProgressEvent implements Serializable {
 		private final float progress;
 		
 		public ExportProgressEvent(final float progress) {

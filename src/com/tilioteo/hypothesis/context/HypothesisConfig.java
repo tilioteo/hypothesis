@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.context;
 
+import java.io.Serializable;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -11,8 +13,9 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
  * @author kamil
  * 
  */
+@SuppressWarnings("serial")
 @Configuration
-public class HypothesisConfig {
+public class HypothesisConfig implements Serializable {
 	
 	//@Autowired
 	//private SecretKey secretKey;

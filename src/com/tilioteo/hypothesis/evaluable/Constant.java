@@ -10,6 +10,7 @@ import com.tilioteo.hypothesis.common.Strings;
  * @author Kamil Morong - Hypothesis
  *
  */
+@SuppressWarnings("serial")
 public class Constant extends Primitive {
 	
 	private Class<?> type;

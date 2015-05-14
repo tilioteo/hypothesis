@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.model;
 
+import java.io.Serializable;
+
 import com.tilioteo.hypothesis.core.ProcessManager;
 import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Token;
@@ -14,7 +16,8 @@ import com.tilioteo.hypothesis.persistence.TokenManager;
  * @author kamil
  *
  */
-public class ProcessModel {
+@SuppressWarnings("serial")
+public class ProcessModel implements Serializable {
 	
 	private TokenManager tokenManager;
 	private ProcessManager processManager;

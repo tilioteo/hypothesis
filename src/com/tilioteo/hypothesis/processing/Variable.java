@@ -9,6 +9,7 @@ import java.util.Locale;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class Variable<T> implements com.tilioteo.hypothesis.interfaces.Variable<T> {
 
 	private String name;
@@ -50,9 +51,9 @@ public class Variable<T> implements com.tilioteo.hypothesis.interfaces.Variable<
 		if (value != null) {
 			Class<?> type = value.getClass();
 			
-			if (type == int.class || type == short.class || type == long.class || Integer.class.isAssignableFrom(type)) {
+			if (type == byte.class || type == int.class || type == short.class || Integer.class.isAssignableFrom(type)) {
 				return Integer.class;
-			} else if (type == double.class || type == float.class || Double.class.isAssignableFrom(type)) {
+			} else if (type == long.class || type == double.class || type == float.class || Double.class.isAssignableFrom(type) || Long.class.isAssignableFrom(type)) {
 				return Double.class;
 			} else if (type == boolean.class || Boolean.class.isAssignableFrom(type)) {
 				return Boolean.class;
@@ -89,5 +90,25 @@ public class Variable<T> implements com.tilioteo.hypothesis.interfaces.Variable<
 		} else {
 			return "";
 		}
+	}
+	
+	public static Variable<?> createVariable(String name, Object value) {
+		if (value != null) {
+			Class<?> type = value.getClass();
+			
+			if (type == byte.class || type == int.class || type == short.class || Integer.class.isAssignableFrom(type)) {
+				return new Variable<Integer>(name, (Integer) value);
+			} else if (type == long.class || Long.class.isAssignableFrom(type)) {
+				return new Variable<Double>(name, ((Long)value).doubleValue());
+			} else if (type == double.class || type == float.class || Double.class.isAssignableFrom(type)) {
+				return new Variable<Double>(name, (Double)value);
+			} else if (type == boolean.class || Boolean.class.isAssignableFrom(type)) {
+				return new Variable<Boolean>(name, (Boolean)value);
+			} else if (type == String.class || String.class.isAssignableFrom(type)) {
+				return new Variable<String>(name, (String)value);
+			}
+		}
+		
+		return new Variable<Object>(name);
 	}
 }

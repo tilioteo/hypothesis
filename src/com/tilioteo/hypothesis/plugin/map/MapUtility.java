@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.plugin.map;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,7 +35,8 @@ import com.vividsolutions.jts.io.WKTReader;
  * @author kamil
  *
  */
-public class MapUtility {
+@SuppressWarnings("serial")
+public class MapUtility implements Serializable {
 	
 	private static HashMap<SlideFascia, MapUtility> hashMap = new HashMap<SlideFascia, MapUtility>();
 	

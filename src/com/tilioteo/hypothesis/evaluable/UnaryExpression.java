@@ -7,6 +7,7 @@ package com.tilioteo.hypothesis.evaluable;
  * @author Kamil Morong - Hypothesis
  *
  */
+@SuppressWarnings("serial")
 public class UnaryExpression extends Expression {
 	
 	protected Primitive rightSide;

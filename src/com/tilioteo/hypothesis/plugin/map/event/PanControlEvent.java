@@ -11,6 +11,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class PanControlEvent extends AbstractComponentEvent<PanControl> {
 
 	protected PanControlEvent(PanControlData data, ErrorHandler errorHandler) {

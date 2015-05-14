@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.evaluable;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -15,7 +16,8 @@ import com.tilioteo.hypothesis.common.Strings;
  * @author Kamil Morong - Hypothesis
  *
  */
-public class ExpressionFactory {
+@SuppressWarnings("serial")
+public class ExpressionFactory implements Serializable {
 
 	private static Logger log = Logger.getLogger(ExpressionFactory.class);
 

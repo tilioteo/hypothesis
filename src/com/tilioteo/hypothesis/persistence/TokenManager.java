@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.persistence;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,8 @@ import com.tilioteo.hypothesis.entity.User;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class TokenManager {
+@SuppressWarnings("serial")
+public class TokenManager implements Serializable {
 
 	private static Logger log = Logger.getLogger(TokenManager.class);
 

@@ -11,6 +11,7 @@ import com.vaadin.ui.AbstractComponent;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public abstract class AbstractComponentData<T extends AbstractComponent> implements XmlDataWriter {
 
 	private SlideFascia slideFascia;

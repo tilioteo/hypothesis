@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -13,7 +14,8 @@ import com.tilioteo.hypothesis.entity.HasList;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class ListManager<T extends HasList<E>, E> {
+@SuppressWarnings("serial")
+public class ListManager<T extends HasList<E>, E> implements Serializable {
 
 	private LinkedList<E> list = new LinkedList<E>();
 	private int index = -1;

@@ -14,6 +14,7 @@ import com.tilioteo.hypothesis.interfaces.SlideFascia;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class ButtonPanelData extends AbstractComponentData<ButtonPanel> {
 
 	private Button button;

@@ -16,6 +16,7 @@ import com.tilioteo.hypothesis.interfaces.Variable;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class SwitchStatement implements Evaluable {
 
 	private HasVariables variables;

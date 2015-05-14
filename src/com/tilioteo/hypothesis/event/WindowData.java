@@ -13,6 +13,7 @@ import com.tilioteo.hypothesis.slide.ui.Window;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class WindowData extends AbstractComponentData<Window> {
 
 	public WindowData(Window sender, SlideFascia slideFascia) {

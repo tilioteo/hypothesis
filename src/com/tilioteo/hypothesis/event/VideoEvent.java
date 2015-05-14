@@ -10,6 +10,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class VideoEvent extends AbstractComponentEvent<Video> {
 
 	public static class Click extends VideoEvent {

@@ -9,6 +9,7 @@ import java.util.Random;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class RandomGenerator implements CoreObject {
 	
 	private Random random = new Random();

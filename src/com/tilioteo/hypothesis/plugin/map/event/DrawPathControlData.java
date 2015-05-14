@@ -15,6 +15,7 @@ import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class DrawPathControlData extends AbstractComponentData<DrawPathControl>  {
 	
 	private VectorFeature feature = null;

@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.model;
 
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,7 +31,8 @@ import com.vaadin.server.VaadinServletRequest;
  * @author kamil
  *
  */
-public class PacksModel {
+@SuppressWarnings("serial")
+public class PacksModel implements Serializable {
 	
 	private PermissionManager permissionManager;
 	private TokenManager tokenManager;

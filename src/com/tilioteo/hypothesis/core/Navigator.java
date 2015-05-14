@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.io.Serializable;
+
 import com.tilioteo.hypothesis.event.FinishSlideEvent;
 import com.tilioteo.hypothesis.event.FinishSlideEvent.Direction;
 import com.tilioteo.hypothesis.event.ProcessEventBus;
@@ -12,7 +14,8 @@ import com.tilioteo.hypothesis.interfaces.SlideFascia;
  * @author kamil
  *
  */
-public class Navigator {
+@SuppressWarnings("serial")
+public class Navigator implements Serializable {
 	
 	private SlideFascia slideFascia;
 	

@@ -19,6 +19,7 @@ import com.tilioteo.hypothesis.plugin.processing.ui.Processing;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public class ProcessingData extends AbstractComponentData<Processing> {
 	
 	private String name;

@@ -10,6 +10,7 @@ import com.vaadin.ui.AbstractComponent;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public abstract class AbstractComponentEvent<T extends AbstractComponent>
 		extends AbstractUserEvent implements HasComponentData<T> {
 	

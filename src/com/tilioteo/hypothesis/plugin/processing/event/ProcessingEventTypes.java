@@ -3,11 +3,14 @@
  */
 package com.tilioteo.hypothesis.plugin.processing.event;
 
+import java.io.Serializable;
+
 /**
  * @author kamil
  *
  */
-public class ProcessingEventTypes {
+@SuppressWarnings("serial")
+public class ProcessingEventTypes implements Serializable {
 
 	public static final String Callback = "CALLBACK";
 	

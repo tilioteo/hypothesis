@@ -11,6 +11,7 @@ import com.vaadin.server.ErrorHandler;
  * @author kamil
  *
  */
+@SuppressWarnings("serial")
 public abstract class DrawPolygonControlEvent extends AbstractComponentEvent<DrawPolygonControl> {
 
 	protected DrawPolygonControlEvent(DrawPolygonControlData componentData, ErrorHandler errorHandler) {

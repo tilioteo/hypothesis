@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.extension;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -22,7 +23,8 @@ import com.tilioteo.hypothesis.plugin.processing.ProcessingPlugin;
  * @author kamil
  *
  */
-public class PluginManager {
+@SuppressWarnings("serial")
+public class PluginManager implements Serializable {
 	
 	// TODO make configuration
 	public static final Class<?>[] PLUGINS = new Class<?>[] {

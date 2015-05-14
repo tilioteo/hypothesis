@@ -11,6 +11,7 @@ import com.vaadin.server.ErrorHandler;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class StartTestEvent extends AbstractTestEvent {
 
 	private SimpleTest test;
