@@ -3,11 +3,17 @@
  */
 package com.tilioteo.hypothesis.processing;
 
+import java.io.Serializable;
+import java.util.Map;
+
+import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class Nick {
+@SuppressWarnings("serial")
+public class Nick implements Serializable {
 
 	private Long slideId;
 	private Expression expression;
@@ -24,13 +30,16 @@ public class Nick {
 		return slideId;
 	}
 
-	public boolean pass(Object value) {
-		if (value != null && expression != null) {
+	public boolean pass(Map<Integer, ExchangeVariable> inputs) {
+		if (inputs != null && expression != null) {
 			VariableMap variables = new VariableMap();
-			// TODO upravit pro ruzne typy
-			Variable<Integer> slideResult = new Variable<Integer>("result");
-			slideResult.setRawValue(value);
-			variables.put(slideResult);
+			
+			for (Integer index : inputs.keySet()) {
+				ExchangeVariable exchangeVariable = inputs.get(index);
+				Variable<?> variable = Variable.createVariable("output"+index, exchangeVariable.getValue());
+				variables.put(variable);
+			}
+
 			expression.setVariables(variables);
 			return expression.getBoolean();
 		}

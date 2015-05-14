@@ -4,53 +4,54 @@
 package com.tilioteo.hypothesis.processing;
 
 import java.util.HashMap;
-import java.util.ListIterator;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.tilioteo.hypothesis.core.Pair;
-import com.tilioteo.hypothesis.core.PairList;
-import com.tilioteo.hypothesis.entity.Slide;
+import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class Pattern extends AbstractBaseFormula {
+@SuppressWarnings("serial")
+public class Pattern implements Formula {
 	
 	private static Logger log = Logger.getLogger(Pattern.class);
 
 	private HashMap<Long, Nick> nickMap = new HashMap<Long, Nick>();
 
 	public void addNick(int number, Nick nick) {
-		// nicks.add(nick);
 		if (nick != null)
 			nickMap.put(getSlideSerial(number, nick.getSlideId()), nick);
 	}
 
-	// private List<Nick> nicks = new LinkedList<Nick>();
-
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean evaluate(Object... parameters) {
+	public boolean evaluate(Object input) {
 		log.debug("evaluate::");
-		if (parameters.length == 1
-				&& parameters[0] instanceof PairList<?, ?>) {
+		Map<Long, Map<Integer, ExchangeVariable>> inputs = new HashMap<Long, Map<Integer,ExchangeVariable>>();
+		if (input != null && inputs.getClass().isAssignableFrom(input.getClass())) {
+			inputs = (Map<Long, Map<Integer, ExchangeVariable>>)input;
+			
 			boolean result = true;
 			try {
-				int i = 0;
-				ListIterator<Pair<Slide, Object>> listIterator = ((PairList<Slide, Object>) parameters[0])
-						.listIterator();
-				while (listIterator.hasNext()) {
-					Pair<Slide, Object> objectPair = listIterator.next();
-					Nick nick = nickMap.get(getSlideSerial(++i, objectPair
-							.getFirst().getId()));
-					if (nick != null) {
-						result = nick.pass(objectPair.getSecond());
-					} else
+				for (int i = 1; i <= nickMap.size(); ++i) {
+					Nick nick = null;
+					for (Long slideId : inputs.keySet()) {
+						nick = nickMap.get(getSlideSerial(i, slideId));
+						if (nick != null) {
+							result = nick.pass(inputs.get(slideId));
+							break;
+						}
+					}
+					if (null == nick) {
 						result = false;
-					if (result)
+					}
+					
+					if (!result) {
 						break;
+					}
 				}
 				return result;
 

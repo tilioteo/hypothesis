@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import org.dom4j.Element;
 import com.tilioteo.hypothesis.dom.BranchXmlConstants;
 import com.tilioteo.hypothesis.dom.BranchXmlUtility;
 import com.tilioteo.hypothesis.evaluable.ExpressionFactory;
-import com.tilioteo.hypothesis.processing.AbstractBaseFormula;
+import com.tilioteo.hypothesis.processing.Formula;
 import com.tilioteo.hypothesis.processing.AbstractBasePath;
 import com.tilioteo.hypothesis.processing.DefaultPath;
 import com.tilioteo.hypothesis.processing.Expression;
@@ -23,7 +24,8 @@ import com.tilioteo.hypothesis.processing.Pattern;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class BranchFactory {
+@SuppressWarnings("serial")
+public class BranchFactory implements Serializable {
 
 	private static HashMap<BranchManager, BranchFactory> instances = new HashMap<BranchManager, BranchFactory>();
 	
@@ -102,7 +104,7 @@ public class BranchFactory {
 		return null;
 	}
 
-	private AbstractBaseFormula createAbstractBaseFormula(Element element) {
+	private Formula createFormula(Element element) {
 		if (element != null) {
 			Element subElement = BranchXmlUtility.getPatternElement(element);
 			if (subElement != null)
@@ -126,7 +128,7 @@ public class BranchFactory {
 	private Path createPath(Element pathElement) {
 		Path path = new Path();
 		setBranchKey(path, pathElement);
-		path.setAbstractBaseFormula(createAbstractBaseFormula(pathElement));
+		path.setAbstractBaseFormula(createFormula(pathElement));
 
 		return path;
 	}

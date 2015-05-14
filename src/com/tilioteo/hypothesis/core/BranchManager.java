@@ -4,7 +4,9 @@
 package com.tilioteo.hypothesis.core;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -13,6 +15,7 @@ import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Branch;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Slide;
+import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
 import com.tilioteo.hypothesis.processing.AbstractBasePath;
 import com.tilioteo.hypothesis.processing.DefaultPath;
 
@@ -20,6 +23,7 @@ import com.tilioteo.hypothesis.processing.DefaultPath;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
 	private static Logger log = Logger.getLogger(BranchManager.class);
@@ -32,9 +36,10 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	private Document branchXml = null;
 	private Branch current = null;
 
-	private PairList<Slide, Object> slideOutputValues = new PairList<Slide, Object>();
+	//private PairList<Slide, Object> slideOutputValues = new PairList<Slide, Object>();
+	private HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<Long, Map<Integer, ExchangeVariable>>();
 
-	//private String nextKey = null;
+	private String nextKey = null;
 
 	public BranchManager() {
 		branchFactory = BranchFactory.getInstance(this);
@@ -48,8 +53,16 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 		}
 	}
 
-	public void addSlideOutputValue(Slide slide, Object outputValue) {
-		slideOutputValues.addObjectPair(slide, outputValue);
+	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
+		if (slide != null && slide.getId() != null && !outputValues.isEmpty()) {
+			// copy map of variables because it will be erased at the slide finish 
+			HashMap<Integer, ExchangeVariable> map = new HashMap<Integer, ExchangeVariable>();
+			for (Integer index : outputValues.keySet()) {
+				map.put(index, outputValues.get(index));
+			}
+			
+			slideOutputs.put(slide.getId(), map);
+		}
 	}
 
 	private void buildBranch() {
@@ -68,7 +81,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 		this.branchXml = null;
 		this.defaultPath = null;
 		this.paths.clear();
-		this.slideOutputValues.clear();
+		this.slideOutputs.clear();
 	}
 
 	@Override
@@ -104,11 +117,11 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	}
 
 	public String getNextBranchKey() {
-		String nextKey = null;
+		nextKey = null;
 		boolean pathFound = false;
 
 		for (Path path : paths) {
-			if (path.isValid(slideOutputValues)) {
+			if (path.isValid(slideOutputs)) {
 				nextKey = path.getBranchKey();
 				pathFound = true;
 				break;
@@ -121,8 +134,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	}
 
 	public String getSerializedData() {
-		// TODO serialize slide outputs
-		return null;
+		return nextKey;
 	}
 
 	/*@Override
