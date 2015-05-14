@@ -8,10 +8,8 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 
 import com.tilioteo.hypothesis.servlet.HibernateUtil;
@@ -20,29 +18,11 @@ import com.tilioteo.hypothesis.servlet.HibernateUtil;
  * @author Kamil Morong - Hypothesis
  * 
  */
+@SuppressWarnings("serial")
 public abstract class AbstractHibernateDao<T, ID extends Serializable> implements GenericDao<T, ID> {
 
 	private Class<T> persistentClass;
-	
-	private static final ThreadLocal<Session> session = new ThreadLocal<>();
-	
-	private static final SessionFactory sessionFactory =
-		      HibernateUtil.getSessionFactory().openSession().getSessionFactory();
 
-	public static Session getSession() {
-		Session session = (Session) AbstractHibernateDao.session.get();
-		if (session == null) {
-			session = sessionFactory.openSession();
-			AbstractHibernateDao.session.set(session);
-		}
-		return session;
-	}
-
-	public static void close() {
-		getSession().close();
-		AbstractHibernateDao.session.set(null);
-	}
-	
 	/**
 	 * Class constructor
 	 */
@@ -64,8 +44,7 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 
 	@Override
 	public void beginTransaction() {
-		//HibernateUtil.beginTransaction();
-		getSession().beginTransaction();
+		HibernateUtil.beginTransaction();
 	}
 
 	/**
@@ -78,8 +57,7 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	@Override
 	public void commit() {
 		flush();
-		//HibernateUtil.commitTransaction();
-		getSession().getTransaction().commit();
+		HibernateUtil.commitTransaction();
 	}
 
 	@Override
@@ -135,14 +113,14 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 		return persistentClass;
 	}
 
-	/*/**
+	/**
 	 * Retrieves the session used for making transactions with the db
 	 * 
 	 * @return the session retrieved
 	 */
-	/*public Session getSession() {
+	public Session getSession() {
 		return HibernateUtil.getSession();
-	}*/
+	}
 
 	@Override
 	public T makePersistent(T entity) {
@@ -163,7 +141,7 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	public void makeTransient(T entity) {
 		getSession().delete(entity);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public T merge(T entity) {
 		clear();
@@ -172,17 +150,6 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 	
 	@Override
 	public void rollback() {
-		//HibernateUtil.rollbackTransaction();
-		try {
-	         getSession().getTransaction().rollback();
-	      } catch (HibernateException ex) {
-	         //log.log(Level.WARNING, "Cannot rollback", ex);
-	      }
-	      try {
-	         getSession().close();
-	      } catch (HibernateException ex2) {
-	         //log.log(Level.WARNING, "Cannot close", ex2);
-	      }
-	      AbstractHibernateDao.session.set(null);
+		HibernateUtil.rollbackTransaction();
 	}
 }

@@ -32,19 +32,29 @@ public class HibernateUtil {
 	private static ServiceRegistry serviceRegistry = null;
 	private static ServletContext servletContext = null;
 
+	private static final ThreadLocal<Session> threadLocal = new ThreadLocal();
+	
 	/**
 	 * All hibernate operations take place within a session. The session for the
 	 * current thread is provided here.
 	 */
 	public static Session getSession() throws NullPointerException {
-		Session session = getSessionFactory().getCurrentSession();
+		Session session = threadLocal.get();
+		
+		if (null == session || !session.isOpen()) {
+			session = sessionFactory.openSession();
+			threadLocal.set(session);
+		}
+		return session;
+		
+		/*Session session = getSessionFactory().getCurrentSession();
 		if (session.isOpen()) {
 			log.trace("Using allready opened Hibernate Session.");
 			return session;
 		} else {
 			log.trace("Opening new Hibernate Session.");
 			return sessionFactory.openSession();
-		}
+		}*/
 	}
 
 	public static SessionFactory getSessionFactory()
@@ -137,7 +147,13 @@ public class HibernateUtil {
 
 	public static void closeSession() {
 		log.trace("Closing Hibernate Session.");
-		final Session session = getSessionFactory().getCurrentSession();
+		Session session = threadLocal.get();
+		if (session != null) {
+			session.close();
+		}
+		threadLocal.set(null);
+		
+		/*final Session session = getSessionFactory().getCurrentSession();
 
 		commitTransaction();
 		session.flush();
@@ -145,7 +161,7 @@ public class HibernateUtil {
 		if (session.isOpen()) {
 			log.trace("Close opened Hibernate Session.");
 			session.close();
-		}
+		}*/
 	}
 
 	public static void shutdown() {
