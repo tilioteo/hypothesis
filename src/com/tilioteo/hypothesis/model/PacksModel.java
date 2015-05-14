@@ -19,6 +19,7 @@ import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartFeaturedTestEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartLegacyTestEvent;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
+import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.TokenManager;
 import com.tilioteo.hypothesis.persistence.UserManager;
 import com.tilioteo.hypothesis.servlet.ServletUtil;
@@ -35,13 +36,15 @@ public class PacksModel implements Serializable {
 	
 	private PermissionManager permissionManager;
 	private TokenManager tokenManager;
-	private UserManager userManager;
+	private PersistenceManager persistenceManager;
+	//private UserManager userManager;
 	
 	public PacksModel() {
 		
 		permissionManager = PermissionManager.newInstance();
 		tokenManager = TokenManager.newInstance();
-		userManager = UserManager.newInstance();
+		persistenceManager = PersistenceManager.newInstance();
+		//userManager = UserManager.newInstance();
 	}
 
 	public List<Pack> getPublicPacks() {
@@ -51,7 +54,8 @@ public class PacksModel implements Serializable {
 	public List<Pack> getUserPacks(User user) {
 		if (user != null) {
 			try {
-				user = userManager.merge(user);
+				//user = userManager.merge(user);
+				user = persistenceManager.merge(user);
 				Set<Pack> packs = permissionManager.findUserPacks(user, true);
 				if (packs != null) {
 					LinkedList<Pack> list = new LinkedList<>();

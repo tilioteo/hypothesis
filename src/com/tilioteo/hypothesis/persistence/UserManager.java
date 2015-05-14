@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.tilioteo.hypothesis.dao.UserDao;
 import com.tilioteo.hypothesis.entity.FieldConstants;
+import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.User;
 
 @SuppressWarnings("serial")
@@ -20,15 +21,18 @@ public class UserManager implements Serializable {
 
 	private UserDao userDao;
 	
+	private PersistenceManager persistenceManager;
+
 	public static UserManager newInstance() {
 		return new UserManager(new UserDao());
 	}
 	
 	protected UserManager(UserDao userDao) {
 		this.userDao = userDao;
+		persistenceManager = PersistenceManager.newInstance();
 	}
 	
-	public User merge(User user) {
+	/*public User merge(User user) {
 		try {
 			userDao.beginTransaction();
 			user = mergeInit(user);
@@ -39,24 +43,22 @@ public class UserManager implements Serializable {
 			userDao.rollback();
 		}
 		return null;
-	}
+	}*/
 
-	private User mergeInit(User user) {
+	/*private User mergeInit(User user) {
 		userDao.clear();
 		user = userDao.merge(user);
 		Hibernate.initialize(user.getGroups());
 		Hibernate.initialize(user.getRoles());
 		return user;
-	}
+	}*/
 
 	public User add(User user) {
 		log.debug("addUser");
 		try {
 			userDao.beginTransaction();
-			if (user.getId() != null) {
-				user = mergeInit(user);
-				userDao.clear();
-			}
+			//user = mergeInit(user);
+			userDao.clear();
 			user = userDao.makePersistent(user);
 			userDao.commit();
 			return user;
@@ -95,7 +97,7 @@ public class UserManager implements Serializable {
 		log.debug("deleteUser");
 		try {
 			userDao.beginTransaction();
-			user = mergeInit(user);
+			//user = mergeInit(user);
 			userDao.clear();
 			userDao.makeTransient(user);
 			userDao.commit();
