@@ -14,6 +14,7 @@ import org.vaadin.jouni.animator.shared.AnimType;
 import org.vaadin.special.ui.ShortcutKey;
 
 import com.google.common.eventbus.Subscribe;
+import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.event.AbstractNotificationEvent;
 import com.tilioteo.hypothesis.event.AfterFinishSlideEvent;
 import com.tilioteo.hypothesis.event.AfterPrepareTestEvent;
@@ -35,7 +36,6 @@ import com.tilioteo.hypothesis.slide.ui.Window;
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.server.ClientConnector.DetachListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
@@ -53,15 +53,15 @@ import com.vaadin.ui.Window.CloseEvent;
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 @PreserveOnRefresh
-public class ProcessUI extends HUI implements DetachListener/*, CommandScheduler*/ {
+public class ProcessUI extends HUI /*implements CommandScheduler*/ {
 
 	private static Logger log = Logger.getLogger(ProcessUI.class);
 
 	public static final String FULLSCREEN_PARAMETER = "fs";
 	public static final String BACK_PARAMETER = "bk";
 	public static final String TOKEN_PARAMETER = "token";
+
 	public static final String CLOSE_URL = "/resource/close.html";
-	public static final String ERROR_INVALID_ACCESS = "Invalid access.";
 
 	@WebServlet(value = "/process/*", asyncSupported = true)
 	@VaadinServletConfiguration(productionMode = false, ui = ProcessUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
@@ -85,11 +85,47 @@ public class ProcessUI extends HUI implements DetachListener/*, CommandScheduler
 		ProcessEventBus.get().register(this);
 		
 		log.debug("ProcessUI initialization");
-		addDetachListener(this);
+
 		processModel = new ProcessModel();
 		
 		PluginManager.get().registerPlugins();
 		
+
+		// TODO try to set token by uri fragment and implement UriFragmentChangeListener
+		String token = initParameters(request);
+
+		if (token != null) {
+			log.debug(TOKEN_PARAMETER +"="+ token);
+			lastToken = token;
+			processModel.followToken(token);
+		} else {
+			log.debug(TOKEN_PARAMETER + "=(null)");
+			processModel.fireError(Messages.getString("Message.Error.InvalidAccess"));
+		}
+	}
+	
+	@Override
+	protected void refresh(VaadinRequest request) {
+		super.refresh(request);
+		
+		String token = initParameters(request);
+		
+		if (token != null) {
+			if (!token.equalsIgnoreCase(lastToken)) {
+				processModel.requestBreak();
+				
+				lastToken = token;
+				processModel.followToken(token);
+			} else {
+				log.debug("ProcessUI refresh");
+			}
+		} else {
+			log.debug(TOKEN_PARAMETER + "=(null)");
+			processModel.fireError(Messages.getString("Message.Error.InvalidAccess"));
+		}
+	}
+	
+	private String initParameters(VaadinRequest request) {
 		String fullScreen = request.getParameter(FULLSCREEN_PARAMETER);
 		if (fullScreen != null && !fullScreen.equalsIgnoreCase("false")) {
 			requestFullscreen = true;
@@ -102,32 +138,7 @@ public class ProcessUI extends HUI implements DetachListener/*, CommandScheduler
 			requestBack = true;
 		}
 
-		// TODO try to set token by uri fragment and implement UriFragmentChangeListener
-		String token = request.getParameter(TOKEN_PARAMETER);
-
-		if (token != null) {
-			log.debug(TOKEN_PARAMETER + token);
-			lastToken = token;
-			processModel.followToken(token);
-		} else {
-			log.debug(TOKEN_PARAMETER + "=(null)");
-			
-			processModel.fireError(ERROR_INVALID_ACCESS);
-		}
-	}
-	
-	@Override
-	protected void refresh(VaadinRequest request) {
-		super.refresh(request);
-		
-		// NOTE
-		// browser refresh does not enter here, not know why
-		
-		String newToken = request.getParameter(TOKEN_PARAMETER);
-		
-		if (newToken != lastToken) {
-			
-		}
+		return request.getParameter(TOKEN_PARAMETER);
 	}
 
 	/*public void scheduleCommand(Command command) {
@@ -258,12 +269,14 @@ public class ProcessUI extends HUI implements DetachListener/*, CommandScheduler
 	}
 
 	@Override
-	public void detach(DetachEvent event) {
-		log.debug("ProcessUI detached.");
+	public void detach() {
+		log.debug("ProcessUI detach");
 		
 		ProcessEventBus.get().unregister(this);
 		processModel.requestBreak();
 		processModel.clean();
+
+		super.detach();
 	}
 	
 	@Override
