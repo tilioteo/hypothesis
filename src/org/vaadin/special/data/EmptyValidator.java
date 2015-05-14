@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.data;
+package org.vaadin.special.data;
 
 import com.tilioteo.hypothesis.common.Strings;
 

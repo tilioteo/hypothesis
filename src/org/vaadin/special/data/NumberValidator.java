@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.data;
+package org.vaadin.special.data;
 
 import java.util.Locale;
 
@@ -12,18 +12,18 @@ import com.vaadin.data.util.converter.Converter.ConversionException;
  *
  */
 @SuppressWarnings("serial")
-public class IntegerValidator extends AbstractValidator {
+public class NumberValidator extends AbstractValidator {
 	
-	private StringToIntegerConverter converter;
+	private StringToDoubleConverter converter;
 
-	public IntegerValidator(String message) {
+	public NumberValidator(String message) {
 		super(message);
-		converter = new StringToIntegerConverter();
+		converter = new StringToDoubleConverter();
 	}
 
 	@Override
 	public boolean isValid(Object value) {
-		if (null == value || Integer.class.isAssignableFrom(value.getClass())) {
+		if (null == value || Number.class.isAssignableFrom(value.getClass())) {
 			return true;
 		}
 		
@@ -33,7 +33,7 @@ public class IntegerValidator extends AbstractValidator {
 
 		try {
 			@SuppressWarnings("unused")
-			Integer integerValue = converter.convertToModel((String) value, Integer.class, Locale.ENGLISH);
+			Number numberValue = converter.convertToModel((String) value, Double.class, Locale.ENGLISH);
 			return true;
 		} catch (ConversionException e) {
 		}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.data;
+package org.vaadin.special.data;
 
 /**
  * @author kamil

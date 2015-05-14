@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.data;
+package org.vaadin.special.data;
 
 import java.text.NumberFormat;
 import java.util.Locale;

@@ -1,8 +1,9 @@
 package com.tilioteo.hypothesis.ui.view;
 
+import org.vaadin.special.data.EmptyValidator;
+
 import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.core.Messages;
-import com.tilioteo.hypothesis.data.EmptyValidator;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidLoginEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidUserPermissionEvent;

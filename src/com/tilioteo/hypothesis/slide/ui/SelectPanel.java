@@ -114,7 +114,7 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Sl
 	}
 
 	private void setValidators(Element element) {
-		List<com.tilioteo.hypothesis.data.Validator> validators = ComponentFactory.createSelectPanelValidators(element);
+		List<org.vaadin.special.data.Validator> validators = ComponentFactory.createSelectPanelValidators(element);
 		for (Validator validator : validators) {
 			addValidator(validator);
 		}
@@ -171,6 +171,23 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Sl
 		super.removeSelected(button);
 		if (contained && validators != null && !validators.isEmpty()) {
             markAsDirty();
+		}
+	}
+
+	public boolean isSelected(int index) {
+		if (index >= 0 && index < childList.size()) {
+			return selectedButtons.contains(childList.get(index));
+		}
+		return false;
+	}
+	
+	public void setSelected(int index, boolean value) {
+		if (index >= 0 && index < childList.size()) {
+			if (value) {
+				addSelected(childList.get(index));
+			} else {
+				removeSelected(childList.get(index));
+			}
 		}
 	}
 
