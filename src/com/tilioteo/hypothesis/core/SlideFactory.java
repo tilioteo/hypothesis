@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +56,8 @@ import com.tilioteo.hypothesis.slide.ui.ComponentFactory;
  * @author Kamil Morong - Hypothesis
  * 
  */
-public class SlideFactory {
+@SuppressWarnings("serial")
+public class SlideFactory implements Serializable {
 
 	private static HashMap<SlideFascia, SlideFactory> instances = new HashMap<SlideFascia, SlideFactory>();
 	
@@ -701,14 +703,25 @@ public class SlideFactory {
 		com.tilioteo.hypothesis.interfaces.Variable<Object> navigator = createNavigatorObject();
 		slideFascia.getVariables().put(navigator.getName(), navigator);
 
+		// create and add Document object variable
+		com.tilioteo.hypothesis.interfaces.Variable<Object> document = createDocumentObject();
+		slideFascia.getVariables().put(document.getName(), document);
+
 	}
 
 	private com.tilioteo.hypothesis.interfaces.Variable<Object> createNavigatorObject() {
 		// TODO invent naming for system objects and mark navigator like a
 		// system object
-		Variable<Object> variable = new Variable<Object>(SlideXmlConstants.NAVIGATOR);
-		Navigator navigator = new Navigator(slideFascia);
-		variable.setRawValue(navigator);
+		Variable<Object> variable = new Variable<Object>(SlideXmlConstants.NAVIGATOR,
+				new Navigator(slideFascia));
+		return variable;
+	}
+
+	private com.tilioteo.hypothesis.interfaces.Variable<Object> createDocumentObject() {
+		// TODO invent naming for system objects and mark document like a
+		// system object
+		Variable<Object> variable = new Variable<Object>(SlideXmlConstants.DOCUMENT,
+				new com.tilioteo.hypothesis.core.Document(slideFascia));
 		return variable;
 	}
 
