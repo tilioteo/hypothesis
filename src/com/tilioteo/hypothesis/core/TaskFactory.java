@@ -14,7 +14,6 @@ import org.dom4j.Element;
 
 import com.tilioteo.hypothesis.common.StringConstants;
 import com.tilioteo.hypothesis.common.Strings;
-import com.tilioteo.hypothesis.dom.BranchXmlUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.dom.TaskXmlUtility;
@@ -64,13 +63,13 @@ public class TaskFactory implements Serializable {
 				Element rootElement = doc.getRootElement(); 
 				createActions(rootElement);
 				createVariables(rootElement);
-				createTaskNodes(rootElement);
+				createNodes(rootElement);
 			}
 		}
 	}
 
 	private void createActions(Element rootElement) {
-		List<Element> actions = SlideXmlUtility.getActionsElements(rootElement);
+		List<Element> actions = TaskXmlUtility.getActionsElements(rootElement);
 		for (Element actionElement : actions) {
 			String id = SlideXmlUtility.getId(actionElement);
 			if (!Strings.isNullOrEmpty(id)) {
@@ -122,14 +121,6 @@ public class TaskFactory implements Serializable {
 					taskManager.getVariables().put(variable.getName(), variable);
 			}
 		}
-		/*// create and add Navigator object variable
-		com.tilioteo.hypothesis.interfaces.Variable<Object> navigator = createNavigatorObject();
-		slideFascia.getVariables().put(navigator.getName(), navigator);
-
-		// create and add Document object variable
-		com.tilioteo.hypothesis.interfaces.Variable<Object> document = createDocumentObject();
-		slideFascia.getVariables().put(document.getName(), document);
-		*/
 	}
 
 	private Variable<?> createVariable(Element element) {
@@ -213,8 +204,8 @@ public class TaskFactory implements Serializable {
 			return null;
 	}
 
-	private void createTaskNodes(Element rootElement) {
-		List<Element> nodes = BranchXmlUtility.getPathElements(rootElement);
+	private void createNodes(Element rootElement) {
+		List<Element> nodes = TaskXmlUtility.getNodesElements(rootElement);
 		for (Element nodeElement : nodes) {
 			Node node = createNode(nodeElement);
 			if (node != null)

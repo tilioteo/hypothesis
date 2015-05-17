@@ -20,11 +20,22 @@ public class TaskXmlUtility {
 	}
 
 	@SuppressWarnings("unchecked")
+	public static List<Element> getNodesElements(Element documentRoot) {
+		if (documentRoot != null) {
+			List<Element> variables = documentRoot.selectNodes(String.format("%s//%s",
+					TaskXmlConstants.NODES, TaskXmlConstants.NODE));
+
+			return variables;
+		}
+
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
 	public static List<Element> getVariablesElements(Element documentRoot) {
 		if (documentRoot != null) {
-			List<Element> variables = documentRoot.selectNodes(String.format(
-					"%s//%s", SlideXmlConstants.VARIABLES,
-					SlideXmlConstants.VARIABLE));
+			List<Element> variables = documentRoot.selectNodes(String.format("%s//%s",
+					SlideXmlConstants.VARIABLES, SlideXmlConstants.VARIABLE));
 
 			return variables;
 		}
@@ -39,6 +50,18 @@ public class TaskXmlUtility {
 	public static Element getEvaluateElement(Element element) {
 		if (element != null) {
 			return (Element) element.selectSingleNode(TaskXmlConstants.EVALUATE);
+		}
+
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<Element> getActionsElements(Element documentRoot) {
+		if (documentRoot != null) {
+			List<Element> actions = documentRoot.selectNodes(String.format("%s//%s",
+					SlideXmlConstants.ACTIONS, SlideXmlConstants.ACTION));
+
+			return actions;
 		}
 
 		return null;

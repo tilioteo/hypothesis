@@ -18,7 +18,7 @@ public class TaskNavigator implements Serializable {
 		this.node = node;
 	}
 
-	public void next(int index) {
+	public void nextIndex(int index) {
 		node.setNextIndex(index);
 	}
 	

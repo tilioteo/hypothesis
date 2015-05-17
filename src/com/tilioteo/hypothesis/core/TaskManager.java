@@ -72,10 +72,12 @@ public class TaskManager extends ListManager<Branch, Task> implements HasVariabl
 				}
 				// add current output values
 				Map<Integer, ExchangeVariable> outputs = slideOutputs.get(currentSlide.getId());
-				for (Integer index : outputs.keySet()) {
-					ExchangeVariable exchangeVariable = outputs.get(index);
-					Variable<?> variable = Variable.createVariable("output"+index, exchangeVariable.getValue());
-					node.getVariables().put(variable.getName(), variable);
+				if (outputs != null) {
+					for (Integer index : outputs.keySet()) {
+						ExchangeVariable exchangeVariable = outputs.get(index);
+						Variable<?> variable = Variable.createVariable("output"+index, exchangeVariable.getValue());
+						node.getVariables().put(variable.getName(), variable);
+					}
 				}
 				
 				// add Navigator object variable

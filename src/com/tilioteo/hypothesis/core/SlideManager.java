@@ -190,6 +190,14 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 		return current();
 	}
 
+	@Override
+	public Slide get(int index) {
+		current = super.get(index);
+		buildSlide();
+		
+		return current;
+	}
+	
 	private void saveOutputValuesForNext() {
 		nextInputValues.clear();
 		
