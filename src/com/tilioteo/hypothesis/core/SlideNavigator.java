@@ -15,11 +15,11 @@ import com.tilioteo.hypothesis.interfaces.SlideFascia;
  *
  */
 @SuppressWarnings("serial")
-public class Navigator implements Serializable {
+public class SlideNavigator implements Serializable {
 	
 	private SlideFascia slideFascia;
 	
-	public Navigator(SlideFascia slideFascia) {
+	public SlideNavigator(SlideFascia slideFascia) {
 		this.slideFascia = slideFascia;
 	}
 	

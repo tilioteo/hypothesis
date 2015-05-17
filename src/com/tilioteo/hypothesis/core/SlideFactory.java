@@ -699,7 +699,7 @@ public class SlideFactory implements Serializable {
 					slideFascia.getVariables().put(variable.getName(), variable);
 			}
 		}
-		// create and add Navigator object variable
+		// create and add SlideNavigator object variable
 		com.tilioteo.hypothesis.interfaces.Variable<Object> navigator = createNavigatorObject();
 		slideFascia.getVariables().put(navigator.getName(), navigator);
 
@@ -713,7 +713,7 @@ public class SlideFactory implements Serializable {
 		// TODO invent naming for system objects and mark navigator like a
 		// system object
 		Variable<Object> variable = new Variable<Object>(SlideXmlConstants.NAVIGATOR,
-				new Navigator(slideFascia));
+				new SlideNavigator(slideFascia));
 		return variable;
 	}
 
