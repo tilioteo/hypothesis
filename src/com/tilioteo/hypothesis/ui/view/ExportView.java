@@ -636,24 +636,25 @@ public class ExportView extends VerticalLayout implements View {
 					header.createCell(10).setCellValue("slide_id");
 					header.createCell(11).setCellValue("slide_name");
 					header.createCell(12).setCellValue("branch_order_pack");
-					header.createCell(13).setCellValue("task_order_pack");
-					header.createCell(14).setCellValue("slide_order_task");
-					header.createCell(15).setCellValue("event_timestamp");
-					header.createCell(16).setCellValue("event_time_diff");
-					header.createCell(17).setCellValue("event_type");
-					header.createCell(18).setCellValue("event_name");
-					header.createCell(19).setCellValue("event_data");
+					header.createCell(13).setCellValue("branch_order");
+					header.createCell(14).setCellValue("task_order_pack");
+					header.createCell(15).setCellValue("slide_order_task");
+					header.createCell(16).setCellValue("event_timestamp");
+					header.createCell(17).setCellValue("event_time_diff");
+					header.createCell(18).setCellValue("event_type");
+					header.createCell(19).setCellValue("event_name");
+					header.createCell(20).setCellValue("event_data");
 
-					header.createCell(20).setCellValue("output_value1");
-					header.createCell(21).setCellValue("output_value2");
-					header.createCell(22).setCellValue("output_value3");
-					header.createCell(23).setCellValue("output_value4");
-					header.createCell(24).setCellValue("output_value5");
-					header.createCell(25).setCellValue("output_value6");
-					header.createCell(26).setCellValue("output_value7");
-					header.createCell(27).setCellValue("output_value8");
-					header.createCell(28).setCellValue("output_value9");
-					header.createCell(29).setCellValue("output_value10");
+					header.createCell(21).setCellValue("output_value1");
+					header.createCell(22).setCellValue("output_value2");
+					header.createCell(23).setCellValue("output_value3");
+					header.createCell(24).setCellValue("output_value4");
+					header.createCell(25).setCellValue("output_value5");
+					header.createCell(26).setCellValue("output_value6");
+					header.createCell(27).setCellValue("output_value7");
+					header.createCell(28).setCellValue("output_value8");
+					header.createCell(29).setCellValue("output_value9");
+					header.createCell(30).setCellValue("output_value10");
 					
 					if (events != null) {
 						int size = events.size();
@@ -671,14 +672,16 @@ public class ExportView extends VerticalLayout implements View {
 						long diffTime = 0;
 
 						HashMap<String, Integer> fieldColumnMap = new HashMap<String, Integer>();
+						HashMap<Long, Integer> branchCountMoap = new HashMap<Long, Integer>();
 						
-						int outputValueCol = 20;
+						int outputValueCol = 21;
 						int fieldCol = outputValueCol + 10;
 
 						int rowNr = 1;
 						int branchOrder = 0;
 						int taskOrder = 0;
 						int slideOrder = 0;
+						int branchCount = 0;
 
 						for (ExportEvent event : events) {
 							if (cancelPending.get()) {
@@ -716,6 +719,14 @@ public class ExportView extends VerticalLayout implements View {
 							if (branchId != null) {
 								if (!branchId.equals(lastBranchId)) {
 									++branchOrder;
+									
+									Integer count = branchCountMoap.get(branchId);
+									if (null == count) {
+										count = 0;
+									}
+									branchCount = ++count;
+									branchCountMoap.put(branchId, branchCount);
+									
 									lastBranchId = branchId;
 									lastTaskId = null;
 								}
@@ -806,40 +817,45 @@ public class ExportView extends VerticalLayout implements View {
 								cell.setCellValue(branchOrder);
 								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
-							if (taskId != null) {
+							if (branchId != null) {
 								cell = row.createCell(13);
+								cell.setCellValue(branchCount);
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+							}
+							if (taskId != null) {
+								cell = row.createCell(14);
 								cell.setCellValue(taskOrder);
 								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							if (slideId != null) {
-								cell = row.createCell(14);
+								cell = row.createCell(15);
 								cell.setCellValue(slideOrder);
 								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							
 							relativeTime = eventTime - startTestTime;
-							cell = row.createCell(15);
+							cell = row.createCell(16);
 							cell.setCellValue(relativeTime);
 							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							
 							if (lastEventTime > 0) {
 								diffTime = eventTime - lastEventTime;
-								cell = row.createCell(16);
+								cell = row.createCell(17);
 								cell.setCellValue(diffTime);
 								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
 							lastEventTime = eventTime;
 							
-							cell = row.createCell(17);
+							cell = row.createCell(18);
 							cell.setCellValue(event.getType());
 							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 
-							cell = row.createCell(18);
+							cell = row.createCell(19);
 							cell.setCellValue(eventName);
 							cell.setCellType(Cell.CELL_TYPE_STRING);
 							
 							String xmlData = event.getXmlData();
-							cell = row.createCell(19);
+							cell = row.createCell(20);
 							cell.setCellValue(xmlData);
 							cell.setCellType(Cell.CELL_TYPE_STRING);
 
