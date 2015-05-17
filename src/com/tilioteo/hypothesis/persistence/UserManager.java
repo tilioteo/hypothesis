@@ -45,19 +45,19 @@ public class UserManager implements Serializable {
 		return null;
 	}*/
 
-	/*private User mergeInit(User user) {
+	private User mergeInit(User user) {
 		userDao.clear();
 		user = userDao.merge(user);
 		Hibernate.initialize(user.getGroups());
 		Hibernate.initialize(user.getRoles());
 		return user;
-	}*/
+	}
 
 	public User add(User user) {
 		log.debug("addUser");
 		try {
 			userDao.beginTransaction();
-			//user = mergeInit(user);
+			user = mergeInit(user);
 			userDao.clear();
 			user = userDao.makePersistent(user);
 			userDao.commit();

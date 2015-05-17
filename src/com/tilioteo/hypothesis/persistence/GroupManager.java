@@ -45,18 +45,18 @@ public class GroupManager implements Serializable {
 		return null;
 	}*/
 	
-	/*private Group mergeInit(Group group) {
+	private Group mergeInit(Group group) {
 		groupDao.clear();
 		group = groupDao.merge(group);
 		Hibernate.initialize(group.getUsers());
 		return group;
-	}*/
+	}
 
 	public Group add(Group group) {
 		log.debug("addGroup");
 		try {
 			groupDao.beginTransaction();
-			//group = mergeInit(group);
+			group = mergeInit(group);
 			groupDao.clear();
 			group = groupDao.makePersistent(group);
 			groupDao.commit();
