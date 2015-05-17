@@ -62,9 +62,7 @@ public class BranchFactory implements Serializable {
 		return null;
 	}
 
-	public void createBranchControls(BranchManager branchManager) {
-		this.branchManager = branchManager;
-
+	public void createBranchControls() {
 		if (branchManager != null) {
 			Document doc = branchManager.getBranchXml();
 			if (BranchXmlUtility.isValidBranchXml(doc)) {

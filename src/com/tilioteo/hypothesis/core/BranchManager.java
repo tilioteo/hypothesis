@@ -36,7 +36,6 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	private Document branchXml = null;
 	private Branch current = null;
 
-	//private PairList<Slide, Object> slideOutputValues = new PairList<Slide, Object>();
 	private HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<Long, Map<Integer, ExchangeVariable>>();
 
 	private String nextKey = null;
@@ -71,7 +70,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 		Branch branch = super.current();
 		if (current != null) {
 			branchXml = XmlUtility.readString(branch.getXmlData());
-			branchFactory.createBranchControls(this);
+			branchFactory.createBranchControls();
 		}
 	}
 
