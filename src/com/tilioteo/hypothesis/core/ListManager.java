@@ -20,6 +20,7 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 	private LinkedList<E> list = new LinkedList<E>();
 	private int index = -1;
 
+	private T parent = null;
 	private E element = null;
 	
 	private Random randomGenerator;
@@ -31,6 +32,14 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 			element = null;
 		}
 		return element;
+	}
+	
+	public T getParent() {
+		return parent;
+	}
+	
+	public int getCount() {
+		return list.size();
 	}
 
 	public E current() {
@@ -75,6 +84,7 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 	}*/
 
 	public void setListFromParent(T parent) {
+		this.parent = parent;
 		list.clear();
 		index = -1;
 		randomGenerator = new Random();

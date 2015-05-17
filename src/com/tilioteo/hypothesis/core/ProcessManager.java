@@ -304,7 +304,15 @@ public class ProcessManager implements Serializable {
 	public void processNextSlide(NextSlideEvent event) {
 		saveRunningEvent(event);
 
-		currentSlide = slideManager.next();
+		taskManager.addSlideOutputs(currentSlide, slideManager.getOutputs());
+		int nextIndex = taskManager.getNextSlideIndex(currentSlide);
+		if (nextIndex < 1) { //
+			currentSlide = slideManager.next();
+		} else if (nextIndex > slideManager.getCount()) {
+			currentSlide = null;
+		} else {
+			currentSlide = slideManager.get(nextIndex-1);
+		}
 		
 		if (currentSlide != null) {
 			slideProcessing = true;

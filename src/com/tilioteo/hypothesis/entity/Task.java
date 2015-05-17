@@ -25,6 +25,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Type;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -43,6 +44,12 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 
 	private String name;
 	private String note;
+
+	/**
+	 * raw xml string for task
+	 */
+	private String xmlData;
+
 	private boolean randomized;
 
 	/**
@@ -77,6 +84,16 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 		this.note = note;
 	}
 	
+	@Column(name = FieldConstants.XML_DATA)
+	@Type(type="text")
+	public String getXmlData() {
+		return xmlData;
+	}
+
+	public void setXmlData(String xmlData) {
+		this.xmlData = xmlData;
+	}
+
 	@Column(name = FieldConstants.RANDOMIZED)
 	public boolean isRandomized() {
 		return randomized;
