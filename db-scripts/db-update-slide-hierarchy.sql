@@ -24,3 +24,4 @@ DROP TABLE IF EXISTS "public"."tbl_slide_content" CASCADE;
 
 
 ALTER TABLE "public"."tbl_pack" ADD COLUMN "java_required" BOOLEAN DEFAULT 'true' NOT NULL;
+ALTER TABLE "public"."tbl_task" ADD COLUMN "xml_data" TEXT;
