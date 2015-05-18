@@ -14,6 +14,7 @@ public class MapEventTypes {
 	public static final String ImageChange = "IMAGE_CHANGE";
 	public static final String FeatureClick = "FEATURE_CLICK";
 	public static final String DrawPath = "DRAW_PATH";
+	public static final String DrawLine = "DRAW_LINE";
 	public static final String DrawPoint = "DRAW_POINT";
 	public static final String DrawPolygon = "DRAW_POLYGON";
 	public static final String PanStart = "PAN_START";

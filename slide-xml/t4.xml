@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SlideTemplate xmlns:maps="http://hypothesis.cz/xml/maps"
-	UID="9C0BA521-4748-4305-80B2-93058EE00196">
-	<!-- dva obrazky, timer -->
+	UID="2A9E8C75-7AE9-4B53-B79C-0F6E6225DB66">
 	<Viewport>
 		<VerticalLayout Id="ct001">
 			<Properties>
@@ -35,13 +34,12 @@
 					<Properties>
 						<Width Value="100%" />
 						<Height Value="15%" />
-						<Alignment Value="mc" />
 					</Properties>
 					<Components>
 						<Panel Id="ct001_ct002_ct001">
 							<Properties>
 								<Border Value="False" />
-								<Width Value="80%" />
+								<Width Value="100%" />
 								<Height Value="100%" />
 							</Properties>
 							<Components>
@@ -49,10 +47,12 @@
 									<Properties>
 										<Width Value="100%" />
 										<Height Value="100%" />
-										<Alignment Value="mc" />
 									</Properties>
 									<Components>
-										<Label Id="text1">
+										<Label Id="explanation">
+											<Properties>
+												<Width Value="90%" />
+											</Properties>
 										</Label>
 									</Components>
 								</VerticalLayout>
@@ -61,90 +61,55 @@
 					</Components>
 				</HorizontalLayout>
 
-				<HorizontalLayout Id="ct001_ct003"> <!--obrazky -->
+				<HorizontalLayout Id="ct001_ct003">
 					<Properties>
 						<Width Value="100%" />
 						<Height Value="73%" />
 						<Alignment Value="mc" />
 					</Properties>
 					<Components>
-						<VerticalLayout Id="ct001_ct003_ct001">
+						<maps:Map Id="map1">
 							<Properties>
-								<Width Value="50%" />
-								<Height Value="100%" />
-								<Alignment Value="mc" />
+								<Width Value="640" />
+								<Height Value="640" />
 							</Properties>
-							<Components>
-								<HorizontalLayout Id="ct001_ct003_ct001_ct001">
-									<Components>
-										<Image Id="image1">
-										</Image>
-									</Components>
-								</HorizontalLayout>
-							</Components>
-						</VerticalLayout>
 
-						<VerticalLayout Id="ct001_ct003_ct002">
-							<Properties>
-								<Width Value="50%" />
-								<Height Value="100%" />
-								<Alignment Value="mc" />
-							</Properties>
-							<Components>
-								<HorizontalLayout Id="ct001_ct003_ct002_ct002">
-									<Components>
+							<Layers>
+								<ImageLayer Id="image_layer">
+									<Properties>
+										<Url Value="http://hypothesis.cz/gallery/albums/userpics/10003/TP3.png" />
+									</Properties>
+								</ImageLayer>
 
-										<maps:Map Id="map">
-											<Properties> <!--musi byt definovana velikost, aby se dala v content prepsat, jinak se 
-													obrazek nezobrazi -->
-												<Width Value="10" />
-												<Height Value="10" />
-											</Properties>
+								<FeatureLayer Id="feature_layer">
+								</FeatureLayer>
+							</Layers>
 
-											<Layers>
-												<ImageLayer Id="image2">
-												</ImageLayer>
+							<Styles>
+								<Style Id="point">
+									<StrokeColor Value="black" />
+									<StrokeWidth Value="1" />
+									<FillOpacity Value="0" />
+								</Style>
+							</Styles>
 
-												<FeatureLayer Id="feature_layer">
-													<Properties>
-														<Style Value="red" />
-													</Properties>
-												</FeatureLayer>
-											</Layers>
-											<Controls>
-												<DrawPoint Id="draw_point">
-													<Properties>
-														<LayerId Value="feature_layer" />
-														<CursorStyle Value="cursor" />
-													</Properties>
-												</DrawPoint>
-											</Controls>
-											<Styles>
-												<Style Id="cursor"> <!-- pod sipkou mysi nebude zadne kolecko pri
-																		aktivovanem kresleni -->
-													<PointRadius Value="0" />
-													<StrokeWidth Value="0" />
-													<StrokeOpacity Value="0" />
-													<FillOpacity Value="0" />
-												</Style>
-												<Style Id="red"> <!-- cervene se bude malovat kliknuty bod -->
-													<PointRadius Value="8" />
-													<StrokeColor Value="red" />
-													<StrokeWidth Value="1" />
-													<FillColor Value="red" />
-													<FillOpacity Value="1" />
-												</Style>
-											</Styles>
-										</maps:Map>
-
-									</Components>
-								</HorizontalLayout>
-							</Components>
-						</VerticalLayout>
+							<Controls>
+								<DrawLine Id="draw_line">
+									<Properties>
+										<LayerId Value="feature_layer" />
+									</Properties>
+									<Handlers>
+										<Draw>
+											<Call Action="nextSlide" />
+										</Draw>
+									</Handlers>
+								</DrawLine>
+							</Controls>
+						</maps:Map>
 					</Components>
 				</HorizontalLayout>
 
-				<HorizontalLayout Id="ct001_ct004">	<!-- zapati - volný prostor na konci stranky -->
+				<HorizontalLayout Id="ct001_ct004">	<!-- zapati -->
 					<Properties>
 						<Width Value="100%" />
 						<Height Value="6%" />
@@ -167,54 +132,26 @@
 
 	<Handlers>
 		<Show>
-			<Call Action="activatePoint" />
-			<Call Action="startTimer" />
+			<Call Action="activateLine" />
 		</Show>
 	</Handlers>
-	<Timers>
-		<Timer Id="odpocet">
-			<Properties>
-				<Time Value="30000" />
-				<Direction Value="down" />
-			</Properties>
-			<Handlers>
-				<Stop>
-					<Call Action="nextSlide" />
-				</Stop>
-			</Handlers>
-		</Timer>
-	</Timers>
 
 	<Variables>
-		<Variable Id="spravne" Type="Integer" Value="0" />
-		<Variable Id="odpocet" Type="Object">
+		<Variable Id="cara" Type="Object">
 			<Reference>
-				<Timer Id="odpocet" />
-			</Reference>
-		</Variable>
-		<Variable Id="drawPoint" Type="Object">
-			<Reference>
-				<Component Id="draw_point" />
+				<Component Id="draw_line" />
 			</Reference>
 		</Variable>
 	</Variables>
 
 	<Actions>
-		<Action Id="spravna_odpoved">
-			<Expression>spravne=spravne+1</Expression>
+		<Action Id="activateLine">
+			<Expression>cara->activate()</Expression>
 		</Action>
+
 		<Action Id="nextSlide">
 			<Expression>Navigator->next()</Expression>
 		</Action>
-		<Action Id="startTimer">
-			<Expression>odpocet->start()</Expression>
-		</Action>
-		<Action Id="activatePoint">
-			<Expression>drawPoint->activate()</Expression>
-		</Action>
 	</Actions>
 
-	<OutputValue>
-		<Expression>spravne</Expression>
-	</OutputValue>
 </SlideTemplate>

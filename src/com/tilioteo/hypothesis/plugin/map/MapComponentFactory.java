@@ -16,6 +16,8 @@ import org.vaadin.maps.shared.ui.Style;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;
+import com.tilioteo.hypothesis.plugin.map.event.DrawLineControlData;
+import com.tilioteo.hypothesis.plugin.map.event.DrawLineControlEvent;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlEvent;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlData;
@@ -36,6 +38,7 @@ import com.tilioteo.hypothesis.plugin.map.event.WMSLayerData;
 import com.tilioteo.hypothesis.plugin.map.event.WMSLayerEvent;
 import com.tilioteo.hypothesis.plugin.map.event.ZoomControlData;
 import com.tilioteo.hypothesis.plugin.map.event.ZoomControlEvent;
+import com.tilioteo.hypothesis.plugin.map.ui.DrawLineControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPointControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPolygonControl;
@@ -84,6 +87,9 @@ public class MapComponentFactory implements Serializable {
 			else if (name.equals(SlideXmlConstants.DRAW_PATH))
 				component = ComponentFactory.<DrawPathControl> createFromElement(
 								DrawPathControl.class, element, slideFascia);
+			else if (name.equals(SlideXmlConstants.DRAW_LINE))
+				component = ComponentFactory.<DrawLineControl> createFromElement(
+						DrawLineControl.class, element, slideFascia);
 			else if (name.equals(SlideXmlConstants.DRAW_POLYGON))
 				component = ComponentFactory.<DrawPolygonControl> createFromElement(
 								DrawPolygonControl.class, element, slideFascia);
@@ -181,6 +187,14 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createDrawPathControlEventCommand(DrawPathControlData data, Date timestamp, Date clientTimestamp) {
 		DrawPathControlEvent event = new DrawPathControlEvent.DrawPath(data);
+		event.setTimestamp(clientTimestamp);
+		event.setClientTimestamp(clientTimestamp);
+
+		return CommandFactory.createComponentEventCommand(event);
+	}
+
+	public static Command createDrawLineControlEventCommand(DrawLineControlData data, Date timestamp, Date clientTimestamp) {
+		DrawLineControlEvent event = new DrawLineControlEvent.DrawLine(data);
 		event.setTimestamp(clientTimestamp);
 		event.setClientTimestamp(clientTimestamp);
 

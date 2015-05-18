@@ -8,6 +8,7 @@ import java.util.Locale;
 
 import org.dom4j.Element;
 
+import com.tilioteo.hypothesis.plugin.map.event.DrawLineControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPathControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPointControlData;
 import com.tilioteo.hypothesis.plugin.map.event.DrawPolygonControlData;
@@ -137,6 +138,15 @@ public class SlideFactory implements Serializable {
 	public static void writeDrawPathControlData(Element sourceElement, DrawPathControlData data) {
 		String id = data.getComponentId();
 		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.DRAW_PATH);
+		if (id != null)
+			sourceElement.addAttribute(SlideXmlConstants.ID, id);
+		Element subElement = sourceElement.addElement(SlideXmlConstants.GEOMETRY);
+		subElement.addText(data.getFeature().getGeometry().toText());
+	}
+	
+	public static void writeDrawLineControlData(Element sourceElement, DrawLineControlData data) {
+		String id = data.getComponentId();
+		sourceElement.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.DRAW_LINE);
 		if (id != null)
 			sourceElement.addAttribute(SlideXmlConstants.ID, id);
 		Element subElement = sourceElement.addElement(SlideXmlConstants.GEOMETRY);

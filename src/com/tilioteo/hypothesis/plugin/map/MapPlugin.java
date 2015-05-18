@@ -36,6 +36,8 @@ public class MapPlugin implements SlideComponentPlugin {
 			SlideXmlConstants.CONTROLS,
 			SlideXmlConstants.DRAW_POINT,
 			SlideXmlConstants.DRAW_PATH,
+			SlideXmlConstants.DRAW_LINE,
+			SlideXmlConstants.DRAW_POLYGON,
 			SlideXmlConstants.PAN,
 			SlideXmlConstants.ZOOM*/
 			);
@@ -49,7 +51,8 @@ public class MapPlugin implements SlideComponentPlugin {
 			MapEventTypes.DrawPolygon,
 			MapEventTypes.PanStart,
 			MapEventTypes.PanEnd,
-			MapEventTypes.ZoomChange
+			MapEventTypes.ZoomChange,
+			MapEventTypes.DrawLine
 			);
 	
 	private Map<String, Set<ValidParentGroup>> elementParentGroups = new HashMap<String, Set<ValidParentGroup>>();

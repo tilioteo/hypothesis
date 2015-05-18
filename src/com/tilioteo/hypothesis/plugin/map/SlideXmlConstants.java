@@ -53,6 +53,7 @@ public class SlideXmlConstants {
 	public static final String CONTROLS = "Controls";
 	public static final String DRAW_POINT = "DrawPoint";
 	public static final String DRAW_PATH = "DrawPath";
+	public static final String DRAW_LINE = "DrawLine";
 	public static final String DRAW_POLYGON = "DrawPolygon";
 	public static final String PAN = "Pan";
 	public static final String ZOOM = "Zoom";
@@ -94,7 +95,7 @@ public class SlideXmlConstants {
 			new String[] { IMAGE_LAYER, FEATURE_LAYER, WMS_LAYER, IMAGE_SEQUENCE_LAYER });
 
 	public static final StringSet VALID_CONTROL_ELEMENTS = new StringSet(
-			new String[] { DRAW_POINT, DRAW_PATH, DRAW_POLYGON, PAN, ZOOM });
+			new String[] { DRAW_POINT, DRAW_PATH, DRAW_LINE, DRAW_POLYGON, PAN, ZOOM });
 
 	public static final StringSet VALID_FEATURE_ELEMENTS = new StringSet(
 			new String[] { FEATURE });

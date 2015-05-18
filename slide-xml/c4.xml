@@ -1,35 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<SlideContent TemplateUID="719A7938-8EDA-11E1-91B4-31F1BAE59B18">
+<SlideContent xmlns:maps="http://hypothesis.cz/xml/maps"
+	TemplateUID="2A9E8C75-7AE9-4B53-B79C-0F6E6225DB66">
 	<Bindings>
 		<Bind>
-			<Panel Id="ct001_ct001_ct001">
+			<Label Id="explanation">
 				<Properties>
-					<Caption Value="Viděli jste tento objekt?" />
+					<Caption
+						Value="&lt;center&gt;&lt;i&gt;&lt;font size='4'&gt;
+          Nakreslete čáru vedoucí z horní hrany tak, aby měla stejnou &lt;b&gt;absolutní délku&lt;/b&gt; jako čára v předchozím obrázku.&lt;br/&gt; 
+          Kreslit čáru začnete kliknutím myši na horní hranu a kresbu dokončíte druhým kliknutím myši.
+          &lt;/font&gt;&lt;/i&gt;&lt;/center&gt;" />
 				</Properties>
-			</Panel>
+			</Label>
 		</Bind>
 		<Bind>
-			<Image Id="ct001_ct002_ct001">
+			<ImageLayer Id="image_layer">
 				<Properties>
-					<Width Value="149" />
-					<Height Value="149" />
-					<Url Value="http://www.imagehosting.cz/images/objekt02.jpg" />
+					<Url Value="http://hypothesis.cz/gallery/albums/userpics/10003/TP3.png" />
 				</Properties>
-			</Image>
-		</Bind>
-		<Bind>
-			<Button Id="ct001_ct003_ct002_ct001">
-				<Properties>
-					<Caption Value="ANO" />
-				</Properties>
-			</Button>
-		</Bind>
-		<Bind>
-			<Button Id="ct001_ct003_ct002_ct002">
-				<Properties>
-					<Caption Value="NE" />
-				</Properties>
-			</Button>
+			</ImageLayer>
 		</Bind>
 	</Bindings>
 </SlideContent>

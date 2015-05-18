@@ -21,6 +21,7 @@ import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;
+import com.tilioteo.hypothesis.plugin.map.ui.DrawLineControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPathControl;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawPolygonControl;
 import com.tilioteo.hypothesis.plugin.map.ui.ImageSequenceLayer;
@@ -126,6 +127,13 @@ public class MapUtility implements Serializable {
 		setFinishStrategy(control, properties);
 	}
 
+	public void setDrawLineControlProperties(DrawLineControl control, Element element,
+			StringMap properties, SlideFascia slideFascia) {
+		
+		setStartPointStyle(control, properties);
+		setLineStyle(control, properties);
+	}
+
 	public void setDrawPolygonControlProperties(DrawPolygonControl control, Element element,
 			StringMap properties, SlideFascia slideFascia) {
 		
@@ -160,6 +168,18 @@ public class MapUtility implements Serializable {
 	}
 	
 	private void setStartPointStyle(DrawPathControl control, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.START_POINT_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setStartPointStyle(style);
+				return;
+			}
+		}
+		control.setStartPointStyle(Style.DEFAULT_DRAW_START_POINT);
+	}
+	
+	private void setStartPointStyle(DrawLineControl control, StringMap properties) {
 		String styleId = properties.get(SlideXmlConstants.START_POINT_STYLE);
 		if (styleId != null && map != null) {
 			Style style = map.getStyle(styleId);
@@ -237,6 +257,18 @@ public class MapUtility implements Serializable {
 	}
 
 	private void setLineStyle(DrawPathControl control, StringMap properties) {
+		String styleId = properties.get(SlideXmlConstants.LINE_STYLE);
+		if (styleId != null && map != null) {
+			Style style = map.getStyle(styleId);
+			if (style != null) {
+				control.setLineStyle(style);
+				return;
+			}
+		}
+		control.setLineStyle(Style.DEFAULT_DRAW_LINE);
+	}
+	
+	private void setLineStyle(DrawLineControl control, StringMap properties) {
 		String styleId = properties.get(SlideXmlConstants.LINE_STYLE);
 		if (styleId != null && map != null) {
 			Style style = map.getStyle(styleId);
