@@ -642,21 +642,22 @@ public class ExportView extends VerticalLayout implements View {
 					header.createCell(16).setCellValue("slide_order");
 					header.createCell(17).setCellValue("event_timestamp");
 					header.createCell(18).setCellValue("event_time_diff");
-					header.createCell(19).setCellValue("event_type");
-					header.createCell(20).setCellValue("event_name");
-					header.createCell(21).setCellValue("event_data");
+					header.createCell(19).setCellValue("client_timestamp");
+					header.createCell(20).setCellValue("event_type");
+					header.createCell(21).setCellValue("event_name");
+					header.createCell(22).setCellValue("event_data");
 
-					header.createCell(22).setCellValue("output_value1");
-					header.createCell(23).setCellValue("output_value2");
-					header.createCell(24).setCellValue("output_value3");
-					header.createCell(25).setCellValue("output_value4");
-					header.createCell(26).setCellValue("output_value5");
-					header.createCell(27).setCellValue("output_value6");
-					header.createCell(28).setCellValue("output_value7");
-					header.createCell(29).setCellValue("output_value8");
-					header.createCell(30).setCellValue("output_value9");
-					header.createCell(31).setCellValue("output_value10");
-					
+					header.createCell(23).setCellValue("output_value1");
+					header.createCell(24).setCellValue("output_value2");
+					header.createCell(25).setCellValue("output_value3");
+					header.createCell(26).setCellValue("output_value4");
+					header.createCell(27).setCellValue("output_value5");
+					header.createCell(28).setCellValue("output_value6");
+					header.createCell(29).setCellValue("output_value7");
+					header.createCell(30).setCellValue("output_value8");
+					header.createCell(31).setCellValue("output_value9");
+					header.createCell(32).setCellValue("output_value10");
+				
 					if (events != null) {
 						int size = events.size();
 						float counter = 0f;
@@ -676,7 +677,7 @@ public class ExportView extends VerticalLayout implements View {
 						HashMap<Long, Integer> branchCountMap = new HashMap<Long, Integer>();
 						HashMap<Long, Integer> slideCountMap = new HashMap<Long, Integer>();
 						
-						int outputValueCol = 22;
+						int outputValueCol = 23;
 						int fieldCol = outputValueCol + 10;
 
 						int rowNr = 1;
@@ -696,6 +697,7 @@ public class ExportView extends VerticalLayout implements View {
 							Long testId = event.getTestId();
 							Long userId = event.getUserId();
 							Date eventDate = event.getDatetime();
+							Date clientDate = event.getClientDatetime();
 							long eventTime = eventDate.getTime();
 							String eventName = event.getName();
 							Long branchId = event.getBranchId();
@@ -869,16 +871,22 @@ public class ExportView extends VerticalLayout implements View {
 							}
 							lastEventTime = eventTime;
 							
-							cell = row.createCell(19);
+							if (clientDate != null) {
+								cell = row.createCell(19);
+								cell.setCellValue(clientDate.getTime());
+								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+							}
+
+							cell = row.createCell(20);
 							cell.setCellValue(event.getType());
 							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 
-							cell = row.createCell(20);
+							cell = row.createCell(21);
 							cell.setCellValue(eventName);
 							cell.setCellType(Cell.CELL_TYPE_STRING);
 							
 							String xmlData = event.getXmlData();
-							cell = row.createCell(21);
+							cell = row.createCell(22);
 							cell.setCellValue(xmlData);
 							cell.setCellType(Cell.CELL_TYPE_STRING);
 
@@ -944,7 +952,6 @@ public class ExportView extends VerticalLayout implements View {
 							if ("NEXT_BRANCH".equalsIgnoreCase(eventName)) {
 								lastBranchId = lastTaskId = lastSlideId = null; 
 							}
-							//++rowNr;
 							++counter;
 							
 							progress = (int) ((100.0f * counter) / size);
