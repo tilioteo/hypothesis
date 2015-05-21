@@ -40,8 +40,6 @@ public class VideoConnector extends AbstractComponentConnector implements CanPla
 	@Override
     protected void init() {
         super.init();
-        
-        super.init();
 
         registerRpc(MediaControl.class, new MediaControl() {
             @Override
