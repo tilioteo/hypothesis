@@ -41,8 +41,8 @@ public class PermissionManager implements Serializable {
 	private PackDao packDao;
 	private TestManager testManager;
 	
-	private PersistenceManager persistenceManager;
-	//private UserManager userManager;
+	//private PersistenceManager persistenceManager;
+	private UserManager userManager;
 
 	public static PermissionManager newInstance() {
 		return new PermissionManager(new UserPermissionDao(), new GroupPermissionDao());
@@ -60,18 +60,25 @@ public class PermissionManager implements Serializable {
 		this.packDao = new PackDao();
 		this.testManager = testManager;
 		
-		persistenceManager = PersistenceManager.newInstance();
-		//userManager = UserManager.newInstance();
+		//persistenceManager = PersistenceManager.newInstance();
+		userManager = UserManager.newInstance();
 	}
 	
 	public TestManager getTestManager() {
 		return testManager;
 	}
 
+	/*private GroupPermission mergeInit(GroupPermission groupPermission) {
+		groupPermissionDao.clear();
+		groupPermission = groupPermissionDao.merge(groupPermission);
+		return groupPermission;
+	}*/
+
 	public GroupPermission addGroupPermission(GroupPermission groupPermission) {
 		log.debug("addGroupPermission");
 		try {
 			groupPermissionDao.beginTransaction();
+			groupPermissionDao.clear();
 			groupPermission = groupPermissionDao.makePersistent(groupPermission);
 			groupPermissionDao.commit();
 			return groupPermission;
@@ -87,6 +94,7 @@ public class PermissionManager implements Serializable {
 		log.debug("addUserPermission");
 		try {
 			userPermissionDao.beginTransaction();
+			userPermissionDao.clear();
 			userPermission = userPermissionDao.makePersistent(userPermission);
 			userPermissionDao.commit();
 			return userPermission;
@@ -206,8 +214,8 @@ public class PermissionManager implements Serializable {
 		Set<Pack> packs = getUserPacks(user, true, excludeFinished);
 		Set<Pack> disabledPacks = getUserPacks(user, false, null);
 
-		//Set<Group> groups = userManager.merge(user).getGroups();
-		Set<Group> groups = persistenceManager.merge(user).getGroups();
+		Set<Group> groups = userManager.merge(user).getGroups();
+		//Set<Group> groups = persistenceManager.merge(user).getGroups();
 		if (!groups.isEmpty()) {
 			try {
 				groupPermissionDao.beginTransaction();
@@ -252,8 +260,8 @@ public class PermissionManager implements Serializable {
 		try {
 			// Set<Pack> packs = new HashSet<Pack>();
 			Hashtable<Long, Pack> packs = new Hashtable<Long, Pack>();
-			//user = userManager.merge(user);
-			user = persistenceManager.merge(user);
+			user = userManager.merge(user);
+			//user = persistenceManager.merge(user);
 			if (!user.getGroups().isEmpty()) {
 				Set<GroupPermission> groupsPermissions = getGroupsPermissions(user.getGroups());
 				for (GroupPermission groupPermission : groupsPermissions) {

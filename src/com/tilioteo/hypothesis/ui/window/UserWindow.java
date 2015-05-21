@@ -74,7 +74,7 @@ public class UserWindow extends Window {
 	private RoleManager roleManager;
 	private PermissionManager permissionManager;
 	
-	private PersistenceManager persistenceManager;
+	//private PersistenceManager persistenceManager;
 	
 	private TabSheet tabSheet;
 	private Component userDetailsTab;
@@ -111,7 +111,7 @@ public class UserWindow extends Window {
         permissionManager = PermissionManager.newInstance();
         userForm = new UserFormFields();
         
-        persistenceManager = PersistenceManager.newInstance();
+        //persistenceManager = PersistenceManager.newInstance();
 
         center();
         setCloseShortcut(KeyCode.ESCAPE, null);
@@ -237,8 +237,8 @@ public class UserWindow extends Window {
 	}
 	
 	private void fillFields(User user) {
-		//user = userManager.merge(user);
-		user = persistenceManager.merge(user);
+		user = userManager.merge(user);
+		//user = persistenceManager.merge(user);
 
 		userForm.getIdField().setValue(user.getId().toString());
 		userForm.getUsernameField().setValue(user.getUsername());
@@ -262,7 +262,7 @@ public class UserWindow extends Window {
 					((AbstractSelect) userForm.getGroupsField());
 			for (Object itemId : groupsField.getItemIds()) {
 				Item row = groupsField.getItem(itemId);
-				Group group = (Group) itemId;
+				Group group = groupManager.merge((Group) itemId);
 	
 				if (groups.contains(group)) {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(true);
@@ -569,8 +569,9 @@ public class UserWindow extends Window {
         if (state.equals(State.MULTIUPDATE)) {
         	for (User user : (Collection<User>) source) {
         		user = saveUser(user, true);
-                MainEventBus.get().post(
-                		new HypothesisEvent.UserAddedEvent(user));
+        		if (user != null) {
+        			MainEventBus.get().post(new HypothesisEvent.UserAddedEvent(user));
+        		}
         	}
         	
         } else if (generateNames) {
@@ -598,8 +599,9 @@ public class UserWindow extends Window {
         		user = (User) source;
         	}
             user = saveUser(user, true);
-            MainEventBus.get().post(
-            		new HypothesisEvent.UserAddedEvent(user));
+    		if (user != null) {
+    			MainEventBus.get().post(new HypothesisEvent.UserAddedEvent(user));
+    		}
         }
 	}
 
@@ -610,7 +612,7 @@ public class UserWindow extends Window {
         	user.setOwnerId(loggedUser.getId());
 		} else {
 			//user = userManager.merge(user);
-			user = persistenceManager.merge(user);
+			//user = persistenceManager.merge(user);
 		}
 	
 		if (includeGenerableFields) {
@@ -654,7 +656,7 @@ public class UserWindow extends Window {
 			
 			for (Object itemId : groupsField.getItemIds()) {
 				Item item = groupsField.getItem(itemId);
-				Group group = (Group) itemId;
+				Group group = groupManager.merge((Group) itemId);
 				Boolean selected = (Boolean) item.getItemProperty(
 						FieldConstants.SELECTED).getValue();
 				
@@ -668,12 +670,17 @@ public class UserWindow extends Window {
 					user.removeGroup(group);
 				}
 
-				MainEventBus.get().post(new HypothesisEvent.
-						GroupUsersChangedEvent(group));
+				if (group != null) {
+					MainEventBus.get().post(new HypothesisEvent.GroupUsersChangedEvent(group));
+				}
 			}
 		}
 		
-		user = userManager.add(user);
+		if (state.equals(State.CREATE)) {
+			user = userManager.add(user);
+		} else {
+			user = userManager.update(user);
+		}
 		
 		if (userForm.getPacksField().isVisible()) {
 	        permissionManager.deleteUserPermissions(user);

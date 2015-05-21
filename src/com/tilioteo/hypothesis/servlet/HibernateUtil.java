@@ -32,7 +32,7 @@ public class HibernateUtil {
 	private static ServiceRegistry serviceRegistry = null;
 	private static ServletContext servletContext = null;
 
-	private static final ThreadLocal<Session> threadLocal = new ThreadLocal();
+	private static final ThreadLocal<Session> threadLocal = new ThreadLocal<Session>();
 	
 	/**
 	 * All hibernate operations take place within a session. The session for the
@@ -172,5 +172,10 @@ public class HibernateUtil {
 		} else {
 			log.trace("Hibernate SessionFactory was not initialized.");
 		}
+	}
+	
+	public static void cleanup() {
+		log.trace("Cleaning ThreadLocal session.");
+		threadLocal.remove();
 	}
 }

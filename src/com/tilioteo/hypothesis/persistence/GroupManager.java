@@ -21,7 +21,7 @@ public class GroupManager implements Serializable {
 
 	private GroupDao groupDao;
 
-	private PersistenceManager persistenceManager;
+	//private PersistenceManager persistenceManager;
 
 	public static GroupManager newInstance() {
 		return new GroupManager(new GroupDao());
@@ -29,10 +29,10 @@ public class GroupManager implements Serializable {
 	
 	protected GroupManager(GroupDao groupDao) {
 		this.groupDao = groupDao;		
-		persistenceManager = PersistenceManager.newInstance();
+		//persistenceManager = PersistenceManager.newInstance();
 	}
 
-	/*public Group merge(Group group) {
+	public Group merge(Group group) {
 		try {
 			groupDao.beginTransaction();
 			group = mergeInit(group);
@@ -43,7 +43,7 @@ public class GroupManager implements Serializable {
 			groupDao.rollback();
 		}
 		return null;
-	}*/
+	}
 	
 	private Group mergeInit(Group group) {
 		groupDao.clear();
@@ -56,8 +56,25 @@ public class GroupManager implements Serializable {
 		log.debug("addGroup");
 		try {
 			groupDao.beginTransaction();
+			//group = mergeInit(group);
+			//groupDao.clear();
+			group = groupDao.makePersistent(group);
+			groupDao.commit();
+			return group;
+		} catch (HibernateException e) {
+			log.error(e.getMessage());
+			groupDao.rollback();
+			//throw e;
+		}
+		return null;
+	}
+
+	public Group update(Group group) {
+		log.debug("updateGroup");
+		try {
+			groupDao.beginTransaction();
 			group = mergeInit(group);
-			groupDao.clear();
+			//groupDao.clear();
 			group = groupDao.makePersistent(group);
 			groupDao.commit();
 			return group;
@@ -85,8 +102,8 @@ public class GroupManager implements Serializable {
 		log.debug("deleteGroup");
 		try {
 			groupDao.beginTransaction();
-			//group = mergeInit(group);
-			groupDao.clear();
+			group = mergeInit(group);
+			//groupDao.clear();
 			groupDao.makeTransient(group);
 			groupDao.commit();
 		} catch (Throwable e) {
