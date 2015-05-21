@@ -6,8 +6,6 @@ package com.tilioteo.hypothesis.plugin.processing.ui;
 import java.util.List;
 
 import org.dom4j.Element;
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import com.tilioteo.hypothesis.common.StringMap;
 import com.tilioteo.hypothesis.common.Strings;
@@ -28,6 +26,8 @@ import com.tilioteo.hypothesis.slide.ui.ParentAlignment;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
+
+import elemental.json.JsonArray;
 
 /**
  * @author kamil
@@ -91,7 +91,7 @@ public class Processing extends org.vaadin.tltv.vprocjs.ui.Processing implements
 				
 				JavaScript.getCurrent().addFunction(name, new JavaScriptFunction() {
 					@Override
-					public void call(JSONArray arguments) throws JSONException {
+					public void call(JsonArray arguments) {
 						ProcessingData data = new ProcessingData(Processing.this, slideManager);
 						data.setName(name);
 						data.setArgumentTypes(argumentTypes);

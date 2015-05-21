@@ -6,14 +6,15 @@ package com.tilioteo.hypothesis.plugin.processing.event;
 import java.util.List;
 
 import org.dom4j.Element;
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import com.tilioteo.hypothesis.event.AbstractComponentData;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.processing.SlideFactory;
 import com.tilioteo.hypothesis.plugin.processing.SlideXmlConstants;
 import com.tilioteo.hypothesis.plugin.processing.ui.Processing;
+
+import elemental.json.JsonArray;
+import elemental.json.JsonException;
 
 /**
  * @author kamil
@@ -23,7 +24,7 @@ import com.tilioteo.hypothesis.plugin.processing.ui.Processing;
 public class ProcessingData extends AbstractComponentData<Processing> {
 	
 	private String name;
-	private JSONArray arguments;
+	private JsonArray arguments;
 	private List<String> argumentTypes;
 
 	public ProcessingData(Processing sender, SlideFascia slideManager) {
@@ -38,7 +39,7 @@ public class ProcessingData extends AbstractComponentData<Processing> {
 		this.name = name;
 	}
 	
-	public void setArguments(JSONArray arguments) {
+	public void setArguments(JsonArray arguments) {
 		this.arguments = arguments;
 	}
 	
@@ -54,20 +55,20 @@ public class ProcessingData extends AbstractComponentData<Processing> {
 		if (argumentTypes != null && arguments != null && index >= 0 && index < argumentTypes.size()) {
 			String type = argumentTypes.get(index);
 
-			if (!arguments.isNull(index)) {
+			if (arguments.get(index) != null) {
 				try {
 					if (type.equalsIgnoreCase(SlideXmlConstants.BOOLEAN)) {
 						return arguments.getBoolean(index);
 					} else if (type.equalsIgnoreCase(SlideXmlConstants.FLOAT)) {
-						return arguments.getDouble(index);
+						return arguments.getNumber(index);
 					} else if (type.equalsIgnoreCase(SlideXmlConstants.INTEGER)) {
-						return arguments.getInt(index);
+						return (int)arguments.getNumber(index);
 					} else if (type.equalsIgnoreCase(SlideXmlConstants.OBJECT)) {
 						return arguments.get(index);
 					} else if (type.equalsIgnoreCase(SlideXmlConstants.STRING)) {
 						return arguments.getString(index);
 					}
-				} catch (JSONException e) {}
+				} catch (JsonException e) {}
 			}
 		}
 		return null;

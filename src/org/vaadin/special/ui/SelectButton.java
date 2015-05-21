@@ -5,9 +5,11 @@ package org.vaadin.special.ui;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Date;
 
-import org.json.JSONException;
+import org.jsoup.nodes.Attributes;
+import org.jsoup.nodes.Element;
 import org.vaadin.special.event.ComponentEvent;
 import org.vaadin.special.shared.ui.selectbutton.SelectButtonServerRpc;
 import org.vaadin.special.shared.ui.selectbutton.SelectButtonState;
@@ -25,7 +27,10 @@ import com.vaadin.event.ShortcutListener;
 import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.declarative.DesignAttributeHandler;
+import com.vaadin.ui.declarative.DesignContext;
 import com.vaadin.util.ReflectTools;
 
 /**
@@ -44,19 +49,16 @@ public abstract class SelectButton extends AbstractField<Boolean> {
 				return;
 			}
 
-			/*
-			 * Client side updates the state before sending the event so we need
-			 * to make sure the cached state is updated to match the client. If
-			 * we do not do this, a reverting setValue() call in a listener will
-			 * not cause the new state to be sent to the client.
-			 * 
-			 * See #11028, #10030.
-			 */
-			try {
-				getUI().getConnectorTracker().getDiffState(SelectButton.this).put("checked", checked);
-			} catch (JSONException e) {
-				throw new RuntimeException(e);
-			}
+            /*
+             * Client side updates the state before sending the event so we need
+             * to make sure the cached state is updated to match the client. If
+             * we do not do this, a reverting setValue() call in a listener will
+             * not cause the new state to be sent to the client.
+             * 
+             * See #11028, #10030.
+             */
+            getUI().getConnectorTracker().getDiffState(SelectButton.this)
+                    .put("checked", checked);
 
 			final Boolean oldValue = getValue();
 			final Boolean newValue = checked;
@@ -522,5 +524,58 @@ public abstract class SelectButton extends AbstractField<Boolean> {
 
 		setId(getConnectorId());
 	}
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.ui.AbstractField#readDesign(org.jsoup.nodes.Element,
+     * com.vaadin.ui.declarative.DesignContext)
+     */
+    @Override
+    public void readDesign(Element design, DesignContext designContext) {
+        super.readDesign(design, designContext);
+        if (design.hasAttr("checked")) {
+            this.setValue(DesignAttributeHandler.readAttribute("checked",
+                    design.attributes(), Boolean.class));
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.ui.AbstractField#getCustomAttributes()
+     */
+    @Override
+    protected Collection<String> getCustomAttributes() {
+        Collection<String> attributes = super.getCustomAttributes();
+        attributes.add("checked");
+        return attributes;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.ui.AbstractField#writeDesign(org.jsoup.nodes.Element,
+     * com.vaadin.ui.declarative.DesignContext)
+     */
+    @Override
+    public void writeDesign(Element design, DesignContext designContext) {
+        super.writeDesign(design, designContext);
+        CheckBox def = (CheckBox) designContext.getDefaultInstance(this);
+        Attributes attr = design.attributes();
+        DesignAttributeHandler.writeAttribute("checked", attr, getValue(),
+                def.getValue(), Boolean.class);
+    }
+
+    @Override
+    public void clear() {
+        setValue(Boolean.FALSE);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return getValue() == null || getValue().equals(Boolean.FALSE);
+
+    }
 
 }

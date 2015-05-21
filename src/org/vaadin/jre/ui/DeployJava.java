@@ -11,8 +11,6 @@ import java.util.TimerTask;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.vaadin.jre.shared.ui.installlink.InstallLinkServerRpc;
 
 import com.vaadin.annotations.JavaScript;
@@ -30,6 +28,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.util.ReflectTools;
+
+import elemental.json.JsonArray;
 
 /**
  * @author kamil
@@ -49,7 +49,7 @@ public class DeployJava extends AbstractExtension {
 	
 	private JavaScriptFunction checkVersion = new JavaScriptFunction() {
 		@Override
-		public void call(JSONArray arguments) throws JSONException {
+		public void call(JsonArray arguments) {
 			try {
 				boolean result = arguments.getBoolean(0);
 				fireEvent(new JavaCheckedEvent(ui, result));

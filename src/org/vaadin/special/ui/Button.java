@@ -5,9 +5,11 @@ package org.vaadin.special.ui;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Date;
 
-import org.json.JSONException;
+import org.jsoup.nodes.Attributes;
+import org.jsoup.nodes.Element;
 import org.vaadin.special.event.ComponentEvent;
 import org.vaadin.special.shared.ui.button.ButtonServerRpc;
 
@@ -28,6 +30,8 @@ import com.vaadin.shared.ui.button.ButtonState;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Component.Focusable;
+import com.vaadin.ui.declarative.DesignAttributeHandler;
+import com.vaadin.ui.declarative.DesignContext;
 import com.vaadin.util.ReflectTools;
 
 /**
@@ -48,16 +52,12 @@ public class Button extends AbstractComponent implements
 
 		@Override
 		public void disableOnClick() throws RuntimeException {
-			setEnabled(false);
-			// Makes sure the enabled=false state is noticed at once - otherwise
-			// a following setEnabled(true) call might have no effect. see
-			// ticket #10030
-			try {
-				getUI().getConnectorTracker().getDiffState(Button.this)
-						.put("enabled", false);
-			} catch (JSONException e) {
-				throw new RuntimeException(e);
-			}
+            setEnabled(false);
+            // Makes sure the enabled=false state is noticed at once - otherwise
+            // a following setEnabled(true) call might have no effect. see
+            // ticket #10030
+            getUI().getConnectorTracker().getDiffState(Button.this)
+                    .put("enabled", false);
 		}
 	};
 
@@ -630,30 +630,108 @@ public class Button extends AbstractComponent implements
 		getState().iconAltText = iconAltText;
 	}
 
-	/**
-	 * Set whether the caption text is rendered as HTML or not. You might need
-	 * to retheme button to allow higher content than the original text style.
-	 * 
-	 * If set to true, the captions are passed to the browser as html and the
-	 * developer is responsible for ensuring no harmful html is used. If set to
-	 * false, the content is passed to the browser as plain text.
-	 * 
-	 * @param htmlContentAllowed
-	 *            <code>true</code> if caption is rendered as HTML,
-	 *            <code>false</code> otherwise
-	 */
-	public void setHtmlContentAllowed(boolean htmlContentAllowed) {
-		getState().htmlContentAllowed = htmlContentAllowed;
-	}
+    /**
+     * Set whether the caption text is rendered as HTML or not. You might need
+     * to re-theme button to allow higher content than the original text style.
+     * 
+     * If set to true, the captions are passed to the browser as html and the
+     * developer is responsible for ensuring no harmful html is used. If set to
+     * false, the content is passed to the browser as plain text.
+     * 
+     * @param htmlContentAllowed
+     *            <code>true</code> if caption is rendered as HTML,
+     *            <code>false</code> otherwise
+     */
+    public void setHtmlContentAllowed(boolean htmlContentAllowed) {
+        getState().captionAsHtml = htmlContentAllowed;
+    }
 
-	/**
-	 * Return HTML rendering setting
-	 * 
-	 * @return <code>true</code> if the caption text is to be rendered as HTML,
-	 *         <code>false</code> otherwise
-	 */
-	public boolean isHtmlContentAllowed() {
-		return getState(false).htmlContentAllowed;
-	}
+    /**
+     * Return HTML rendering setting
+     * 
+     * @return <code>true</code> if the caption text is to be rendered as HTML,
+     *         <code>false</code> otherwise
+     */
+    public boolean isHtmlContentAllowed() {
+        return getState(false).captionAsHtml;
+    }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.ui.AbstractComponent#readDesign(org.jsoup.nodes .Element,
+     * com.vaadin.ui.declarative.DesignContext)
+     */
+    @Override
+    public void readDesign(Element design, DesignContext designContext) {
+        super.readDesign(design, designContext);
+        Attributes attr = design.attributes();
+        String content = design.html();
+        setCaption(content);
+        // plain-text (default is html)
+        Boolean plain = DesignAttributeHandler.readAttribute(
+                DESIGN_ATTR_PLAIN_TEXT, attr, Boolean.class);
+        if (plain == null || !plain) {
+            setHtmlContentAllowed(true);
+        }
+        if (attr.hasKey("icon-alt")) {
+            setIconAlternateText(DesignAttributeHandler.readAttribute(
+                    "icon-alt", attr, String.class));
+        }
+        // click-shortcut
+        removeClickShortcut();
+        ShortcutAction action = DesignAttributeHandler.readAttribute(
+                "click-shortcut", attr, ShortcutAction.class);
+        if (action != null) {
+            setClickShortcut(action.getKeyCode(), action.getModifiers());
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.ui.AbstractComponent#getCustomAttributes()
+     */
+    @Override
+    protected Collection<String> getCustomAttributes() {
+        Collection<String> result = super.getCustomAttributes();
+        result.add(DESIGN_ATTR_PLAIN_TEXT);
+        result.add("caption");
+        result.add("icon-alt");
+        result.add("icon-alternate-text");
+        result.add("click-shortcut");
+        result.add("html-content-allowed");
+        result.add("caption-as-html");
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.ui.AbstractComponent#writeDesign(org.jsoup.nodes.Element
+     * , com.vaadin.ui.declarative.DesignContext)
+     */
+    @Override
+    public void writeDesign(Element design, DesignContext designContext) {
+        super.writeDesign(design, designContext);
+        Attributes attr = design.attributes();
+        Button def = (Button) designContext.getDefaultInstance(this);
+        String content = getCaption();
+        if (content != null) {
+            design.html(content);
+        }
+        // plain-text (default is html)
+        if (!isHtmlContentAllowed()) {
+            design.attr(DESIGN_ATTR_PLAIN_TEXT, "");
+        }
+        // icon-alt
+        DesignAttributeHandler.writeAttribute("icon-alt", attr,
+                getIconAlternateText(), def.getIconAlternateText(),
+                String.class);
+        // click-shortcut
+        if (clickShortcut != null) {
+            DesignAttributeHandler.writeAttribute("click-shortcut", attr,
+                    clickShortcut, null, ShortcutAction.class);
+        }
+    }
 }
