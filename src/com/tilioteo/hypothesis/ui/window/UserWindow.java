@@ -676,11 +676,7 @@ public class UserWindow extends Window {
 			}
 		}
 		
-		if (state.equals(State.CREATE)) {
-			user = userManager.add(user);
-		} else {
-			user = userManager.update(user);
-		}
+		user = userManager.add(user);
 		
 		if (userForm.getPacksField().isVisible()) {
 	        permissionManager.deleteUserPermissions(user);

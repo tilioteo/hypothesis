@@ -144,7 +144,7 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 
 	@SuppressWarnings("unchecked")
 	public T merge(T entity) {
-		clear();
+		//clear();
 		return (T) getSession().merge(entity);
 	}
 	

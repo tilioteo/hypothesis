@@ -16,18 +16,17 @@ import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import com.tilioteo.hypothesis.dao.AbstractHibernateDao;
 import com.tilioteo.hypothesis.dao.EventDao;
 import com.tilioteo.hypothesis.dao.SlideOrderDao;
 import com.tilioteo.hypothesis.dao.TestDao;
-import com.tilioteo.hypothesis.entity.FieldConstants;
-import com.tilioteo.hypothesis.entity.TableConstants;
 import com.tilioteo.hypothesis.entity.Event;
+import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.Pack;
-import com.tilioteo.hypothesis.entity.SlideOrder;
-import com.tilioteo.hypothesis.entity.Task;
 import com.tilioteo.hypothesis.entity.SimpleTest;
+import com.tilioteo.hypothesis.entity.SlideOrder;
 import com.tilioteo.hypothesis.entity.Status;
+import com.tilioteo.hypothesis.entity.TableConstants;
+import com.tilioteo.hypothesis.entity.Task;
 import com.tilioteo.hypothesis.entity.User;
 
 /**
@@ -58,16 +57,18 @@ public class TestManager implements Serializable {
 		log.debug("findTestsBy");
 		try {
 			testDao.beginTransaction();
-			/*
-			 * Integer[] stats = new Integer[statuses.length]; for (int i = 0; i
-			 * < statuses.length; ++i) { stats[i] = statuses[i].getCode(); }
-			 */
+			
+			int i = 0;
+			Integer[] stats = new Integer[statuses.length];
+			for (Status status : statuses){
+				stats[i++] = status.getCode();
+			}
 
 			List<SimpleTest> tests = testDao.findByCriteria(Restrictions.and(
 					Restrictions.eq(EntityConstants.PACK, pack), Restrictions
 							.and(Restrictions.eq(EntityConstants.USER, user),
 									Restrictions.in(FieldConstants.STATUS,
-											statuses))));
+											stats))));
 			testDao.commit();
 			return tests;
 		} catch (Throwable e) {

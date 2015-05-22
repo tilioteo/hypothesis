@@ -8,17 +8,10 @@ import java.io.Serializable;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 
-import com.tilioteo.hypothesis.dao.BranchDao;
-import com.tilioteo.hypothesis.dao.GroupDao;
-import com.tilioteo.hypothesis.dao.PackDao;
-import com.tilioteo.hypothesis.dao.TaskDao;
-import com.tilioteo.hypothesis.dao.UserDao;
 import com.tilioteo.hypothesis.entity.Branch;
-import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Task;
-import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.servlet.HibernateUtil;
 
 /**
@@ -125,7 +118,7 @@ public class PersistenceManager implements Serializable {
 		return null;
 	}
 	
-	public User merge(User entity) {
+	/*public User merge(User entity) {
 		log.debug(String.format("merge(user id = %s)", entity != null ? entity.getId() : "NULL"));
 		if (entity != null) {
 			try {
@@ -143,9 +136,9 @@ public class PersistenceManager implements Serializable {
 			}
 		}
 		return null;
-	}
+	}*/
 
-	public Group merge(Group entity) {
+	/*public Group merge(Group entity) {
 		log.debug(String.format("merge(group id = %s)", entity != null ? entity.getId() : "NULL"));
 		if (entity != null) {
 			try {
@@ -161,7 +154,7 @@ public class PersistenceManager implements Serializable {
 			}
 		}
 		return null;
-	}
+	}*/
 
 	/*public static <E extends Serializable> E  merge(Class<E> clazz, E entity) {
 		assert(clazz != null) : "Class object is null";

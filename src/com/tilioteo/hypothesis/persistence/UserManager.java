@@ -56,23 +56,8 @@ public class UserManager implements Serializable {
 		log.debug("addUser");
 		try {
 			userDao.beginTransaction();
-			//user = mergeInit(user);
-			//userDao.clear();
-			user = userDao.makePersistent(user);
-			userDao.commit();
-			return user;
-		} catch (HibernateException e) {
-			log.error(e.getMessage());
-			userDao.rollback();
-		}
-		return null;
-	}
-
-	public User update(User user) {
-		log.debug("updateUser");
-		try {
-			userDao.beginTransaction();
 			user = mergeInit(user);
+			//userDao.clear();
 			user = userDao.makePersistent(user);
 			userDao.commit();
 			return user;

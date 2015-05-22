@@ -36,15 +36,15 @@ public class PacksModel implements Serializable {
 	
 	private PermissionManager permissionManager;
 	private TokenManager tokenManager;
-	private PersistenceManager persistenceManager;
-	//private UserManager userManager;
+	//private PersistenceManager persistenceManager;
+	private UserManager userManager;
 	
 	public PacksModel() {
 		
 		permissionManager = PermissionManager.newInstance();
 		tokenManager = TokenManager.newInstance();
-		persistenceManager = PersistenceManager.newInstance();
-		//userManager = UserManager.newInstance();
+		//persistenceManager = PersistenceManager.newInstance();
+		userManager = UserManager.newInstance();
 	}
 
 	public List<Pack> getPublicPacks() {
@@ -54,9 +54,9 @@ public class PacksModel implements Serializable {
 	public List<Pack> getUserPacks(User user) {
 		if (user != null) {
 			try {
-				//user = userManager.merge(user);
-				user = persistenceManager.merge(user);
-				Set<Pack> packs = permissionManager.findUserPacks(user, true);
+				user = userManager.merge(user);
+				//user = persistenceManager.merge(user);
+				Set<Pack> packs = permissionManager.findUserPacks(user, false);
 				if (packs != null) {
 					LinkedList<Pack> list = new LinkedList<>();
 					for (Pack pack : packs) {

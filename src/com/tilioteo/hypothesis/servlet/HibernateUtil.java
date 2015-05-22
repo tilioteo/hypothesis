@@ -15,6 +15,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 import com.tilioteo.hypothesis.core.Messages;
+import com.vaadin.server.VaadinSession;
 
 /**
  * @author kamil
@@ -32,18 +33,25 @@ public class HibernateUtil {
 	private static ServiceRegistry serviceRegistry = null;
 	private static ServletContext servletContext = null;
 
-	private static final ThreadLocal<Session> threadLocal = new ThreadLocal<Session>();
+	//private static final ThreadLocal<Session> threadLocal = new ThreadLocal<Session>();
 	
 	/**
 	 * All hibernate operations take place within a session. The session for the
 	 * current thread is provided here.
 	 */
 	public static Session getSession() throws NullPointerException {
-		Session session = threadLocal.get();
+		/*Session session = threadLocal.get();
 		
 		if (null == session || !session.isOpen()) {
 			session = sessionFactory.openSession();
 			threadLocal.set(session);
+		}
+		return session;*/
+		
+		Session session = VaadinSession.getCurrent().getAttribute(Session.class);
+		if (null == session) {
+			session = sessionFactory.openSession();
+			VaadinSession.getCurrent().setAttribute(Session.class, session);
 		}
 		return session;
 		
@@ -135,25 +143,28 @@ public class HibernateUtil {
 	}
 
 	public static void rollbackTransaction() {
-		final Session session = getSession();
-
-		if (session.getTransaction().isActive()) {
-			log.trace("Rollbacking active database transaction.");
-			session.getTransaction().rollback();
-		} else {
-			log.trace("Session has no active database transaction to rollback.");
+		try {
+			final Session session = getSession();
+	
+			if (session.getTransaction().isActive()) {
+				log.trace("Rollbacking active database transaction.");
+				session.getTransaction().rollback();
+			} else {
+				log.trace("Session has no active database transaction to rollback.");
+			}
 		}
+		catch (Throwable e) {}
 	}
 
-	public static void closeSession() {
-		log.trace("Closing Hibernate Session.");
+	/*public static void closeSession() {
+		/*log.trace("Closing Hibernate Session.");
 		Session session = threadLocal.get();
 		if (session != null) {
 			session.close();
 		}
-		threadLocal.set(null);
-		
-		/*final Session session = getSessionFactory().getCurrentSession();
+		threadLocal.set(null);*/
+		/*
+		final Session session = getSessionFactory().getCurrentSession();
 
 		commitTransaction();
 		session.flush();
@@ -161,12 +172,14 @@ public class HibernateUtil {
 		if (session.isOpen()) {
 			log.trace("Close opened Hibernate Session.");
 			session.close();
-		}*/
-	}
+		}
+	}*/
 
 	public static void shutdown() {
 		log.trace("Closing Hibernate SessionFactory.");
 		if (sessionFactory != null) {
+			cleanup();
+			
 			sessionFactory.close();
 			sessionFactory = null;
 		} else {
@@ -175,7 +188,20 @@ public class HibernateUtil {
 	}
 	
 	public static void cleanup() {
-		log.trace("Cleaning ThreadLocal session.");
-		threadLocal.remove();
+		log.trace("Cleaning session.");
+		
+		try {
+			Session session = VaadinSession.getCurrent().getAttribute(Session.class);
+			if (session != null) {
+				if (session.getTransaction().isActive()) {
+					session.getTransaction().commit();
+				}
+				session.flush();
+				session.close();
+			}
+			VaadinSession.getCurrent().setAttribute(Session.class, null);
+		} catch (Throwable e) {}
+		
+		//threadLocal.remove();
 	}
 }

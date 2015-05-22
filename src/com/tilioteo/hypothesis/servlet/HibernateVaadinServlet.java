@@ -57,10 +57,10 @@ public class HibernateVaadinServlet extends VaadinServlet implements
 
 		// cleanup all ThreadLocal values
 		HibernateUtil.cleanup();
-		cleanThreadLocals();
+		//cleanThreadLocals();
 	}
 
-	private void cleanThreadLocals() {
+	/*private void cleanThreadLocals() {
 		log.debug("Cleaning ThreadLocal values");
 		try {
 			// Get a reference to the thread locals table of the current thread
@@ -99,5 +99,5 @@ public class HibernateVaadinServlet extends VaadinServlet implements
 			// We will tolerate an exception here and just log it
 			//throw new IllegalStateException(e);
 		}
-	}
+	}*/
 }

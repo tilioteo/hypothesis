@@ -56,23 +56,6 @@ public class GroupManager implements Serializable {
 		log.debug("addGroup");
 		try {
 			groupDao.beginTransaction();
-			//group = mergeInit(group);
-			//groupDao.clear();
-			group = groupDao.makePersistent(group);
-			groupDao.commit();
-			return group;
-		} catch (HibernateException e) {
-			log.error(e.getMessage());
-			groupDao.rollback();
-			//throw e;
-		}
-		return null;
-	}
-
-	public Group update(Group group) {
-		log.debug("updateGroup");
-		try {
-			groupDao.beginTransaction();
 			group = mergeInit(group);
 			//groupDao.clear();
 			group = groupDao.makePersistent(group);

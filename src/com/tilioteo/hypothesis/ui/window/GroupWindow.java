@@ -486,12 +486,7 @@ public class GroupWindow extends Window {
 			}
 		}
 		
-		if (state.equals(State.CREATE)) {
-			group = groupManager.add(group);
-		} else {
-			group = groupManager.update(group);
-		}
-		
+		group = groupManager.add(group);
 		
 		if (groupForm.getPacksField().isVisible()) {
 	        permissionManager.deleteGroupPermissions(group);

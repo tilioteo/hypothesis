@@ -23,15 +23,15 @@ import org.hibernate.StaleObjectStateException;
  *         Servlet filter to handle Hibernate Session per-request
  * 
  */
-@WebFilter(urlPatterns = { "/*" }, dispatcherTypes = { DispatcherType.REQUEST,
-		DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR })
+/*@WebFilter(urlPatterns = { "/*" }, dispatcherTypes = { DispatcherType.REQUEST,
+		DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR })*/
 public class HibernateSessionInterceptor implements Filter {
 
 	private static Logger log = Logger.getLogger(HibernateSessionInterceptor.class);
 
 	@Override
 	public void destroy() {
-		HibernateUtil.closeSession();
+		HibernateUtil.shutdown();
 	}
 
 	@Override
