@@ -385,12 +385,12 @@ public class PermissionManager implements Serializable {
 					Pack pack = userPermission.getPack();
 					if (userPermission.getPass() == null || excludeFinished == null || !excludeFinished) {
 						packs.add(pack);
-					} else {
+					} /*else {
 						List<SimpleTest> finishedTests = testManager.findTestsBy(user, pack, Status.FINISHED);
 						if (userPermission.getPass() < finishedTests.size()) {
 							packs.add(pack);
 						}
-					}
+					}*/
 				}
 			}
 			return packs;
