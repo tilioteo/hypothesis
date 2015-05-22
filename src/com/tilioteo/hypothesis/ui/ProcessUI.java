@@ -295,6 +295,7 @@ public class ProcessUI extends HUI /*implements CommandScheduler*/ {
 			JavaScript javaScript = Page.getCurrent().getJavaScript();
 			javaScript.execute("window.history.back();");
 		}
+		getSession().close();
 	}
 	
 	public boolean isFullscreen() {
