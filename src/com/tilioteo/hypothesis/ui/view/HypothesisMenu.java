@@ -11,7 +11,6 @@ import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.ui.UserSettingsWindow;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
