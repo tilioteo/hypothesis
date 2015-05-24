@@ -54,7 +54,7 @@ public class TestManager implements Serializable {
 	}
 
 	public List<SimpleTest> findTestsBy(User user, Pack pack, Status... statuses) {
-		log.debug("findTestsBy");
+		log.debug("findTestsBy(User, Pack, Status[])");
 		try {
 			testDao.beginTransaction();
 			
@@ -80,7 +80,7 @@ public class TestManager implements Serializable {
 	
 	@SuppressWarnings("unchecked")
 	public List<SimpleTest> findTestsBy(Pack pack, Collection<User> users, Date dateFrom, Date dateTo) {
-		log.debug("findTestsBy");
+		log.debug("findTestsBy(Pack, Collection<User>, Date, Date)");
 		try {
 			testDao.beginTransaction();
 
