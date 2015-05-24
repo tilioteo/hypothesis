@@ -36,6 +36,7 @@ import com.tilioteo.hypothesis.persistence.GroupManager;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
 import com.tilioteo.hypothesis.persistence.RoleManager;
 import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.ui.window.UserWindow;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -51,7 +52,6 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -92,7 +92,7 @@ public class UsersManagementView extends VerticalLayout
 		groupManager = GroupManager.newInstance();
 		//persistenceManager = PersistenceManager.newInstance();
 		
-		loggedUser = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+		loggedUser = SessionUtils.getAttribute(User.class);
 		
 		MainEventBus.get().register(this);
 		

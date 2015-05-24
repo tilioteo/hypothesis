@@ -7,6 +7,7 @@ import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.PostViewChangeEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.ProfileUpdatedEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
+import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.ui.UserSettingsWindow;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
@@ -77,7 +78,7 @@ public final class HypothesisMenu extends CustomComponent {
 	}*/
 
 	private User getCurrentUser() {
-		return (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+		return SessionUtils.getAttribute(User.class);
 	}
 
 	private Component buildUserMenu() {

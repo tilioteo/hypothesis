@@ -40,6 +40,7 @@ import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.RoleManager;
 import com.tilioteo.hypothesis.persistence.TestManager;
 import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.server.SessionUtils;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -52,7 +53,6 @@ import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ResourceReference;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Alignment;
@@ -111,8 +111,7 @@ public class ExportView extends VerticalLayout implements View {
         //exportManager = ExportManager.newInstance();
         userManager = UserManager.newInstance();
 
-        loggedUser = (User) VaadinSession.getCurrent()
-        		.getAttribute(User.class.getName());
+        loggedUser = SessionUtils.getAttribute(User.class);
         
         MainEventBus.get().register(this);
 

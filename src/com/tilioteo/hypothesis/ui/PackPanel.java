@@ -11,6 +11,7 @@ import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartFeaturedTestEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartLegacyTestEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
+import com.tilioteo.hypothesis.server.SessionUtils;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinSession;
@@ -172,7 +173,7 @@ public class PackPanel extends Panel {
 	}
 	
 	private User getNoGuestUser() {
-		User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+		User user = SessionUtils.getAttribute(User.class);
 		if (!User.GUEST.equals(user)) {
 			return user;
 		}

@@ -16,6 +16,7 @@ import com.tilioteo.hypothesis.event.HypothesisEvent.UserLoggedOutEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.UserLoginRequestedEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.servlet.HibernateVaadinServlet;
 import com.tilioteo.hypothesis.ui.view.HypothesisViewType;
 import com.tilioteo.hypothesis.ui.view.LoginView;
@@ -73,7 +74,7 @@ public class MainUI extends UI {
      * Otherwise login view is shown.
      */
     private void updateContent() {
-        User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+        User user = SessionUtils.getAttribute(User.class);
         if (user != null) {
             // Authenticated user
             setContent(getMainView());
@@ -90,7 +91,7 @@ public class MainUI extends UI {
     }
     
     protected void setUser(User user) {
-    	VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
+    	SessionUtils.setAttribute(User.class, user);
     }
     
     private boolean userCanLogin(User user) {
@@ -136,6 +137,7 @@ public class MainUI extends UI {
         // When the user logs out, current VaadinSession gets closed and the
         // page gets reloaded on the login screen. Do notice the this doesn't
         // invalidate the current HttpSession.
+    	SessionUtils.clearAttribute(User.class);
         VaadinSession.getCurrent().close();
         Page.getCurrent().reload();
     }

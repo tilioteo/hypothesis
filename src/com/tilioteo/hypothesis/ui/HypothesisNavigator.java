@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.ui;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent.PostViewChangeEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
+import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.ui.view.HypothesisViewType;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -38,7 +39,7 @@ public class HypothesisNavigator extends Navigator {
 			public boolean beforeViewChange(final ViewChangeEvent event) {
 				HypothesisViewType view = HypothesisViewType.getByViewName(event.getViewName());
 				
-				User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+				User user = SessionUtils.getAttribute(User.class);
 				if (user != null) {
 					return view.isAllowed(user.getRoles());
 				}

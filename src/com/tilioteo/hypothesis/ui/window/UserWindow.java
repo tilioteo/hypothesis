@@ -18,9 +18,9 @@ import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.persistence.GroupManager;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.RoleManager;
 import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.ui.form.UserFormFields;
 import com.tilioteo.hypothesis.ui.form.validator.RoleValidator;
 import com.tilioteo.hypothesis.ui.form.validator.UsernameValidator;
@@ -35,16 +35,14 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.Position;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
@@ -58,6 +56,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings({ "serial", "unchecked" })
 public class UserWindow extends Window {
@@ -104,7 +103,7 @@ public class UserWindow extends Window {
         UI.getCurrent().addWindow(this);
         this.focus();
 
-        loggedUser = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+        loggedUser = SessionUtils.getAttribute(User.class);
         userManager = UserManager.newInstance();
         groupManager = GroupManager.newInstance();
         roleManager = RoleManager.newInstance();

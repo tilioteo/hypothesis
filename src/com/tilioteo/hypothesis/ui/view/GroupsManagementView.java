@@ -31,6 +31,7 @@ import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.persistence.GroupManager;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
 import com.tilioteo.hypothesis.persistence.RoleManager;
+import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.ui.window.GroupWindow;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -84,7 +85,7 @@ public class GroupsManagementView extends VerticalLayout
 		groupManager = GroupManager.newInstance();
 		//persistenceManager = PersistenceManager.newInstance();
 		
-		loggedUser = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+		loggedUser = SessionUtils.getAttribute(User.class);
 		
 		MainEventBus.get().register(this);
 		

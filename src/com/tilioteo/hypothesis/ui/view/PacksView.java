@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.User;
-import com.vaadin.server.VaadinSession;
+import com.tilioteo.hypothesis.server.SessionUtils;
 
 /**
  * @author kamil
@@ -18,7 +18,7 @@ public class PacksView extends PublicPacksView {
 
 	@Override
 	protected List<Pack> getPacks() {
-		User user = (User) VaadinSession.getCurrent().getAttribute(User.class.getName());
+		User user = SessionUtils.getAttribute(User.class);
 
 		return packsModel.getUserPacks(user);
 	}
