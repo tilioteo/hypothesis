@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -37,7 +36,7 @@ public class UserManager implements Serializable {
 			user = mergeInit(user);
 			userDao.commit();
 			return user;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -61,7 +60,7 @@ public class UserManager implements Serializable {
 			user = userDao.makePersistent(user);
 			userDao.commit();
 			return user;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -100,7 +99,7 @@ public class UserManager implements Serializable {
 			//userDao.clear();
 			userDao.makeTransient(user);
 			userDao.commit();
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -128,7 +127,7 @@ public class UserManager implements Serializable {
 					FieldConstants.PROPERTY_OWNER_ID, owner.getId()));
 			userDao.commit();
 			return allUsers;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -157,7 +156,7 @@ public class UserManager implements Serializable {
 					FieldConstants.USERNAME, username));
 			userDao.commit();
 			return users.get(0);
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -197,7 +196,7 @@ public class UserManager implements Serializable {
 			List<User> users = userDao.findByCriteria(crit);
 			userDao.commit();
 			return !users.isEmpty();
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}

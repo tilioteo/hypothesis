@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
@@ -22,8 +21,6 @@ import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.GroupPermission;
 import com.tilioteo.hypothesis.entity.Pack;
-import com.tilioteo.hypothesis.entity.SimpleTest;
-import com.tilioteo.hypothesis.entity.Status;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.entity.UserPermission;
 
@@ -82,7 +79,7 @@ public class PermissionManager implements Serializable {
 			groupPermission = groupPermissionDao.makePersistent(groupPermission);
 			groupPermissionDao.commit();
 			return groupPermission;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 			//throw e;
@@ -98,7 +95,7 @@ public class PermissionManager implements Serializable {
 			userPermission = userPermissionDao.makePersistent(userPermission);
 			userPermissionDao.commit();
 			return userPermission;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 			//throw e;
@@ -115,7 +112,7 @@ public class PermissionManager implements Serializable {
 				groupPermissionDao.makeTransient(groupPermission);
 			}
 			groupPermissionDao.commit();
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 			//throw e;
@@ -131,7 +128,7 @@ public class PermissionManager implements Serializable {
 				userPermissionDao.makeTransient(userPermission);
 			}
 			userPermissionDao.commit();
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 			//throw e;
@@ -149,7 +146,7 @@ public class PermissionManager implements Serializable {
 				}
 			}
 			userPermissionDao.commit();
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 			//throw e;
@@ -163,7 +160,7 @@ public class PermissionManager implements Serializable {
 			List<GroupPermission> groupPermissions = groupPermissionDao.findAll();
 			groupPermissionDao.commit();
 			return groupPermissions;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 			return null;
@@ -202,7 +199,7 @@ public class PermissionManager implements Serializable {
 			List<UserPermission> userPermissions = userPermissionDao.findAll();
 			userPermissionDao.commit();
 			return userPermissions;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 			return null;
@@ -280,7 +277,7 @@ public class PermissionManager implements Serializable {
 			}
 
 			return new HashSet<Pack>(packs.values());
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			//throw e;
 			return null;
@@ -296,7 +293,7 @@ public class PermissionManager implements Serializable {
 				packs.add(groupPermission.getPack());
 			}
 			return packs;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			return null;
 		}
@@ -329,7 +326,7 @@ public class PermissionManager implements Serializable {
 			groupsPermissions.addAll(grpsPerms);
 
 			return groupsPermissions;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 			//throw e;
@@ -394,7 +391,7 @@ public class PermissionManager implements Serializable {
 				}
 			}
 			return packs;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			return null;
 		}
@@ -409,7 +406,7 @@ public class PermissionManager implements Serializable {
 					Restrictions.eq(EntityConstants.USER, user));
 			userPermissionDao.commit();
 			userPermissions.addAll(usrPerms);
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 		}

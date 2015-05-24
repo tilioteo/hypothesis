@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -38,7 +37,7 @@ public class GroupManager implements Serializable {
 			group = mergeInit(group);
 			groupDao.commit();
 			return group;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 		}
@@ -61,7 +60,7 @@ public class GroupManager implements Serializable {
 			group = groupDao.makePersistent(group);
 			groupDao.commit();
 			return group;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 			//throw e;
@@ -131,7 +130,7 @@ public class GroupManager implements Serializable {
 					FieldConstants.PROPERTY_OWNER_ID, owner.getId()));
 			groupDao.commit();
 			return allGroups;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 			//throw e;
@@ -150,7 +149,7 @@ public class GroupManager implements Serializable {
 			List<Group> groups = groupDao.findByCriteria(crit);
 			groupDao.commit();
 			return !groups.isEmpty();
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 			//throw e;

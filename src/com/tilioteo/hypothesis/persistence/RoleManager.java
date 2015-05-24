@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.criterion.Restrictions;
 
 import com.tilioteo.hypothesis.dao.RoleDao;
@@ -58,7 +57,7 @@ public class RoleManager implements Serializable {
 			role = roleDao.makePersistent(role);
 			roleDao.commit();
 			return role;
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			roleDao.rollback();
 			//throw e;

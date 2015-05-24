@@ -6,7 +6,6 @@ package com.tilioteo.hypothesis.persistence;
 import java.io.Serializable;
 
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 
 import com.tilioteo.hypothesis.dao.BranchOutputDao;
 import com.tilioteo.hypothesis.entity.BranchOutput;
@@ -36,7 +35,7 @@ public class OutputManager implements Serializable {
 			branchOutputDao.beginTransaction();
 			branchOutputDao.makePersistent(branchOutput);
 			branchOutputDao.commit();
-		} catch (HibernateException e) {
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			branchOutputDao.rollback();
 			//throw e;
