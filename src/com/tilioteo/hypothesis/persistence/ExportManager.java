@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -23,6 +24,8 @@ import com.tilioteo.hypothesis.entity.FieldConstants;
 @SuppressWarnings("serial")
 public class ExportManager implements Serializable {
 
+	private static Logger log = Logger.getLogger(ExportManager.class);
+
 	private ExportEventDao exportEventDao;
 
 	public static ExportManager newInstance() {
@@ -36,6 +39,7 @@ public class ExportManager implements Serializable {
 	@SuppressWarnings("unchecked")
 	public List<ExportEvent> findExportEventsBy(Long packId, Date dateFrom, Date dateTo) {
 		try {
+			log.debug("findExportEventsBy");
 			exportEventDao.beginTransaction();
 			
 			Criteria criteria = exportEventDao.createCriteria();
@@ -68,6 +72,7 @@ public class ExportManager implements Serializable {
 			return events;
 			
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			exportEventDao.rollback();
 		}
 		return null;
@@ -75,6 +80,7 @@ public class ExportManager implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public List<ExportEvent> findExportEventsByTestId(Collection<Long> testIds) {
+		log.debug("findExportEventsByTestId");
 		try {
 			exportEventDao.beginTransaction();
 			
@@ -90,6 +96,7 @@ public class ExportManager implements Serializable {
 			return events;
 			
 		} catch (Throwable e) {
+			log.error(e.getMessage());
 			exportEventDao.rollback();
 		}
 		return null;
