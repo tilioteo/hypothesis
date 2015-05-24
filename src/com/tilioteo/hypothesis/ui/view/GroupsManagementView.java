@@ -13,12 +13,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import jxl.Workbook;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
-
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.google.common.eventbus.Subscribe;
@@ -32,7 +30,6 @@ import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.persistence.GroupManager;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.RoleManager;
 import com.tilioteo.hypothesis.ui.window.GroupWindow;
 import com.vaadin.data.Property;
@@ -50,6 +47,8 @@ import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -58,10 +57,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings({ "serial", "unchecked" })
 public class GroupsManagementView extends VerticalLayout
@@ -233,37 +230,32 @@ public class GroupsManagementView extends VerticalLayout
 	protected InputStream getExportFile() {
 		try {
 			OutputStream output = new ByteArrayOutputStream();
-			WritableWorkbook workbook = Workbook.createWorkbook(output);
+			SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
 	
-			WritableSheet sheet = workbook.createSheet(
-					Messages.getString("Caption.Export.GroupSheetName"), 0);
+			Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.GroupSheetName"));
 	
-			sheet.addCell(new jxl.write.Label(0, 0, Messages.getString("Caption.Field.Id")));
-			sheet.addCell(new jxl.write.Label(1, 0, Messages.getString("Caption.Field.Name")));
+			int rowNr = 0;
+			Row row = sheet.createRow(rowNr++);
+			sheet.createFreezePane(0, 1);
+			
+			row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
+			row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
 	
-			int row = 1;
 			for (Iterator<Group> i = getSelectedGroups().iterator(); i.hasNext();) {
+				row = sheet.createRow(rowNr++);
 				Group group = i.next();
-				sheet.addCell(new jxl.write.Number(0, row, group.getId()));
-				sheet.addCell(new jxl.write.Label(1, row, group.getName()));
-				row++;
+				row.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(group.getId());
+				row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(group.getName());
 			}
-			workbook.write();
-			workbook.close();
+            workbook.write(output);
+            workbook.close();
+            output.close();
 	
 			return new ByteArrayInputStream(
 					((ByteArrayOutputStream) output).toByteArray());
 	
 		} catch (IOException e) {
 			Notification.show(Messages.getString("Message.Error.ExportCreateFile"),
-					e.getMessage(), Type.ERROR_MESSAGE);
-		
-		} catch (RowsExceededException e) {
-			Notification.show(Messages.getString("Message.Error.ExportRowsLimit"),
-					e.getMessage(), Type.ERROR_MESSAGE);
-		
-		} catch (WriteException e) {
-			Notification.show(Messages.getString("Message.Error.ExportWriteFile"),
 					e.getMessage(), Type.ERROR_MESSAGE);
 		}
 		

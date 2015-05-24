@@ -16,12 +16,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import jxl.Workbook;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
-import jxl.write.WriteException;
-import jxl.write.biff.RowsExceededException;
-
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.google.common.eventbus.Subscribe;
@@ -36,7 +34,6 @@ import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.persistence.GroupManager;
 import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.PersistenceManager;
 import com.tilioteo.hypothesis.persistence.RoleManager;
 import com.tilioteo.hypothesis.persistence.UserManager;
 import com.tilioteo.hypothesis.ui.window.UserWindow;
@@ -57,16 +54,16 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.VerticalLayout;
 
@@ -246,41 +243,34 @@ public class UsersManagementView extends VerticalLayout
 	protected InputStream getExportFile() {
 		try {
 			OutputStream output = new ByteArrayOutputStream();
-			WritableWorkbook workbook = Workbook.createWorkbook(output);
+			SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
+			
+			Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.UserSheetName"));
 	
-			WritableSheet sheet = workbook.createSheet(Messages.getString("Caption.Export.UserSheetName"), 0);
+			int rowNr = 0;
+			Row row = sheet.createRow(rowNr++);
+			sheet.createFreezePane(0, 1);
+			
+			row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
+			row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
+			row.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Password"));
 	
-			sheet.addCell(new jxl.write.Label(0, 0, Messages.getString("Caption.Field.Id")));
-			sheet.addCell(new jxl.write.Label(1, 0, Messages.getString("Caption.Field.Name")));
-			sheet.addCell(new jxl.write.Label(2, 0, Messages.getString("Caption.Field.Password")));
-	
-			int row = 1;
 			for (Iterator<User> i = getSelectedUsers().iterator(); i.hasNext();) {
+				row = sheet.createRow(rowNr++);
 				User user = i.next();
-				sheet.addCell(new jxl.write.Number(
-						0, row, user.getId()));
-				sheet.addCell(new jxl.write.Label(
-						1, row, user.getUsername()));
-				sheet.addCell(new jxl.write.Label(
-						2, row, user.getPassword()));
-				row++;
+				row.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(user.getId());
+				row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(user.getUsername());
+				row.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(user.getPassword());
 			}
-			workbook.write();
+			workbook.write(output);
 			workbook.close();
-	
+			output.close();
+
 			return new ByteArrayInputStream(
 					((ByteArrayOutputStream) output).toByteArray());
 	
 		} catch (IOException e) {
 			Notification.show(Messages.getString("Message.Error.ExportCreateFile"),
-					e.getMessage(), Type.ERROR_MESSAGE);
-		
-		} catch (RowsExceededException e) {
-			Notification.show(Messages.getString("Message.Error.ExportRowsLimit"),
-					e.getMessage(), Type.ERROR_MESSAGE);
-		
-		} catch (WriteException e) {
-			Notification.show(Messages.getString("Message.Error.ExportWriteFile"),
 					e.getMessage(), Type.ERROR_MESSAGE);
 		}
 		
