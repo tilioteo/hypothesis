@@ -1033,8 +1033,9 @@ public class ExportView extends VerticalLayout implements View {
 		initPacksSources();
 		
 		packsSelect.removeAllItems();
+		testSelection.removeAllComponents();
 		for (String packTitle : sortedPacks) {
 			packsSelect.addItem(packTitle);
-		}
+		}		
 	}
 }
