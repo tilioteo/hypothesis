@@ -162,7 +162,19 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static final class PackSelectionChangedEvent implements Serializable {
+	public static final class UserPacksChangedEvent implements Serializable {
+		private final User user;
+
+		public UserPacksChangedEvent(final User user) {
+			this.user = user;
+		}
+
+		public User getUser() {
+			return user;
+		}
+	}
+
+		public static final class PackSelectionChangedEvent implements Serializable {
 	}
 
 	public static final class ExportFinishedEvent implements Serializable {

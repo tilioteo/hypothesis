@@ -1027,4 +1027,14 @@ public class ExportView extends VerticalLayout implements View {
 			return null;
 		}
 	}
+	
+	@Subscribe
+	public void changeUserPacks(final HypothesisEvent.UserPacksChangedEvent event) {
+		initPacksSources();
+		
+		packsSelect.removeAllItems();
+		for (String packTitle : sortedPacks) {
+			packsSelect.addItem(packTitle);
+		}
+	}
 }

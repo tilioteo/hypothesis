@@ -441,6 +441,7 @@ public class GroupWindow extends Window {
 	}
 
 	private Group saveGroup(Group group) {
+		User updatedLoggedUser = null;
 		
 		if (state.equals(State.CREATE)) {
         	group.setOwnerId(loggedUser.getId());
@@ -480,7 +481,12 @@ public class GroupWindow extends Window {
 				}
 
         		if (user != null) {
-        			MainEventBus.get().post(new HypothesisEvent.UserGroupsChangedEvent(user));
+        			MainEventBus.get().post(
+        					new HypothesisEvent.UserGroupsChangedEvent(user));
+        			
+        			if (user.equals(loggedUser)) {
+        				updatedLoggedUser = user;
+        			}
         		}
 			}
 		}
@@ -503,6 +509,12 @@ public class GroupWindow extends Window {
 			}
 		}
 		
+		if (updatedLoggedUser != null) {
+			SessionUtils.setAttribute(User.class, updatedLoggedUser);
+			MainEventBus.get().post(
+					new HypothesisEvent.UserPacksChangedEvent(updatedLoggedUser));
+		}
+
 		return group;
 	}
 

@@ -697,6 +697,8 @@ public class UserWindow extends Window {
 			Set<Role> oldRoles = loggedUser.getRoles();
 			Set<Role> newRoles = user.getRoles();
 
+			SessionUtils.setAttribute(User.class, user);
+
 			if (!oldRoles.equals(newRoles)) {
 				// Superuser/Manager -> User degradation
 				if (!newRoles.contains(RoleService.ROLE_MANAGER)
@@ -711,7 +713,10 @@ public class UserWindow extends Window {
 							new HypothesisEvent.ProfileUpdatedEvent());
 					// TODO: zmena vypisu skupin
 				}
-			}	
+			}
+			
+			MainEventBus.get().post(
+					new HypothesisEvent.UserPacksChangedEvent(user));
 		}
 		
 		return user;
