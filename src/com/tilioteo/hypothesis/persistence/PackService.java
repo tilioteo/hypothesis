@@ -15,13 +15,13 @@ import com.tilioteo.hypothesis.entity.Pack;
  * 
  */
 @SuppressWarnings("serial")
-public class PackManager implements Serializable {
+public class PackService implements Serializable {
 
-	private static Logger log = Logger.getLogger(PackManager.class);
+	private static Logger log = Logger.getLogger(PackService.class);
 
 	private PackDao packDao;
 
-	public PackManager(PackDao packDao) {
+	public PackService(PackDao packDao) {
 		this.packDao = packDao;
 	}
 

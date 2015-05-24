@@ -34,20 +34,20 @@ import com.tilioteo.hypothesis.entity.User;
  * 
  */
 @SuppressWarnings("serial")
-public class TestManager implements Serializable {
+public class TestService implements Serializable {
 
-	private static Logger log = Logger.getLogger(TestManager.class);
+	private static Logger log = Logger.getLogger(TestService.class);
 
 	private TestDao testDao;
 	private EventDao eventDao;
 	private SlideOrderDao slideOrderDao;
 	
-	public static TestManager newInstance() {
-		return new TestManager(new TestDao(), new EventDao(),
+	public static TestService newInstance() {
+		return new TestService(new TestDao(), new EventDao(),
 				new SlideOrderDao());
 	}
 	
-	protected TestManager(TestDao testDao, EventDao eventDao, SlideOrderDao slideOrderDao) {
+	protected TestService(TestDao testDao, EventDao eventDao, SlideOrderDao slideOrderDao) {
 		this.testDao = testDao;
 		this.eventDao = eventDao;
 		this.slideOrderDao = slideOrderDao;

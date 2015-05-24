@@ -6,7 +6,7 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
-import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.persistence.UserService;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
@@ -29,7 +29,7 @@ import com.vaadin.ui.themes.ValoTheme;
 public class UserSettingsWindow extends Window {
 	
 	private final BeanFieldGroup<User> fieldGroup;
-	private UserManager userManager;
+	private UserService userService;
 
 	@PropertyId("username")
     private TextField usernameField;
@@ -52,7 +52,7 @@ public class UserSettingsWindow extends Window {
         fieldGroup.bindMemberFields(this);
         fieldGroup.setItemDataSource(user);
         
-        userManager = UserManager.newInstance();
+        userService = UserService.newInstance();
 	}
 
 	private Component buildForm() {
@@ -80,7 +80,7 @@ public class UserSettingsWindow extends Window {
                 try {
                     fieldGroup.commit();
                     User user = fieldGroup.getItemDataSource().getBean();
-                    userManager.add(user);
+                    userService.add(user);
 
                     Notification success = new Notification(
                             "Profile updated successfully");

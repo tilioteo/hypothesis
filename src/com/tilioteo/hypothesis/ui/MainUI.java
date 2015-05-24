@@ -15,7 +15,7 @@ import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidUserPermissionEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.UserLoggedOutEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.UserLoginRequestedEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
-import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.persistence.UserService;
 import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.servlet.HibernateVaadinServlet;
 import com.tilioteo.hypothesis.ui.view.HypothesisViewType;
@@ -44,7 +44,7 @@ public class MainUI extends UI {
 
 	private String pid = null;
 	
-	private UserManager userManager;
+	private UserService userService;
 	
 	private MainView mainView = null;
 	
@@ -54,7 +54,7 @@ public class MainUI extends UI {
 		
 		MainEventBus.get().register(this);
 		
-		userManager = UserManager.newInstance();
+		userService = UserService.newInstance();
 		
 		pid = request.getParameter("pid");
 
@@ -110,7 +110,7 @@ public class MainUI extends UI {
 
     @Subscribe
     public void userLoginRequested(final UserLoginRequestedEvent event) {
-        User user = userManager.findByUsernamePassword(event.getUserName(), event.getPassword());
+        User user = userService.findByUsernamePassword(event.getUserName(), event.getPassword());
         
         if (user != null) {
         	

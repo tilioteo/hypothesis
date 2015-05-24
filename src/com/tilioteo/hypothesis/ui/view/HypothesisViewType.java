@@ -4,17 +4,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.tilioteo.hypothesis.entity.Role;
-import com.tilioteo.hypothesis.persistence.RoleManager;
+import com.tilioteo.hypothesis.persistence.RoleService;
 import com.vaadin.navigator.View;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 
 public enum HypothesisViewType {
-	PACKS("/packs", "Caption.View.Packs", PacksView.class, FontAwesome.BARS, true, new Role[] {RoleManager.ROLE_USER, RoleManager.ROLE_MANAGER, RoleManager.ROLE_SUPERUSER}),
-	PUBLIC("/public", "Caption.View.Public", PublicPacksView.class, FontAwesome.EYE, true, new Role[] {null, RoleManager.ROLE_USER, RoleManager.ROLE_MANAGER, RoleManager.ROLE_SUPERUSER}),
-	USERS("/users", "Caption.View.Users", UsersManagementView.class, FontAwesome.USER, true, new Role[] {RoleManager.ROLE_MANAGER, RoleManager.ROLE_SUPERUSER}),
-	GROUPS("/groups", "Caption.View.Groups", GroupsManagementView.class, FontAwesome.GROUP, true, new Role[] {RoleManager.ROLE_MANAGER, RoleManager.ROLE_SUPERUSER}),
-	EXPORT("/export", "Caption.View.Export", ExportView.class, FontAwesome.TABLE, true, new Role[] {RoleManager.ROLE_MANAGER, RoleManager.ROLE_SUPERUSER});
+	PACKS("/packs", "Caption.View.Packs", PacksView.class, FontAwesome.BARS, true, new Role[] {RoleService.ROLE_USER, RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
+	PUBLIC("/public", "Caption.View.Public", PublicPacksView.class, FontAwesome.EYE, true, new Role[] {null, RoleService.ROLE_USER, RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
+	USERS("/users", "Caption.View.Users", UsersManagementView.class, FontAwesome.USER, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
+	GROUPS("/groups", "Caption.View.Groups", GroupsManagementView.class, FontAwesome.GROUP, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
+	EXPORT("/export", "Caption.View.Export", ExportView.class, FontAwesome.TABLE, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER});
 
 	private final String viewName;
 	private final String caption;

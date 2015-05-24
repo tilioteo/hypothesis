@@ -13,21 +13,21 @@ import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.User;
 
 @SuppressWarnings("serial")
-public class UserManager implements Serializable {
+public class UserService implements Serializable {
 
-	private static Logger log = Logger.getLogger(UserManager.class);
+	private static Logger log = Logger.getLogger(UserService.class);
 
 	private UserDao userDao;
 	
-	//private PersistenceManager persistenceManager;
+	//private PersistenceService persistenceService;
 
-	public static UserManager newInstance() {
-		return new UserManager(new UserDao());
+	public static UserService newInstance() {
+		return new UserService(new UserDao());
 	}
 	
-	protected UserManager(UserDao userDao) {
+	protected UserService(UserDao userDao) {
 		this.userDao = userDao;
-		//persistenceManager = PersistenceManager.newInstance();
+		//persistenceService = PersistenceService.newInstance();
 	}
 	
 	public User merge(User user) {
@@ -71,7 +71,7 @@ public class UserManager implements Serializable {
 	public boolean anotherSuperuserExists(Long id) {
 		log.debug("anotherSuperuserExists");
 		for (User user : findAll()) {
-			if (user.hasRole(RoleManager.ROLE_SUPERUSER)
+			if (user.hasRole(RoleService.ROLE_SUPERUSER)
 					&& !id.equals(user.getId())) {
 				return true;
 			}

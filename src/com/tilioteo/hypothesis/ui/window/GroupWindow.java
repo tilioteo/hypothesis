@@ -14,10 +14,10 @@ import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
-import com.tilioteo.hypothesis.persistence.GroupManager;
-import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.RoleManager;
-import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.persistence.GroupService;
+import com.tilioteo.hypothesis.persistence.PermissionService;
+import com.tilioteo.hypothesis.persistence.RoleService;
+import com.tilioteo.hypothesis.persistence.UserService;
 import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.ui.form.GroupFormFields;
 import com.tilioteo.hypothesis.ui.form.validator.GroupNameValidator;
@@ -63,11 +63,11 @@ public class GroupWindow extends Window {
 	
 	private User loggedUser;
 	private GroupFormFields groupForm;
-	private GroupManager groupManager;
-	private UserManager userManager;
-	private PermissionManager permissionManager;
+	private GroupService groupService;
+	private UserService userService;
+	private PermissionService permissionService;
 	
-	//private PersistenceManager persistenceManager;
+	//private PersistenceService persistenceService;
 	
 	private TabSheet tabSheet;
 	private Component groupDetailsTab;
@@ -96,12 +96,12 @@ public class GroupWindow extends Window {
         this.focus();
 
         loggedUser = SessionUtils.getAttribute(User.class);
-        groupManager = GroupManager.newInstance();
-        userManager = UserManager.newInstance();
-        permissionManager = PermissionManager.newInstance();
+        groupService = GroupService.newInstance();
+        userService = UserService.newInstance();
+        permissionService = PermissionService.newInstance();
         groupForm = new GroupFormFields();
         
-        //persistenceManager = PersistenceManager.newInstance();
+        //persistenceService = PersistenceService.newInstance();
 
         center();
         setCloseShortcut(KeyCode.ESCAPE, null);
@@ -141,15 +141,15 @@ public class GroupWindow extends Window {
         // users
 		Collection<User> users;
 
-		if (loggedUser.hasRole(RoleManager.ROLE_SUPERUSER)) {
-			users = userManager.findAll();
+		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+			users = userService.findAll();
 		} else {
-			users = userManager.findOwnerUsers(loggedUser);
+			users = userService.findOwnerUsers(loggedUser);
 		}
 		
 		if (!users.isEmpty()) {
 	        AbstractField<?> usersField = groupForm.buildUsersField(
-					!loggedUser.hasRole(RoleManager.ROLE_SUPERUSER));
+					!loggedUser.hasRole(RoleService.ROLE_SUPERUSER));
 
 	        for (User user : users) {
 				Table table = (Table) usersField;
@@ -171,10 +171,10 @@ public class GroupWindow extends Window {
 		AbstractField<?> packsField = groupForm.buildPacksField();
 		
 		Collection<Pack> packs;
-		if (loggedUser.hasRole(RoleManager.ROLE_SUPERUSER)) {
-			packs = permissionManager.findAllPacks();
+		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+			packs = permissionService.findAllPacks();
 		} else {
-			packs = permissionManager.findUserPacks2(loggedUser, false);
+			packs = permissionService.findUserPacks2(loggedUser, false);
 		}
 		
 		// TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
@@ -195,8 +195,8 @@ public class GroupWindow extends Window {
 	}
 
 	private void fillFields(Group group) {
-		group = groupManager.merge(group);
-		//group = persistenceManager.merge(group);
+		group = groupService.merge(group);
+		//group = persistenceService.merge(group);
 		
 		groupForm.getIdField().setValue(group.getId().toString());
 		groupForm.getNameField().setValue(group.getName());
@@ -215,7 +215,7 @@ public class GroupWindow extends Window {
 			AbstractSelect usersField = ((AbstractSelect) groupForm.getUsersField());
 			for (Object itemId : usersField.getItemIds()) {
 				Item row = usersField.getItem(itemId);
-				User user = userManager.merge((User) itemId);
+				User user = userService.merge((User) itemId);
 	
 				if (users.contains(user)) {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(true);
@@ -229,7 +229,7 @@ public class GroupWindow extends Window {
 		Set<Pack> packs;
 		
 		if (state.equals(State.UPDATE)) {
-			packs = permissionManager.getGroupPacks(group);
+			packs = permissionService.getGroupPacks(group);
 		} else {
 			packs = new HashSet<Pack>();
 		}
@@ -445,8 +445,8 @@ public class GroupWindow extends Window {
 		if (state.equals(State.CREATE)) {
         	group.setOwnerId(loggedUser.getId());
         } else {
-    		//group = groupManager.merge(group);
-    		//group = persistenceManager.merge(group);
+    		//group = groupService.merge(group);
+    		//group = persistenceService.merge(group);
         }
 		
 		if (!(state.equals(State.MULTIUPDATE))) {
@@ -465,7 +465,7 @@ public class GroupWindow extends Window {
 			
 			for (Object itemId : usersField.getItemIds()) {
 				Item item = usersField.getItem(itemId);
-				User user = userManager.merge((User) itemId);
+				User user = userService.merge((User) itemId);
 				Boolean selected = (Boolean) item.getItemProperty(
 						FieldConstants.SELECTED).getValue();
 
@@ -485,10 +485,10 @@ public class GroupWindow extends Window {
 			}
 		}
 		
-		group = groupManager.add(group);
+		group = groupService.add(group);
 		
 		if (groupForm.getPacksField().isVisible()) {
-	        permissionManager.deleteGroupPermissions(group);
+	        permissionService.deleteGroupPermissions(group);
 
 			for (Object itemId : groupForm.getPacksField().getItemIds()) {
 				Item item = groupForm.getPacksField().getItem(itemId);
@@ -497,7 +497,7 @@ public class GroupWindow extends Window {
 						FieldConstants.SELECTED).getValue();
 				
 				if (selected != null && selected.equals(true)) {
-					permissionManager.addGroupPermission(
+					permissionService.addGroupPermission(
 							new GroupPermission(group, pack));
 				}
 			}

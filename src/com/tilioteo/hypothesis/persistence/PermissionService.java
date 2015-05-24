@@ -29,40 +29,40 @@ import com.tilioteo.hypothesis.entity.UserPermission;
  * 
  */
 @SuppressWarnings("serial")
-public class PermissionManager implements Serializable {
+public class PermissionService implements Serializable {
 
-	private static Logger log = Logger.getLogger(PermissionManager.class);
+	private static Logger log = Logger.getLogger(PermissionService.class);
 
 	private UserPermissionDao userPermissionDao;
 	private GroupPermissionDao groupPermissionDao;
 	private PackDao packDao;
-	private TestManager testManager;
+	private TestService testService;
 	
-	//private PersistenceManager persistenceManager;
-	private UserManager userManager;
+	//private PersistenceService persistenceService;
+	private UserService userService;
 
-	public static PermissionManager newInstance() {
-		return new PermissionManager(new UserPermissionDao(), new GroupPermissionDao());
+	public static PermissionService newInstance() {
+		return new PermissionService(new UserPermissionDao(), new GroupPermissionDao());
 	}
 	
-	protected PermissionManager(UserPermissionDao userPermitionDao,
+	protected PermissionService(UserPermissionDao userPermitionDao,
 			GroupPermissionDao groupPermitionDao) {
-		this(userPermitionDao, groupPermitionDao, TestManager.newInstance());
+		this(userPermitionDao, groupPermitionDao, TestService.newInstance());
 	}
 
-	protected PermissionManager(UserPermissionDao userPermitionDao,
-			GroupPermissionDao groupPermitionDao, TestManager testManager) {
+	protected PermissionService(UserPermissionDao userPermitionDao,
+			GroupPermissionDao groupPermitionDao, TestService testService) {
 		this.userPermissionDao = userPermitionDao;
 		this.groupPermissionDao = groupPermitionDao;
 		this.packDao = new PackDao();
-		this.testManager = testManager;
+		this.testService = testService;
 		
-		//persistenceManager = PersistenceManager.newInstance();
-		userManager = UserManager.newInstance();
+		//persistenceService = PersistenceService.newInstance();
+		userService = UserService.newInstance();
 	}
 	
-	public TestManager getTestManager() {
-		return testManager;
+	public TestService getTestManager() {
+		return testService;
 	}
 
 	/*private GroupPermission mergeInit(GroupPermission groupPermission) {
@@ -211,8 +211,8 @@ public class PermissionManager implements Serializable {
 		Set<Pack> packs = getUserPacks(user, true, excludeFinished);
 		Set<Pack> disabledPacks = getUserPacks(user, false, null);
 
-		Set<Group> groups = userManager.merge(user).getGroups();
-		//Set<Group> groups = persistenceManager.merge(user).getGroups();
+		Set<Group> groups = userService.merge(user).getGroups();
+		//Set<Group> groups = persistenceService.merge(user).getGroups();
 		if (!groups.isEmpty()) {
 			try {
 				groupPermissionDao.beginTransaction();
@@ -222,7 +222,7 @@ public class PermissionManager implements Serializable {
 				for (GroupPermission groupPermission : groupsPermissions) {
 					Pack groupPack = groupPermission.getPack();
 					if (!disabledPacks.contains(groupPack)) {
-						packs.add(/*persistenceManager.merge*/(groupPack));
+						packs.add(/*persistenceService.merge*/(groupPack));
 					}
 				}
 			} catch (Throwable e) {
@@ -257,8 +257,8 @@ public class PermissionManager implements Serializable {
 		try {
 			// Set<Pack> packs = new HashSet<Pack>();
 			Hashtable<Long, Pack> packs = new Hashtable<Long, Pack>();
-			user = userManager.merge(user);
-			//user = persistenceManager.merge(user);
+			user = userService.merge(user);
+			//user = persistenceService.merge(user);
 			if (!user.getGroups().isEmpty()) {
 				Set<GroupPermission> groupsPermissions = getGroupsPermissions(user.getGroups());
 				for (GroupPermission groupPermission : groupsPermissions) {
@@ -383,7 +383,7 @@ public class PermissionManager implements Serializable {
 					if (userPermission.getPass() == null || excludeFinished == null || !excludeFinished) {
 						packs.add(pack);
 					} /*else {
-						List<SimpleTest> finishedTests = testManager.findTestsBy(user, pack, Status.FINISHED);
+						List<SimpleTest> finishedTests = testService.findTestsBy(user, pack, Status.FINISHED);
 						if (userPermission.getPass() < finishedTests.size()) {
 							packs.add(pack);
 						}

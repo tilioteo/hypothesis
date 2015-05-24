@@ -32,10 +32,10 @@ import com.tilioteo.hypothesis.entity.Role;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
-import com.tilioteo.hypothesis.persistence.GroupManager;
-import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.RoleManager;
-import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.persistence.GroupService;
+import com.tilioteo.hypothesis.persistence.PermissionService;
+import com.tilioteo.hypothesis.persistence.RoleService;
+import com.tilioteo.hypothesis.persistence.UserService;
 import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.ui.window.UserWindow;
 import com.vaadin.data.Property;
@@ -71,26 +71,26 @@ import com.vaadin.ui.VerticalLayout;
 public class UsersManagementView extends VerticalLayout
 		implements View, ColumnGenerator, ConfirmDialog.Listener {
 
-	PermissionManager permissionManager;
-	UserManager userManager;
-	GroupManager groupManager;
-	//PersistenceManager persistenceManager;
+	private PermissionService permissionService;
+	private UserService userService;
+	private GroupService groupService;
+	//private PersistenceService persistenceService;
 	
-	User loggedUser;
+	private User loggedUser;
 
-	CssLayout buttonGroup;
-	Table table;
+	private CssLayout buttonGroup;
+	private Table table;
 	
-	ConfirmDialog deletionConfirmDialog;
-	ConfirmDialog.Listener confirmDialogListener = this;
+	private ConfirmDialog deletionConfirmDialog;
+	private ConfirmDialog.Listener confirmDialogListener = this;
 	
 	boolean allUsersSelected = false; 
 	
 	public UsersManagementView() {
-		permissionManager = PermissionManager.newInstance();
-		userManager = UserManager.newInstance();
-		groupManager = GroupManager.newInstance();
-		//persistenceManager = PersistenceManager.newInstance();
+		permissionService = PermissionService.newInstance();
+		userService = UserService.newInstance();
+		groupService = GroupService.newInstance();
+		//persistenceService = PersistenceService.newInstance();
 		
 		loggedUser = SessionUtils.getAttribute(User.class);
 		
@@ -144,8 +144,8 @@ public class UsersManagementView extends VerticalLayout
 		addButton.addClickListener(new ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-            	if (!loggedUser.hasRole(RoleManager.ROLE_SUPERUSER) && 
-            			groupManager.findOwnerGroups(loggedUser).size() == 0) {
+            	if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER) && 
+            			groupService.findOwnerGroups(loggedUser).size() == 0) {
             		Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
             	} else {
             		UserWindow userWindow = new UserWindow();
@@ -290,14 +290,14 @@ public class UsersManagementView extends VerticalLayout
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 		
 		List<User> users;
-		if (loggedUser.hasRole(RoleManager.ROLE_SUPERUSER)) {
-			users = userManager.findAll();
+		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+			users = userService.findAll();
 		} else {
-			users = userManager.findOwnerUsers(loggedUser);
+			users = userService.findOwnerUsers(loggedUser);
 		}	
 		for (User user : users) {
-			user = userManager.merge(user);
-			//user = persistenceManager.merge(user);
+			user = userService.merge(user);
+			//user = persistenceService.merge(user);
 			dataSource.addBean(user);
 		}
 		table.setContainerDataSource(dataSource);
@@ -359,8 +359,8 @@ public class UsersManagementView extends VerticalLayout
 	public Object generateCell(Table source, Object itemId, Object columnId) {
 		if (columnId.equals(FieldConstants.ROLES)) {
 			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
-			user = userManager.merge(user);
-			//user = persistenceManager.merge(user);
+			user = userService.merge(user);
+			//user = persistenceService.merge(user);
 			
 			Set<Role> roles = user.getRoles();
 			List<String> sortedRoles = new ArrayList<String>();
@@ -388,8 +388,8 @@ public class UsersManagementView extends VerticalLayout
 		
 		else if (columnId.equals(FieldConstants.GROUPS)) {
 			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
-			user = userManager.merge(user);
-			//user = persistenceManager.merge(user);
+			user = userService.merge(user);
+			//user = persistenceService.merge(user);
 			
 			Set<Group> groups = user.getGroups();
 			List<String> sortedGroups = new ArrayList<String>();
@@ -447,7 +447,7 @@ public class UsersManagementView extends VerticalLayout
 		else if (columnId.equals(FieldConstants.AVAILABLE_PACKS)) {
 			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
 			
-			Set<Pack> packs = permissionManager.findUserPacks2(user, false);
+			Set<Pack> packs = permissionService.findUserPacks2(user, false);
 			List<String> sortedPacks = new ArrayList<String>();
 			List<String> sortedPackDescs = new ArrayList<String>();
 			for (Pack pack : packs) {
@@ -496,9 +496,9 @@ public class UsersManagementView extends VerticalLayout
 		
 		for (Iterator<User> iterator = users.iterator(); iterator.hasNext(); ) {
 			User user = iterator.next();
-			//user = userManager.merge(user);
+			//user = userService.merge(user);
 
-			userManager.delete(user);
+			userService.delete(user);
 			
 			for (Group group : user.getGroups()) {
 				if (group != null) {
@@ -518,7 +518,7 @@ public class UsersManagementView extends VerticalLayout
 			Collection<User> users) {
 		String exceptionMessage = Messages.getString("Message.Error.SuperuserDelete");
 		
-		if (currentUser.hasRole(RoleManager.ROLE_SUPERUSER)) {
+		if (currentUser.hasRole(RoleService.ROLE_SUPERUSER)) {
 			return;
 		}
 		
@@ -528,7 +528,7 @@ public class UsersManagementView extends VerticalLayout
 		
 		for (Iterator<User> iterator = users.iterator(); iterator.hasNext(); ) {
 			User user = iterator.next();
-			if (user.hasRole(RoleManager.ROLE_SUPERUSER)) {
+			if (user.hasRole(RoleService.ROLE_SUPERUSER)) {
 				throw new UnsupportedOperationException(exceptionMessage);
 			}
 		}
@@ -541,14 +541,14 @@ public class UsersManagementView extends VerticalLayout
         	throw new UnsupportedOperationException(exceptionMessage);
         }
 
-        if (currentUser.hasRole(RoleManager.ROLE_SUPERUSER)) {
+        if (currentUser.hasRole(RoleService.ROLE_SUPERUSER)) {
 			boolean superuserLeft = false;
 			for (Iterator<Long> iterator = ((Collection<Long>)
 					table.getItemIds()).iterator(); iterator.hasNext(); ) {
 				Long id = iterator.next();
 				if (!table.isSelected(id)) {
 					User user = ((BeanItem<User>) table.getItem(id)).getBean();
-					if (user.hasRole(RoleManager.ROLE_SUPERUSER)) {
+					if (user.hasRole(RoleService.ROLE_SUPERUSER)) {
 						superuserLeft = true;
 						break;
 					}

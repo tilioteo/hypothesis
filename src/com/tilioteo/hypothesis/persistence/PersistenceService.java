@@ -19,9 +19,9 @@ import com.tilioteo.hypothesis.servlet.HibernateUtil;
  *
  */
 @SuppressWarnings("serial")
-public class PersistenceManager implements Serializable {
+public class PersistenceService implements Serializable {
 	
-	private static Logger log = Logger.getLogger(PersistenceManager.class);
+	private static Logger log = Logger.getLogger(PersistenceService.class);
 	
 	//private PackDao packDao;
 	//private BranchDao branchDao;
@@ -30,11 +30,11 @@ public class PersistenceManager implements Serializable {
 	//private UserDao userDao;
 	//private GroupDao groupDao;
 
-	public static PersistenceManager newInstance() {
-		return new PersistenceManager();
+	public static PersistenceService newInstance() {
+		return new PersistenceService();
 	}
 	
-	protected PersistenceManager() {
+	protected PersistenceService() {
 		//packDao = new PackDao();
 		//branchDao = new BranchDao();
 		//taskDao = new TaskDao();

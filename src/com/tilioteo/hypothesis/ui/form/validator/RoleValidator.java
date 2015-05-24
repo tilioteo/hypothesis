@@ -5,21 +5,21 @@ import java.util.Set;
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.Role;
 import com.tilioteo.hypothesis.entity.User;
-import com.tilioteo.hypothesis.persistence.RoleManager;
-import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.persistence.RoleService;
+import com.tilioteo.hypothesis.persistence.UserService;
 import com.vaadin.data.Validator;
 
 @SuppressWarnings({ "serial", "unchecked" })
 public class RoleValidator implements Validator {
 	
-	Object source;
-	User loggedUser;
-	UserManager userManager;
+	private Object source;
+	private User loggedUser;
+	private UserService userService;
 	
 	public RoleValidator(Object source, User loggedUser) {
 		this.source = source;
 		this.loggedUser = loggedUser;
-		this.userManager = UserManager.newInstance();
+		this.userService = UserService.newInstance();
 	}
 
 	@Override
@@ -39,12 +39,12 @@ public class RoleValidator implements Validator {
 		}
 		
 		// superuser left in update
-		if (((Set<Role>) value).contains(RoleManager.ROLE_SUPERUSER)) {
+		if (((Set<Role>) value).contains(RoleService.ROLE_SUPERUSER)) {
 			return;
 		}
 		
 		// no superuser left?
-		if (!userManager.anotherSuperuserExists(loggedUser.getId())) {
+		if (!userService.anotherSuperuserExists(loggedUser.getId())) {
 			throw new InvalidValueException(Messages.getString("Message.Error.SuperuserLeft"));			
 		}
 	}

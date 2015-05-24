@@ -14,21 +14,21 @@ import com.tilioteo.hypothesis.entity.Group;
 import com.tilioteo.hypothesis.entity.User;
 
 @SuppressWarnings("serial")
-public class GroupManager implements Serializable {
+public class GroupService implements Serializable {
 
-	private static Logger log = Logger.getLogger(GroupManager.class);
+	private static Logger log = Logger.getLogger(GroupService.class);
 
 	private GroupDao groupDao;
 
-	//private PersistenceManager persistenceManager;
+	//private PersistenceService persistenceService;
 
-	public static GroupManager newInstance() {
-		return new GroupManager(new GroupDao());
+	public static GroupService newInstance() {
+		return new GroupService(new GroupDao());
 	}
 	
-	protected GroupManager(GroupDao groupDao) {
+	protected GroupService(GroupDao groupDao) {
 		this.groupDao = groupDao;		
-		//persistenceManager = PersistenceManager.newInstance();
+		//persistenceService = PersistenceService.newInstance();
 	}
 
 	public Group merge(Group group) {

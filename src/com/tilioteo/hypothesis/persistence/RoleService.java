@@ -12,9 +12,9 @@ import com.tilioteo.hypothesis.entity.FieldConstants;
 import com.tilioteo.hypothesis.entity.Role;
 
 @SuppressWarnings("serial")
-public class RoleManager implements Serializable {
+public class RoleService implements Serializable {
 
-	private static Logger log = Logger.getLogger(RoleManager.class);
+	private static Logger log = Logger.getLogger(RoleService.class);
 
 	private RoleDao roleDao;
 
@@ -22,11 +22,11 @@ public class RoleManager implements Serializable {
 	public static final Role ROLE_MANAGER = initRoleByName("MANAGER");
 	public static final Role ROLE_USER = initRoleByName("USER");
 
-	public static RoleManager newInstance() {
-		return new RoleManager(new RoleDao());
+	public static RoleService newInstance() {
+		return new RoleService(new RoleDao());
 	}
 	
-	protected RoleManager(RoleDao roleDao) {
+	protected RoleService(RoleDao roleDao) {
 		this.roleDao = new RoleDao();
 	}
 

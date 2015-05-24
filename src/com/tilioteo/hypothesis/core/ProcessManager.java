@@ -55,10 +55,11 @@ import com.tilioteo.hypothesis.event.RenderContentEvent;
 import com.tilioteo.hypothesis.event.SlideEvent;
 import com.tilioteo.hypothesis.event.StartTestEvent;
 import com.tilioteo.hypothesis.event.ViewportEvent;
-import com.tilioteo.hypothesis.persistence.OutputManager;
-import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.PersistenceManager;
-import com.tilioteo.hypothesis.persistence.TestManager;
+import com.tilioteo.hypothesis.persistence.BranchService;
+import com.tilioteo.hypothesis.persistence.OutputService;
+import com.tilioteo.hypothesis.persistence.PermissionService;
+import com.tilioteo.hypothesis.persistence.PersistenceService;
+import com.tilioteo.hypothesis.persistence.TestService;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -74,11 +75,11 @@ public class ProcessManager implements Serializable {
 
 	private SlideManager slideManager;
 	
-	private PersistenceManager persistenceManager;
-	private TestManager testManager;
-	private com.tilioteo.hypothesis.persistence.BranchManager persistenceBranchManager;
-	private PermissionManager permissionManager;
-	private OutputManager outputManager;
+	private PersistenceService persistenceService;
+	private TestService testService;
+	private BranchService branchService;
+	private PermissionService permissionService;
+	private OutputService outputService;
 	
 	private boolean testProcessing = false;
 	private boolean slideProcessing = false;
@@ -90,8 +91,6 @@ public class ProcessManager implements Serializable {
 	private Task currentTask = null;
 	private Slide currentSlide = null;
 	
-	private User currentUser = null;
-
 	public ProcessManager() {
 		
 		ProcessEventBus.get().register(this);
@@ -100,12 +99,12 @@ public class ProcessManager implements Serializable {
 		taskManager = new TaskManager();
 
 		slideManager = new SlideManager();
-		permissionManager = PermissionManager.newInstance();
-		testManager = permissionManager.getTestManager();
-		persistenceManager = PersistenceManager.newInstance();
-		persistenceBranchManager = com.tilioteo.hypothesis.persistence.BranchManager.newInstance();
+		permissionService = PermissionService.newInstance();
+		testService = permissionService.getTestManager();
+		persistenceService = PersistenceService.newInstance();
+		branchService = BranchService.newInstance();
 
-		outputManager = OutputManager.newInstance();
+		outputService = OutputService.newInstance();
 	}
 
 	private Event createEvent(ProcessEvent event) {
@@ -122,14 +121,14 @@ public class ProcessManager implements Serializable {
 	private boolean checkUserPack(User user, Pack pack) {
 		Collection<Pack> packs;
 		if (user != null) {
-			packs = permissionManager.findUserPacks(user, true);
+			packs = permissionService.findUserPacks(user, true);
 			for (Pack allowedPack : packs) {
 				if (allowedPack.getId().equals(pack.getId()))
 					return true;
 			}
 		}
 
-		packs = permissionManager.getPublishedPacks();
+		packs = permissionService.getPublishedPacks();
 		for (Pack allowedPack : packs) {
 			if (allowedPack.getId().equals(pack.getId()))
 				return true;
@@ -160,8 +159,6 @@ public class ProcessManager implements Serializable {
 		currentBranch = null;
 		currentTask = null;
 		currentSlide = null;
-		
-		currentUser = null;
 	}
 
 	@Subscribe
@@ -179,11 +176,11 @@ public class ProcessManager implements Serializable {
 		currentTest = event.getTest();
 		saveRunningEvent(event);
 		
-		currentBranch = persistenceManager.merge(branchManager.find(currentTest.getLastBranch()));
+		currentBranch = persistenceService.merge(branchManager.find(currentTest.getLastBranch()));
 		
 		if (currentBranch != null) {
 			
-			currentTask = persistenceManager.merge(taskManager.find(currentTest.getLastTask()));
+			currentTask = persistenceService.merge(taskManager.find(currentTest.getLastTask()));
 			
 			if (currentTask != null) {
 				
@@ -254,15 +251,13 @@ public class ProcessManager implements Serializable {
 		
 		currentTest = null;
 		testProcessing = false;
-		
-		currentUser = null;
 	}
 
 	@Subscribe
 	public void processNextBranch(NextBranchEvent event) {
 		saveRunningEvent(event);
 
-		BranchMap branchMap = persistenceBranchManager.getBranchMap(currentPack, currentBranch);
+		BranchMap branchMap = branchService.getBranchMap(currentPack, currentBranch);
 		String key = branchManager.getNextBranchKey();
 
 		Branch nextBranch = null;
@@ -271,12 +266,12 @@ public class ProcessManager implements Serializable {
 		}
 
 		if (nextBranch != null) {
-			currentBranch = persistenceManager.merge(nextBranch);
+			currentBranch = persistenceService.merge(nextBranch);
 
 			if (currentBranch != null) {
 			
 				taskManager.setListFromParent(currentBranch);
-				currentTask = persistenceManager.merge(taskManager.current());
+				currentTask = persistenceService.merge(taskManager.current());
 				
 				if (currentTask != null) {
 
@@ -344,7 +339,7 @@ public class ProcessManager implements Serializable {
 	public void processNextTask(NextTaskEvent event) {
 		saveRunningEvent(event);
 
-		currentTask = persistenceManager.merge(taskManager.next());
+		currentTask = persistenceService.merge(taskManager.next());
 		if (currentTask != null) {
 
 			setSlideManagerParent(currentTask);
@@ -370,12 +365,12 @@ public class ProcessManager implements Serializable {
 
 	private void setTaskSlidesRandomOrder(SimpleTest test, Task task) {
 		List<Integer> order = null;
-		SlideOrder slideOrder = testManager.findTaskSlideOrder(test, task);
+		SlideOrder slideOrder = testService.findTaskSlideOrder(test, task);
 		if (null == slideOrder) {
 			slideOrder = new SlideOrder(test, task);
 			order = slideManager.createRandomOrder();
 			slideOrder.setOrder(order);
-			testManager.updateSlideOrder(slideOrder);
+			testService.updateSlideOrder(slideOrder);
 		} else {
 			order = slideOrder.getOrder();
 		}
@@ -388,9 +383,9 @@ public class ProcessManager implements Serializable {
 		log.debug(String.format("processPrepareTest: token uid = %s", event.getToken() != null ? event.getToken().getUid() : "NULL"));
 		Token token = event.getToken();
 
-		SimpleTest test = testManager.getUnattendedTest(token.getUser(), token.getPack(), token.isProduction());
+		SimpleTest test = testService.getUnattendedTest(token.getUser(), token.getPack(), token.isProduction());
 		if (test != null) {
-			currentUser = token.getUser();
+			token.getUser();
 			
 			if (event.isStartAllowed()) {
 				log.debug(String.format("Test start allowed (test id = %s).", test.getId() != null ? test.getId() : "NULL"));
@@ -417,14 +412,14 @@ public class ProcessManager implements Serializable {
 			
 			currentTest = test;
 			
-			currentPack = persistenceManager.merge(test.getPack());
+			currentPack = persistenceService.merge(test.getPack());
 			
 			branchManager.setListFromParent(currentPack);
-			currentBranch = persistenceManager.merge(branchManager.current());
+			currentBranch = persistenceService.merge(branchManager.current());
 			
 			if (currentBranch != null) {
 				taskManager.setListFromParent(currentBranch);
-				currentTask = persistenceManager.merge(taskManager.current());
+				currentTask = persistenceService.merge(taskManager.current());
 				
 				if (currentTask != null) {
 					setSlideManagerParent(currentTask);
@@ -502,7 +497,7 @@ public class ProcessManager implements Serializable {
 		branchOutput.setXmlData(data);
 		branchOutput.setOutput(data);
 
-		outputManager.saveBranchOutput(branchOutput);
+		outputService.saveBranchOutput(branchOutput);
 	}
 
 	private void saveUserProcessEvent(AbstractUserEvent processEvent) {
@@ -548,7 +543,7 @@ public class ProcessManager implements Serializable {
 				event.setXmlData(slideData);
 			}
 			
-			testManager.saveEvent(event, currentTest);
+			testService.saveEvent(event, currentTest);
 		}
 	}
 
@@ -584,12 +579,12 @@ public class ProcessManager implements Serializable {
 			test.setLastBranch(currentBranch);
 			test.setLastTask(currentTask);
 			test.setLastSlide(currentSlide);
-			testManager.updateTest(test);
+			testService.updateTest(test);
 		}
 	}
 
 	public void updateTest(SimpleTest test, Date date, Status status) {
-		test = persistenceManager.merge(test);
+		test = persistenceService.merge(test);
 
 		if (test != null) {
 			
@@ -640,6 +635,5 @@ public class ProcessManager implements Serializable {
 	
 	public void clean() {
 		ProcessEventBus.get().unregister(this);
-		currentUser = null;
 	}
 }

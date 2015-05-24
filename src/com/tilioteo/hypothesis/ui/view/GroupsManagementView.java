@@ -28,9 +28,9 @@ import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
-import com.tilioteo.hypothesis.persistence.GroupManager;
-import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.RoleManager;
+import com.tilioteo.hypothesis.persistence.GroupService;
+import com.tilioteo.hypothesis.persistence.PermissionService;
+import com.tilioteo.hypothesis.persistence.RoleService;
 import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.ui.window.GroupWindow;
 import com.vaadin.data.Property;
@@ -46,7 +46,6 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -65,25 +64,25 @@ import com.vaadin.ui.VerticalLayout;
 public class GroupsManagementView extends VerticalLayout
 		implements View, ColumnGenerator, ConfirmDialog.Listener {
 
-	PermissionManager permissionManager;
-	GroupManager groupManager;
-	//PersistenceManager persistenceManager;
+	private PermissionService permissionService;
+	private GroupService groupService;
+	//private PersistenceService persistenceService;
 	
-	User loggedUser;
+	private User loggedUser;
 
-	CssLayout buttonGroup;
-	Table table;
+	private CssLayout buttonGroup;
+	private Table table;
 	
-	ConfirmDialog deletionConfirmDialog;
-	ConfirmDialog.Listener confirmDialogListener = this;
+	private ConfirmDialog deletionConfirmDialog;
+	private ConfirmDialog.Listener confirmDialogListener = this;
 	
 	boolean allGroupsSelected = false; 
 
 	
 	public GroupsManagementView() {
-		permissionManager = PermissionManager.newInstance();
-		groupManager = GroupManager.newInstance();
-		//persistenceManager = PersistenceManager.newInstance();
+		permissionService = PermissionService.newInstance();
+		groupService = GroupService.newInstance();
+		//persistenceService = PersistenceService.newInstance();
 		
 		loggedUser = SessionUtils.getAttribute(User.class);
 		
@@ -276,14 +275,14 @@ public class GroupsManagementView extends VerticalLayout
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
 		List<Group> groups;
-		if (loggedUser.hasRole(RoleManager.ROLE_SUPERUSER)) {
-			groups = groupManager.findAll();
+		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+			groups = groupService.findAll();
 		} else {
-			groups = groupManager.findOwnerGroups(loggedUser);
+			groups = groupService.findOwnerGroups(loggedUser);
 		}	
 		for (Group group : groups) {
-			group = groupManager.merge(group);
-			//group = persistenceManager.merge(group);
+			group = groupService.merge(group);
+			//group = persistenceService.merge(group);
 			dataSource.addBean(group);
 		}
 		table.setContainerDataSource(dataSource);
@@ -330,8 +329,8 @@ public class GroupsManagementView extends VerticalLayout
 	public Object generateCell(Table source, Object itemId, Object columnId) {
 		if (columnId.equals(FieldConstants.USERS)) {
 			Group group = ((BeanItem<Group>) source.getItem(itemId)).getBean();
-			group = groupManager.merge(group);
-			//group = persistenceManager.merge(group);
+			group = groupService.merge(group);
+			//group = persistenceService.merge(group);
 			
 			Set<User> users = group.getUsers();
 			List<String> sortedUsers = new ArrayList<String>();
@@ -364,7 +363,7 @@ public class GroupsManagementView extends VerticalLayout
 		else if (columnId.equals(FieldConstants.AVAILABLE_PACKS)) {
 			Group group = ((BeanItem<Group>) source.getItem(itemId)).getBean();
 			
-			Set<Pack> packs = permissionManager.getGroupPacks(group);
+			Set<Pack> packs = permissionService.getGroupPacks(group);
 			List<String> sortedPacks = new ArrayList<String>();
 			List<String> sortedPackDescs = new ArrayList<String>();
 			for (Pack pack : packs) {
@@ -410,7 +409,7 @@ public class GroupsManagementView extends VerticalLayout
         
 		for (Iterator<Group> iterator = groups.iterator(); iterator.hasNext(); ) {
 			Group group = iterator.next();
-			group = groupManager.merge(group);
+			group = groupService.merge(group);
 			Set<User> users = new HashSet<User>();
 			for (User user : group.getUsers()) {
 				users.add(user);
@@ -420,7 +419,7 @@ public class GroupsManagementView extends VerticalLayout
 				group.removeUser(user);
 			}*/
 			
-			groupManager.delete(group);
+			groupService.delete(group);
 			
 			for (User user : users) {
         		if (user != null) {

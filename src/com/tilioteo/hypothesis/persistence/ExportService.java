@@ -22,17 +22,17 @@ import com.tilioteo.hypothesis.entity.FieldConstants;
  *
  */
 @SuppressWarnings("serial")
-public class ExportManager implements Serializable {
+public class ExportService implements Serializable {
 
-	private static Logger log = Logger.getLogger(ExportManager.class);
+	private static Logger log = Logger.getLogger(ExportService.class);
 
 	private ExportEventDao exportEventDao;
 
-	public static ExportManager newInstance() {
-		return new ExportManager(new ExportEventDao());
+	public static ExportService newInstance() {
+		return new ExportService(new ExportEventDao());
 	}
 	
-	public ExportManager(ExportEventDao exportEventDao) {
+	public ExportService(ExportEventDao exportEventDao) {
 		this.exportEventDao = exportEventDao;
 	}
 	

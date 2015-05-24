@@ -18,10 +18,10 @@ import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartFeaturedTestEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartLegacyTestEvent;
-import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.PersistenceManager;
-import com.tilioteo.hypothesis.persistence.TokenManager;
-import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.persistence.PermissionService;
+import com.tilioteo.hypothesis.persistence.PersistenceService;
+import com.tilioteo.hypothesis.persistence.TokenService;
+import com.tilioteo.hypothesis.persistence.UserService;
 import com.tilioteo.hypothesis.servlet.ServletUtil;
 import com.tilioteo.hypothesis.ui.UI;
 import com.vaadin.server.VaadinService;
@@ -34,29 +34,29 @@ import com.vaadin.server.VaadinServletRequest;
 @SuppressWarnings("serial")
 public class PacksModel implements Serializable {
 	
-	private PermissionManager permissionManager;
-	private TokenManager tokenManager;
-	//private PersistenceManager persistenceManager;
-	private UserManager userManager;
+	private PermissionService permissionService;
+	private TokenService tokenService;
+	//private PersistenceService persistenceService;
+	private UserService userService;
 	
 	public PacksModel() {
 		
-		permissionManager = PermissionManager.newInstance();
-		tokenManager = TokenManager.newInstance();
-		//persistenceManager = PersistenceManager.newInstance();
-		userManager = UserManager.newInstance();
+		permissionService = PermissionService.newInstance();
+		tokenService = TokenService.newInstance();
+		//persistenceService = PersistenceService.newInstance();
+		userService = UserService.newInstance();
 	}
 
 	public List<Pack> getPublicPacks() {
-		return permissionManager.getPublishedPacks();
+		return permissionService.getPublishedPacks();
 	}
 	
 	public List<Pack> getUserPacks(User user) {
 		if (user != null) {
 			try {
-				user = userManager.merge(user);
-				//user = persistenceManager.merge(user);
-				Set<Pack> packs = permissionManager.findUserPacks(user, false);
+				user = userService.merge(user);
+				//user = persistenceService.merge(user);
+				Set<Pack> packs = permissionService.findUserPacks(user, false);
 				if (packs != null) {
 					LinkedList<Pack> list = new LinkedList<>();
 					for (Pack pack : packs) {
@@ -71,11 +71,11 @@ public class PacksModel implements Serializable {
 	}
 	
 	public List<Pack> getSimplePublicPacks() {
-		return permissionManager.getSimplePublishedPacks();
+		return permissionService.getSimplePublishedPacks();
 	}
 	
 	public List<Pack> getPackByHash(String hash) {
-		List<Pack> packs = permissionManager.findAllPacks();
+		List<Pack> packs = permissionService.findAllPacks();
 		
 		List<Pack> onlyPack = new ArrayList<Pack>();
 		
@@ -130,7 +130,7 @@ public class PacksModel implements Serializable {
 
 	private Token createToken(User user, Pack pack) {
 		
-		return tokenManager.createToken(user, pack, true);
+		return tokenService.createToken(user, pack, true);
 	}
 	
 	private String constructProcessJnlp(String token) {

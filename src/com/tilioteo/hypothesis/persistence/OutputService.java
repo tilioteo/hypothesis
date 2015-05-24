@@ -15,17 +15,17 @@ import com.tilioteo.hypothesis.entity.BranchOutput;
  * 
  */
 @SuppressWarnings("serial")
-public class OutputManager implements Serializable {
+public class OutputService implements Serializable {
 
-	private static Logger log = Logger.getLogger(OutputManager.class);
+	private static Logger log = Logger.getLogger(OutputService.class);
 
 	private BranchOutputDao branchOutputDao;
 
-	public static OutputManager newInstance() {
-		return new OutputManager(new BranchOutputDao());
+	public static OutputService newInstance() {
+		return new OutputService(new BranchOutputDao());
 	}
 	
-	public OutputManager(BranchOutputDao branchOutputDao) {
+	public OutputService(BranchOutputDao branchOutputDao) {
 		this.branchOutputDao = branchOutputDao;
 	}
 

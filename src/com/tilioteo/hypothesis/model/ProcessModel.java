@@ -10,7 +10,7 @@ import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.event.ErrorNotificationEvent;
 import com.tilioteo.hypothesis.event.ProcessEventBus;
-import com.tilioteo.hypothesis.persistence.TokenManager;
+import com.tilioteo.hypothesis.persistence.TokenService;
 
 /**
  * @author kamil
@@ -19,16 +19,16 @@ import com.tilioteo.hypothesis.persistence.TokenManager;
 @SuppressWarnings("serial")
 public class ProcessModel implements Serializable {
 	
-	private TokenManager tokenManager;
+	private TokenService tokenService;
 	private ProcessManager processManager;
 	
 	public ProcessModel() {
-		tokenManager = TokenManager.newInstance();
+		tokenService = TokenService.newInstance();
 		processManager = new ProcessManager();
 	}
 	
 	public void followToken(String tokenUid) {
-		Token token = tokenManager.findTokenByUid(tokenUid);
+		Token token = tokenService.findTokenByUid(tokenUid);
 		processManager.setAutoSlideShow(false);
 		processManager.processToken(token, false);
 	}

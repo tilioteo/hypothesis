@@ -34,12 +34,11 @@ import com.tilioteo.hypothesis.entity.Status;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
-import com.tilioteo.hypothesis.persistence.ExportManager;
-import com.tilioteo.hypothesis.persistence.PermissionManager;
-import com.tilioteo.hypothesis.persistence.PersistenceManager;
-import com.tilioteo.hypothesis.persistence.RoleManager;
-import com.tilioteo.hypothesis.persistence.TestManager;
-import com.tilioteo.hypothesis.persistence.UserManager;
+import com.tilioteo.hypothesis.persistence.ExportService;
+import com.tilioteo.hypothesis.persistence.PermissionService;
+import com.tilioteo.hypothesis.persistence.RoleService;
+import com.tilioteo.hypothesis.persistence.TestService;
+import com.tilioteo.hypothesis.persistence.UserService;
 import com.tilioteo.hypothesis.server.SessionUtils;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -78,25 +77,24 @@ public class ExportView extends VerticalLayout implements View {
 
 	private static Logger log = Logger.getLogger(ExportView.class);
 
-	PermissionManager permissionManager;
-	TestManager testManager;
-	PersistenceManager persistenceManager;
-	UserManager userManager;
+	private PermissionService permissionService;
+	private TestService testService;
+	private UserService userService;
 	
-	User loggedUser;
+	private User loggedUser;
 
-	List<String> sortedPacks = new ArrayList<String>();
-	HashMap<String, Pack> packMap = new HashMap<String, Pack>();
+	private List<String> sortedPacks = new ArrayList<String>();
+	private HashMap<String, Pack> packMap = new HashMap<String, Pack>();
 
-	VerticalLayout content;
-	VerticalLayout testSelection;
-	Button exportButton;
-	Button cancelExportButton;
-	ComboBox exportSelectionType;
-	ComboBox packsSelect;
-	PopupDateField dateFieldFrom;
-	PopupDateField dateFieldTo;
-	Table table;
+	private VerticalLayout content;
+	private VerticalLayout testSelection;
+	private Button exportButton;
+	private Button cancelExportButton;
+	private ComboBox exportSelectionType;
+	private ComboBox packsSelect;
+	private PopupDateField dateFieldFrom;
+	private PopupDateField dateFieldTo;
+	private Table table;
 	
 	boolean allTestsSelected = false;
 
@@ -105,11 +103,10 @@ public class ExportView extends VerticalLayout implements View {
 	private ProgressBar exportProgressBar = null;
 
 	public ExportView() {
-        permissionManager = PermissionManager.newInstance();
-        testManager = TestManager.newInstance();
-        persistenceManager = PersistenceManager.newInstance();
-        //exportManager = ExportManager.newInstance();
-        userManager = UserManager.newInstance();
+        permissionService = PermissionService.newInstance();
+        testService = TestService.newInstance();
+        //exportService = ExportService.newInstance();
+        userService = UserService.newInstance();
 
         loggedUser = SessionUtils.getAttribute(User.class);
         
@@ -237,9 +234,6 @@ public class ExportView extends VerticalLayout implements View {
 		});
 		exportButton.setEnabled(false);
 
-		/*Resource exportResource = getExportResource();
-		FileDownloader fileDownloader = new FileDownloader(exportResource);
-        fileDownloader.extend(exportButton);*/
 	}
 
 	private void startExport() {
@@ -256,7 +250,6 @@ public class ExportView extends VerticalLayout implements View {
 		currentExport.start();
 		
 		UI.getCurrent().setPollInterval(1000);
-		//getUI().access(currentExport);
 	}
 
 	private Component buildContent() {
@@ -356,7 +349,7 @@ public class ExportView extends VerticalLayout implements View {
 	}
 
 	private void initPacksSources() {
-		Set<Pack> packs = permissionManager.findUserPacks2(loggedUser, false);
+		Set<Pack> packs = permissionService.findUserPacks2(loggedUser, false);
 
 		sortedPacks.clear();
 		packMap.clear();
@@ -377,12 +370,12 @@ public class ExportView extends VerticalLayout implements View {
 
 		// MANAGER see only tests created by himself and his users
 		List<User> users = null;
-		if (!loggedUser.hasRole(RoleManager.ROLE_SUPERUSER)) {
-			users = userManager.findOwnerUsers(loggedUser);
+		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+			users = userService.findOwnerUsers(loggedUser);
 			users.add(loggedUser);
 		}
 
-		List<SimpleTest> tests = testManager.findTestsBy(
+		List<SimpleTest> tests = testService.findTestsBy(
 				pack, users, dateFrom, dateTo);
 		
 		if (tests.size() == 0) {
@@ -598,10 +591,10 @@ public class ExportView extends VerticalLayout implements View {
 		}
 
 		private InputStream getExportFile() {
-			ExportManager exportManager = ExportManager.newInstance();
+			ExportService exportService = ExportService.newInstance();
 			
 			try {
-				List<ExportEvent> events = exportManager.findExportEventsByTestId(testIds);
+				List<ExportEvent> events = exportService.findExportEventsByTestId(testIds);
 
 				try {
 					File tempFile = File.createTempFile("htsm", null);

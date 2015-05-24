@@ -21,19 +21,19 @@ import com.tilioteo.hypothesis.entity.User;
  * 
  */
 @SuppressWarnings("serial")
-public class TokenManager implements Serializable {
+public class TokenService implements Serializable {
 
-	private static Logger log = Logger.getLogger(TokenManager.class);
+	private static Logger log = Logger.getLogger(TokenService.class);
 
 	private static final int TOKEN_VALID_TIME = 120 * 1000; // 2 minutes
 
 	private TokenDao tokenDao;
 	
-	public static TokenManager newInstance() {
-		return new TokenManager(new TokenDao());
+	public static TokenService newInstance() {
+		return new TokenService(new TokenDao());
 	}
 
-	public TokenManager(TokenDao tokenDao) {
+	public TokenService(TokenDao tokenDao) {
 		this.tokenDao = tokenDao;
 	}
 

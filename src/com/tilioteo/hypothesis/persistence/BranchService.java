@@ -20,17 +20,17 @@ import com.tilioteo.hypothesis.entity.Pack;
  * 
  */
 @SuppressWarnings("serial")
-public class BranchManager implements Serializable {
+public class BranchService implements Serializable {
 
-	private static Logger log = Logger.getLogger(BranchManager.class);
+	private static Logger log = Logger.getLogger(BranchService.class);
 
 	private BranchTrekDao branchTrekDao;
 
-	public static BranchManager newInstance() {
-		return new BranchManager(new BranchTrekDao());
+	public static BranchService newInstance() {
+		return new BranchService(new BranchTrekDao());
 	}
 	
-	protected BranchManager(BranchTrekDao branchTrekDao) {
+	protected BranchService(BranchTrekDao branchTrekDao) {
 		this.branchTrekDao = branchTrekDao;
 	}
 
