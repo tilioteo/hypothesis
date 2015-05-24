@@ -53,16 +53,25 @@ public class TokenManager implements Serializable {
 	public Token findTokenByUid(String uid) {
 		log.debug("findTokenByUid");
 		try {
-			tokenDao.beginTransaction();
 			// first purge invalid tokens and then find token by uid
 			Date date = new Date();
 			date.setTime(date.getTime() - TOKEN_VALID_TIME);
+			
+			tokenDao.beginTransaction();
 			List<Token> tokens = tokenDao.findByCriteria(Restrictions.lt(
 					FieldConstants.DATETIME, date));
 			for (Token invalidToken : tokens) {
 				tokenDao.makeTransient(invalidToken);
 			}
-
+			tokenDao.commit();
+		} catch (Throwable e) {
+			log.error("purge of invalid tokens failed");
+			log.error(e.getMessage());
+			tokenDao.rollback();
+		}
+		
+		try {
+			tokenDao.beginTransaction();
 			Token token = tokenDao.findById(uid, true);
 
 			if (token != null) {
