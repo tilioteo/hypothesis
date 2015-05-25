@@ -525,6 +525,17 @@ public class ExportView extends VerticalLayout implements View {
 		Notification.show("Export failed", null, Type.WARNING_MESSAGE);
 	}
 
+	@Subscribe
+	public void changeUserPacks(final HypothesisEvent.UserPacksChangedEvent event) {
+		initPacksSources();
+		
+		packsSelect.removeAllItems();
+		testSelection.removeAllComponents();
+		for (String packTitle : sortedPacks) {
+			packsSelect.addItem(packTitle);
+		}		
+	}
+
 	private static class ExportThread extends Thread {
 		
 		private volatile int progress;
@@ -596,61 +607,61 @@ public class ExportView extends VerticalLayout implements View {
 			try {
 				List<ExportEvent> events = exportService.findExportEventsByTestId(testIds);
 
-				try {
-					File tempFile = File.createTempFile("htsm", null);
-
-					// maps hold informations for legend creation
-					HashMap<String, String> fieldCaptionMap = new HashMap<String, String>();
-					HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<String, HashMap<String,String>>();
-
-					SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
-					Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.TestSheetName"));
+				if (events != null) {
+					try {
+						File tempFile = File.createTempFile("htsm", null);
+	
+						// maps hold informations for legend creation
+						HashMap<String, String> fieldCaptionMap = new HashMap<String, String>();
+						HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<String, HashMap<String,String>>();
+	
+						SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
+						Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.TestSheetName"));
+						
+						// create cell style for date cell
+						CreationHelper createHelper = workbook.getCreationHelper();
+						CellStyle dateCellStyle = workbook.createCellStyle();
+						dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat(Messages.getString("Format.Export.DateTime")));
+	
+						// create header row and freeze it
+						Row header = sheet.createRow(0);
+						sheet.createFreezePane(0, 1);
+						
+						header.createCell(0).setCellValue("test_id");
+						header.createCell(1).setCellValue("date");
+						header.createCell(2).setCellValue("user_id");
+						header.createCell(3).setCellValue("event_id");
+						header.createCell(4).setCellValue("pack_id");
+						header.createCell(5).setCellValue("pack_name");
+						header.createCell(6).setCellValue("branch_id");
+						header.createCell(7).setCellValue("branch_name");
+						header.createCell(8).setCellValue("task_id");
+						header.createCell(9).setCellValue("task_iname");
+						header.createCell(10).setCellValue("slide_id");
+						header.createCell(11).setCellValue("slide_name");
+						header.createCell(12).setCellValue("branch_order_pack");
+						header.createCell(13).setCellValue("branch_order");
+						header.createCell(14).setCellValue("task_order_pack");
+						header.createCell(15).setCellValue("slide_order_task");
+						header.createCell(16).setCellValue("slide_order");
+						header.createCell(17).setCellValue("event_timestamp");
+						header.createCell(18).setCellValue("event_time_diff");
+						header.createCell(19).setCellValue("client_timestamp");
+						header.createCell(20).setCellValue("event_type");
+						header.createCell(21).setCellValue("event_name");
+						header.createCell(22).setCellValue("event_data");
+	
+						header.createCell(23).setCellValue("output_value1");
+						header.createCell(24).setCellValue("output_value2");
+						header.createCell(25).setCellValue("output_value3");
+						header.createCell(26).setCellValue("output_value4");
+						header.createCell(27).setCellValue("output_value5");
+						header.createCell(28).setCellValue("output_value6");
+						header.createCell(29).setCellValue("output_value7");
+						header.createCell(30).setCellValue("output_value8");
+						header.createCell(31).setCellValue("output_value9");
+						header.createCell(32).setCellValue("output_value10");
 					
-					// create cell style for date cell
-					CreationHelper createHelper = workbook.getCreationHelper();
-					CellStyle dateCellStyle = workbook.createCellStyle();
-					dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat(Messages.getString("Format.Export.DateTime")));
-
-					// create header row and freeze it
-					Row header = sheet.createRow(0);
-					sheet.createFreezePane(0, 1);
-					
-					header.createCell(0).setCellValue("test_id");
-					header.createCell(1).setCellValue("date");
-					header.createCell(2).setCellValue("user_id");
-					header.createCell(3).setCellValue("event_id");
-					header.createCell(4).setCellValue("pack_id");
-					header.createCell(5).setCellValue("pack_name");
-					header.createCell(6).setCellValue("branch_id");
-					header.createCell(7).setCellValue("branch_name");
-					header.createCell(8).setCellValue("task_id");
-					header.createCell(9).setCellValue("task_iname");
-					header.createCell(10).setCellValue("slide_id");
-					header.createCell(11).setCellValue("slide_name");
-					header.createCell(12).setCellValue("branch_order_pack");
-					header.createCell(13).setCellValue("branch_order");
-					header.createCell(14).setCellValue("task_order_pack");
-					header.createCell(15).setCellValue("slide_order_task");
-					header.createCell(16).setCellValue("slide_order");
-					header.createCell(17).setCellValue("event_timestamp");
-					header.createCell(18).setCellValue("event_time_diff");
-					header.createCell(19).setCellValue("client_timestamp");
-					header.createCell(20).setCellValue("event_type");
-					header.createCell(21).setCellValue("event_name");
-					header.createCell(22).setCellValue("event_data");
-
-					header.createCell(23).setCellValue("output_value1");
-					header.createCell(24).setCellValue("output_value2");
-					header.createCell(25).setCellValue("output_value3");
-					header.createCell(26).setCellValue("output_value4");
-					header.createCell(27).setCellValue("output_value5");
-					header.createCell(28).setCellValue("output_value6");
-					header.createCell(29).setCellValue("output_value7");
-					header.createCell(30).setCellValue("output_value8");
-					header.createCell(31).setCellValue("output_value9");
-					header.createCell(32).setCellValue("output_value10");
-				
-					if (events != null) {
 						int size = events.size();
 						float counter = 0f;
 						int lastProgress = 0;
@@ -664,21 +675,21 @@ public class ExportView extends VerticalLayout implements View {
 						long relativeTime = 0;
 						long lastEventTime = 0;
 						long diffTime = 0;
-
+	
 						HashMap<String, Integer> fieldColumnMap = new HashMap<String, Integer>();
 						HashMap<Long, Integer> branchCountMap = new HashMap<Long, Integer>();
 						HashMap<Long, Integer> slideCountMap = new HashMap<Long, Integer>();
 						
 						int outputValueCol = 23;
 						int fieldCol = outputValueCol + 10;
-
+	
 						int rowNr = 1;
 						int branchOrder = 0;
 						int taskOrder = 0;
 						int slideOrder = 0;
 						int branchCount = 0;
 						int slideCount = 0;
-
+	
 						for (ExportEvent event : events) {
 							if (cancelPending.get()) {
 								workbook.close();
@@ -703,7 +714,7 @@ public class ExportView extends VerticalLayout implements View {
 								startTestTime = eventTime;
 								lastEventTime = 0;
 							}
-
+	
 							if (!testId.equals(lastTestId)) {
 								if (lastTestId != null) {
 									++rowNr;
@@ -712,7 +723,7 @@ public class ExportView extends VerticalLayout implements View {
 								branchOrder = taskOrder = slideOrder = 0;
 								lastBranchId = lastTaskId = lastSlideId = null;
 							}
-
+	
 							if (branchId != null) {
 								if (!branchId.equals(lastBranchId)) {
 									++branchOrder;
@@ -759,13 +770,13 @@ public class ExportView extends VerticalLayout implements View {
 							} else {
 								lastSlideId = null;
 							}
-
+	
 							if ("FINISH_TEST".equalsIgnoreCase(eventName)) {
 								branchId = null;
 							}
 							
 							Row row = sheet.createRow(rowNr++);
-
+	
 							Cell cell = row.createCell(0);
 							cell.setCellValue(testId);
 							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
@@ -773,25 +784,25 @@ public class ExportView extends VerticalLayout implements View {
 							cell = row.createCell(1);
 							cell.setCellValue(eventDate);
 							cell.setCellStyle(dateCellStyle);
-
+	
 							if (userId != null) {
 								cell = row.createCell(2);
 								cell.setCellValue(userId);
 								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
-
+	
 							cell = row.createCell(3);
 							cell.setCellValue(event.getId());
 							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-
+	
 							cell = row.createCell(4);
 							cell.setCellValue(event.getPackId());
 							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-
+	
 							cell = row.createCell(5);
 							cell.setCellValue(event.getPackName());
 							cell.setCellType(Cell.CELL_TYPE_STRING);
-
+	
 							if (branchId != null) {
 								cell = row.createCell(6);
 								cell.setCellValue(branchId);
@@ -868,11 +879,11 @@ public class ExportView extends VerticalLayout implements View {
 								cell.setCellValue(clientDate.getTime());
 								cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 							}
-
+	
 							cell = row.createCell(20);
 							cell.setCellValue(event.getType());
 							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-
+	
 							cell = row.createCell(21);
 							cell.setCellValue(eventName);
 							cell.setCellType(Cell.CELL_TYPE_STRING);
@@ -881,10 +892,10 @@ public class ExportView extends VerticalLayout implements View {
 							cell = row.createCell(22);
 							cell.setCellValue(xmlData);
 							cell.setCellType(Cell.CELL_TYPE_STRING);
-
+	
 							if (slideId != null && xmlData != null) {
 								int colNr = outputValueCol;
-
+	
 								if ("FINISH_SLIDE".equalsIgnoreCase(eventName) ||
 										"ACTION".equalsIgnoreCase(eventName)) {
 									// write output properties
@@ -897,7 +908,7 @@ public class ExportView extends VerticalLayout implements View {
 										++colNr;
 									}
 								}
-
+	
 								if ("FINISH_SLIDE".equalsIgnoreCase(eventName)) {
 									SlideDataParser.FieldWrapper wrapper = SlideDataParser.parseFields(xmlData);
 									Map<String, String> fieldCaptions = wrapper.getFieldCaptionMap();
@@ -949,7 +960,7 @@ public class ExportView extends VerticalLayout implements View {
 							progress = (int) ((100.0f * counter) / size);
 							if (progress > lastProgress) {
 								lastProgress = progress;
-
+	
 								UI.getCurrent().access(new Runnable() {
 									@Override
 									public void run() {
@@ -958,84 +969,74 @@ public class ExportView extends VerticalLayout implements View {
 								});
 							}
 						}
-					}
-					
-					// create legend sheet only if there are some informations gathered
-					if (!fieldCaptionMap.isEmpty() || !fieldValueCaptionMap.isEmpty()) {
-						sheet = workbook.createSheet(Messages.getString("Caption.Export.LegendSheetName"));
-						int rowNr = 0;
-						Row row;
-						if (!fieldCaptionMap.isEmpty()) {
-							row = sheet.createRow(rowNr++);
-							row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumns"));
-							
-							row = sheet.createRow(rowNr++);
-							row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
-							row.createCell(1).setCellValue(Messages.getString("Caption.Export.ColumnDescription"));
-							
-							for (String fieldName : fieldCaptionMap.keySet()) {
-								row = sheet.createRow(rowNr++);
-								row.createCell(0).setCellValue(fieldName);
-								row.createCell(1).setCellValue(fieldCaptionMap.get(fieldName));
-							}
-							++rowNr;
-						}
 						
-						if (!fieldValueCaptionMap.isEmpty()) {
-							row = sheet.createRow(rowNr++);
-							row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumnValues"));
-							
-							for (String fieldName : fieldValueCaptionMap.keySet()) {
+						// create legend sheet only if there are some informations gathered
+						if (!fieldCaptionMap.isEmpty() || !fieldValueCaptionMap.isEmpty()) {
+							sheet = workbook.createSheet(Messages.getString("Caption.Export.LegendSheetName"));
+							rowNr = 0;
+							Row row;
+							if (!fieldCaptionMap.isEmpty()) {
+								row = sheet.createRow(rowNr++);
+								row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumns"));
+								
 								row = sheet.createRow(rowNr++);
 								row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
-								row.createCell(1).setCellValue(fieldName);
+								row.createCell(1).setCellValue(Messages.getString("Caption.Export.ColumnDescription"));
 								
-								row = sheet.createRow(rowNr++);
-								row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserValue"));
-								row.createCell(1).setCellValue(Messages.getString("Caption.Export.UserValueDescription"));
-								
-								HashMap<String, String> valueCaptions = fieldValueCaptionMap.get(fieldName);
-								for (String value : valueCaptions.keySet()) {
+								for (String fieldName : fieldCaptionMap.keySet()) {
 									row = sheet.createRow(rowNr++);
-									row.createCell(0).setCellValue(value);
-									row.createCell(1).setCellValue(valueCaptions.get(value));
+									row.createCell(0).setCellValue(fieldName);
+									row.createCell(1).setCellValue(fieldCaptionMap.get(fieldName));
 								}
 								++rowNr;
 							}
 							
+							if (!fieldValueCaptionMap.isEmpty()) {
+								row = sheet.createRow(rowNr++);
+								row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumnValues"));
+								
+								for (String fieldName : fieldValueCaptionMap.keySet()) {
+									row = sheet.createRow(rowNr++);
+									row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
+									row.createCell(1).setCellValue(fieldName);
+									
+									row = sheet.createRow(rowNr++);
+									row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserValue"));
+									row.createCell(1).setCellValue(Messages.getString("Caption.Export.UserValueDescription"));
+									
+									HashMap<String, String> valueCaptions = fieldValueCaptionMap.get(fieldName);
+									for (String value : valueCaptions.keySet()) {
+										row = sheet.createRow(rowNr++);
+										row.createCell(0).setCellValue(value);
+										row.createCell(1).setCellValue(valueCaptions.get(value));
+									}
+									++rowNr;
+								}
+								
+							}
+							sheet.autoSizeColumn(0);
+							sheet.autoSizeColumn(1);
 						}
-						sheet.autoSizeColumn(0);
-						sheet.autoSizeColumn(1);
+	
+						// finalize file creation
+						FileOutputStream output = new FileOutputStream(tempFile);
+			            workbook.write(output);
+			            workbook.close();
+			            output.close();
+	
+			            return new FileInputStream(tempFile);
+	
+					} catch (IOException e) {
+						log.error(e.getMessage());
 					}
-
-					// finalize file creation
-					FileOutputStream output = new FileOutputStream(tempFile);
-		            workbook.write(output);
-		            workbook.close();
-		            output.close();
-
-		            return new FileInputStream(tempFile);
-
-				} catch (IOException e) {
-					log.error(e.getMessage());
 				}
 
 			} catch (Throwable e) {
-				e.printStackTrace();
+				log.error(e.getMessage());
 			}
 
 			return null;
 		}
 	}
 	
-	@Subscribe
-	public void changeUserPacks(final HypothesisEvent.UserPacksChangedEvent event) {
-		initPacksSources();
-		
-		packsSelect.removeAllItems();
-		testSelection.removeAllComponents();
-		for (String packTitle : sortedPacks) {
-			packsSelect.addItem(packTitle);
-		}		
-	}
 }
