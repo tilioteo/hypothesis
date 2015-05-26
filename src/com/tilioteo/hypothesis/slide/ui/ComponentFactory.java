@@ -211,6 +211,7 @@ public class ComponentFactory {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	private static void setViewportInitHandler(final String actionId, final SlideFascia slideManager) {
 		slideManager.addViewportInitListener(new ViewportEventListener() {
 			@Override
@@ -225,6 +226,7 @@ public class ComponentFactory {
 		});
 	}
 
+	@SuppressWarnings("serial")
 	private static void setViewportShowHandler(final String actionId, final SlideFascia slideManager) {
 		slideManager.addViewportShowListener(new ViewportEventListener() {
 			@Override
