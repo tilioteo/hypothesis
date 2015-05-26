@@ -14,7 +14,6 @@ import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.server.SessionUtils;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
