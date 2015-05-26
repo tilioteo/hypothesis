@@ -16,9 +16,11 @@ import org.vaadin.special.shared.ui.timer.TimerState;
 import org.vaadin.special.shared.ui.timer.TimerState.Direction;
 
 import com.vaadin.event.EventRouter;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.shared.ui.ComponentStateUtil;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.util.ReflectTools;
 
@@ -263,10 +265,16 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 			running = false;
 			internalTimer.cancel();
 			
-			getUI().access/*Synchronously*/(new Runnable() {
+			final UI ui = getUI();
+			ui.access/*Synchronously*/(new Runnable() {
 				@Override
 				public void run() {
 					fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+					if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+						try {
+							ui.push();
+						} catch (Throwable e) {}
+					}
 				}
 			});
 
@@ -293,10 +301,16 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 			// if rest passes into first timer tick interval then fire update event
 			// for this time slice
 			if (rest >= 0 && rest < TimerState.TIMER_TICK) {
-				getUI().access/*Synchronously*/(new Runnable() {
+				final UI ui = getUI();
+				ui.access/*Synchronously*/(new Runnable() {
 					@Override
 					public void run() {
 						eventRouterMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, getState().direction, timeSlice));
+						if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+							try {
+								ui.push();
+							} catch (Throwable e) {}
+						}
 					}
 				});
 			}
@@ -332,10 +346,16 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 			}
 			
 			if (!silent) {
-				getUI().access/*Synchronously*/(new Runnable() {
+				final UI ui = getUI();
+				ui.access/*Synchronously*/(new Runnable() {
 					@Override
 					public void run() {
 						fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+						if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+							try {
+								ui.push();
+							} catch (Throwable e) {}
+						}
 					}
 				});
 			}
