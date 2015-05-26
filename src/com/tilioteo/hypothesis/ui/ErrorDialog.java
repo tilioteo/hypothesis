@@ -6,17 +6,18 @@ package com.tilioteo.hypothesis.ui;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import com.tilioteo.hypothesis.core.Messages;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.themes.Reindeer;
+import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * @author kamil
@@ -43,10 +44,9 @@ public class ErrorDialog extends Window {
 		VerticalLayout scrollContent = new VerticalLayout();
 		Panel panel = new Panel(scrollContent);
 		verticalLayout.addComponent(panel);
-		panel.setWidth("100%");
-		panel.setHeight("100%");
-		panel.setStyleName(Reindeer.PANEL_LIGHT);
-		verticalLayout.setExpandRatio(panel, 1f);
+		panel.setSizeFull();;
+		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
+		verticalLayout.setExpandRatio(panel, 1.0f);
 
 		Label text = new Label(message);
 		scrollContent.addComponent(text);
@@ -55,10 +55,10 @@ public class ErrorDialog extends Window {
 		verticalLayout.addComponent(buttons);
 		buttons.setSpacing(true);
 
-		buttons.setHeight("18px");
-		buttons.setWidth("100%");
+		buttons.setWidth(100.0f, Unit.PERCENTAGE);
 
-		final Button button = new Button("OK");
+		final Button button = new Button(Messages.getString("Caption.Button.OK"));
+		button.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		button.setData(false);
 		button.setClickShortcut(KeyCode.ENTER, null);
 		button.focus();
