@@ -10,6 +10,7 @@ import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.model.UrlConsumer;
 import com.tilioteo.hypothesis.ui.view.HypothesisViewType;
+import com.tilioteo.hypothesis.ui.view.ProcessView;
 
 /**
  * @author kamil
@@ -201,6 +202,18 @@ public abstract class HypothesisEvent implements Serializable {
 		
 		public float getProgress() {
 			return progress;
+		}
+	}
+	
+	public static final class ProcessViewEndEvent {
+		private final ProcessView view;
+		
+		public ProcessViewEndEvent(final ProcessView view) {
+			this.view = view;
+		}
+		
+		public ProcessView getView() {
+			return view;
 		}
 	}
 }

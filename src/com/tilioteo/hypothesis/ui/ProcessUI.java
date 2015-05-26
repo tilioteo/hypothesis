@@ -15,6 +15,7 @@ import org.vaadin.special.ui.ShortcutKey;
 
 import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.core.Messages;
+import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.event.AbstractNotificationEvent;
 import com.tilioteo.hypothesis.event.AfterFinishSlideEvent;
 import com.tilioteo.hypothesis.event.AfterPrepareTestEvent;
@@ -23,6 +24,7 @@ import com.tilioteo.hypothesis.event.CloseTestEvent;
 import com.tilioteo.hypothesis.event.ErrorNotificationEvent;
 import com.tilioteo.hypothesis.event.FinishSlideEvent.Direction;
 import com.tilioteo.hypothesis.event.FinishTestEvent;
+import com.tilioteo.hypothesis.event.HypothesisEvent.ProcessViewEndEvent;
 import com.tilioteo.hypothesis.event.NextSlideEvent;
 import com.tilioteo.hypothesis.event.PriorSlideEvent;
 import com.tilioteo.hypothesis.event.ProcessEventBus;
@@ -33,7 +35,10 @@ import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.servlet.ProcessServlet;
 import com.tilioteo.hypothesis.slide.ui.Timer;
 import com.tilioteo.hypothesis.slide.ui.Window;
+import com.tilioteo.hypothesis.ui.view.FinishTestView;
+import com.tilioteo.hypothesis.ui.view.StartTestView;
 import com.vaadin.annotations.PreserveOnRefresh;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
@@ -41,9 +46,9 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.CloseEvent;
 
 /**
@@ -53,7 +58,8 @@ import com.vaadin.ui.Window.CloseEvent;
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 @PreserveOnRefresh
-public class ProcessUI extends HUI /*implements CommandScheduler*/ {
+@Push
+public class ProcessUI extends HUI {
 
 	private static Logger log = Logger.getLogger(ProcessUI.class);
 
@@ -69,14 +75,14 @@ public class ProcessUI extends HUI /*implements CommandScheduler*/ {
 	}
 
 	private ProcessModel processModel;
-	private VerticalLayout clearLayout = new VerticalLayout();
+	private CssLayout clearLayout = new CssLayout();
 	private boolean requestFullscreen = false;
 	private boolean requestBack = false;
 	private boolean animate = true;
 	
 	private String lastToken = null;
 	
-	//private CommandQueue commandQueue = new CommandQueue();
+	private SimpleTest preparedTest = null;
 	
 	@Override
 	protected void init(VaadinRequest request) {
@@ -141,16 +147,6 @@ public class ProcessUI extends HUI /*implements CommandScheduler*/ {
 		return request.getParameter(TOKEN_PARAMETER);
 	}
 
-	/*public void scheduleCommand(Command command) {
-		if (command != null) {
-			try {
-				commandQueue.put(command);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}*/
-
 	@Subscribe
 	public void doAfterFinishSlide(final AfterFinishSlideEvent event) {
 		clearContent(animate, new Command() {
@@ -178,24 +174,31 @@ public class ProcessUI extends HUI /*implements CommandScheduler*/ {
 	@Subscribe
 	public void showPreparedContent(final AfterPrepareTestEvent afterPrepareTestEvent) {
 		log.debug(String.format("showPreparedContent: test id = %s", afterPrepareTestEvent.getTest() != null ? afterPrepareTestEvent.getTest().getId() : "NULL"));
-		setContent(new PreparedTestContent(this, new Command() {
-			@Override
-			public void execute() {
-				processModel.processTest(afterPrepareTestEvent.getTest());
-			}
-		}));
+		
+		this.preparedTest = afterPrepareTestEvent.getTest();
+		setContent(new StartTestView(requestFullscreen, 5));
+	}
+	
+	@Subscribe
+	public void processViewEnd(ProcessViewEndEvent event) {
+		Command command = null;
+		
+		if (event.getView() instanceof StartTestView) {
+			command = new Command() {
+				@Override
+				public void execute() {
+					processModel.processTest(preparedTest);
+				}
+			};
+		}
+		clearContent(animate, command);
 	}
 
 	@Subscribe
 	public void showFinishContent(FinishTestEvent event) {
 		clearContent(false, null);
 		
-		setContent(new FinishTestContent(new Command() {
-			@Override
-			public void execute() {
-				ProcessEventBus.get().post(new CloseTestEvent());
-			}
-		}));
+		setContent(new FinishTestView());
 	}
 
 	@Subscribe
@@ -210,7 +213,7 @@ public class ProcessUI extends HUI /*implements CommandScheduler*/ {
 	}
 
 	private void showErrorDialog(final ErrorNotificationEvent event) {
-		ErrorDialog errorDialog = new ErrorDialog("Error", event.getCaption());
+		ErrorDialog errorDialog = new ErrorDialog(Messages.getString("Caption.Error"), event.getCaption());
 		errorDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
@@ -226,27 +229,26 @@ public class ProcessUI extends HUI /*implements CommandScheduler*/ {
 	}
 
 	/**
-	 * sets empty vertical layout to remove old content
+	 * sets empty layout to remove old content
 	 */
 	public void clearContent(boolean animate, final Command nextCommand) {
 		log.debug("clearContent::");
+
 		removeAllTimers();
 		removeAllShortcutKeys();
 		
-		if (animate) {
-			Component content = getContent();
-			if (content instanceof ComponentContainer) {
-				AnimatorProxy animator = new AnimatorProxy();
-				animator.addListener(new AnimatorProxy.AnimationListener() {
-					@Override
-					public void onAnimation(AnimationEvent event) {
-						setContent(clearLayout);
-						Command.Executor.execute(nextCommand);
-					}
-				});
-				((ComponentContainer)content).addComponent(animator);
-				animator.animate(content, AnimType.FADE_OUT).setDuration(300).setDelay(0);
-			}
+		Component content = getContent();
+		if (animate && content instanceof ComponentContainer) {
+			AnimatorProxy animator = new AnimatorProxy();
+			animator.addListener(new AnimatorProxy.AnimationListener() {
+				@Override
+				public void onAnimation(AnimationEvent event) {
+					setContent(clearLayout);
+					Command.Executor.execute(nextCommand);
+				}
+			});
+			((ComponentContainer)content).addComponent(animator);
+			animator.animate(content, AnimType.FADE_OUT).setDuration(300).setDelay(0);
 		} else {
 			setContent(clearLayout);
 			Command.Executor.execute(nextCommand);
