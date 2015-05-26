@@ -1,8 +1,7 @@
-/* Import the reindeer theme.*/
 /* This only allows us to use the mixins defined in it and does not add any styles by itself. */
-//@import "../reindeer/reindeer.scss";
 @import "../valo/valo.scss";
 @import "login.scss";
+@import "timerlabel.scss";
 
 /* This contains all of your theme.*/
 /* If somebody wants to extend the theme she will include this mixin. */
@@ -10,9 +9,9 @@
 
 @mixin hypothesis {
   /* Include all the styles from the reindeer theme */
-//  @include reindeer;
   @include valo;
   @include hypothesis-login-view;
+  @include valo-timerlabel;
 
   /* Insert your theme rules here */
   

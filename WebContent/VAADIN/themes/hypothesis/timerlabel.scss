@@ -1,0 +1,7 @@
+@import "../valo/valo.scss";
+
+@mixin valo-timerlabel {
+
+  @include valo-label($primary-stylename: v-timerlabel, $include-additional-styles: contains($v-included-additional-styles, label));
+
+}

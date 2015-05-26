@@ -1503,6 +1503,720 @@ div.v-layout.v-horizontal.v-widget {
 	vertical-align: top;
 }
 
+/**
+ * Checks if a list contains a certain value.
+ * 
+ * @param {list} $list - the list to check
+ * @param {value} $var - the value to search for
+ * @param {bool} $recursive (false) - should any contained lists be checked for the value
+ * 
+ * @return {bool} true if the value is found from the list, false otherwise
+ * 
+ * @group lists
+ */
+
+/**
+ * Cross-browser opacity.
+ *
+ * @param {number} $value - opacity value from 0 to 1
+ * @param {bool} $important (false) - should the property value be declared with !important
+ *
+ * @group util
+ */
+
+/**
+ * Outputs cross-browser Valo-specific linear gradient background-image declarations.
+ * 
+ * @group style
+ * 
+ * @param {color} $color ($v-background-color) - The base color for the gradient color stops
+ * @param {list} $gradient ($v-gradient) - Valo-specific gradient value. See the documentation for $v-gradient.
+ * @param {color} $fallback (null) - A fallback color for browser which do not support linear gradients (IE8 and IE9 in particular). If null, the base $color is used instead.
+ * @param {string} $direction (to bottom) - the direction of the linear gradient. The color stops are by default so that a lighter shade is at the start and a darker shade is at the end.
+ */
+
+/**
+ * Computes a CSS border property value for the given base color.
+ *
+ * @group style
+ *
+ * @param {list} $border ($v-border) - CSS border value which can contain any of the color keywords
+ * @param {color} $color ($v-background-color) - the base color to which the color keywords are applied to
+ * @param {color} $context (null) - context/surrounding color where the border is expected to appear. The color of the final border is the darker of the two parameters passed to this function.
+ * @param {number} $strength (1) - adjustment for the border contrast
+ *
+ * @return {list} The input $border value with any color keyword replaced with the corresponding actual color
+ */
+
+/**
+ * Ouput selectors and properties to vertically center elements inside their parent.
+ * 
+ * @param {string} $to-align (()) - The selector to match the elements which you wish to align vertically. The targeted elements should be inline or inline-block elements.
+ * @param {string} $align (middle) - The vertical-align value, e.g. top, middle, bottom
+ * @param {string} $pseudo-element (after) - Which pseudo element to use for the vertical align guide
+ * 
+ * @group util
+ */
+
+@font-face {
+	font-family: FontAwesome;
+	font-weight: normal;
+	font-style: normal;
+	src: url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.eot);
+	src: url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.woff) format("woff"), url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.svg#FontAwesome) format("svg");
+}
+
+.FontAwesome {
+	font-family: FontAwesome;
+	font-style: normal;
+	font-weight: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	display: inline-block;
+	text-align: center;
+}
+
+@font-face {
+	font-family: "Open Sans";
+	src: url(../valo/fonts/open-sans/OpenSans-Light-webfont.eot);
+	src: url(../valo/fonts/open-sans/OpenSans-Light-webfont.eot?#iefix) format("embedded-opentype"), url(../valo/fonts/open-sans/OpenSans-Light-webfont.woff) format("woff"), url(../valo/fonts/open-sans/OpenSans-Light-webfont.ttf) format("truetype");
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Open Sans";
+	src: url(../valo/fonts/open-sans/OpenSans-Regular-webfont.eot);
+	src: url(../valo/fonts/open-sans/OpenSans-Regular-webfont.eot?#iefix) format("embedded-opentype"), url(../valo/fonts/open-sans/OpenSans-Regular-webfont.woff) format("woff"), url(../valo/fonts/open-sans/OpenSans-Regular-webfont.ttf) format("truetype");
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Open Sans";
+	src: url(../valo/fonts/open-sans/OpenSans-Semibold-webfont.eot);
+	src: url(../valo/fonts/open-sans/OpenSans-Semibold-webfont.eot?#iefix) format("embedded-opentype"), url(../valo/fonts/open-sans/OpenSans-Semibold-webfont.woff) format("woff"), url(../valo/fonts/open-sans/OpenSans-Semibold-webfont.ttf) format("truetype");
+	font-weight: 600;
+	font-style: normal;
+}
+
+@-webkit-keyframes v-rotate-360 {
+		to {
+		-webkit-transform: rotate(360deg);
+	}
+	}
+
+@-moz-keyframes v-rotate-360 {
+		to {
+		-moz-transform: rotate(360deg);
+	}
+	}
+
+@-o-keyframes v-rotate-360 {
+		to {
+		-o-transform: rotate(360deg);
+	}
+	}
+
+@keyframes v-rotate-360 {
+		to {
+		transform: rotate(360deg);
+	}
+	}
+
+@-webkit-keyframes v-progress-start {
+		0% {
+		width: 0%;
+	}
+		100% {
+		width: 50%;
+	}
+	}
+
+@-moz-keyframes v-progress-start {
+		0% {
+		width: 0%;
+	}
+		100% {
+		width: 50%;
+	}
+	}
+
+@keyframes v-progress-start {
+		0% {
+		width: 0%;
+	}
+		100% {
+		width: 50%;
+	}
+	}
+
+@-webkit-keyframes v-progress-delay {
+		0% {
+		width: 50%;
+	}
+		100% {
+		width: 90%;
+	}
+	}
+
+@-moz-keyframes v-progress-delay {
+		0% {
+		width: 50%;
+	}
+		100% {
+		width: 90%;
+	}
+	}
+
+@keyframes v-progress-delay {
+		0% {
+		width: 50%;
+	}
+		100% {
+		width: 90%;
+	}
+	}
+
+@-webkit-keyframes v-progress-wait {
+		0% {
+		width: 90%;
+		height: 4px;
+	}
+		3% {
+		width: 91%;
+		height: 7px;
+	}
+		100% {
+		width: 96%;
+		height: 7px;
+	}
+	}
+
+@-moz-keyframes v-progress-wait {
+		0% {
+		width: 90%;
+		height: 4px;
+	}
+		3% {
+		width: 91%;
+		height: 7px;
+	}
+		100% {
+		width: 96%;
+		height: 7px;
+	}
+	}
+
+@keyframes v-progress-wait {
+		0% {
+		width: 90%;
+		height: 4px;
+	}
+		3% {
+		width: 91%;
+		height: 7px;
+	}
+		100% {
+		width: 96%;
+		height: 7px;
+	}
+	}
+
+@-webkit-keyframes v-progress-wait-pulse {
+		0% {
+		opacity: 1;
+	}
+		50% {
+		opacity: 0.1;
+	}
+		100% {
+		opacity: 1;
+	}
+	}
+
+@-moz-keyframes v-progress-wait-pulse {
+		0% {
+		opacity: 1;
+	}
+		50% {
+		opacity: 0.1;
+	}
+		100% {
+		opacity: 1;
+	}
+	}
+
+@keyframes v-progress-wait-pulse {
+		0% {
+		opacity: 1;
+	}
+		50% {
+		opacity: 0.1;
+	}
+		100% {
+		opacity: 1;
+	}
+	}
+
+/**
+ * Outputs the context menu selectors and styles, which is used by Table and Tree for instance.
+ * 
+ * @requires {mixin} valo-selection-item-style
+ * @requires {mixin} valo-selection-item-selected-style
+ */
+
+/**
+ * The background color for overlay elements.
+ *
+ * @type color
+ * @group overlay
+ */
+
+.v-shadow, .v-shadow-window {
+	display: none;
+}
+
+.v-ie8 .v-shadow, .v-ie8 .v-shadow-window {
+	display: block;
+}
+
+.v-ie8 .v-shadow .top, .v-ie8 .v-shadow-window .top {
+	position: absolute;
+	top: -6px;
+	right: 10px;
+	bottom: 6px;
+	left: -10px;
+	background: black;
+	filter: alpha(opacity=5) progid:DXImageTransform.Microsoft.blur(pixelradius=10, makeShadow=false);
+}
+
+.v-ie8 .v-shadow .top-left, .v-ie8 .v-shadow-window .top-left {
+	position: absolute;
+	top: -1px;
+	right: -1px;
+	bottom: -1px;
+	left: -1px;
+	background: black;
+	filter: alpha(opacity=9) progid:DXImageTransform.Microsoft.blur(pixelradius=0, makeShadow=false);
+}
+
+/**
+ * The backgound color for tooltips.
+ *
+ * @type color
+ * @group tooltip
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-absolutelayout) - 
+ *
+ * @group absolutelayout
+ */
+
+/**
+ * Outputs the selectors and properties for the Accordion component.
+ *
+ * @param {string} $primary-stylename (v-accordion) - the primary style name for the selectors
+ * @param {bool} $include-additional-styles - should the mixin output all the different style variations of the component
+ * @group accordion
+ */
+
+/**
+ * Outputs the selectors and properties for the Button component.
+ *
+ * @param {string} $primary-stylename (v-button) - the primary style name for the selectors
+ * @param {bool} $include-additional-styles - should the mixin output all the different style variations of the component
+ *
+ * @group button
+ */
+
+/**
+ * A list of colors for custom event colors. Can be an empty list of you don't 
+ * need any custom event colors.
+ * 
+ * @example javascript
+ * // Java code
+ * // 'event' is an instance of EditableCalendarEvent
+ * event.setStyleName("color1"); // 1st color in the list
+ * event.setStyleName("color2"); // 2nd color in the list
+ * // etc.
+ * 
+ * @group calendar
+ */
+
+/**
+ * Outputs the selectors and properties for the CheckBox component.
+ *
+ * @param {string} $primary-stylename (v-checkbox) - the primary style name for the selectors
+ * @param {bool} $include-additional-styles - should the mixin output all the different style variations of the component
+ *
+ * @group checkbox
+ */
+
+/**
+ * Outputs the global selectors and properties for the ColorPicker component - styles which are 
+ * considered mandatory for the component to work properly.
+ *
+ * @param {string} $primary-stylename (v-colorpicker) - the primary style name for the selectors
+ *
+ * @group colorpicker
+ */
+
+/**
+ * Outputs the selectors and properties for the ComboBox component.
+ *
+ * @param {string} $primary-stylename (v-filterselect) - the primary style name for the selectors
+ * @param {bool} $include-additional-styles - should the mixin output all the different style variations of the component
+ *
+ * @group combobox
+ */
+
+/**
+ * The amount of spacing between different widgets in a component group.
+ * If null, a computed value is used ($v-border size * -1, or 1px if $v-border size is 0)
+ * 
+ * @group csslayout
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-customcomponent) - 
+ *
+ * @group customcomponent
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-customlayout) - 
+ *
+ * @group customlayout
+ */
+
+/**
+ * Outputs the selectors and properties for the DateField component.
+ *
+ * @param {string} $primary-stylename (v-datefield) - the primary style name for the selectors
+ * @param {bool} $include-additional-styles - should the mixin output all the different style variations of the component
+ *
+ * @group datefield
+ */
+
+/**
+ * Outputs the styles and selectors for the DragAndDropWrapper component.
+ * 
+ * @param {string} $primary-stylename (v-ddwrapper) - the primary style name for the selectors
+ * 
+ * @group drag-n-drop
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-form) - 
+ *
+ * @group form
+ */
+
+/**
+ * Outputs the selectors and properties for the FormLayout component.
+ *
+ * @param {string} $primary-stylename (v-formlayout) - the primary style name for the selectors
+ * @param {bool} $include-additional-styles - should the mixin output all the different style variations of the component
+ *
+ * @group formlayout
+ */
+
+/**
+ *
+ * @group table
+ */
+
+@-webkit-keyframes valo-grid-editor-footer-animate-in {
+		0% {
+		margin-top: -37px;
+	}
+	}
+
+@-moz-keyframes valo-grid-editor-footer-animate-in {
+		0% {
+		margin-top: -37px;
+	}
+	}
+
+@keyframes valo-grid-editor-footer-animate-in {
+		0% {
+		margin-top: -37px;
+	}
+	}
+
+@-webkit-keyframes valo-grid-editor-footer-animate-in-alt {
+		0% {
+		margin-bottom: -38px;
+	}
+		100% {
+		margin-bottom: -1px;
+	}
+	}
+
+@-moz-keyframes valo-grid-editor-footer-animate-in-alt {
+		0% {
+		margin-bottom: -38px;
+	}
+		100% {
+		margin-bottom: -1px;
+	}
+	}
+
+@keyframes valo-grid-editor-footer-animate-in-alt {
+		0% {
+		margin-bottom: -38px;
+	}
+		100% {
+		margin-bottom: -1px;
+	}
+	}
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-gridlayout) - 
+ *
+ * @group gridlayout
+ */
+
+/**
+ * The font weight for headers.
+ * 
+ * @group label
+ */
+
+/**
+ *
+ * @group link
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-loginform) - 
+ *
+ * @group loginform
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-menubar) - 
+ * @param {bool} $include-additional-styles - 
+ *
+ * @group menubar
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-nativebutton) - 
+ *
+ * @group nativebutton
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-select) - 
+ *
+ * @group nativeselect
+ */
+
+/**
+ *
+ * @group notification
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-select-optiongroup) - 
+ * @param {bool} $include-additional-styles - 
+ *
+ * @group optiongroup
+ */
+
+/**
+ *
+ *
+ *
+ * @group orderedlayout
+ */
+
+/**
+ *
+ * @group panel
+ */
+
+@-webkit-keyframes v-popupview-animate-in {
+		0% {
+		-webkit-transform: scale(0);
+	}
+	}
+
+@-moz-keyframes v-popupview-animate-in {
+		0% {
+		-moz-transform: scale(0);
+	}
+	}
+
+@keyframes v-popupview-animate-in {
+		0% {
+		-webkit-transform: scale(0);
+		transform: scale(0);
+	}
+	}
+
+/**
+ *
+ * @group progressbar
+ */
+
+/**
+ *
+ * @group richtextarea
+ */
+
+/**
+ *
+ * @group slider
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-splitpanel) - 
+ * @param {bool} $include-additional-styles - 
+ *
+ * @group splitpanel
+ */
+
+/**
+ *
+ * @group table
+ */
+
+/**
+ * Should the tabsheet content changes be animated.
+ * 
+ * @group tabsheet
+ */
+
+/**
+ * The background color for text fields.
+ * @group textfield
+ */
+
+/**
+ * Outputs the selectors and properties for the TextArea component.
+ *
+ * @param {string} $primary-stylename (v-textarea) - the primary style name for the selectors
+ * @param {bool} $include-additional-styles - should the mixin output all the different style variations of the component
+ *
+ * @group textarea
+ */
+
+/**
+ *
+ * @group tree
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-treetable) - 
+ *
+ * @group treetable
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-select-twincol) - 
+ *
+ * @group twin-column-select
+ */
+
+/**
+ *
+ *
+ * @param {string} $primary-stylename (v-upload) -
+ *
+ * @group upload
+ */
+
+/**
+ *
+ */
+
+/**
+ * @group window
+ */
+
+@-webkit-keyframes valo-modal-window-indication {
+		0% {
+		opacity: 0;
+	}
+		100% {
+		opacity: 1;
+	}
+	}
+
+@-moz-keyframes valo-modal-window-indication {
+		0% {
+		opacity: 0;
+	}
+		100% {
+		opacity: 1;
+	}
+	}
+
+@keyframes valo-modal-window-indication {
+		0% {
+		opacity: 0;
+	}
+		100% {
+		opacity: 1;
+	}
+	}
+
+@-webkit-keyframes valo-animate-out-scale-down-fade {
+		100% {
+		-webkit-transform: scale(0.8);
+		opacity: 0;
+	}
+	}
+
+@-moz-keyframes valo-animate-out-scale-down-fade {
+		100% {
+		-moz-transform: scale(0.8);
+		opacity: 0;
+	}
+	}
+
+@keyframes valo-animate-out-scale-down-fade {
+		100% {
+		-webkit-transform: scale(0.8);
+		transform: scale(0.8);
+		opacity: 0;
+	}
+	}
+
+/**
+ * @group valo-menu
+ */
+
 .hypothesis.v-app, .hypothesis.v-app-loading {
 	font: 300 16px/1.55 "Open Sans", sans-serif;
 	color: #464646;
@@ -12497,6 +13211,162 @@ div.v-layout.v-horizontal.v-widget {
 	color: #fff;
 	text-decoration: none;
 	border-bottom: 1px solid #888;
+}
+
+.hypothesis .v-timerlabel {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+.hypothesis .v-timerlabel-undef-w {
+	white-space: nowrap;
+}
+
+.hypothesis h1, .hypothesis .v-timerlabel-h1, .hypothesis h2, .hypothesis .v-timerlabel-h2, .hypothesis h3, .hypothesis .v-timerlabel-h3 {
+	line-height: 1.1;
+	font-weight: 200;
+	color: #141414;
+}
+
+.hypothesis h1, .hypothesis .v-timerlabel-h1 {
+	font-size: 2.4em;
+	margin-top: 1.4em;
+	margin-bottom: 1em;
+	
+	letter-spacing: -0.03em;
+}
+
+.hypothesis h2, .hypothesis .v-timerlabel-h2 {
+	font-size: 1.6em;
+	
+	margin-top: 1.6em;
+	margin-bottom: 0.77em;
+	letter-spacing: -0.02em;
+}
+
+.hypothesis h3, .hypothesis .v-timerlabel-h3 {
+	font-size: 1.2em;
+	
+	margin-top: 1.8em;
+	margin-bottom: 0.77em;
+	letter-spacing: 0;
+}
+
+.hypothesis h4, .hypothesis .v-timerlabel-h4 {
+	line-height: 1.1;
+	font-weight: 500;
+	font-size: 14px;
+	color: #414141;
+	text-transform: uppercase;
+	letter-spacing: 0;
+	margin-top: 2.4em;
+	margin-bottom: 0.8em;
+}
+
+.hypothesis .v-csslayout  > h1:first-child, .hypothesis .v-csslayout  > h2:first-child, .hypothesis .v-csslayout  > h3:first-child, .hypothesis .v-csslayout  > h4 > .v-timerlabel-h1:first-child, .hypothesis .v-csslayout  > .v-timerlabel-h2:first-child, .hypothesis .v-csslayout  > .v-timerlabel-h3:first-child, .hypothesis .v-csslayout  > .v-timerlabel-h4:first-child {
+	margin-top: 16px;
+}
+
+.hypothesis .v-verticallayout > .v-slot:first-child h1, .hypothesis .v-verticallayout > .v-slot:first-child .v-timerlabel-h1, .hypothesis .v-verticallayout > .v-slot:first-child h2, .hypothesis .v-verticallayout > .v-slot:first-child .v-timerlabel-h2, .hypothesis .v-verticallayout > .v-slot:first-child h3, .hypothesis .v-verticallayout > .v-slot:first-child .v-timerlabel-h3, .hypothesis .v-verticallayout > .v-slot:first-child h4, .hypothesis .v-verticallayout > .v-slot:first-child .v-timerlabel-h4, .hypothesis .v-verticallayout > div > .v-slot:first-child h1, .hypothesis .v-verticallayout > div > .v-slot:first-child .v-timerlabel-h1, .hypothesis .v-verticallayout > div > .v-slot:first-child h2, .hypothesis .v-verticallayout > div > .v-slot:first-child .v-timerlabel-h2, .hypothesis .v-verticallayout > div > .v-slot:first-child h3, .hypothesis .v-verticallayout > div > .v-slot:first-child .v-timerlabel-h3, .hypothesis .v-verticallayout > div > .v-slot:first-child h4, .hypothesis .v-verticallayout > div > .v-slot:first-child .v-timerlabel-h4 {
+	margin-top: 16px;
+}
+
+.hypothesis h1.no-margin, .hypothesis .v-timerlabel-h1.no-margin, .hypothesis h2.no-margin, .hypothesis .v-timerlabel-h2.no-margin, .hypothesis h3.no-margin, .hypothesis .v-timerlabel-h3.no-margin, .hypothesis h4.no-margin, .hypothesis .v-timerlabel-h4.no-margin {
+	margin: 0 !important;
+}
+
+.hypothesis .v-timerlabel-colored {
+	color: #197de1;
+}
+
+.hypothesis .v-timerlabel-large {
+	font-size: 20px;
+}
+
+.hypothesis .v-timerlabel-small {
+	font-size: 14px;
+}
+
+.hypothesis .v-timerlabel-tiny {
+	font-size: 12px;
+}
+
+.hypothesis .v-timerlabel-huge {
+	font-size: 26px;
+}
+
+.hypothesis .v-timerlabel-bold {
+	font-weight: 500;
+}
+
+.hypothesis .v-timerlabel-light {
+	font-weight: 200;
+	color: #7d7d7d;
+}
+
+.hypothesis .v-timerlabel-align-right {
+	text-align: right;
+}
+
+.hypothesis .v-timerlabel-align-center {
+	text-align: center;
+}
+
+.hypothesis .v-timerlabel-spinner {
+	height: 24px !important;
+	width: 24px !important;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	border: 2px solid rgba(25, 125, 225, 0.2);
+	border-top-color: #197de1;
+	border-right-color: #197de1;
+	border-radius: 100%;
+	-webkit-animation: v-rotate-360 500ms infinite linear;
+	-moz-animation: v-rotate-360 500ms infinite linear;
+	animation: v-rotate-360 500ms infinite linear;
+	pointer-events: none;
+}
+
+.v-ie8 .hypothesis .v-timerlabel-spinner, .v-ie9 .hypothesis .v-timerlabel-spinner {
+	border: none;
+	border-radius: 4px;
+	background: #fff url(../valo/shared/img/spinner.gif) no-repeat 50% 50%;
+	background-size: 80%;
+}
+
+.v-ie8 .hypothesis .v-timerlabel-spinner {
+	min-width: 30px;
+	min-height: 30px;
+}
+
+.hypothesis .v-timerlabel-success, .hypothesis .v-timerlabel-failure {
+	background: white;
+	color: #474747;
+	border: 2px solid #2c9720;
+	border-radius: 4px;
+	padding: 7px 19px 7px 37px;
+	font-weight: 400;
+	font-size: 15px;
+}
+
+.hypothesis .v-timerlabel-success:before, .hypothesis .v-timerlabel-failure:before {
+	font-family: FontAwesome;
+	content: "\f00c";
+	margin-right: 0.5em;
+	margin-left: -19px;
+	color: #2c9720;
+}
+
+.hypothesis .v-timerlabel-failure {
+	border-color: #ed473b;
+}
+
+.hypothesis .v-timerlabel-failure:before {
+	content: "\f05e";
+	color: #ed473b;
 }
 
 .hypothesis .v-panel-caption-color1 {
