@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 
 import com.google.common.eventbus.Subscribe;
+import com.tilioteo.hypothesis.broadcast.Broadcaster;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Branch;
@@ -105,6 +106,8 @@ public class ProcessManager implements Serializable {
 		branchService = BranchService.newInstance();
 
 		outputService = OutputService.newInstance();
+		
+		Broadcaster.register(slideManager);
 	}
 
 	private Event createEvent(ProcessEvent event) {
@@ -464,7 +467,7 @@ public class ProcessManager implements Serializable {
 
 	public void processToken(Token token, boolean startAllowed) {
 		if (token != null) {
-
+			setCurrentUser(token.getUser());
 			if (checkUserPack(token.getUser(), token.getPack())) {
 				ProcessEventBus.get().post(new PrepareTestEvent(token, startAllowed));
 			} else {
@@ -472,6 +475,7 @@ public class ProcessManager implements Serializable {
 			}
 		} else {
 			log.debug("Invalid token.");
+			setCurrentUser(null);
 			ProcessEventBus.get().post(new ErrorNotificationEvent(Messages.getString("Message.Error.Token")));
 		}
 	}
@@ -628,6 +632,10 @@ public class ProcessManager implements Serializable {
 		}
 	}
 	
+	public void setCurrentUser(User user) {
+		slideManager.setUser(user);
+	}
+	
 	public void purgeFactories() {
 		SlideFactory.remove(slideManager);
 		BranchFactory.remove(branchManager);
@@ -635,5 +643,6 @@ public class ProcessManager implements Serializable {
 	
 	public void clean() {
 		ProcessEventBus.get().unregister(this);
+		Broadcaster.unregister(slideManager);
 	}
 }

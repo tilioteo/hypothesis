@@ -32,5 +32,13 @@ public class SlideNavigator implements Serializable {
 	public void prior() {
 		ProcessEventBus.get().post(new FinishSlideEvent(Direction.PRIOR));
 	}
+	
+	public void postMessage(Object object) {
+		if (object != null && object instanceof Message) {
+			Message message = (Message) object;
+			message.updateTimestamp();
+			slideFascia.postMessage(message.toString());
+		}
+	}
 
 }

@@ -62,6 +62,7 @@ public class ProcessEventTypes {
 	public static final String SlideInit = "SLIDE_INIT";
 	public static final String SlideShow = "SLIDE_SHOW";
 	public static final String ShortcutKey = "SHORTCUT_KEY";
+	public static final String Message = "MESSAGE";
 
 	static {
 		registerEvent(StartTest); // 1
@@ -85,6 +86,7 @@ public class ProcessEventTypes {
 		registerEvent(SlideInit); // 32
 		registerEvent(SlideShow); // 33
 		registerEvent(ShortcutKey); // 34
+		registerEvent(Message); // 35
 		nextId += 15;
 		registerEvent(Action); // 50
 		nextId += 49;

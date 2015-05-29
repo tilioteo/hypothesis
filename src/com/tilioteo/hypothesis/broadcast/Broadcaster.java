@@ -17,7 +17,7 @@ public class Broadcaster implements Serializable {
 	static ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	public interface BroadcastListener {
-		void receiveBroadcast(String message);
+		void receiveBroadcast(final String message);
 	}
 
 	private static LinkedList<BroadcastListener> listeners = new LinkedList<BroadcastListener>();

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.dom4j.Document;
 
+import com.tilioteo.hypothesis.event.MessageEventListener;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
 import com.vaadin.ui.Component;
 
@@ -41,7 +42,13 @@ public interface SlideFascia extends HasVariables, HasActions, Serializable {
 
 	public void addViewportShowListener(ViewportEventListener listener);
 	
+	public void addMessageListener(String uid, MessageEventListener listener);
+	
 	public Map<Integer, ExchangeVariable> getInputs();
 
 	public Map<Integer, ExchangeVariable> getOutputs();
+
+	public Object createMessage(String uid);
+	
+	public void postMessage(String message);
 }

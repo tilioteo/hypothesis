@@ -62,6 +62,22 @@ public abstract class SlideEvent extends AbstractUserEvent {
 		}
 	}
 
+	public static class Message extends SlideEvent {
+
+		public Message(SlideData data) {
+			this(data, null);
+		}
+
+		public Message(SlideData data, ErrorHandler errorHandler) {
+			super(data, errorHandler);
+		}
+
+		@Override
+		public String getName() {
+			return ProcessEventTypes.Message;
+		}
+	}
+	
 	protected SlideEvent(SlideData data, ErrorHandler errorHandler) {
 		super(errorHandler);
 		this.slideData = data;

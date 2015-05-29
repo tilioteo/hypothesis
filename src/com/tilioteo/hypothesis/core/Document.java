@@ -32,4 +32,8 @@ public class Document implements Serializable {
 	public SlideComponent getWindowById(String id) {
 		return slideFascia.getWindow(id);
 	}
+	
+	public Message createMessage(String uid) {
+		return (Message)slideFascia.createMessage(uid);
+	}
 }

@@ -25,6 +25,8 @@ import com.tilioteo.hypothesis.core.ShortcutUtility.ShortcutKeys;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
+import com.tilioteo.hypothesis.event.MessageEvent;
+import com.tilioteo.hypothesis.event.MessageEventListener;
 import com.tilioteo.hypothesis.event.SlideData;
 import com.tilioteo.hypothesis.event.ViewportEvent;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
@@ -205,6 +207,9 @@ public class ComponentFactory {
 			} else if (name.equals(SlideXmlConstants.SHORTCUT)) {
 				String key = SlideXmlUtility.getKey(element);
 				setViewportShortcutHandler(action, key, slideManager);
+			} else if (name.equals(SlideXmlConstants.MESSAGE)) {
+				String uid = SlideXmlUtility.getUid(element);
+				setViewportMessageHandler(action, uid, slideManager);
 			}
 
 			// TODO add other event handlers
@@ -261,6 +266,23 @@ public class ComponentFactory {
 			});
 			
 			slideManager.registerComponent(null, shortcutKey);
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private static void setViewportMessageHandler(final String actionId, String uid, final SlideFascia slideManager) {
+		if (!Strings.isNullOrEmpty(uid)) {
+			slideManager.addMessageListener(uid, new MessageEventListener() {
+				@Override
+				public void handleEvent(MessageEvent event) {
+					SlideData data = new SlideData(slideManager.getSlide(), slideManager);
+					Command componentEvent = CommandFactory.createMessageEventCommand(data, event.getTimestamp());
+					Command action = CommandFactory.createSlideActionCommand(slideManager, actionId, data);
+	
+					Command.Executor.execute(componentEvent);
+					Command.Executor.execute(action);
+				}
+			});
 		}
 	}
 

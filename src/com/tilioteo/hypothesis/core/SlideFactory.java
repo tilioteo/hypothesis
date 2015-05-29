@@ -219,6 +219,12 @@ public class SlideFactory implements Serializable {
 			Element subElement = sourceElement.addElement(SlideXmlConstants.SHORTCUT);
 			subElement.addAttribute(SlideXmlConstants.KEY, shortcutKey);
 		}
+		Message message = slideData.getMessage();
+		if (message != null) {
+			Element messageElement = sourceElement.addElement(SlideXmlConstants.MESSAGE);
+			messageElement.addAttribute(SlideXmlConstants.UID, message.getUid());
+			
+		}
 	}
 
 	private static void writeSourceData(Element sourceElement, ActionEvent actionEvent) {

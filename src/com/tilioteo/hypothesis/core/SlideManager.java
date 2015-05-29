@@ -12,11 +12,17 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.vaadin.special.ui.ShortcutKey;
 
+import com.tilioteo.hypothesis.broadcast.Broadcaster;
+import com.tilioteo.hypothesis.broadcast.Broadcaster.BroadcastListener;
 import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Slide;
 import com.tilioteo.hypothesis.entity.Task;
+import com.tilioteo.hypothesis.entity.User;
+import com.tilioteo.hypothesis.event.MessageEvent;
+import com.tilioteo.hypothesis.event.MessageEventListener;
+import com.tilioteo.hypothesis.event.MessageEventManager;
 import com.tilioteo.hypothesis.event.ViewportEvent;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
 import com.tilioteo.hypothesis.event.ViewportEventManager;
@@ -36,17 +42,19 @@ import com.tilioteo.hypothesis.processing.WindowMap;
 import com.tilioteo.hypothesis.slide.ui.Timer;
 import com.tilioteo.hypothesis.slide.ui.Window;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
  */
 @SuppressWarnings("serial")
-public class SlideManager extends ListManager<Task, Slide> implements SlideFascia {
+public class SlideManager extends ListManager<Task, Slide> implements SlideFascia, BroadcastListener {
 	
 	private static Logger log = Logger.getLogger(SlideFascia.class);
 
 	private ViewportEventManager viewportEventManager = new ViewportEventManager();
+	private MessageEventManager messageEventManager = new MessageEventManager();
 
 	private SlideFactory slideFactory;
 
@@ -64,10 +72,14 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 	private Document slideXml = null;
 	private Slide current = null;
 	private Component viewportComponent = null;
+	
+	private MessageManager messageManager = null;
+	private User user = null;
 
 
 	public SlideManager() {
 		slideFactory = SlideFactory.getInstance(this);
+		messageManager = new MessageManager();
 	}
 
 	@Override
@@ -78,6 +90,11 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 	@Override
 	public void addViewportShowListener(ViewportEventListener listener) {
 		viewportEventManager.addListener(ViewportEvent.Show.class, listener);
+	}
+	
+	@Override
+	public void addMessageListener(String uid, MessageEventListener listener) {
+		messageEventManager.addListener(uid, listener);
 	}
 	
 	private void buildSlide() {
@@ -93,6 +110,7 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 
 	private void clearListeners() {
 		viewportEventManager.removeAllListeners();
+		messageEventManager.removeAllListeners();
 	}
 	
 	private void clearSlideRelatives() {
@@ -128,6 +146,10 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 
 	public void fireEvent(ViewportEvent event) {
 		viewportEventManager.fireEvent(event);
+	}
+
+	public void fireEvent(MessageEvent event) {
+		messageEventManager.fireEvent(event);
 	}
 
 	@Override
@@ -311,6 +333,42 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 	@Override
 	public Slide getSlide() {
 		return current;
+	}
+
+	@Override
+	public void receiveBroadcast(final String event) {
+		final Message message = Message.fromJson(event);
+		if (message != null) {
+			Long receiverId = message.getReceiverId();
+			if (null == user || null == receiverId || receiverId.equals(user.getId())) {
+				// ok - receive this message
+				UI ui = UI.getCurrent();
+				ui.access(new Runnable() {
+					@Override
+					public void run() {
+						fireEvent(new MessageEvent(message));
+					}
+				});
+			}
+		}
+	}
+	
+	@Override
+	public Message createMessage(String uid) {
+		return messageManager.createMessage(uid, user != null ? user.getId() : null);
+	}
+
+	@Override
+	public void postMessage(String message) {
+		Broadcaster.broadcastExcept(this, message);
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 }

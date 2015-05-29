@@ -267,6 +267,10 @@ public class SlideXmlUtility implements Serializable {
 		return element.attributeValue(SlideXmlConstants.KEY);
 	}
 
+	public static String getUid(Element element) {
+		return element.attributeValue(SlideXmlConstants.UID);
+	}
+
 	public static String getValidatorMessage(Element element, String defaultMessage) {
 		Element messageElement = getMessageElement(element);
 		if (messageElement != null) {

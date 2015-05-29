@@ -278,4 +278,11 @@ public class CommandFactory implements Serializable {
 		return createSlideEventCommand(event);
 	}
 
+	public static Command createMessageEventCommand(SlideData data, Date timestamp) {
+		SlideEvent event = new SlideEvent.Message(data);
+		event.setTimestamp(timestamp);
+
+		return createSlideEventCommand(event);
+	}
+
 }

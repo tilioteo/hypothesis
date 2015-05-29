@@ -34,6 +34,7 @@ public class TableConstants {
 	public static final String USER_TABLE = "tbl_user";
 	public static final String USER_ROLE_TABLE = "tbl_user_role";
 	public static final String USER_PERMISSION_TABLE = "tbl_user_permission";
+	public static final String MESSAGE_TABLE = "tbl_message";
 	
 	public static final String BRANCH_GENERATOR = "branchGenerator";
 	public static final String BRANCH_SEQUENCE = "hbn_branch_seq";
