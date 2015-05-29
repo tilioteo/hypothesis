@@ -8,10 +8,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import net.engio.mbassy.listener.Handler;
+
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 
-import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.broadcast.Broadcaster;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.XmlUtility;
@@ -139,19 +140,19 @@ public class ProcessManager implements Serializable {
 		return false;
 	}
 
-	@Subscribe
+	@Handler
 	public void processActionEvent(ActionEvent event) {
 		saveUserProcessEvent(event);
 	}
 
-	@Subscribe
+	@Handler
 	public void processAfterRender(AfterRenderContentEvent event) {
 		slideManager.fireEvent(new ViewportEvent.Show(slideManager.getSlide()));
 
 		saveRunningEvent(event);
 	}
 
-	@Subscribe
+	@Handler
 	public void processBreakTest(BreakTestEvent event) {
 		saveRunningEvent(event);
 
@@ -164,17 +165,17 @@ public class ProcessManager implements Serializable {
 		currentSlide = null;
 	}
 
-	@Subscribe
+	@Handler
 	public void processComponentEvent(AbstractComponentEvent<?> event) {
 		saveUserProcessEvent(event);
 	}
 
-	@Subscribe
+	@Handler
 	public void processSlideEvent(SlideEvent event) {
 		saveUserProcessEvent(event);
 	}
 
-	@Subscribe
+	@Handler
 	public void processContinueTest(ContinueTestEvent event) {
 		currentTest = event.getTest();
 		saveRunningEvent(event);
@@ -198,7 +199,7 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	@Subscribe
+	@Handler
 	public void processError(ErrorTestEvent event) {
 		saveRunningEvent(event);
 
@@ -206,7 +207,7 @@ public class ProcessManager implements Serializable {
 		ProcessEventBus.get().post(new ErrorNotificationEvent(Messages.getString("Message.Error.Unspecified")));
 	}
 
-	@Subscribe
+	@Handler
 	public void processFinishBranch(FinishBranchEvent event) {
 		saveRunningEvent(event);
 
@@ -217,7 +218,7 @@ public class ProcessManager implements Serializable {
 		ProcessEventBus.get().post(new NextBranchEvent());
 	}
 
-	@Subscribe
+	@Handler
 	public void processFinishSlide(FinishSlideEvent event) {
 		slideManager.finishSlide();
 		saveRunningEvent(event);
@@ -235,7 +236,7 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	@Subscribe
+	@Handler
 	public void processFinishTask(FinishTaskEvent event) {
 		saveRunningEvent(event);
 
@@ -248,7 +249,7 @@ public class ProcessManager implements Serializable {
 		ProcessEventBus.get().post(new NextTaskEvent());
 	}
 
-	@Subscribe
+	@Handler
 	public void processFinishTest(FinishTestEvent event) {
 		saveRunningEvent(event);
 		
@@ -256,7 +257,7 @@ public class ProcessManager implements Serializable {
 		testProcessing = false;
 	}
 
-	@Subscribe
+	@Handler
 	public void processNextBranch(NextBranchEvent event) {
 		saveRunningEvent(event);
 
@@ -298,7 +299,7 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	@Subscribe
+	@Handler
 	public void processNextSlide(NextSlideEvent event) {
 		saveRunningEvent(event);
 
@@ -320,7 +321,7 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	@Subscribe
+	@Handler
 	public void processPriorSlide(PriorSlideEvent event) {
 		saveRunningEvent(event);
 
@@ -338,7 +339,7 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	@Subscribe
+	@Handler
 	public void processNextTask(NextTaskEvent event) {
 		saveRunningEvent(event);
 
@@ -381,7 +382,7 @@ public class ProcessManager implements Serializable {
 		slideManager.setOrder(order);
 	}
 
-	@Subscribe
+	@Handler
 	public void processPrepareTest(PrepareTestEvent event) {
 		log.debug(String.format("processPrepareTest: token uid = %s", event.getToken() != null ? event.getToken().getUid() : "NULL"));
 		Token token = event.getToken();
@@ -401,7 +402,7 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	@Subscribe
+	@Handler
 	public void processStartTest(StartTestEvent event) {
 		saveRunningEvent(event);
 

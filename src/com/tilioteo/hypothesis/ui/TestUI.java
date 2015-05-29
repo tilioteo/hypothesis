@@ -3,16 +3,11 @@
  */
 package com.tilioteo.hypothesis.ui;
 
-import java.util.Collection;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.google.common.eventbus.SubscriberExceptionContext;
-import com.google.common.eventbus.SubscriberExceptionHandler;
+import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.listener.Handler;
+
 import com.tilioteo.hypothesis.broadcast.Broadcaster;
 import com.tilioteo.hypothesis.broadcast.Broadcaster.BroadcastListener;
 import com.tilioteo.hypothesis.slide.ui.VerticalLayout;
@@ -28,7 +23,7 @@ import com.vaadin.ui.Notification;
  * @author kamil
  *
  */
-@SuppressWarnings({ "serial", "unused" })
+@SuppressWarnings({ "serial" })
 @Theme("hypothesis")
 @Push
 public class TestUI extends HUI implements BroadcastListener /*HasEventBus*/ {
@@ -38,13 +33,7 @@ public class TestUI extends HUI implements BroadcastListener /*HasEventBus*/ {
 	public static class Servlet extends VaadinServlet {
 	}
 	
-	EventBus eventBus = new EventBus(new SubscriberExceptionHandler() {
-		@Override
-		public void handleException(Throwable e, SubscriberExceptionContext s) {
-			// TODO Auto-generated method stub
-			
-		}
-	});
+	MBassador<TestEvent> eventBus = new MBassador<TestEvent>();
 	
 	@Override
 	protected void init(VaadinRequest request) {
@@ -77,7 +66,7 @@ public class TestUI extends HUI implements BroadcastListener /*HasEventBus*/ {
 		
 	}
 
-	@Subscribe
+	@Handler
 	public void onTestEvent(TestEvent event) {
 		getUI().access(new Runnable() {
 			@Override

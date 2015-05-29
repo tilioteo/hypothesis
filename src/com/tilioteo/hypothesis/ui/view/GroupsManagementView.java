@@ -13,13 +13,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.engio.mbassy.listener.Handler;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.core.CaseInsensitiveItemSorter;
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.FieldConstants;
@@ -449,7 +450,7 @@ public class GroupsManagementView extends VerticalLayout
 		return groups;
 	}
 	
-	@Subscribe
+	@Handler
 	public void addGroupIntoTable(final HypothesisEvent.GroupAddedEvent event) {
 		Group group = event.getGroup();
 		if (group != null) {
@@ -463,7 +464,7 @@ public class GroupsManagementView extends VerticalLayout
 		}
 	}
 	
-	@Subscribe
+	@Handler
 	public void changeGroupUsers(final HypothesisEvent.GroupUsersChangedEvent event) {
 		Group group = event.getGroup();
 		BeanContainer<Long, Group> container =
@@ -473,7 +474,7 @@ public class GroupsManagementView extends VerticalLayout
 		container.addItem(group.getId(), group);
 	}
 	
-	@Subscribe
+	@Handler
 	public void setToolsEnabled(final HypothesisEvent.GroupSelectionChangedEvent event) {
     	boolean itemsSelected = ((Set<Object>) table.getValue()).size() > 0;
     	boolean toolsEnabled = allGroupsSelected || itemsSelected; 

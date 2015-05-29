@@ -7,7 +7,8 @@ import java.util.Date;
 
 import javax.servlet.annotation.WebServlet;
 
-import com.google.common.eventbus.Subscribe;
+import net.engio.mbassy.listener.Handler;
+
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent.GuestAccessRequestedEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidLoginEvent;
@@ -108,7 +109,7 @@ public class MainUI extends UI {
     	return false;
     }
 
-    @Subscribe
+    @Handler
     public void userLoginRequested(final UserLoginRequestedEvent event) {
         User user = userService.findByUsernamePassword(event.getUserName(), event.getPassword());
         
@@ -125,14 +126,14 @@ public class MainUI extends UI {
         }
     }
 
-    @Subscribe
+    @Handler
     public void guestAccessRequested(final GuestAccessRequestedEvent event) {
         setUser(User.GUEST);
         
         updateContent();
     }
 
-    @Subscribe
+    @Handler
     public void userLoggedOut(final UserLoggedOutEvent event) {
         // When the user logs out, current VaadinSession gets closed and the
         // page gets reloaded on the login screen. Do notice the this doesn't

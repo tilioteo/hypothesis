@@ -7,13 +7,14 @@ import java.util.Collection;
 
 import javax.servlet.annotation.WebServlet;
 
+import net.engio.mbassy.listener.Handler;
+
 import org.apache.log4j.Logger;
 import org.vaadin.jouni.animator.AnimatorProxy;
 import org.vaadin.jouni.animator.AnimatorProxy.AnimationEvent;
 import org.vaadin.jouni.animator.shared.AnimType;
 import org.vaadin.special.ui.ShortcutKey;
 
-import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.SimpleTest;
 import com.tilioteo.hypothesis.event.AbstractNotificationEvent;
@@ -147,7 +148,7 @@ public class ProcessUI extends HUI {
 		return request.getParameter(TOKEN_PARAMETER);
 	}
 
-	@Subscribe
+	@Handler
 	public void doAfterFinishSlide(final AfterFinishSlideEvent event) {
 		clearContent(animate, new Command() {
 			@Override
@@ -157,7 +158,7 @@ public class ProcessUI extends HUI {
 		});
 	}
 
-	@Subscribe
+	@Handler
 	public void renderContent(RenderContentEvent event) {
 		log.debug("renderContent::");
 		Component component = event.getComponent();
@@ -171,7 +172,7 @@ public class ProcessUI extends HUI {
 		}
 	}
 	
-	@Subscribe
+	@Handler
 	public void showPreparedContent(final AfterPrepareTestEvent afterPrepareTestEvent) {
 		log.debug(String.format("showPreparedContent: test id = %s", afterPrepareTestEvent.getTest() != null ? afterPrepareTestEvent.getTest().getId() : "NULL"));
 		
@@ -179,7 +180,7 @@ public class ProcessUI extends HUI {
 		setContent(new StartTestView(requestFullscreen, 5));
 	}
 	
-	@Subscribe
+	@Handler
 	public void processViewEnd(ProcessViewEndEvent event) {
 		Command command = null;
 		
@@ -194,14 +195,14 @@ public class ProcessUI extends HUI {
 		clearContent(animate, command);
 	}
 
-	@Subscribe
+	@Handler
 	public void showFinishContent(FinishTestEvent event) {
 		clearContent(false, null);
 		
 		setContent(new FinishTestView());
 	}
 
-	@Subscribe
+	@Handler
 	public void showNotification(AbstractNotificationEvent event) {
 		if (event instanceof ErrorNotificationEvent) {
 			showErrorDialog((ErrorNotificationEvent) event);
@@ -223,7 +224,7 @@ public class ProcessUI extends HUI {
 		errorDialog.show(this);
 	}
 
-	@Subscribe
+	@Handler
 	public void requestClose(final CloseTestEvent event) {
 		close();
 	}

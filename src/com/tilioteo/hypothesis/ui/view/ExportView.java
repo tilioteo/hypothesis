@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.engio.mbassy.listener.Handler;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -23,7 +25,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.core.SlideDataParser;
 import com.tilioteo.hypothesis.entity.ExportEvent;
@@ -484,7 +485,7 @@ public class ExportView extends VerticalLayout implements View {
 	}
 
 
-	@Subscribe
+	@Handler
 	public void setExportEnabled(final HypothesisEvent.PackSelectionChangedEvent event) {
     	boolean itemsSelected = ((Set<Object>) table.getValue()).size() > 0;
     	boolean exportEnabled = allTestsSelected || itemsSelected; 
@@ -495,7 +496,7 @@ public class ExportView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 	}
 	
-	@Subscribe
+	@Handler
 	public void updateExportProgress(final HypothesisEvent.ExportProgressEvent event) {
 		if (exportProgressBar.isIndeterminate() && event.getProgress() >= 0) {
 			setExportProgress();
@@ -514,18 +515,18 @@ public class ExportView extends VerticalLayout implements View {
 		UI.getCurrent().setPollInterval(-1);
 	}
 	
-	@Subscribe
+	@Handler
 	public void exportFinished(final HypothesisEvent.ExportFinishedEvent event) {
 		afterExportFinnished(event.isCanceled());
 	}
 	
-	@Subscribe
+	@Handler
 	public void exportError(final HypothesisEvent.ExportErrorEvent event) {
 		afterExportFinnished(false);
 		Notification.show("Export failed", null, Type.WARNING_MESSAGE);
 	}
 
-	@Subscribe
+	@Handler
 	public void changeUserPacks(final HypothesisEvent.UserPacksChangedEvent event) {
 		initPacksSources();
 		

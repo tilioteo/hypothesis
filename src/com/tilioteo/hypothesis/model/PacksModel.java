@@ -10,16 +10,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import net.engio.mbassy.listener.Handler;
+
 import org.vaadin.jre.ui.DeployJava;
 
-import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartFeaturedTestEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartLegacyTestEvent;
 import com.tilioteo.hypothesis.persistence.PermissionService;
-import com.tilioteo.hypothesis.persistence.PersistenceService;
 import com.tilioteo.hypothesis.persistence.TokenService;
 import com.tilioteo.hypothesis.persistence.UserService;
 import com.tilioteo.hypothesis.servlet.ServletUtil;
@@ -110,7 +110,7 @@ public class PacksModel implements Serializable {
 		return digest;
 	}
 
-	@Subscribe
+	@Handler
 	public void startFeaturedTest(StartFeaturedTestEvent event) {
 		Token token = createToken(event.getUser(), event.getPack());
 		
@@ -119,7 +119,7 @@ public class PacksModel implements Serializable {
 		}
 	}
 	
-	@Subscribe
+	@Handler
 	public void startLegacyTest(StartLegacyTestEvent event) {
 		Token token = createToken(event.getUser(), event.getPack());
 

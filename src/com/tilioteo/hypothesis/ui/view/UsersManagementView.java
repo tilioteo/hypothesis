@@ -16,13 +16,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.engio.mbassy.listener.Handler;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.core.CaseInsensitiveItemSorter;
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.FieldConstants;
@@ -579,7 +580,7 @@ public class UsersManagementView extends VerticalLayout
 		return users;
 	}
 	
-	@Subscribe
+	@Handler
 	public void addUserIntoTable(final HypothesisEvent.UserAddedEvent event) {
 		User user = event.getUser();
 		BeanContainer<Long, User> container =
@@ -591,7 +592,7 @@ public class UsersManagementView extends VerticalLayout
 		table.sort();
 	}
 	
-	@Subscribe
+	@Handler
 	public void changeUserGroups(final HypothesisEvent.UserGroupsChangedEvent event) {
 		User user = event.getUser();
 		BeanContainer<Long, User> container =
@@ -601,7 +602,7 @@ public class UsersManagementView extends VerticalLayout
 		container.addItem(user.getId(), user);
 	}
 	
-	@Subscribe
+	@Handler
 	public void setToolsEnabled(final HypothesisEvent.UserSelectionChangedEvent event) {
     	boolean itemsSelected = ((Set<Object>) table.getValue()).size() > 0;
     	boolean toolsEnabled = allUsersSelected || itemsSelected; 

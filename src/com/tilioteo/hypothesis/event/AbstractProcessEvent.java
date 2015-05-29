@@ -5,6 +5,7 @@ package com.tilioteo.hypothesis.event;
 
 import java.util.Date;
 
+import com.tilioteo.hypothesis.event.HypothesisEvent.ProcessUIEvent;
 import com.vaadin.server.ErrorHandler;
 
 /**
@@ -13,7 +14,7 @@ import com.vaadin.server.ErrorHandler;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractProcessEvent implements
-		ProcessEvent {
+		ProcessEvent, ProcessUIEvent {
 
 	private Date timestamp;
 	private Date clientTimestamp = null;

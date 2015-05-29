@@ -17,9 +17,15 @@ import com.tilioteo.hypothesis.ui.view.ProcessView;
  * 
  */
 @SuppressWarnings("serial")
-public abstract class HypothesisEvent implements Serializable {
+public interface HypothesisEvent extends Serializable {
+	
+	public static interface MainUIEvent extends HypothesisEvent {
+	}
+	
+	public static interface ProcessUIEvent extends HypothesisEvent {
+	}
 
-	public static final class UserLoginRequestedEvent implements Serializable {
+	public static final class UserLoginRequestedEvent implements MainUIEvent {
 		private final String userName, password;
 
 		public UserLoginRequestedEvent(final String userName,
@@ -37,19 +43,19 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static class GuestAccessRequestedEvent implements Serializable {
+	public static class GuestAccessRequestedEvent implements MainUIEvent {
 	}
 
-	public static class InvalidLoginEvent implements Serializable {
+	public static class InvalidLoginEvent implements MainUIEvent {
 	}
 
-	public static class InvalidUserPermissionEvent implements Serializable {
+	public static class InvalidUserPermissionEvent implements MainUIEvent {
 	}
 
-	public static class UserLoggedOutEvent implements Serializable {
+	public static class UserLoggedOutEvent implements MainUIEvent {
 	}
 
-	public static final class PostViewChangeEvent implements Serializable {
+	public static final class PostViewChangeEvent implements MainUIEvent {
 		private final HypothesisViewType view;
 
 		public PostViewChangeEvent(final HypothesisViewType view) {
@@ -61,7 +67,7 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static class StartFeaturedTestEvent implements Serializable {
+	public static class StartFeaturedTestEvent implements MainUIEvent {
 		private final User user;
 		private final Pack pack;
 
@@ -79,7 +85,7 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static class StartLegacyTestEvent implements Serializable {
+	public static class StartLegacyTestEvent implements MainUIEvent {
 		private final User user;
 		private final Pack pack;
 		private final UrlConsumer urlConsumer;
@@ -103,13 +109,13 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static final class CloseOpenWindowsEvent implements Serializable {
+	public static final class CloseOpenWindowsEvent implements MainUIEvent {
 	}
 
-	public static final class ProfileUpdatedEvent implements Serializable {
+	public static final class ProfileUpdatedEvent implements MainUIEvent {
 	}
 
-	public static final class UserAddedEvent implements Serializable {
+	public static final class UserAddedEvent implements MainUIEvent {
 		private final User user;
 
 		public UserAddedEvent(final User user) {
@@ -121,10 +127,10 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static final class UserSelectionChangedEvent implements Serializable {
+	public static final class UserSelectionChangedEvent implements MainUIEvent {
 	}
 
-	public static final class GroupUsersChangedEvent implements Serializable {
+	public static final class GroupUsersChangedEvent implements MainUIEvent {
 		private final Group group;
 
 		public GroupUsersChangedEvent(final Group group) {
@@ -136,7 +142,7 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static final class GroupAddedEvent implements Serializable {
+	public static final class GroupAddedEvent implements MainUIEvent {
 		private final Group group;
 
 		public GroupAddedEvent(final Group group) {
@@ -148,10 +154,10 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static final class GroupSelectionChangedEvent implements Serializable {
+	public static final class GroupSelectionChangedEvent implements MainUIEvent {
 	}
 
-	public static final class UserGroupsChangedEvent implements Serializable {
+	public static final class UserGroupsChangedEvent implements MainUIEvent {
 		private final User user;
 
 		public UserGroupsChangedEvent(final User user) {
@@ -163,7 +169,7 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static final class UserPacksChangedEvent implements Serializable {
+	public static final class UserPacksChangedEvent implements MainUIEvent {
 		private final User user;
 
 		public UserPacksChangedEvent(final User user) {
@@ -175,10 +181,10 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-		public static final class PackSelectionChangedEvent implements Serializable {
+		public static final class PackSelectionChangedEvent implements MainUIEvent {
 	}
 
-	public static final class ExportFinishedEvent implements Serializable {
+	public static final class ExportFinishedEvent implements MainUIEvent {
 		private final boolean canceled;
 		
 		public ExportFinishedEvent(final boolean canceled) {
@@ -190,10 +196,10 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 
-	public static final class ExportErrorEvent implements Serializable {
+	public static final class ExportErrorEvent implements MainUIEvent {
 	}
 
-	public static final class ExportProgressEvent implements Serializable {
+	public static final class ExportProgressEvent implements MainUIEvent {
 		private final float progress;
 		
 		public ExportProgressEvent(final float progress) {
@@ -205,7 +211,7 @@ public abstract class HypothesisEvent implements Serializable {
 		}
 	}
 	
-	public static final class ProcessViewEndEvent {
+	public static final class ProcessViewEndEvent implements ProcessUIEvent {
 		private final ProcessView view;
 		
 		public ProcessViewEndEvent(final ProcessView view) {

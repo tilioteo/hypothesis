@@ -2,34 +2,41 @@ package com.tilioteo.hypothesis.event;
 
 import java.io.Serializable;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.SubscriberExceptionContext;
-import com.google.common.eventbus.SubscriberExceptionHandler;
+import net.engio.mbassy.bus.MBassador;
+import net.engio.mbassy.bus.common.Properties;
+import net.engio.mbassy.bus.config.BusConfiguration;
+import net.engio.mbassy.bus.config.Feature;
+import net.engio.mbassy.bus.error.IPublicationErrorHandler;
+import net.engio.mbassy.bus.error.PublicationError;
 
 /**
- * A simple wrapper for Guava event bus. Defines static convenience methods for
- * relevant actions.
+ * A simple wrapper for MBassador event bus. Defines methods for relevant actions.
  */
 @SuppressWarnings("serial")
-public class HypothesisEventBus implements SubscriberExceptionHandler, Serializable {
+public class HypothesisEventBus<T> implements Serializable, IPublicationErrorHandler {
 
-    private final EventBus eventBus = new EventBus(this);
+    private final MBassador<T> eventBus = new MBassador<T>(new BusConfiguration().
+    		addFeature(Feature.SyncPubSub.Default()).
+			addFeature(Feature.AsynchronousHandlerInvocation.Default()).
+			addFeature(Feature.AsynchronousMessageDispatch.Default()).
+			setProperty(Properties.Handler.PublicationError, this));    
     
-    public void post(final Object event) {
-        eventBus.post(event);
+    public void post(final T event) {
+        eventBus.publish(event);
     }
 
     public void register(final Object object) {
-    	eventBus.register(object);
+    	eventBus.subscribe(object);
     }
 
     public void unregister(final Object object) {
-    	eventBus.unregister(object);
+    	eventBus.unsubscribe(object);
     }
 
-    @Override
-    public final void handleException(final Throwable exception, final SubscriberExceptionContext context) {
-        exception.printStackTrace();
-    }
+	@Override
+	public void handleError(PublicationError error) {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

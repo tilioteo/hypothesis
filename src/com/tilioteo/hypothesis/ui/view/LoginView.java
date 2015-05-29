@@ -1,8 +1,9 @@
 package com.tilioteo.hypothesis.ui.view;
 
+import net.engio.mbassy.listener.Handler;
+
 import org.vaadin.special.data.EmptyValidator;
 
-import com.google.common.eventbus.Subscribe;
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.InvalidLoginEvent;
@@ -177,13 +178,13 @@ public class LoginView extends VerticalLayout {
 		notification.show(Page.getCurrent());
 	}
 
-	@Subscribe
+	@Handler
 	public void invalidLogin(InvalidLoginEvent event) {
 		clearFields();
 		showError(Messages.getString("Message.Error.InvalidLogin"));
 	}
 	
-	@Subscribe
+	@Handler
 	public void invalidUserPermission(InvalidUserPermissionEvent event) {
 		clearFields();
 		showError(Messages.getString("Message.Error.AccessDenied"));

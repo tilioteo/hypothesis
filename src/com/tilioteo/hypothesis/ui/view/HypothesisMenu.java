@@ -1,6 +1,7 @@
 package com.tilioteo.hypothesis.ui.view;
 
-import com.google.common.eventbus.Subscribe;
+import net.engio.mbassy.listener.Handler;
+
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.User;
 import com.tilioteo.hypothesis.event.HypothesisEvent;
@@ -171,13 +172,13 @@ public final class HypothesisMenu extends CustomComponent {
 		updateNotificationsCount(null);
 	}*/
 
-	/*@Subscribe
+	/*@Handler
 	public void postViewChange(final PostViewChangeEvent event) {
 		// After a successful view change the menu can be hidden in mobile view.
 		getCompositionRoot().removeStyleName(STYLE_VISIBLE);
 	}*/
 
-	/*@Subscribe
+	/*@Handler
 	public void updateNotificationsCount(
 			final NotificationsCountUpdatedEvent event) {
 		int unreadNotificationsCount = DashboardUI.getDataProvider()
@@ -186,13 +187,13 @@ public final class HypothesisMenu extends CustomComponent {
 		notificationsBadge.setVisible(unreadNotificationsCount > 0);
 	}*/
 
-	/*@Subscribe
+	/*@Handler
 	public void updateReportsCount(final ReportsCountUpdatedEvent event) {
 		reportsBadge.setValue(String.valueOf(event.getCount()));
 		reportsBadge.setVisible(event.getCount() > 0);
 	}*/
 
-	@Subscribe
+	@Handler
 	public void updateUserName(final ProfileUpdatedEvent event) {
 		User user = getCurrentUser();
 		settingsItem.setText(user.getUsername());
@@ -219,7 +220,7 @@ public final class HypothesisMenu extends CustomComponent {
 
 		}
 
-		@Subscribe
+		@Handler
 		public void postViewChange(final PostViewChangeEvent event) {
 			removeStyleName(STYLE_SELECTED);
 			if (event.getView() == view) {

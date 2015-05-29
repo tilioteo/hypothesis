@@ -3,8 +3,7 @@
  */
 package com.tilioteo.hypothesis.event;
 
-import java.io.Serializable;
-
+import com.tilioteo.hypothesis.event.HypothesisEvent.ProcessUIEvent;
 import com.vaadin.ui.Notification;
 
 /**
@@ -12,7 +11,7 @@ import com.vaadin.ui.Notification;
  * 
  */
 @SuppressWarnings("serial")
-public abstract class AbstractNotificationEvent implements Serializable {
+public abstract class AbstractNotificationEvent implements ProcessUIEvent {
 
 	protected String caption;
 	protected String description;
