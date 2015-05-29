@@ -62,10 +62,10 @@ public abstract class HypothesisEvent implements Serializable {
 	}
 
 	public static class StartFeaturedTestEvent implements Serializable {
-		private User user;
-		private Pack pack;
+		private final User user;
+		private final Pack pack;
 
-		public StartFeaturedTestEvent(User user, Pack pack) {
+		public StartFeaturedTestEvent(final User user, final Pack pack) {
 			this.user = user;
 			this.pack = pack;
 		}
@@ -80,11 +80,11 @@ public abstract class HypothesisEvent implements Serializable {
 	}
 
 	public static class StartLegacyTestEvent implements Serializable {
-		private User user;
-		private Pack pack;
-		private UrlConsumer urlConsumer;
+		private final User user;
+		private final Pack pack;
+		private final UrlConsumer urlConsumer;
 
-		public StartLegacyTestEvent(User user, Pack pack, UrlConsumer urlConsumer) {
+		public StartLegacyTestEvent(final User user, final Pack pack, final UrlConsumer urlConsumer) {
 			this.user = user;
 			this.pack = pack;
 			this.urlConsumer = urlConsumer;
