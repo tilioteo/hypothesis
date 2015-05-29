@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.hypothesis.common.expression.junit;
+package com.tilioteo.hypothesis.evaluable.junit;
 
 import static org.junit.Assert.*;
 
@@ -34,8 +34,8 @@ public class ExpressionFactoryTest {
 		
 		double value = expression.getDouble();*/
 		
-		int i = 0;
-		i = i+i+i+i+1;
+		//int i = 0;
+		//i = i+i+i+i+1;
 		
 		//Expression expression = ExpressionFactory.parseString("pocitadlo=pocitadlo+1");
 		//Expression expression = ExpressionFactory.parseString("pocitadlo");
@@ -44,17 +44,18 @@ public class ExpressionFactoryTest {
 		//int value = expression.getInteger();
 		//assertEquals(2, value, 0);
 		
-		Point point = new Point();
-		point.setLocation(1, 2);
+		//Point point = new Point();
+		//point.setLocation(1, 2);
 		
 		//Expression expression = ExpressionFactory.parseString("pocitadlo=obj->getX()");
 		//Expression expression = ExpressionFactory.parseString("obj->setLocation(3,4)");
 		//Expression expression = ExpressionFactory.parseString("x1=obj->x");
-		Expression expression = ExpressionFactory.parseString("x1=obj->getX()");
-		expression.setVariableValue("obj", point);
-		Object val = expression.getValue();
+		//Expression expression = ExpressionFactory.parseString("x1=obj->getX()");
+		//expression.setVariableValue("obj", point);
+		//Object val = expression.getValue();
 
-		assertEquals(1.0, point.x, 0.0);
+		String parsed = ExpressionFactory.parseString("initMsg=Document->createMessage(\"3F66DCC0-BA8F-4825-A8EE-CB70EF118C93\")").toString();
+		assertEquals("(initMsg=(Document->createMessage(\"3F66DCC0-BA8F-4825-A8EE-CB70EF118C93\")))", parsed);
 		//fail("Not yet implemented");
 	}
 
