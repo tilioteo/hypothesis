@@ -72,6 +72,7 @@ public class ExpressionFactory implements Serializable {
 	
 	private enum MachineState {
 		NONE,
+		STRING,
 		WORD,
 		AFTER,
 		END
@@ -102,60 +103,68 @@ public class ExpressionFactory implements Serializable {
 		OperatorNodeGroup operatorNodeGroup = new OperatorNodeGroup();
 		
 		int operatorIndex = 0;
+		boolean stringBegun = false;
 		String operatorString = StringConstants.STR_EMPTY;
+
 		// TODO REFACTOR!
 		
 		for (int i = 0; i < text.length(); ++i) {
-			if (Operator.CHARS.contains(text.charAt(i))) {
-				operatorString += text.charAt(i);
-				
-				if (operatorIndex == 0) {
-					operatorIndex = i;
+			if (StringConstants.CHR_STRING_SEPARATOR == text.charAt(i)) {
+				stringBegun = !stringBegun;
+				continue;
+			}
+			if (!stringBegun) {
+				if (Operator.CHARS.contains(text.charAt(i))) {
+					operatorString += text.charAt(i);
 					
-					OperatorNode operatorNode = new OperatorNode(i, Operator.get(operatorString));
-					operatorNodeGroup.add(operatorNode);
-					
-				} else if (i == operatorIndex+1) {
-					Operator operator = Operator.get(operatorString);
-					if (operator != null) {
-						HasOperatorNode obj = operatorNodeGroup.getLast();
-						if (obj != null && obj instanceof OperatorNode &&
-								((OperatorNode)obj).getOperator() != operator) {
-							((OperatorNode)obj).setOperator(operator);
-						}
-						
-						operatorIndex = 0;
-						operatorString = StringConstants.STR_EMPTY;
-					} else {
+					if (operatorIndex == 0) {
 						operatorIndex = i;
-						operatorString = StringConstants.STR_EMPTY + text.charAt(i);
 						
 						OperatorNode operatorNode = new OperatorNode(i, Operator.get(operatorString));
 						operatorNodeGroup.add(operatorNode);
+						
+					} else if (i == operatorIndex+1) {
+						Operator operator = Operator.get(operatorString);
+						if (operator != null) {
+							HasOperatorNode obj = operatorNodeGroup.getLast();
+							if (obj != null && obj instanceof OperatorNode &&
+									((OperatorNode)obj).getOperator() != operator) {
+								((OperatorNode)obj).setOperator(operator);
+							}
+							
+							operatorIndex = 0;
+							operatorString = StringConstants.STR_EMPTY;
+						} else {
+							operatorIndex = i;
+							operatorString = StringConstants.STR_EMPTY + text.charAt(i);
+							
+							OperatorNode operatorNode = new OperatorNode(i, Operator.get(operatorString));
+							operatorNodeGroup.add(operatorNode);
+						}
 					}
-				}
-			} else {
-				if (PROHIBITED.contains(text.charAt(i))) {
-					throw new UnexpectedCharException(i);
-				}
-				
-				if (operatorString.length() > 0 &&
-						(operatorIndex >= 0 || i == text.length()-1)) {
-					Operator operator = Operator.get(operatorString);
-					if (operator != null) {
-						HasOperatorNode obj = operatorNodeGroup.getLast();
-						if (obj != null && obj instanceof OperatorNode) {
-							((OperatorNode)obj).setOperator(operator);
+				} else {
+					if (PROHIBITED.contains(text.charAt(i))) {
+						throw new UnexpectedCharException(i);
+					}
+					
+					if (operatorString.length() > 0 &&
+							(operatorIndex >= 0 || i == text.length()-1)) {
+						Operator operator = Operator.get(operatorString);
+						if (operator != null) {
+							HasOperatorNode obj = operatorNodeGroup.getLast();
+							if (obj != null && obj instanceof OperatorNode) {
+								((OperatorNode)obj).setOperator(operator);
+							}
+							
+							operatorIndex = 0;
+							operatorString = StringConstants.STR_EMPTY;
+						} else {
+							operatorIndex = i;
+							operatorString = StringConstants.STR_EMPTY + text.charAt(i);
+	
+							OperatorNode operatorNode = new OperatorNode(i, Operator.get(operatorString));
+							operatorNodeGroup.add(operatorNode);
 						}
-						
-						operatorIndex = 0;
-						operatorString = StringConstants.STR_EMPTY;
-					} else {
-						operatorIndex = i;
-						operatorString = StringConstants.STR_EMPTY + text.charAt(i);
-
-						OperatorNode operatorNode = new OperatorNode(i, Operator.get(operatorString));
-						operatorNodeGroup.add(operatorNode);
 					}
 				}
 			}
@@ -389,7 +398,10 @@ public class ExpressionFactory implements Serializable {
 			
 			switch (status) {
 			case NONE:
-				if (!SEPARATORS.contains(c)) {
+				if (StringConstants.CHR_STRING_SEPARATOR == c) {
+					status = MachineState.STRING;
+					result += c;
+				} else if (!SEPARATORS.contains(c)) {
 					status = MachineState.WORD;
 					position -= increment;
 				}
@@ -419,6 +431,23 @@ public class ExpressionFactory implements Serializable {
 						(increment < 0 && c == Parenthesis.CLOSE.getChar()) ||
 						(increment > 0 && c == Parenthesis.OPEN.getChar()))) {
 					throw new UnexpectedCharException(position);
+				}
+				break;
+				
+			case STRING:
+				if (StringConstants.CHR_STRING_SEPARATOR == c) {
+					status = MachineState.NONE;
+					if (increment > 0) {
+						result += c;
+					} else {
+						result = c + result;
+					}
+				} else {
+					if (increment > 0) {
+						result += c;
+					} else {
+						result = c + result;
+					}
 				}
 				break;
 			}

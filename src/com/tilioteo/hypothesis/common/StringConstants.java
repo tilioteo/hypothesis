@@ -46,6 +46,8 @@ public final class StringConstants {
 	public static final String STR_OP_XOR				=	"~";
 	public static final String STR_OP_ASSIGN			=	"=";
 
+	public static final String STR_STRING_SEPARATOR		=	STR_DOUBLE_QUOTE;
+
 	public static final Character CHR_NOT				=	'!';
 	public static final Character CHR_MINUS				=	'-';
 	public static final Character CHR_PLUS				=	'+';
@@ -73,10 +75,13 @@ public final class StringConstants {
 	public static final Character CHR_COLON				=	':';
 	public static final Character CHR_SEMI_COLON		=	';';
 	public static final Character CHR_QUOTE				=	'\'';
+	public static final Character CHR_DOUBLE_QUOTE		=	'"';
 	public static final Character CHR_BCK_SLASH			=	'\\';
 	public static final Character CHR_QUESTION			=	'?';
 	public static final Character CHR_TAB				=	'\t';
 	public static final Character CHR_SPACE				=	' ';
+
+	public static final Character CHR_STRING_SEPARATOR	=	CHR_DOUBLE_QUOTE;
 	
 	public static final Character CHR_0					=	'0';
 	public static final Character CHR_1					=	'1';
