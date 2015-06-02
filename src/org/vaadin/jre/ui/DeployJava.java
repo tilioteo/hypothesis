@@ -71,15 +71,21 @@ public class DeployJava extends AbstractExtension {
 		String url = getContextURL((VaadinServletRequest)VaadinService.getCurrentRequest()) + "/APP/PUBLISHED/deployJava.js";
 		String head = "<script type='text/javascript' src='" + url + "'></script>";
 		javaScript.execute("var i=document.createElement(\"iframe\");i.id=\"$ifrm\";i.style=\"position:absolute;width:0px;height:0px;border:medium none;left:-1000px;top:-1000px;\";i.tabIndex=\"-1\";i.src='javascript:\"\"';document.body.appendChild(i);i.contentWindow.document.open('text/html','replace');i.contentWindow.document.write(\"<html><head>"+head+"</head><body></body></html>\");i.contentWindow.document.close();");
-		
+
 		javaScript.addFunction("cth_cjv", checkVersion);
 	}
 	
+	public void clearIframeBody() {
+		javaScript.execute("var i=document.getElementById(\"$ifrm\");if(i)while(e=i.contentWindow.document.getElementById(\"div1\"))e.parentNode.removeChild(e);");
+	}
+	
 	public void checkJavaVersion(String pattern) {
+		clearIframeBody();
 		javaScript.execute(String.format("var c=0;var l;var i=document.getElementById(\"$ifrm\");if(i&&typeof i.contentWindow.deployJava!=\"undefined\"){cth_cjv(i.contentWindow.deployJava.versionCheck(\"%s\"))}else{l=setInterval(function(){if(typeof i.contentWindow.deployJava!=\"undefined\"){clearInterval(l);cth_cjv(i.contentWindow.deployJava.versionCheck(\"%s\"))}else if(++c>20){clearInterval(l);cth_cjv(null)}},250)};", pattern, pattern));
 	}
 	
 	public void launchJavaWebStart(String jnlp) {
+		clearIframeBody();
 		javaScript.execute(String.format("var i=document.getElementById(\"$ifrm\");if(i&&typeof i.contentWindow.deployJava!=\"undefined\")i.contentWindow.deployJava.launchWebStartApplication(\"%s\");", jnlp));
 	}
 	
@@ -256,7 +262,10 @@ public class DeployJava extends AbstractExtension {
 			getUI().setPollInterval(-1);
 			timer.cancel();
 			
-			super.detach();
+			try {
+				super.detach();
+			} catch (Throwable e) {
+			}
 		}
 		
 		private JavaWindowClosedListener closedListener = new JavaWindowClosedListener() {

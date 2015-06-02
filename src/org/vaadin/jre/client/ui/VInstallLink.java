@@ -71,7 +71,7 @@ public class VInstallLink extends VLink {
 			try {
 				if (win == null || win.closed) {
 					$wnd.clearInterval(interval);
-					link.@com.tilioteo.hypothesis.client.ui.VInstallLink::winClosed()();
+					link.@org.vaadin.jre.client.ui.VInstallLink::winClosed()();
 				}
 			}
 			catch (e) {
