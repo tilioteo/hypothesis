@@ -30,6 +30,12 @@ public class ProcessModel implements Serializable {
 	public void followToken(String tokenUid) {
 		Token token = tokenService.findTokenByUid(tokenUid);
 		processManager.setAutoSlideShow(false);
+		// TODO maybe in the future send broadcast message to main view
+		/*if (token != null && token.getViewUid() != null) {
+			ProcessUIMessage message = new ProcessUIMessage(token.getViewUid());
+			Broadcaster.broadcast(message.toString());
+		}*/
+		
 		processManager.processToken(token, false);
 	}
 
