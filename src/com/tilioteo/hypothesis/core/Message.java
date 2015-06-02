@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +18,7 @@ import elemental.json.JsonObject;
  *
  */
 @SuppressWarnings("serial")
-public class Message implements CoreObject {
+public class Message implements Serializable {
 	
 	private static final String MESSAGE_CLASS = "CLASS";
 	private static final String MESSAGE_UID = "UID";
