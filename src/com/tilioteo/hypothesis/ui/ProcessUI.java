@@ -88,6 +88,7 @@ public class ProcessUI extends HUI {
 	@Override
 	protected void init(VaadinRequest request) {
 		super.init(request);
+		ProcessEventBus.createInstance(this);
 		
 		ProcessEventBus.get().register(this);
 		
@@ -285,7 +286,6 @@ public class ProcessUI extends HUI {
 	@Override
 	public void close() {
 		log.debug("close::");
-		super.close();
 		
 		if (!requestBack) {
 			log.debug("Closing window.");
@@ -299,6 +299,8 @@ public class ProcessUI extends HUI {
 			javaScript.execute("window.history.back();");
 		}
 		getSession().close();
+
+		super.close();
 	}
 	
 	public boolean isFullscreen() {
