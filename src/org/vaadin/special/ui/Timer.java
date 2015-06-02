@@ -30,7 +30,7 @@ import com.vaadin.util.ReflectTools;
  */
 @SuppressWarnings("serial")
 public class Timer extends AbstractComponent implements NonVisualComponent {
-
+	
 	private TimerServerRpc rpc = new TimerServerRpc() {
 
 		@Override
@@ -266,17 +266,19 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 			internalTimer.cancel();
 			
 			final UI ui = getUI();
-			ui.access/*Synchronously*/(new Runnable() {
-				@Override
-				public void run() {
-					fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
-					if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
-						try {
-							ui.push();
-						} catch (Throwable e) {}
+			if (ui != null) {
+				ui.access/*Synchronously*/(new Runnable() {
+					@Override
+					public void run() {
+						fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+						if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+							try {
+								ui.push();
+							} catch (Throwable e) {}
+						}
 					}
-				}
-			});
+				});
+			}
 
 		} else {
 			signalTimeSlices(elapsed);
@@ -302,17 +304,19 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 			// for this time slice
 			if (rest >= 0 && rest < TimerState.TIMER_TICK) {
 				final UI ui = getUI();
-				ui.access/*Synchronously*/(new Runnable() {
-					@Override
-					public void run() {
-						eventRouterMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, getState().direction, timeSlice));
-						if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
-							try {
-								ui.push();
-							} catch (Throwable e) {}
+				if (ui != null) {
+					ui.access/*Synchronously*/(new Runnable() {
+						@Override
+						public void run() {
+							eventRouterMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, getState().direction, timeSlice));
+							if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+								try {
+									ui.push();
+								} catch (Throwable e) {}
+							}
 						}
-					}
-				});
+					});
+				}
 			}
 		}
 	}
@@ -347,17 +351,19 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 			
 			if (!silent) {
 				final UI ui = getUI();
-				ui.access/*Synchronously*/(new Runnable() {
-					@Override
-					public void run() {
-						fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
-						if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
-							try {
-								ui.push();
-							} catch (Throwable e) {}
+				if (ui != null) {
+					ui.access/*Synchronously*/(new Runnable() {
+						@Override
+						public void run() {
+							fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+							if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+								try {
+									ui.push();
+								} catch (Throwable e) {}
+							}
 						}
-					}
-				});
+					});
+				}
 			}
 			if (!pause) {
 				startCounter = 0;
@@ -453,11 +459,16 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
         	ComponentStateUtil.removeRegisteredEventListener(getState(), UpdateEvent.EVENT_ID);
 	}
 	
-	/*@Override
+	@Override
 	public void detach() {
-		stop(true);
+		if (internalTimer != null) {
+			internalTimer.cancel();
+		}
 
-		super.detach();
-	}*/
+		try {
+			super.detach();
+		} catch (Throwable e) {
+		}
+	}
 	
 }
