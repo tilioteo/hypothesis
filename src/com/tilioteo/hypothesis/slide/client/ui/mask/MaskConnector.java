@@ -10,8 +10,10 @@ import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.Widget;
 import com.tilioteo.hypothesis.slide.shared.ui.mask.MaskClientRpc;
+import com.tilioteo.hypothesis.slide.shared.ui.mask.MaskState;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ServerConnector;
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.shared.ui.Connect;
 
@@ -60,7 +62,9 @@ public class MaskConnector extends AbstractExtensionConnector {
 			style.setLeft(0, Unit.PX);
 			style.setWidth(100, Unit.PCT);
 			style.setHeight(100, Unit.PCT);
-			style.setBackgroundColor("#808080");
+			
+			style.setProperty("background", getState().color);
+			//style.setOpacity(getState().opacity);
 			
 			if (null == position) {
 				widget.getElement().getStyle().setPosition(Style.Position.RELATIVE);
@@ -91,5 +95,24 @@ public class MaskConnector extends AbstractExtensionConnector {
 			}
 		}
 	}
+	
+	@Override
+	public MaskState getState() {
+		return (MaskState)super.getState();
+	}
 
+	@Override
+	public void onStateChanged(StateChangeEvent stateChangeEvent) {
+		super.onStateChanged(stateChangeEvent);
+		
+		if (maskElement != null) {
+			Style style = maskElement.getStyle();
+			if (stateChangeEvent.hasPropertyChanged("color")) {
+				style.setBackgroundColor(getState().color);
+			}
+			/*if (stateChangeEvent.hasPropertyChanged("opacity")) {
+				style.setOpacity(getState().opacity);
+			}*/
+		}
+	}
 }

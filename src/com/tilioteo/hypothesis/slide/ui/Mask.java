@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.slide.ui;
 
 import com.tilioteo.hypothesis.slide.shared.ui.mask.MaskClientRpc;
+import com.tilioteo.hypothesis.slide.shared.ui.mask.MaskState;
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.ui.AbstractComponent;
 
@@ -33,5 +34,25 @@ public class Mask extends AbstractExtension {
 	public void hide() {
 		clientRpc.hide();
 	}
+	
+	public String getColor() {
+		return getState().color;
+	}
+	
+	public void setColor(String color) {
+		getState().color = color;
+	}
+	
+	/*public double getOpacity() {
+		return getState().opacity;
+	}
+	
+	public void setOpacity(double opacity) {
+		getState().opacity = opacity;
+	}*/
 
+	@Override
+	protected MaskState getState() {
+		return (MaskState)super.getState();
+	}
 }
