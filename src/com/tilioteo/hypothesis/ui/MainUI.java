@@ -4,6 +4,7 @@
 package com.tilioteo.hypothesis.ui;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -42,6 +43,8 @@ public class MainUI extends UI {
 	@VaadinServletConfiguration(productionMode = false, ui = MainUI.class, widgetset = "com.tilioteo.hypothesis.HypothesisWidgetset")
 	public static class Servlet extends HibernateVaadinServlet {
 	}
+	
+	private String uid;
 
 	private String pid = null;
 	
@@ -52,6 +55,10 @@ public class MainUI extends UI {
 	@Override
 	protected void init(VaadinRequest request) {
 		super.init(request);
+		MainEventBus.createInstance(this);
+		
+		uid = UUID.randomUUID().toString().replaceAll("-", "");
+		SessionUtils.setAttribute("MainUID", uid);
 		
 		MainEventBus.get().register(this);
 		

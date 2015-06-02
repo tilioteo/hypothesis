@@ -32,3 +32,5 @@ CREATE TABLE "public"."tbl_message" (
 	"xml_data" TEXT NOT NULL,
  PRIMARY KEY ( "uid" )
  );
+ 
+ALTER TABLE "public"."tbl_token" ADD COLUMN "view_uid" CHARACTER VARYING( 255 );

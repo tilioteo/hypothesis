@@ -6,6 +6,8 @@ package com.tilioteo.hypothesis.ui.view;
 import java.util.Iterator;
 import java.util.List;
 
+import net.engio.mbassy.listener.Handler;
+
 import org.vaadin.jre.ui.DeployJava;
 import org.vaadin.jre.ui.DeployJava.JavaCheckedEvent;
 import org.vaadin.jre.ui.DeployJava.JavaCheckedListener;
@@ -13,8 +15,11 @@ import org.vaadin.jre.ui.DeployJava.JavaInfoPanel;
 
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.Pack;
+import com.tilioteo.hypothesis.event.HypothesisEvent.LegacyWindowClosedEvent;
+import com.tilioteo.hypothesis.event.HypothesisEvent.MaskEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.model.PacksModel;
+import com.tilioteo.hypothesis.slide.ui.Mask;
 import com.tilioteo.hypothesis.ui.PackPanel;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -40,6 +45,9 @@ public class PublicPacksView extends HorizontalLayout implements View {
 	private JavaInfoPanel javaInfoPanel;
 	private Panel mainPanel;
 	
+	private Mask mask = null;
+	private boolean isMasked = false;
+	
 	private JavaCheckedListener javaCheckedListener = new JavaCheckedListener() {
 		@Override
 		public void javaChecked(JavaCheckedEvent event) {
@@ -57,6 +65,8 @@ public class PublicPacksView extends HorizontalLayout implements View {
 		addComponent(contentPanel);
 		setExpandRatio(contentPanel, 1.0f);
 		addComponent(buildVerticalPane());
+		
+		MainEventBus.get().register(this);
 	}
 	
 	private Panel buildContentPanel() {
@@ -207,6 +217,34 @@ public class PublicPacksView extends HorizontalLayout implements View {
 				}
 			}
 		}
+	}
+	
+	protected void mask() {
+		if (null == mask) {
+			mask = Mask.addToComponent(mainPanel);
+			mask.setColor("rgba(128,128,128,0.3)");
+		}
+		if (!isMasked) {
+			mask.show();
+			isMasked = true;
+		}
+	}
+
+	protected void unmask() {
+		if (mask != null && isMasked) {
+			mask.hide();
+			isMasked = false;
+		}
+	}
+	
+	@Handler
+	public void setMask(MaskEvent event) {
+		mask();
+	}
+
+	@Handler
+	public void legacyWindowClosed(LegacyWindowClosedEvent event) {
+		unmask();
 	}
 
 }

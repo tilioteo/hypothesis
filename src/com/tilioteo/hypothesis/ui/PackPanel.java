@@ -4,10 +4,12 @@
 package com.tilioteo.hypothesis.ui;
 
 import org.vaadin.button.ui.OpenPopupButton;
+import org.vaadin.button.ui.OpenPopupButton.WindowClosedEvent;
 
 import com.tilioteo.hypothesis.core.Messages;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.User;
+import com.tilioteo.hypothesis.event.HypothesisEvent.LegacyWindowClosedEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartFeaturedTestEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartLegacyTestEvent;
 import com.tilioteo.hypothesis.event.MainEventBus;
@@ -216,6 +218,13 @@ public class PackPanel extends Panel {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				MainEventBus.get().post(new StartLegacyTestEvent(getNoGuestUser(), pack, button));
+			}
+		});
+		
+		button.addWindowClosedListener(new OpenPopupButton.WindowClosedListener() {
+			@Override
+			public void windowClosed(WindowClosedEvent event) {
+				MainEventBus.get().post(new LegacyWindowClosedEvent());
 			}
 		});
 		

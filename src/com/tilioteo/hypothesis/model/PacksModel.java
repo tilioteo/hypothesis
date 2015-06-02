@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.model;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -17,11 +18,15 @@ import org.vaadin.jre.ui.DeployJava;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.entity.User;
+import com.tilioteo.hypothesis.event.HypothesisEvent.LegacyWindowClosedEvent;
+import com.tilioteo.hypothesis.event.HypothesisEvent.MaskEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartFeaturedTestEvent;
 import com.tilioteo.hypothesis.event.HypothesisEvent.StartLegacyTestEvent;
+import com.tilioteo.hypothesis.event.MainEventBus;
 import com.tilioteo.hypothesis.persistence.PermissionService;
 import com.tilioteo.hypothesis.persistence.TokenService;
 import com.tilioteo.hypothesis.persistence.UserService;
+import com.tilioteo.hypothesis.server.SessionUtils;
 import com.tilioteo.hypothesis.servlet.ServletUtil;
 import com.tilioteo.hypothesis.ui.UI;
 import com.vaadin.server.VaadinService;
@@ -39,7 +44,11 @@ public class PacksModel implements Serializable {
 	//private PersistenceService persistenceService;
 	private UserService userService;
 	
+	private boolean testStarted = false;
+	private Date featuredStart = null;
+	
 	public PacksModel() {
+		MainEventBus.get().register(this);
 		
 		permissionService = PermissionService.newInstance();
 		tokenService = TokenService.newInstance();
@@ -112,25 +121,44 @@ public class PacksModel implements Serializable {
 
 	@Handler
 	public void startFeaturedTest(StartFeaturedTestEvent event) {
-		Token token = createToken(event.getUser(), event.getPack());
+		if (!testStarted) {
+			Date now = new Date();
+			Date beforeDate = new Date(now.getTime() - 30000);
+			if (featuredStart != null && featuredStart.after(beforeDate)) {
+				return;
+			}
+			
+			featuredStart = null;
+			Token token = createToken(event.getUser(), event.getPack());
 		
-		if (token != null) {
-			DeployJava.get(UI.getCurrent()).launchJavaWebStart(constructProcessJnlp(token.getUid()));
+			if (token != null) {
+				featuredStart = new Date();
+				DeployJava.get(UI.getCurrent()).launchJavaWebStart(constructProcessJnlp(token.getUid()));
+			}
 		}
 	}
 	
 	@Handler
 	public void startLegacyTest(StartLegacyTestEvent event) {
-		Token token = createToken(event.getUser(), event.getPack());
+		if (!testStarted) {
+			Token token = createToken(event.getUser(), event.getPack());
 
-		if (token != null) {
-			event.getUrlConsumer().setUrl(constructProcessUrl(token.getUid(), false));
+			if (token != null) {
+				MainEventBus.get().post(new MaskEvent());
+				event.getUrlConsumer().setUrl(constructProcessUrl(token.getUid(), false));
+				testStarted = true;
+			}
 		}
+	}
+	
+	@Handler
+	public void legacyWindowClosed(LegacyWindowClosedEvent event) {
+		testStarted = false;
 	}
 
 	private Token createToken(User user, Pack pack) {
-		
-		return tokenService.createToken(user, pack, true);
+		String uid = SessionUtils.getStringAttribute("MainUID");
+		return tokenService.createToken(user, pack, uid, true);
 	}
 	
 	private String constructProcessJnlp(String token) {

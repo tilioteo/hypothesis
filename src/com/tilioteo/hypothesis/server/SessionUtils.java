@@ -33,4 +33,26 @@ public class SessionUtils {
 		}
 	}
 	
+	public static void setAttribute(String name, Object value) {
+		VaadinSession session = VaadinSession.getCurrent();
+		if (session != null) {
+			session.setAttribute(name, value);
+		}
+	}
+	
+	public static Object getAttribute(String name) {
+		VaadinSession session = VaadinSession.getCurrent();
+		if (session != null) {
+			session.getAttribute(name);
+		}
+		return null;
+	}
+	
+	public static String getStringAttribute(String name) {
+		Object object = getAttribute(name);
+		if (object instanceof String) {
+			return (String)object;
+		}
+		return null;
+	}
 }

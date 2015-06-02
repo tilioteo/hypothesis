@@ -27,6 +27,7 @@ public class FieldConstants {
 	public static final String CLIENT_TIMESTAMP = "client_timestamp";
 	public static final String DATETIME = "datetime";
 	public static final String RANDOMIZED = "randomized";
+	public static final String VIEW_UID = "view_uid";
 
 	public static final String XML_DATA = "xml_data";
 	public static final String OUTPUT = "output";

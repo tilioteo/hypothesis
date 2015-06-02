@@ -37,8 +37,8 @@ public class TokenService implements Serializable {
 		this.tokenDao = tokenDao;
 	}
 
-	public Token createToken(User user, Pack pack, boolean production) {
-		Token token = new Token(user, pack);
+	public Token createToken(User user, Pack pack, String viewUid, boolean production) {
+		Token token = new Token(user, pack, viewUid);
 		// TODO test if user can run non-production test (only MANAGER and
 		// SUPERUSER can)
 		token.setProduction(production);

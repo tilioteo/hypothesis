@@ -3,6 +3,7 @@
  */
 package com.tilioteo.hypothesis.ui.view;
 
+import org.vaadin.button.ui.FullscreenButton;
 import org.vaadin.special.shared.ui.timer.TimerState.Direction;
 import org.vaadin.special.ui.Timer.StopEvent;
 
@@ -11,7 +12,6 @@ import com.tilioteo.hypothesis.event.HypothesisEvent;
 import com.tilioteo.hypothesis.event.ProcessEventBus;
 import com.tilioteo.hypothesis.slide.ui.Timer;
 import com.tilioteo.hypothesis.slide.ui.TimerLabel;
-import com.tilioteo.hypothesis.ui.FsButton;
 import com.tilioteo.hypothesis.ui.HUI;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -77,7 +77,7 @@ public class StartTestView extends VerticalLayout implements ProcessView, ClickL
 	private Button createButton() {
 		final Button button;
 		if (fullscreen) {
-			button = new FsButton();
+			button = new FullscreenButton();
 		} else {
 			button = new Button();
 		}

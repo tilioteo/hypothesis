@@ -108,6 +108,12 @@ public interface HypothesisEvent extends Serializable {
 			return user;
 		}
 	}
+	
+	public static class MaskEvent implements MainUIEvent {
+	}
+	
+	public static class LegacyWindowClosedEvent implements MainUIEvent {
+	}
 
 	public static final class CloseOpenWindowsEvent implements MainUIEvent {
 	}

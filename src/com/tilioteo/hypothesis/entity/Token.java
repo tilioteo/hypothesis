@@ -39,6 +39,8 @@ public final class Token extends SerializableUidObject {
 
 	private User user;
 	private Pack pack;
+	
+	private String viewUid;
 
 	/**
 	 * timestamp of request, old tokens are garbaged
@@ -55,11 +57,12 @@ public final class Token extends SerializableUidObject {
 	 * @param user
 	 * @param pack
 	 */
-	public Token(User user, Pack pack) {
+	public Token(User user, Pack pack, String viewUid) {
 		this();
 		this.uid = UUID.randomUUID().toString().replaceAll("-", "");
 		this.user = user;
 		this.pack = pack;
+		this.viewUid = viewUid;
 		this.datetime = new Date();
 	}
 
@@ -98,6 +101,15 @@ public final class Token extends SerializableUidObject {
 
 	protected void setPack(Pack pack) {
 		this.pack = pack;
+	}
+
+	@Column(name = FieldConstants.VIEW_UID)
+	public String getViewUid() {
+		return viewUid;
+	}
+
+	protected void setViewUid(String viewUid) {
+		this.viewUid = viewUid;
 	}
 
 	@Column(name = FieldConstants.DATETIME)
