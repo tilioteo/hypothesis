@@ -15,7 +15,7 @@ import com.vaadin.shared.ui.Connect;
  *
  */
 @SuppressWarnings("serial")
-@Connect(com.tilioteo.hypothesis.ui.FsButton.class)
+@Connect(org.vaadin.button.ui.FullscreenButton.class)
 public class FullscreenButtonConnector extends ButtonConnector {
 
 	@Override

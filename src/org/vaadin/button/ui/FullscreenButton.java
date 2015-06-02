@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.ui;
+package org.vaadin.button.ui;
 
 import org.vaadin.button.shared.ui.fullscreenbutton.FullscreenButtonState;
 
@@ -12,17 +12,17 @@ import com.vaadin.ui.Button;
  *
  */
 @SuppressWarnings("serial")
-public class FsButton extends Button {
+public class FullscreenButton extends Button {
 	
-	public FsButton() {
+	public FullscreenButton() {
 		super();
 	}
 	
-	public FsButton(String caption) {
+	public FullscreenButton(String caption) {
 		super(caption);
 	}
 	
-	public FsButton(String caption, ClickListener listener) {
+	public FullscreenButton(String caption, ClickListener listener) {
 		super(caption, listener);
 	}
 	

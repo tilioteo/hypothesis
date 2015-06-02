@@ -30,32 +30,29 @@ public class VFullscreenButton extends VButton {
 	}
 	
 	private native static void registerScript(VFullscreenButton button, Element element) /*-{
-		function getFullscreenEnabled() {
-			return button.@org.vaadin.button.client.ui.VFullscreenButton::fullscreen;
-		};
-		
 		(function () {
 			element.addEventListener("click", function () {
-				var enabled = true; // TODO get value of fullscreen field 
+				var enabled = button.@org.vaadin.button.client.ui.VFullscreenButton::fullscreen;
 				if (enabled) {
-					var docElm = $doc.documentElement;
+					var isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+					var el = isChrome ? $doc.documentElement : $doc.getElementsByTagName("body")[0];
 					
-					if (docElm.requestFullscreen) {
-						docElm.requestFullscreen();
-					} else if (docElm.requestFullScreen) {
-						docElm.requestFullScreen();
-					} else if (docElm.msRequestFullscreen) {
-						docElm.msRequestFullscreen();
-					} else if (docElm.msRequestFullScreen) {
-						docElm.msRequestFullScreen();
-					} else if (docElm.mozRequestFullscreen) {
-						docElm.mozRequestFullscreen();
-					} else if (docElm.mozRequestFullScreen) {
-						docElm.mozRequestFullScreen();
-					} else if (docElm.webkitRequestFullscreen) {
-						docElm.webkitRequestFullscreen();
-					} else if (docElm.webkitRequestFullScreen) {
-						docElm.webkitRequestFullScreen();
+					if (el.requestFullscreen) {
+						el.requestFullscreen();
+					} else if (el.requestFullScreen) {
+						el.requestFullScreen();
+					} else if (el.msRequestFullscreen) {
+						el.msRequestFullscreen();
+					} else if (el.msRequestFullScreen) {
+						el.msRequestFullScreen();
+					} else if (el.mozRequestFullscreen) {
+						el.mozRequestFullscreen();
+					} else if (el.mozRequestFullScreen) {
+						el.mozRequestFullScreen();
+					} else if (el.webkitRequestFullscreen) {
+						el.webkitRequestFullscreen();
+					} else if (el.webkitRequestFullScreen) {
+						el.webkitRequestFullScreen();
 					}
 				}
 			}, false);
