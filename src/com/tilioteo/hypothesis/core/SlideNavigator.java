@@ -25,12 +25,12 @@ public class SlideNavigator implements Serializable {
 	
 	public void next() {
 		if (slideFascia.hasValidFields()) {
-			ProcessEventBus.get().post(new FinishSlideEvent(Direction.NEXT));
+			ProcessEventBus.get(slideFascia.getUI()).post(new FinishSlideEvent(Direction.NEXT));
 		}
 	}
 	
 	public void prior() {
-		ProcessEventBus.get().post(new FinishSlideEvent(Direction.PRIOR));
+		ProcessEventBus.get(slideFascia.getUI()).post(new FinishSlideEvent(Direction.PRIOR));
 	}
 	
 	public void postMessage(Object object) {

@@ -11,6 +11,7 @@ import org.dom4j.Document;
 import com.tilioteo.hypothesis.event.MessageEventListener;
 import com.tilioteo.hypothesis.event.ViewportEventListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 
 /**
  * @author kamil
@@ -51,4 +52,6 @@ public interface SlideFascia extends HasVariables, HasActions, Serializable {
 	public Object createMessage(String uid);
 	
 	public void postMessage(String message);
+	
+	public UI getUI();
 }

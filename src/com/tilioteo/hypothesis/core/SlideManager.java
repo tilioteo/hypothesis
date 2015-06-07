@@ -33,8 +33,8 @@ import com.tilioteo.hypothesis.interfaces.SlideComponent;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.processing.ActionMap;
 import com.tilioteo.hypothesis.processing.ComponentMap;
-import com.tilioteo.hypothesis.processing.FieldMap;
 import com.tilioteo.hypothesis.processing.ExchangeVariableMap;
+import com.tilioteo.hypothesis.processing.FieldMap;
 import com.tilioteo.hypothesis.processing.TimerMap;
 import com.tilioteo.hypothesis.processing.Variable;
 import com.tilioteo.hypothesis.processing.VariableMap;
@@ -76,8 +76,10 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 	private MessageManager messageManager = null;
 	private User user = null;
 
-
+	private UI ui = null;
+	
 	public SlideManager() {
+		this.ui = UI.getCurrent();
 		slideFactory = SlideFactory.getInstance(this);
 		messageManager = new MessageManager();
 	}
@@ -337,18 +339,19 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 
 	@Override
 	public void receiveBroadcast(final String event) {
-		final Message message = Message.fromJson(event);
-		if (message != null) {
-			Long receiverId = message.getReceiverId();
-			if (null == user || null == receiverId || receiverId.equals(user.getId())) {
-				// ok - receive this message
-				UI ui = UI.getCurrent();
-				ui.access(new Runnable() {
-					@Override
-					public void run() {
-						fireEvent(new MessageEvent(message));
-					}
-				});
+		if (ui.getSession() != null) { // prevent from detached ui
+			final Message message = Message.fromJson(event);
+			if (message != null) {
+				Long receiverId = message.getReceiverId();
+				if (null == user || null == receiverId || receiverId.equals(user.getId())) {
+					// ok - receive this message
+					ui.access(new Runnable() {
+						@Override
+						public void run() {
+							fireEvent(new MessageEvent(message));
+						}
+					});
+				}
 			}
 		}
 	}
@@ -369,6 +372,11 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	@Override
+	public UI getUI() {
+		return ui;
 	}
 
 }

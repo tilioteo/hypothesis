@@ -77,7 +77,9 @@ public class CommandFactory implements Serializable {
 						Action action = slideManager.getAction(actionId);
 						if (action != null) {
 							log.debug("Execute action command.");
+							SlideFactory.getInstance(slideManager).addComponentDataVariable(data);
 							action.execute();
+							SlideFactory.getInstance(slideManager).clearComponentDataVariable();
 						} else {
 							log.error("Action " + actionId + " IS NULL!");
 						}
@@ -97,7 +99,7 @@ public class CommandFactory implements Serializable {
 		return new Command() {
 			public void execute() {
 				log.debug("Execute component event command.");
-				ProcessEventBus.get().post(event);
+				ProcessEventBus.get(event.getComponentData().getSender().getUI()).post(event);
 			}
 		};
 	}
@@ -106,7 +108,7 @@ public class CommandFactory implements Serializable {
 		return new Command() {
 			public void execute() {
 				log.debug("Execute slide event command.");
-				ProcessEventBus.get().post(event);
+				ProcessEventBus.get(event.getComponentData().getSlideManager().getUI()).post(event);
 			}
 		};
 	}

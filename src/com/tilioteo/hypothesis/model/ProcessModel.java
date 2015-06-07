@@ -11,6 +11,7 @@ import com.tilioteo.hypothesis.entity.Token;
 import com.tilioteo.hypothesis.event.ErrorNotificationEvent;
 import com.tilioteo.hypothesis.event.ProcessEventBus;
 import com.tilioteo.hypothesis.persistence.TokenService;
+import com.vaadin.ui.UI;
 
 /**
  * @author kamil
@@ -22,7 +23,10 @@ public class ProcessModel implements Serializable {
 	private TokenService tokenService;
 	private ProcessManager processManager;
 	
+	private ProcessEventBus bus;
+	
 	public ProcessModel() {
+		this.bus = ProcessEventBus.get(UI.getCurrent());
 		tokenService = TokenService.newInstance();
 		processManager = new ProcessManager();
 	}
@@ -52,7 +56,7 @@ public class ProcessModel implements Serializable {
 	 * @param caption Error description
 	 */
 	public void fireError(String caption) {
-		ProcessEventBus.get().post(new ErrorNotificationEvent(caption));
+		bus.post(new ErrorNotificationEvent(caption));
 	}
 
 	public void requestBreak() {
@@ -62,10 +66,6 @@ public class ProcessModel implements Serializable {
 	public void processTest(SimpleTest test) {
 		processManager.processTest(test);
 	}
-	
-	/*public void processSlideFollowing(Direction direction) {
-		processManager.processSlideFollowing(direction);
-	}*/
 	
 	public void clean() {
 		processManager.clean();

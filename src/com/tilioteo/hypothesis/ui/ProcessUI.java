@@ -85,12 +85,13 @@ public class ProcessUI extends HUI {
 	
 	private SimpleTest preparedTest = null;
 	
+	private ProcessEventBus bus = null; 
+	
 	@Override
 	protected void init(VaadinRequest request) {
 		super.init(request);
-		ProcessEventBus.createInstance(this);
-		
-		ProcessEventBus.get().register(this);
+		bus = ProcessEventBus.createInstance(this);
+		bus.register(this);
 		
 		log.debug("ProcessUI initialization");
 
@@ -154,7 +155,7 @@ public class ProcessUI extends HUI {
 		clearContent(animate, new Command() {
 			@Override
 			public void execute() {
-				ProcessEventBus.get().post((Direction.NEXT.equals(event.getDirection())) ? new NextSlideEvent() : new PriorSlideEvent());
+				bus.post((Direction.NEXT.equals(event.getDirection())) ? new NextSlideEvent() : new PriorSlideEvent());
 			}
 		});
 	}
@@ -166,7 +167,7 @@ public class ProcessUI extends HUI {
 		if (component != null) {
 			setSlideContent(component, event.getTimers(), event.getShortcutKeys());
 
-			ProcessEventBus.get().post(new AfterRenderContentEvent(component));
+			bus.post(new AfterRenderContentEvent(component));
 		} else {
 			log.error("Error while rendering slide.");
 			processModel.fireTestError();
@@ -219,7 +220,7 @@ public class ProcessUI extends HUI {
 		errorDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				ProcessEventBus.get().post(new CloseTestEvent());
+				bus.post(new CloseTestEvent());
 			}
 		});
 		errorDialog.show(this);
@@ -276,7 +277,7 @@ public class ProcessUI extends HUI {
 	public void detach() {
 		log.debug("ProcessUI detach");
 		
-		ProcessEventBus.get().unregister(this);
+		bus.unregister(this);
 		processModel.requestBreak();
 		processModel.clean();
 

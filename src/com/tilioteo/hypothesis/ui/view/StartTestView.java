@@ -138,7 +138,7 @@ public class StartTestView extends VerticalLayout implements ProcessView, ClickL
 	}
 
 	private void postEndEvent() {
-		ProcessEventBus.get().post(new HypothesisEvent.ProcessViewEndEvent(this));
+		ProcessEventBus.get(getUI()).post(new HypothesisEvent.ProcessViewEndEvent(this));
 	}
 
 }

@@ -367,7 +367,7 @@ public class SlideFactory implements Serializable {
 					action.setExecuteCommand(new Command() {
 						@Override
 						public void execute() {
-							ProcessEventBus.get().post(new ActionEvent(action));
+							ProcessEventBus.get(slideFascia.getUI()).post(new ActionEvent(action));
 						}
 					});
 					slideFascia.setAction(id, action);
@@ -732,6 +732,15 @@ public class SlideFactory implements Serializable {
 	}
 
 	public void addComponentDataVariable(AbstractComponentData<?> data) {
+		com.tilioteo.hypothesis.interfaces.Variable<?> variable = slideFascia.getVariables().get(SlideXmlConstants.COMPONENT_DATA);
+		if (null == variable) {
+			variable = new Variable<Object>(SlideXmlConstants.COMPONENT_DATA);
+			slideFascia.getVariables().put(SlideXmlConstants.COMPONENT_DATA, variable);
+		}
+		variable.setRawValue(data);
+	}
+	
+	public void addComponentDataVariable(SlideData data) {
 		com.tilioteo.hypothesis.interfaces.Variable<?> variable = slideFascia.getVariables().get(SlideXmlConstants.COMPONENT_DATA);
 		if (null == variable) {
 			variable = new Variable<Object>(SlideXmlConstants.COMPONENT_DATA);

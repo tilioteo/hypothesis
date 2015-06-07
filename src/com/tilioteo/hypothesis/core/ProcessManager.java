@@ -62,6 +62,7 @@ import com.tilioteo.hypothesis.persistence.OutputService;
 import com.tilioteo.hypothesis.persistence.PermissionService;
 import com.tilioteo.hypothesis.persistence.PersistenceService;
 import com.tilioteo.hypothesis.persistence.TestService;
+import com.vaadin.ui.UI;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -93,9 +94,11 @@ public class ProcessManager implements Serializable {
 	private Task currentTask = null;
 	private Slide currentSlide = null;
 	
+	private ProcessEventBus bus = null;
+	
 	public ProcessManager() {
-		
-		ProcessEventBus.get().register(this);
+		this.bus = ProcessEventBus.get(UI.getCurrent());
+		bus.register(this);
 		
 		branchManager = new BranchManager();
 		taskManager = new TaskManager();
@@ -204,7 +207,7 @@ public class ProcessManager implements Serializable {
 		saveRunningEvent(event);
 
 		// TODO add some error description
-		ProcessEventBus.get().post(new ErrorNotificationEvent(Messages.getString("Message.Error.Unspecified")));
+		bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.Unspecified")));
 	}
 
 	@Handler
@@ -215,7 +218,7 @@ public class ProcessManager implements Serializable {
 
 		saveBranchOutput();
 
-		ProcessEventBus.get().post(new NextBranchEvent());
+		bus.post(new NextBranchEvent());
 	}
 
 	@Handler
@@ -232,7 +235,7 @@ public class ProcessManager implements Serializable {
 		if (autoSlideShow) {
 			processSlideFollowing(event.getDirection());
 		} else {
-			ProcessEventBus.get().post(new AfterFinishSlideEvent(event.getDirection()));
+			bus.post(new AfterFinishSlideEvent(event.getDirection()));
 		}
 	}
 
@@ -246,7 +249,7 @@ public class ProcessManager implements Serializable {
 		// branchManager.addTaskOutputValue(taskManager.current(),
 		// taskOutputValue);
 
-		ProcessEventBus.get().post(new NextTaskEvent());
+		bus.post(new NextTaskEvent());
 	}
 
 	@Handler
@@ -286,16 +289,16 @@ public class ProcessManager implements Serializable {
 						slideProcessing = true;
 						renderSlide();
 					} else {
-						ProcessEventBus.get().post(new FinishTaskEvent());
+						bus.post(new FinishTaskEvent());
 					}
 				} else {
-					ProcessEventBus.get().post(new FinishBranchEvent());
+					bus.post(new FinishBranchEvent());
 				}
 			} else {
-				ProcessEventBus.get().post(new FinishTestEvent());
+				bus.post(new FinishTestEvent());
 			}
 		} else {
-			ProcessEventBus.get().post(new FinishTestEvent());
+			bus.post(new FinishTestEvent());
 		}
 	}
 
@@ -305,9 +308,9 @@ public class ProcessManager implements Serializable {
 
 		taskManager.addSlideOutputs(currentSlide, slideManager.getOutputs());
 		int nextIndex = taskManager.getNextSlideIndex(currentSlide);
-		if (nextIndex < 1) { //
+		if (nextIndex == 0) { //
 			currentSlide = slideManager.next();
-		} else if (nextIndex > slideManager.getCount()) {
+		} else if (nextIndex < 0 || nextIndex > slideManager.getCount()) {
 			currentSlide = null;
 		} else {
 			currentSlide = slideManager.get(nextIndex-1);
@@ -317,7 +320,7 @@ public class ProcessManager implements Serializable {
 			slideProcessing = true;
 			renderSlide();
 		} else {
-			ProcessEventBus.get().post(new FinishTaskEvent());
+			bus.post(new FinishTaskEvent());
 		}
 	}
 
@@ -352,10 +355,10 @@ public class ProcessManager implements Serializable {
 				slideProcessing = true;
 				renderSlide();
 			} else {
-				ProcessEventBus.get().post(new FinishTaskEvent());
+				bus.post(new FinishTaskEvent());
 			}
 		} else {
-			ProcessEventBus.get().post(new FinishBranchEvent());
+			bus.post(new FinishBranchEvent());
 		}
 	}
 
@@ -395,10 +398,10 @@ public class ProcessManager implements Serializable {
 				log.debug(String.format("Test start allowed (test id = %s).", test.getId() != null ? test.getId() : "NULL"));
 				processTest(test);
 			} else {
-				ProcessEventBus.get().post(new AfterPrepareTestEvent(test));
+				bus.post(new AfterPrepareTestEvent(test));
 			}
 		} else {
-			ProcessEventBus.get().post(new ErrorNotificationEvent(Messages.getString("Message.Error.StartTest")));
+			bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.StartTest")));
 		}
 	}
 
@@ -434,22 +437,22 @@ public class ProcessManager implements Serializable {
 			
 						if (test.getStatus().equals(Status.CREATED)) {
 							log.debug("Test was newly created.");
-							ProcessEventBus.get().post(new StartTestEvent(test));
+							bus.post(new StartTestEvent(test));
 						} else {
 							log.debug("Test continues from last point.");
-							ProcessEventBus.get().post(new ContinueTestEvent(test));
+							bus.post(new ContinueTestEvent(test));
 						}
 					} else {
 						log.debug("There is no slide.");
-						ProcessEventBus.get().post(new FinishTestEvent());
+						bus.post(new FinishTestEvent());
 					}
 				} else {
 					log.debug("There is no task.");
-					ProcessEventBus.get().post(new FinishTestEvent());
+					bus.post(new FinishTestEvent());
 				}
 			} else {
 				log.debug("There is no branch.");
-				ProcessEventBus.get().post(new FinishTestEvent());
+				bus.post(new FinishTestEvent());
 			}
 		} else {
 			log.debug("Test is already processing.");
@@ -460,7 +463,7 @@ public class ProcessManager implements Serializable {
 		if (!slideProcessing) {
 			slideProcessing = true;
 			
-			ProcessEventBus.get().post((Direction.NEXT.equals(direction)) ? new NextSlideEvent() : new PriorSlideEvent());
+			bus.post((Direction.NEXT.equals(direction)) ? new NextSlideEvent() : new PriorSlideEvent());
 		} else {
 			log.warn("Slide not processing.");
 		}
@@ -470,25 +473,25 @@ public class ProcessManager implements Serializable {
 		if (token != null) {
 			setCurrentUser(token.getUser());
 			if (checkUserPack(token.getUser(), token.getPack())) {
-				ProcessEventBus.get().post(new PrepareTestEvent(token, startAllowed));
+				bus.post(new PrepareTestEvent(token, startAllowed));
 			} else {
-				ProcessEventBus.get().post(new ErrorNotificationEvent(Messages.getString("Message.Error.InsufficientRights")));
+				bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.InsufficientRights")));
 			}
 		} else {
 			log.debug("Invalid token.");
 			setCurrentUser(null);
-			ProcessEventBus.get().post(new ErrorNotificationEvent(Messages.getString("Message.Error.Token")));
+			bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.Token")));
 		}
 	}
 
 	private void breakCurrentTest() {
-		ProcessEventBus.get().post(new BreakTestEvent());
+		bus.post(new BreakTestEvent());
 	}
 
 	private void renderSlide() {
 		if (slideManager.getViewportComponent() != null) {
 
-			ProcessEventBus.get().post(new RenderContentEvent(
+			bus.post(new RenderContentEvent(
 					slideManager.getViewportComponent(), slideManager.getTimers(), slideManager.getShortcutKeys()));
 		} else {
 			fireTestError();
@@ -617,7 +620,7 @@ public class ProcessManager implements Serializable {
 	}
 	
 	public void fireTestError() {
-		ProcessEventBus.get().post(new ErrorTestEvent());
+		bus.post(new ErrorTestEvent());
 	}
 	
 	public void requestBreakTest() {
@@ -643,7 +646,7 @@ public class ProcessManager implements Serializable {
 	}
 	
 	public void clean() {
-		ProcessEventBus.get().unregister(this);
+		bus.unregister(this);
 		Broadcaster.unregister(slideManager);
 	}
 }

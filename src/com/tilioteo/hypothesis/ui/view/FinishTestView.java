@@ -62,7 +62,7 @@ public class FinishTestView extends VerticalLayout implements ProcessView, Click
 	}
 
 	private void postEndEvent() {
-		ProcessEventBus.get().post(new CloseTestEvent());
+		ProcessEventBus.get(getUI()).post(new CloseTestEvent());
 	}
 
 }
