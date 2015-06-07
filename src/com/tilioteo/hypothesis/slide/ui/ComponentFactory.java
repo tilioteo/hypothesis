@@ -276,6 +276,7 @@ public class ComponentFactory {
 				@Override
 				public void handleEvent(MessageEvent event) {
 					SlideData data = new SlideData(slideManager.getSlide(), slideManager);
+					data.setMessage(event.getMessage());
 					Command componentEvent = CommandFactory.createMessageEventCommand(data, event.getTimestamp());
 					Command action = CommandFactory.createSlideActionCommand(slideManager, actionId, data);
 	

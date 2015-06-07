@@ -22,4 +22,12 @@ public class TaskNavigator implements Serializable {
 		node.setNextIndex(index);
 	}
 	
+	public void next() {
+		node.setNextIndex(0);
+	}
+	
+	public void nextTask() {
+		node.setNextIndex(-1);
+	}
+	
 }

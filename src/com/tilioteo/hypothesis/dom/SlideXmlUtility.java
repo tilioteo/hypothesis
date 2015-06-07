@@ -61,8 +61,9 @@ public class SlideXmlUtility implements Serializable {
 		return element.attributeValue(SlideXmlConstants.CAPTION);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static List<Element> getCaseElements(Element element) {
-		return getElementSubNodeChilds(element, SlideXmlConstants.CASE, null);
+		return element.selectNodes(SlideXmlConstants.CASE);
 	}
 
 	public static List<Element> getComponentHandlers(Element component) {

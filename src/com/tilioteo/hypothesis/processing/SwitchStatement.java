@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.tilioteo.hypothesis.evaluable.ExpressionFactory;
 import com.tilioteo.hypothesis.interfaces.Evaluable;
 import com.tilioteo.hypothesis.interfaces.HasVariables;
 import com.tilioteo.hypothesis.interfaces.Variable;
@@ -22,14 +23,14 @@ public class SwitchStatement implements Evaluable {
 	private HasVariables variables;
 	private Expression expression;
 
-	private HashMap<Object, List<Evaluable>> caseMap = new HashMap<Object, List<Evaluable>>();
+	private HashMap<String, List<Evaluable>> caseMap = new HashMap<String, List<Evaluable>>();
 
 	public SwitchStatement(HasVariables variables, Expression expression) {
 		this.variables = variables;
 		this.expression = expression;
 	}
 
-	public void addCaseEvaluable(Object caseValue, Evaluable evaluable) {
+	public void addCaseEvaluable(String caseValue, Evaluable evaluable) {
 		List<Evaluable> evaluables = caseMap.get(caseValue);
 		if (evaluables == null) {
 			evaluables = new ArrayList<Evaluable>();
@@ -42,12 +43,23 @@ public class SwitchStatement implements Evaluable {
 		if (expression != null && variables != null) {
 			Object result = expression.getValue();
 			if (result != null) {
-				List<Evaluable> evaluables = caseMap.get(result);
-				if (evaluables != null) {
-					for (Evaluable evaluable : evaluables) {
-						evaluable.setVariables(variables.getVariables());
-						evaluable.evaluate();
-						evaluable.updateVariables(variables.getVariables());
+				com.tilioteo.hypothesis.evaluable.Expression expression = ExpressionFactory.parseString("a==b");
+				expression.setVariableValue("a", result);
+				
+				for (String caseValue : caseMap.keySet()) {
+					com.tilioteo.hypothesis.evaluable.Expression caseExpression = ExpressionFactory.parseString(caseValue);
+					expression.setVariableValue("b", caseExpression.getValue());
+					Boolean value = expression.getBoolean();
+					
+					if (value != null && value.booleanValue()) {
+						List<Evaluable> evaluables = caseMap.get(caseValue);
+						if (evaluables != null) {
+							for (Evaluable evaluable : evaluables) {
+								evaluable.setVariables(variables.getVariables());
+								evaluable.evaluate();
+								evaluable.updateVariables(variables.getVariables());
+							}
+						}
 					}
 				}
 			}
