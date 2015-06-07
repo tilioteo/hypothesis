@@ -3,35 +3,30 @@
  */
 package org.vaadin.special.client.ui;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
-import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
  * @author kamil
  * 
  */
-public class VImage extends Widget {
+public class VImage extends SimplePanel {
 
 	public static final String CLASSNAME = "v-image";
-	private Element container;
+	
 	private Image image;
 
 	public VImage() {
-		container = Document.get().createDivElement();
-		setElement(container);
-		setStylePrimaryName(CLASSNAME);
+		super();
 
+		setStylePrimaryName(CLASSNAME+"-container");
+		
 		image = new Image();
-		image.setWidth("100%");
-		image.setHeight("100%");
-		container.appendChild(image.getElement());
+		image.setStylePrimaryName(CLASSNAME);
+		setWidget(image);
 	}
 
 	/**
@@ -59,11 +54,10 @@ public class VImage extends Widget {
 	}
 
 	public HandlerRegistration addLoadHandler(LoadHandler handler) {
-		return image.addHandler(handler, LoadEvent.getType());
+		return image.addLoadHandler(handler);
 	}
 
 	public HandlerRegistration addErrorHandler(ErrorHandler handler) {
-		return image.addHandler(handler, ErrorEvent.getType());
+		return image.addErrorHandler(handler);
 	}
-
 }
