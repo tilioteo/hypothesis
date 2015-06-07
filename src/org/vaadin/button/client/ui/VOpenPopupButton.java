@@ -28,7 +28,7 @@ public class VOpenPopupButton extends VButton {
 	private native static void initWindow(VOpenPopupButton button, String url) /*-{
 		var win = @org.vaadin.button.client.ui.VOpenPopupButton::window;
 		if (win == null || win.closed) {
-			win = $wnd.open(!url ? 'about:blank' : url,'popupWindow','menubar=no,location=no,status=no');
+			win = $wnd.open(!url ? 'about:blank' : url,'popupWindow-'+Math.random().toString(36).substr(2,5),'menubar=no,location=no,status=no');
 			@org.vaadin.button.client.ui.VOpenPopupButton::window = win;
 			var interval = $wnd.setInterval(function() {
 				try {
