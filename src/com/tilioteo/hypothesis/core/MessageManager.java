@@ -37,33 +37,31 @@ public class MessageManager implements Serializable {
 			Document doc = XmlUtility.readString(entity.getXmlData());
 			if (MessageXmlUtility.isValidMessageXml(doc)) {
 				List<Element> properties = MessageXmlUtility.getPropertyElements(doc.getRootElement());
-				if (!properties.isEmpty()) {
-					Message message = new Message(uid, userId);
-					
-					for (Element propertyElement : properties) {
-						String name = SlideXmlUtility.getName(propertyElement);
-						String type = SlideXmlUtility.getType(propertyElement);
-						if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(type)) {
-							return null;
-						}
-						Class<?> clazz;
-						if (MessageXmlConstants.INTEGER.equalsIgnoreCase(type)) {
-							clazz = Integer.class;
-						} else if (MessageXmlConstants.BOOLEAN.equalsIgnoreCase(type)) {
-							clazz = Boolean.class;
-						} else if (MessageXmlConstants.FLOAT.equalsIgnoreCase(type)) {
-							clazz = Double.class;
-						} else if (MessageXmlConstants.STRING.equalsIgnoreCase(type)) {
-							clazz = String.class;
-						} else {
-							return null;
-						}
-						
-						message.setPropertyDefinition(name, clazz);
+				Message message = new Message(uid, userId);
+				
+				for (Element propertyElement : properties) {
+					String name = SlideXmlUtility.getName(propertyElement);
+					String type = SlideXmlUtility.getType(propertyElement);
+					if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(type)) {
+						return null;
+					}
+					Class<?> clazz;
+					if (MessageXmlConstants.INTEGER.equalsIgnoreCase(type)) {
+						clazz = Integer.class;
+					} else if (MessageXmlConstants.BOOLEAN.equalsIgnoreCase(type)) {
+						clazz = Boolean.class;
+					} else if (MessageXmlConstants.FLOAT.equalsIgnoreCase(type)) {
+						clazz = Double.class;
+					} else if (MessageXmlConstants.STRING.equalsIgnoreCase(type)) {
+						clazz = String.class;
+					} else {
+						return null;
 					}
 					
-					return message;
+					message.setPropertyDefinition(name, clazz);
 				}
+					
+				return message;
 			}
 		}
 		
