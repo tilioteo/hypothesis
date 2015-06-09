@@ -41,6 +41,7 @@ import com.tilioteo.hypothesis.processing.VariableMap;
 import com.tilioteo.hypothesis.processing.WindowMap;
 import com.tilioteo.hypothesis.slide.ui.Timer;
 import com.tilioteo.hypothesis.slide.ui.Window;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 
@@ -349,6 +350,11 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 						@Override
 						public void run() {
 							fireEvent(new MessageEvent(message));
+							if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+								try {
+									ui.push();
+								} catch (Throwable e) {}
+							}
 						}
 					});
 				}
