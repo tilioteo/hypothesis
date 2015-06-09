@@ -68,6 +68,16 @@ public class ProcessingHanoi extends Processing implements SlideComponent, Maska
 		if (null == mask) {
 			mask = Mask.addToComponent(this);
 		}
+		mask.setColor("#808080");
+		mask.show();
+	}
+
+	@Override
+	public void mask(String color) {
+		if (null == mask) {
+			mask = Mask.addToComponent(this);
+		}
+		mask.setColor(color);
 		mask.show();
 	}
 

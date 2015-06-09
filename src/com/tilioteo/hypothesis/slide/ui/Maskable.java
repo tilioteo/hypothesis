@@ -10,6 +10,9 @@ package com.tilioteo.hypothesis.slide.ui;
 public interface Maskable {
 	
 	public void mask();
+
+	public void mask(String color);
+	
 	public void unmask();
 
 }
