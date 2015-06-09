@@ -24,7 +24,11 @@ public class SlideNavigator implements Serializable {
 	}
 	
 	public void next() {
-		if (slideFascia.hasValidFields()) {
+		next(true);
+	}
+	
+	public void next(boolean validate) {
+		if (!validate || slideFascia.hasValidFields()) {
 			ProcessEventBus.get(slideFascia.getUI()).post(new FinishSlideEvent(Direction.NEXT));
 		}
 	}
