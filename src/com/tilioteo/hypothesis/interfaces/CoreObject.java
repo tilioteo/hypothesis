@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.core;
+package com.tilioteo.hypothesis.interfaces;
 
 import java.io.Serializable;
 
