@@ -21,10 +21,11 @@ import com.vaadin.ui.Layout;
  * 
  */
 @SuppressWarnings("serial")
-public class Panel extends com.vaadin.ui.Panel implements SlideComponentContainer {
+public class Panel extends com.vaadin.ui.Panel implements SlideComponentContainer, Maskable {
 
 	private SlideFascia slideFascia;
 	private ParentAlignment parentAlignment;
+	private Mask mask = null;
 
 	public Panel() {
 		this.parentAlignment = new ParentAlignment();
@@ -84,6 +85,31 @@ public class Panel extends com.vaadin.ui.Panel implements SlideComponentContaine
 	@Override
 	public void setSlideManager(SlideFascia slideFascia) {
 		this.slideFascia = slideFascia;
+	}
+
+	@Override
+	public void mask() {
+		if (null == mask) {
+			mask = Mask.addToComponent(this);
+		}
+		mask.setColor("#808080");
+		mask.show();
+	}
+
+	@Override
+	public void mask(String color) {
+		if (null == mask) {
+			mask = Mask.addToComponent(this);
+		}
+		mask.setColor(color);
+		mask.show();
+	}
+
+	@Override
+	public void unmask() {
+		if (mask != null) {
+			mask.hide();
+		}
 	}
 
 }
