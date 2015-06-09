@@ -252,7 +252,7 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 		return time;
 	}
 
-	protected void setTime(long time) {
+	public void setTime(long time) {
 		this.time = time < 0 ? -1 : time;
 	}
 	
