@@ -148,9 +148,16 @@ public class Method extends Primitive implements HasReference {
 					rank[i] += 3;
 				} else if (type2 == String.class && (type == Number.class || type == int.class || type == double.class || type == long.class || type == short.class || type == float.class)) { // try to convert to string
 					rank[i] += 1;
-				} else { // cannot be used
-					rank[i] = 0;
-					break;
+				} else { // castable primitive types
+					if (((type2 == double.class || type2 == Double.class) && (type == long.class || type == Long.class || type == int.class || type == Integer.class || type == float.class || type == Float.class || type == short.class || type == Short.class || type == byte.class || type == Byte.class)) ||
+							((type2 == long.class || type2 == Long.class) && (type == int.class || type == Integer.class || type == short.class || type == Short.class || type == byte.class || type == Byte.class)) ||
+							((type2 == int.class || type2 == Integer.class) && (type == short.class || type == Short.class || type == byte.class || type == Byte.class)) ||
+							((type2 == short.class || type2 == Short.class) && (type == byte.class || type == Byte.class))) {
+						rank[i] += 3;
+					} else { // cannot be used
+						rank[i] = 0;
+						break;
+					}
 				}
 			}
 			rank[i] = rank[i]/parameterTypes.length;
