@@ -45,6 +45,7 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
@@ -59,7 +60,7 @@ import com.vaadin.ui.Window.CloseEvent;
 @SuppressWarnings("serial")
 @Theme("hypothesis")
 @PreserveOnRefresh
-@Push
+@Push(value = PushMode.MANUAL)
 public class ProcessUI extends HUI {
 
 	private static Logger log = Logger.getLogger(ProcessUI.class);
