@@ -24,6 +24,7 @@ import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Command;
 import com.tilioteo.hypothesis.processing.CommandFactory;
 import com.vaadin.ui.Alignment;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * @author kamil
@@ -120,6 +121,24 @@ public class VectorFeatureLayer extends org.vaadin.maps.ui.layer.VectorFeatureLa
 				Command.Executor.execute(action);
 			}
 		});
+	}
+	
+	/**
+	 * Create and add feature to the layer
+	 * @param geometry
+	 * @return created feature or null
+	 */
+	public VectorFeature createFeature(Geometry geometry) {
+		if (geometry != null) {
+			VectorFeature feature = new VectorFeature();
+			feature.setSlideManager(slideFascia);
+			feature.setGeometry(geometry);
+			
+			addComponent(feature);
+			return feature;
+		}
+		
+		return null;
 	}
 
 }
