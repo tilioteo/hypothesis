@@ -54,6 +54,9 @@ public class ExpressionFactoryTest {
 		//expression.setVariableValue("obj", point);
 		//Object val = expression.getValue();
 
+		// TODO debug expressions
+		// user1drawn & (recGeomCount==2) // error in parsing (recGeomCount
+		// panel1->mask(rgba(127,127,127,0.3))
 		String parsed = ExpressionFactory.parseString("initMsg=Document->createMessage(\"3F66DCC0-BA8F-4825-A8EE-CB70EF118C93\")").toString();
 		assertEquals("(initMsg=(Document->createMessage(\"3F66DCC0-BA8F-4825-A8EE-CB70EF118C93\")))", parsed);
 		//fail("Not yet implemented");
