@@ -88,7 +88,7 @@ public class TaskManager extends ListManager<Branch, Task> implements HasVariabl
 				return node.getNextIndex();
 			}
 		}
-		return -1;
+		return 0; // 0 for next slide in task
 	}
 
 	private void buildTask() {
@@ -108,6 +108,7 @@ public class TaskManager extends ListManager<Branch, Task> implements HasVariabl
 
 		nodes.clear();
 		variables.clear();
+		actions.clear();
 		slideOutputs.clear();
 	}
 
