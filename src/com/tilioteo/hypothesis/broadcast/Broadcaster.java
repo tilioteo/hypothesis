@@ -43,12 +43,12 @@ public class Broadcaster implements Serializable {
 	public static synchronized void broadcastExcept(final BroadcastListener exceptListener, final String message) {
 		for (final BroadcastListener listener : listeners)
 			if (listener != exceptListener) {
-			executorService.execute(new Runnable() {
-				@Override
-				public void run() {
-					listener.receiveBroadcast(message);
-				}
-			});
-		}
+				executorService.execute(new Runnable() {
+					@Override
+					public void run() {
+						listener.receiveBroadcast(message);
+					}
+				});
+			}
 	}
 }

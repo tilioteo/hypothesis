@@ -96,7 +96,7 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 	}
 	
 	@Override
-	public void addMessageListener(String uid, MessageEventListener listener) {
+	public synchronized void addMessageListener(String uid, MessageEventListener listener) {
 		messageEventManager.addListener(uid, listener);
 	}
 	
@@ -151,7 +151,7 @@ public class SlideManager extends ListManager<Task, Slide> implements SlideFasci
 		viewportEventManager.fireEvent(event);
 	}
 
-	public void fireEvent(MessageEvent event) {
+	public synchronized void fireEvent(MessageEvent event) {
 		messageEventManager.fireEvent(event);
 	}
 

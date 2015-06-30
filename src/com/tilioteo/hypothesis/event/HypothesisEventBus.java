@@ -21,20 +21,20 @@ public class HypothesisEventBus<T> implements Serializable, IPublicationErrorHan
 			addFeature(Feature.AsynchronousMessageDispatch.Default()).
 			setProperty(Properties.Handler.PublicationError, this));    
     
-    public void post(final T event) {
+    public synchronized void post(final T event) {
         eventBus.publish(event);
     }
 
-    public void register(final Object object) {
+    public synchronized void register(final Object object) {
     	eventBus.subscribe(object);
     }
 
-    public void unregister(final Object object) {
+    public synchronized void unregister(final Object object) {
     	eventBus.unsubscribe(object);
     }
 
 	@Override
-	public void handleError(PublicationError error) {
+	public synchronized void handleError(PublicationError error) {
 		// TODO Auto-generated method stub
 		
 	}
