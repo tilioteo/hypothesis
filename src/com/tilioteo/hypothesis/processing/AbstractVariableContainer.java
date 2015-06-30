@@ -25,7 +25,7 @@ public abstract class AbstractVariableContainer implements HasVariables {
 	}
 
 	public Map<String, Variable<?>> getVariables() {
-		return variables.getVariables();
+		return variables != null ? variables.getVariables() : null;
 	}
 
 	protected void setVariables(HasVariables variables) {
