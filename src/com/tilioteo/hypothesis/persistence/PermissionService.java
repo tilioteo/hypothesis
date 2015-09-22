@@ -378,11 +378,12 @@ public class PermissionService implements Serializable {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
 			Set<Pack> packs = new HashSet<Pack>();
 			for (UserPermission userPermission : userPermissions) {
-				if (enabled == null	|| userPermission.getEnabled().equals(enabled)) {
+				if (enabled == null || userPermission.getEnabled().equals(enabled)) {
 					Pack pack = userPermission.getPack();
-					if (userPermission.getPass() == null || excludeFinished == null || !excludeFinished) {
+					// TODO check pass is not null
+					//if (userPermission.getPass() == null || excludeFinished == null || !excludeFinished) {
 						packs.add(pack);
-					} /*else {
+					/*} else {
 						List<SimpleTest> finishedTests = testService.findTestsBy(user, pack, Status.FINISHED);
 						if (userPermission.getPass() < finishedTests.size()) {
 							packs.add(pack);

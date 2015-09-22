@@ -401,6 +401,7 @@ public class ProcessManager implements Serializable {
 				bus.post(new AfterPrepareTestEvent(test));
 			}
 		} else {
+			log.error("No test got!");
 			bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.StartTest")));
 		}
 	}

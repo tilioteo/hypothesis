@@ -124,6 +124,7 @@ public class TestService implements Serializable {
 			
 			// anonymous user cannot continue broken test 
 			if (user != null) {
+				log.debug("test of user " + user.getUsername() + " (" + user.getId() + ")");
 				// TODO broken test finding is disabled at this time
 				// continue of testing must be implemented first
 				//tests = testDao.findByCriteria(Restrictions.and(
@@ -133,15 +134,19 @@ public class TestService implements Serializable {
 				// TODO remove this line after uncommenting code block above
 				tests = new ArrayList<SimpleTest>();
 			} else {
+				log.debug("test of annonymous user");
 				tests = new ArrayList<SimpleTest>();
 			}
 
 			SimpleTest outputTest = null;
 			if (tests.size() > 0) {
+				log.debug("getting broken test");
 				outputTest = tests.get(0);
 			} else {
+				log.debug("creating new test instance for pack id=" + pack.getId());
 				outputTest = new SimpleTest(pack, user);
 				outputTest.setProduction(production);
+				log.debug("persisting new test instance");
 				testDao.makePersistent(outputTest);
 			}
 
