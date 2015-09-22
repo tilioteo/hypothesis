@@ -115,7 +115,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createWMSLayerClickEventCommand(WMSLayerData data, Date timestamp, Date clientTimestamp) {
 		WMSLayerEvent event = new WMSLayerEvent.Click(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -123,7 +123,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createImageLayerClickEventCommand(ImageLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageLayerEvent event = new ImageLayerEvent.Click(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -131,7 +131,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createImageLayerLoadEventCommand(ImageLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageLayerEvent event = new ImageLayerEvent.Load(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -139,7 +139,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createImageSequenceLayerClickEventCommand(ImageSequenceLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Click(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -147,7 +147,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createImageSequenceLayerLoadEventCommand(ImageSequenceLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Load(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -155,7 +155,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createImageSequenceLayerChangeEventCommand(ImageSequenceLayerData data, Date timestamp, Date clientTimestamp) {
 		ImageSequenceLayerEvent event = new ImageSequenceLayerEvent.Change(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -163,7 +163,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createVectorFeatureLayerClickEventCommand(VectorFeatureLayerData data, Date timestamp, Date clientTimestamp) {
 		VectorFeatureLayerEvent event = new VectorFeatureLayerEvent.Click(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -171,7 +171,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createVectorFeatureClickEventCommand(VectorFeatureData data, Date timestamp, Date clientTimestamp) {
 		VectorFeatureEvent event = new VectorFeatureEvent.Click(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -179,7 +179,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createDrawPointControlEventCommand(DrawPointControlData data, Date timestamp, Date clientTimestamp) {
 		DrawPointControlEvent event = new DrawPointControlEvent.DrawPoint(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -187,7 +187,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createDrawPathControlEventCommand(DrawPathControlData data, Date timestamp, Date clientTimestamp) {
 		DrawPathControlEvent event = new DrawPathControlEvent.DrawPath(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -195,7 +195,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createDrawLineControlEventCommand(DrawLineControlData data, Date timestamp, Date clientTimestamp) {
 		DrawLineControlEvent event = new DrawLineControlEvent.DrawLine(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -203,7 +203,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createDrawPolygonControlEventCommand(DrawPolygonControlData data, Date timestamp, Date clientTimestamp) {
 		DrawPolygonControlEvent event = new DrawPolygonControlEvent.DrawPolygon(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -211,7 +211,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createPanControlPanStartEventCommand(PanControlData data, Date timestamp, Date clientTimestamp) {
 		PanControlEvent event = new PanControlEvent.PanStart(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -219,7 +219,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createPanControlPanEndEventCommand(PanControlData data, Date timestamp, Date clientTimestamp) {
 		PanControlEvent event = new PanControlEvent.PanEnd(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
@@ -227,7 +227,7 @@ public class MapComponentFactory implements Serializable {
 
 	public static Command createZoomControlZoomChangeEventCommand(ZoomControlData data, Date timestamp, Date clientTimestamp) {
 		ZoomControlEvent event = new ZoomControlEvent.ZoomChange(data);
-		event.setTimestamp(clientTimestamp);
+		event.setTimestamp(timestamp);
 		event.setClientTimestamp(clientTimestamp);
 
 		return CommandFactory.createComponentEventCommand(event);
