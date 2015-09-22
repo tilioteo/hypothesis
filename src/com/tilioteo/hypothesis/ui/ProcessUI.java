@@ -300,7 +300,7 @@ public class ProcessUI extends HUI {
 			JavaScript javaScript = Page.getCurrent().getJavaScript();
 			javaScript.execute("window.history.back();");
 		}
-		getSession().close();
+		//getSession().close(); // closes all windows in this session
 
 		super.close();
 	}
