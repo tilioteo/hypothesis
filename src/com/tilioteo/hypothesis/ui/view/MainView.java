@@ -14,7 +14,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class MainView extends VerticalLayout {
 	
-	private static final String VERSION = "1.4.9";
+	private static final String VERSION = "1.4.10";
 
 	public MainView() {
 		setSizeFull();
