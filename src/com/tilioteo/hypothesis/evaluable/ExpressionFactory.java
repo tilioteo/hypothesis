@@ -111,6 +111,10 @@ public class ExpressionFactory implements Serializable {
 		for (int i = 0; i < text.length(); ++i) {
 			if (StringConstants.CHR_STRING_SEPARATOR == text.charAt(i)) {
 				stringBegun = !stringBegun;
+				if (stringBegun) {
+					operatorIndex = 0;
+					operatorString = StringConstants.STR_EMPTY;
+				}
 				continue;
 			}
 			if (!stringBegun) {
