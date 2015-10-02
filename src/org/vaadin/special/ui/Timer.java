@@ -270,12 +270,14 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 				ui.access/*Synchronously*/(new Runnable() {
 					@Override
 					public void run() {
-						fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
-						if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
-							try {
-								ui.push();
-							} catch (Throwable e) {}
-						}
+						try {
+							fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+							if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+								try {
+									ui.push();
+								} catch (Throwable e) {}
+							}
+						} catch (Throwable e) {}
 					}
 				});
 			}
@@ -308,12 +310,14 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 					ui.access/*Synchronously*/(new Runnable() {
 						@Override
 						public void run() {
-							eventRouterMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, getState().direction, timeSlice));
-							if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
-								try {
-									ui.push();
-								} catch (Throwable e) {}
-							}
+							try {
+								eventRouterMap.get(timeSlice).fireEvent(new UpdateEvent(Timer.this, counter, getState().direction, timeSlice));
+								if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+									try {
+										ui.push();
+									} catch (Throwable e) {}
+								}
+							} catch (Throwable e) {}
 						}
 					});
 				}
@@ -355,12 +359,14 @@ public class Timer extends AbstractComponent implements NonVisualComponent {
 					ui.access/*Synchronously*/(new Runnable() {
 						@Override
 						public void run() {
-							fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
-							if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
-								try {
-									ui.push();
-								} catch (Throwable e) {}
-							}
+							try {
+								fireEvent(new StopEvent(Timer.this, counter, getState().direction, false));
+								if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+									try {
+										ui.push();
+									} catch (Throwable e) {}
+								}
+							} catch (Throwable e) {}
 						}
 					});
 				}
