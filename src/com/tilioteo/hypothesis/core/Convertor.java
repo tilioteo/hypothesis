@@ -24,4 +24,9 @@ public class Convertor implements CoreObject {
 	public Boolean stringToBool(String string) {
 		return Strings.toBoolean(string);
 	}
+
+	public String intToString(Integer integer) {
+		return integer != null ? integer.toString() : "";
+	}
+	
 }
