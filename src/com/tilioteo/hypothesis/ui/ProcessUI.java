@@ -81,6 +81,7 @@ public class ProcessUI extends HUI {
 	private boolean requestFullscreen = false;
 	private boolean requestBack = false;
 	private boolean animate = true;
+	private boolean requestClose = false;
 	
 	private String lastToken = null;
 	
@@ -229,6 +230,7 @@ public class ProcessUI extends HUI {
 
 	@Handler
 	public void requestClose(final CloseTestEvent event) {
+		requestClose = true;
 		close();
 	}
 
@@ -288,6 +290,10 @@ public class ProcessUI extends HUI {
 	@Override
 	public void close() {
 		log.debug("close::");
+		if (!requestClose) {
+			log.warn("ProcessUI closing without request. Possible runtime error or user closed the browser window.");
+			requestClose = false;
+		}
 		
 		if (!requestBack) {
 			log.debug("Closing window.");
@@ -301,7 +307,7 @@ public class ProcessUI extends HUI {
 			javaScript.execute("window.history.back();");
 		}
 		//getSession().close(); // closes all windows in this session
-
+		
 		super.close();
 	}
 	
