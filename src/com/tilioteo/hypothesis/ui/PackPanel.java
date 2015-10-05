@@ -3,7 +3,6 @@
  */
 package com.tilioteo.hypothesis.ui;
 
-import org.vaadin.button.ui.OpenPopupButton;
 import org.vaadin.button.ui.OpenPopupButton.WindowClosedEvent;
 
 import com.tilioteo.hypothesis.core.Messages;
