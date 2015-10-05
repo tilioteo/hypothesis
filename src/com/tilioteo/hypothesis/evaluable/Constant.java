@@ -3,8 +3,8 @@
  */
 package com.tilioteo.hypothesis.evaluable;
 
+import com.tilioteo.common.Strings;
 import com.tilioteo.hypothesis.common.StringConstants;
-import com.tilioteo.hypothesis.common.Strings;
 
 /**
  * @author Kamil Morong - Hypothesis

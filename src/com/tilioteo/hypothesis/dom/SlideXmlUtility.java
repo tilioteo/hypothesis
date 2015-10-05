@@ -14,9 +14,9 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import com.tilioteo.hypothesis.common.StringMap;
-import com.tilioteo.hypothesis.common.StringSet;
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
+import com.tilioteo.common.collections.StringMap;
+import com.tilioteo.common.collections.StringSet;
 
 /**
  * @author Kamil Morong - Hypothesis

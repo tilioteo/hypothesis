@@ -10,7 +10,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong - Hypothesis

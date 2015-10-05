@@ -13,7 +13,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Element;
 import org.vaadin.maps.shared.ui.Style;
 
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.event.DrawLineControlData;

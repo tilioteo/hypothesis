@@ -6,7 +6,7 @@ package com.tilioteo.hypothesis.plugin.processing.ui;
 import org.dom4j.Element;
 import org.vaadin.tltv.vprocjs.ui.Processing;
 
-import com.tilioteo.hypothesis.common.StringMap;
+import com.tilioteo.common.collections.StringMap;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.slide.ui.ComponentUtility;

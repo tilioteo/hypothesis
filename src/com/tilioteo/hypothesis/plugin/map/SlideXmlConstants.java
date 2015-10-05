@@ -3,7 +3,7 @@
  */
 package com.tilioteo.hypothesis.plugin.map;
 
-import com.tilioteo.hypothesis.common.StringSet;
+import com.tilioteo.common.collections.StringSet;
 
 /**
  * @author Kamil Morong - Tilioteo Ltd

@@ -3,7 +3,7 @@
  */
 package com.tilioteo.hypothesis.core;
 
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
 import com.tilioteo.hypothesis.interfaces.CoreObject;
 
 /**

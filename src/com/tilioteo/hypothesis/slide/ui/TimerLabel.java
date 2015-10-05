@@ -5,7 +5,7 @@ package com.tilioteo.hypothesis.slide.ui;
 
 import org.dom4j.Element;
 
-import com.tilioteo.hypothesis.common.StringMap;
+import com.tilioteo.common.collections.StringMap;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;

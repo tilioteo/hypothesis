@@ -9,7 +9,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
 import com.tilioteo.hypothesis.dom.MessageXmlConstants;
 import com.tilioteo.hypothesis.dom.MessageXmlUtility;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;

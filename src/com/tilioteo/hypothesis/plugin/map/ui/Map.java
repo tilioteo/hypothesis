@@ -13,7 +13,7 @@ import org.vaadin.maps.ui.MapContainer;
 import org.vaadin.maps.ui.control.AbstractControl;
 import org.vaadin.maps.ui.layer.AbstractLayer;
 
-import com.tilioteo.hypothesis.common.StringMap;
+import com.tilioteo.common.collections.StringMap;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.MapComponentFactory;

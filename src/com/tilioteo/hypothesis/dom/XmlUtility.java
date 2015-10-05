@@ -20,8 +20,8 @@ import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import com.tilioteo.common.Strings;
 import com.tilioteo.hypothesis.common.StringConstants;
-import com.tilioteo.hypothesis.common.Strings;
 
 /**
  * @author Kamil Morong - Hypothesis

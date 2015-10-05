@@ -3,7 +3,7 @@
  */
 package com.tilioteo.hypothesis.dom;
 
-import com.tilioteo.hypothesis.common.StringSet;
+import com.tilioteo.common.collections.StringSet;
 
 /**
  * @author Kamil Morong - Hypothesis

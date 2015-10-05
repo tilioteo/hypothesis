@@ -12,8 +12,8 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.tilioteo.common.Strings;
 import com.tilioteo.hypothesis.common.StringConstants;
-import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.dom.TaskXmlUtility;

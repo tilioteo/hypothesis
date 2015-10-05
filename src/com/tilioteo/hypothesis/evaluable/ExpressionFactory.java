@@ -8,9 +8,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.tilioteo.hypothesis.common.ReadOnlyHashSet;
+import com.tilioteo.common.Strings;
+import com.tilioteo.common.collections.ReadOnlyHashSet;
 import com.tilioteo.hypothesis.common.StringConstants;
-import com.tilioteo.hypothesis.common.Strings;
 
 /**
  * @author Kamil Morong - Hypothesis

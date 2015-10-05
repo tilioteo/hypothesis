@@ -19,7 +19,7 @@ import org.vaadin.special.ui.ShortcutKey;
 import org.vaadin.special.ui.ShortcutKey.KeyPressEvent;
 import org.vaadin.special.ui.ShortcutKey.KeyPressListener;
 
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
 import com.tilioteo.hypothesis.core.ShortcutUtility;
 import com.tilioteo.hypothesis.core.ShortcutUtility.ShortcutKeys;
 import com.tilioteo.hypothesis.core.SlideFactory;

@@ -9,8 +9,8 @@ import org.dom4j.Element;
 import org.vaadin.maps.ui.handler.ZoomHandler;
 import org.vaadin.maps.ui.handler.ZoomHandler.ZoomChangeEvent;
 
-import com.tilioteo.hypothesis.common.StringMap;
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
+import com.tilioteo.common.collections.StringMap;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;

@@ -10,19 +10,9 @@ package com.tilioteo.hypothesis.common;
 public final class StringConstants {
 	
 	public static final String STR_EMPTY				=	"";
-	public static final String STR_0					=	"0";
-	public static final String STR_HEX_PREFIX			=	"0x";
 	public static final String STR_COMMA				=	",";
 	public static final String STR_DOT					=	".";
 	public static final String STR_DOUBLE_QUOTE			=	"\"";
-	
-	public static final String STR_UNIT_PX				=	"px";
-	public static final String STR_UNIT_PT				=	"pt";
-	public static final String STR_UNIT_EM				=	"em";
-	public static final String STR_UNIT_EX				=	"ex";
-	public static final String STR_UNIT_MM				=	"mm";
-	public static final String STR_UNIT_CM				=	"cm";
-	public static final String STR_UNIT_PERCENT			=	"%";
 	
 	public static final String STR_BOOL_TRUE			=	"true";
 	public static final String STR_BOOL_FALSE			=	"false";
@@ -45,8 +35,6 @@ public final class StringConstants {
 	public static final String STR_OP_OR				=	"|";
 	public static final String STR_OP_XOR				=	"~";
 	public static final String STR_OP_ASSIGN			=	"=";
-
-	public static final String STR_STRING_SEPARATOR		=	STR_DOUBLE_QUOTE;
 
 	public static final Character CHR_NOT				=	'!';
 	public static final Character CHR_MINUS				=	'-';
@@ -94,7 +82,6 @@ public final class StringConstants {
 	public static final Character CHR_8					=	'8';
 	public static final Character CHR_9					=	'9';
 
-	public static final String ERROR_INPUT_STRING_NUM_CHARS	=	"Input string must contain an even number of characters";
 	public static final String ERROR_UNEXP_PARENTHESIS_FMT	=	"Unexpected parenthesis at position %d";
 	public static final String ERROR_UNEXP_CHAR_AT_POS_FMT	=	"Unexpected character at position %d";
 	

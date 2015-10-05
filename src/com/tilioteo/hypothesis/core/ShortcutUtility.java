@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import org.vaadin.special.data.ShortcutConstants;
 
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
 
 /**
  * @author kamil

@@ -17,8 +17,8 @@ import org.vaadin.maps.ui.handler.PathHandler.FinishStrategy;
 import org.vaadin.maps.ui.layer.Layer;
 import org.vaadin.maps.ui.layer.VectorFeatureLayer;
 
-import com.tilioteo.hypothesis.common.StringMap;
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
+import com.tilioteo.common.collections.StringMap;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;
 import com.tilioteo.hypothesis.plugin.map.ui.DrawLineControl;

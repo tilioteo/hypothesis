@@ -12,8 +12,8 @@ import org.vaadin.maps.ui.handler.PanHandler.PanEndEvent;
 import org.vaadin.maps.ui.handler.PanHandler.PanStartEvent;
 import org.vaadin.maps.ui.layer.ForLayer;
 
-import com.tilioteo.hypothesis.common.StringMap;
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
+import com.tilioteo.common.collections.StringMap;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;

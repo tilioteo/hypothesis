@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.dom4j.Element;
 
-import com.tilioteo.hypothesis.common.StringMap;
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
+import com.tilioteo.common.collections.StringMap;
 import com.tilioteo.hypothesis.core.SlideFactory;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;

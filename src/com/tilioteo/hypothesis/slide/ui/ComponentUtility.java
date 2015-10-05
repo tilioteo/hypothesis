@@ -10,8 +10,8 @@ import org.dom4j.Element;
 import org.vaadin.special.ui.MultipleComponentPanel;
 import org.vaadin.special.ui.MultipleComponentPanel.Orientation;
 
-import com.tilioteo.hypothesis.common.StringMap;
-import com.tilioteo.hypothesis.common.Strings;
+import com.tilioteo.common.Strings;
+import com.tilioteo.common.collections.StringMap;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.vaadin.server.ExternalResource;

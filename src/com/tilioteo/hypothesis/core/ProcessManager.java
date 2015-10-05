@@ -541,7 +541,7 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	public void updateEvent(Event event) {
+	private void updateEvent(Event event) {
 		if (event != null) {
 			event.setBranch(currentBranch);
 			event.setTask(currentTask);
@@ -592,7 +592,7 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	public void updateTest(SimpleTest test, Date date, Status status) {
+	private void updateTest(SimpleTest test, Date date, Status status) {
 		test = persistenceService.merge(test);
 
 		if (test != null) {

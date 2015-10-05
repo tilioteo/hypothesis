@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.dom4j.Element;
 
-import com.tilioteo.hypothesis.common.StringSet;
+import com.tilioteo.common.collections.StringSet;
 import com.tilioteo.hypothesis.interfaces.SlideComponent;
 import com.tilioteo.hypothesis.interfaces.SlideComponentPlugin;
 import com.tilioteo.hypothesis.interfaces.SlideFascia;

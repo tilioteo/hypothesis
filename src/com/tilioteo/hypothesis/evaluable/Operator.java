@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.tilioteo.hypothesis.common.ReadOnlyHashSet;
+import com.tilioteo.common.collections.ReadOnlyHashSet;
 import com.tilioteo.hypothesis.common.StringConstants;
 
 /**

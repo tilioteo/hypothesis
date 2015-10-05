@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.vaadin.special.ui.ShortcutKey;
 
+import com.tilioteo.common.Strings;
 import com.tilioteo.hypothesis.broadcast.Broadcaster;
 import com.tilioteo.hypothesis.broadcast.Broadcaster.BroadcastListener;
-import com.tilioteo.hypothesis.common.Strings;
 import com.tilioteo.hypothesis.dom.SlideXmlFactory;
 import com.tilioteo.hypothesis.dom.XmlUtility;
 import com.tilioteo.hypothesis.entity.Slide;
