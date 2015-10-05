@@ -6,6 +6,8 @@ package com.tilioteo.hypothesis.core;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.vaadin.special.data.ShortcutConstants;
+
 import com.tilioteo.hypothesis.common.Strings;
 
 /**
