@@ -13,11 +13,11 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.tilioteo.common.Strings;
+import com.tilioteo.expressions.ExpressionFactory;
 import com.tilioteo.hypothesis.common.StringConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlConstants;
 import com.tilioteo.hypothesis.dom.SlideXmlUtility;
 import com.tilioteo.hypothesis.dom.TaskXmlUtility;
-import com.tilioteo.hypothesis.evaluable.ExpressionFactory;
 import com.tilioteo.hypothesis.interfaces.Evaluable;
 import com.tilioteo.hypothesis.processing.AbstractBaseAction;
 import com.tilioteo.hypothesis.processing.Action;

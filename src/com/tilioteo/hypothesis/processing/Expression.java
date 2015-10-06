@@ -5,7 +5,7 @@ package com.tilioteo.hypothesis.processing;
 
 import java.util.Map;
 
-import com.tilioteo.hypothesis.evaluable.UnaryExpression;
+import com.tilioteo.expressions.UnaryExpression;
 import com.tilioteo.hypothesis.interfaces.Evaluable;
 import com.tilioteo.hypothesis.interfaces.Variable;
 
@@ -16,9 +16,9 @@ import com.tilioteo.hypothesis.interfaces.Variable;
 @SuppressWarnings("serial")
 public class Expression implements Evaluable {
 
-	private com.tilioteo.hypothesis.evaluable.Expression internalExpression;
+	private com.tilioteo.expressions.Expression internalExpression;
 
-	public Expression(com.tilioteo.hypothesis.evaluable.Expression expression) {
+	public Expression(com.tilioteo.expressions.Expression expression) {
 		this.internalExpression = expression;
 	}
 
@@ -39,8 +39,8 @@ public class Expression implements Evaluable {
 				&& internalExpression instanceof UnaryExpression) {
 			UnaryExpression expression = (UnaryExpression) internalExpression;
 			if (expression.getRightSide() != null
-					&& expression.getRightSide() instanceof com.tilioteo.hypothesis.evaluable.Variable) {
-				return ((com.tilioteo.hypothesis.evaluable.Variable) expression
+					&& expression.getRightSide() instanceof com.tilioteo.expressions.Variable) {
+				return ((com.tilioteo.expressions.Variable) expression
 						.getRightSide()).getName();
 			}
 		}

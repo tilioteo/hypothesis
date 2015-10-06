@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.tilioteo.hypothesis.evaluable.ExpressionFactory;
+import com.tilioteo.expressions.ExpressionFactory;
 import com.tilioteo.hypothesis.interfaces.Evaluable;
 import com.tilioteo.hypothesis.interfaces.HasVariables;
 import com.tilioteo.hypothesis.interfaces.Variable;
@@ -43,11 +43,11 @@ public class SwitchStatement implements Evaluable {
 		if (expression != null && variables != null) {
 			Object result = expression.getValue();
 			if (result != null) {
-				com.tilioteo.hypothesis.evaluable.Expression expression = ExpressionFactory.parseString("a==b");
+				com.tilioteo.expressions.Expression expression = ExpressionFactory.parseString("a==b");
 				expression.setVariableValue("a", result);
 				
 				for (String caseValue : caseMap.keySet()) {
-					com.tilioteo.hypothesis.evaluable.Expression caseExpression = ExpressionFactory.parseString(caseValue);
+					com.tilioteo.expressions.Expression caseExpression = ExpressionFactory.parseString(caseValue);
 					expression.setVariableValue("b", caseExpression.getValue());
 					Boolean value = expression.getBoolean();
 					
