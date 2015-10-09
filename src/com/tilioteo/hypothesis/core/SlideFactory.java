@@ -263,7 +263,8 @@ public class SlideFactory implements Serializable {
 		for (com.tilioteo.hypothesis.interfaces.Variable<?> variable : variables.values()) {
 			String name = variable.getName();
 			if (!(name.equals(SlideXmlConstants.COMPONENT_DATA) ||
-					name.equals(SlideXmlConstants.NAVIGATOR))) {
+					name.equals(SlideXmlConstants.NAVIGATOR) ||
+					name.equals(SlideXmlConstants.DOCUMENT))) {
 				writeVariableData(variablesElement, variable);
 			}
 		}
@@ -272,7 +273,7 @@ public class SlideFactory implements Serializable {
 	@SuppressWarnings("unchecked")
 	private void writeVariableData(Element element, com.tilioteo.hypothesis.interfaces.Variable<?> variable) {
 		Class<?> type = variable.getType();
-		String typeName = "";
+		String typeName = SlideXmlConstants.OBJECT;
 		String valueString = "";
 
 		if (type.equals(Integer.class)) {
@@ -294,48 +295,51 @@ public class SlideFactory implements Serializable {
 		} else if (type.equals(Object.class)) {
 			Object value = variable.getValue();
 			
-			if (value.getClass() == ArrayList.class) {
+			if (value != null && value.getClass() == ArrayList.class) {
+				typeName = SlideXmlConstants.OBJECT_ARRAY;
+				
 				ArrayList<?> array = (ArrayList<?>)value;
 				if (array.size() > 0) {
-					Class<?> itemType = array.get(0).getClass();
-				
-					if (itemType.equals(Integer.class)) {
-						for (Integer item : (ArrayList<Integer>)value) {
-							if (valueString.length() > 0) {
-								valueString += StringConstants.STR_COMMA;
-							}
-							valueString += item.toString();
+					Object testItem = null;
+					for (int i = 0; i < array.size(); ++i) {
+						testItem = array.get(i);
+						if (testItem != null) {
+							break;
 						}
-						typeName = SlideXmlConstants.INTEGER_ARRAY;
-					
-					} else if (itemType.equals(Double.class)) {
-						for (Double item : (ArrayList<Double>)value) {
-							if (valueString.length() > 0) {
-								valueString += StringConstants.STR_COMMA;
-							}
-							valueString += item.toString();
-						}
-						typeName = SlideXmlConstants.FLOAT_ARRAY;
-					
-					} else if (itemType.equals(String.class)) {
-						for (String item : (ArrayList<String>)value) {
-							if (valueString.length() > 0) {
-								valueString += StringConstants.STR_COMMA;
-							}
-							valueString += item;
-						}
-						typeName = SlideXmlConstants.STRING_ARRAY;
-					
-					} else {
-						typeName = SlideXmlConstants.OBJECT_ARRAY;
-						// TODO serialize object type values
 					}
-				} else {
-					typeName = SlideXmlConstants.OBJECT_ARRAY;
-					// TODO serialize object type values
+					
+					if (testItem != null) {
+						Class<?> itemType = testItem.getClass();
+						
+						if (itemType.equals(Integer.class)) {
+							for (Integer item : (ArrayList<Integer>)value) {
+								if (valueString.length() > 0) {
+									valueString += StringConstants.STR_COMMA;
+								}
+								valueString += item.toString();
+							}
+							typeName = SlideXmlConstants.INTEGER_ARRAY;
+						
+						} else if (itemType.equals(Double.class)) {
+							for (Double item : (ArrayList<Double>)value) {
+								if (valueString.length() > 0) {
+									valueString += StringConstants.STR_COMMA;
+								}
+								valueString += item.toString();
+							}
+							typeName = SlideXmlConstants.FLOAT_ARRAY;
+					
+						} else if (itemType.equals(String.class)) {
+							for (String item : (ArrayList<String>)value) {
+								if (valueString.length() > 0) {
+									valueString += StringConstants.STR_COMMA;
+								}
+								valueString += item;
+							}
+							typeName = SlideXmlConstants.STRING_ARRAY;
+						}
+					}
 				}
-			} else {
-				typeName = SlideXmlConstants.OBJECT;
 			}
 		}
 		
