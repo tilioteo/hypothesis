@@ -52,6 +52,21 @@ public class TestService implements Serializable {
 		this.eventDao = eventDao;
 		this.slideOrderDao = slideOrderDao;
 	}
+	
+	public SimpleTest findById(Long id) {
+		log.debug("TestService::findById(" + (id != null ? id : "NULL") + ")");
+		try {
+			testDao.beginTransaction();
+			
+			SimpleTest test = testDao.findById(id, false);
+			testDao.commit();
+			return test;
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			testDao.rollback();
+		}
+		return null;
+	}
 
 	public List<SimpleTest> findTestsBy(User user, Pack pack, Status... statuses) {
 		log.debug("findTestsBy(User, Pack, Status[])");
@@ -161,8 +176,8 @@ public class TestService implements Serializable {
 	}
 
 	public void updateTest(SimpleTest test) {
-		log.debug(String.format("updateTest, test id = %s", test.getId() != null ? test.getId() : "NULL"));
 		if (test != null) {
+			log.debug(String.format("updateTest, test id = %s", test.getId() != null ? test.getId() : "NULL"));
 			try {
 				testDao.beginTransaction();
 				testDao.clear();
@@ -178,8 +193,9 @@ public class TestService implements Serializable {
 	}
 	
 	public void saveEvent(Event event, SimpleTest test) {
-		log.debug(String.format("saveEvent, test id = %s, event id = %s", test.getId() != null ? test.getId() : "NULL", event.getId() != null ? event.getId() : "NULL"));
 		if (event != null && test != null) {
+			log.debug(String.format("saveEvent, test id = %s, event id = %s", test.getId() != null ? test.getId() : "NULL", event.getId() != null ? event.getId() : "NULL"));
+
 			try {
 				eventDao.beginTransaction();
 				eventDao.makePersistent(event);

@@ -56,7 +56,7 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
 
 	@Override
 	public void commit() {
-		flush();
+		//flush();
 		HibernateUtil.commitTransaction();
 	}
 

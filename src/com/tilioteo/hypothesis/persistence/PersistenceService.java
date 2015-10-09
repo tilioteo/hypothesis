@@ -11,6 +11,7 @@ import org.hibernate.Hibernate;
 import com.tilioteo.hypothesis.entity.Branch;
 import com.tilioteo.hypothesis.entity.Pack;
 import com.tilioteo.hypothesis.entity.SimpleTest;
+import com.tilioteo.hypothesis.entity.Slide;
 import com.tilioteo.hypothesis.entity.Task;
 import com.tilioteo.hypothesis.servlet.HibernateUtil;
 
@@ -92,6 +93,25 @@ public class PersistenceService implements Serializable {
 				HibernateUtil.commitTransaction();
 
 				return task;
+			} catch (Throwable e) {
+				log.error(e.getMessage());
+				HibernateUtil.rollbackTransaction();
+			}
+		}
+		return null;
+	}
+
+	public Slide merge(Slide entity) {
+		log.debug(String.format("merge(slide id = %s)", entity != null ? entity.getId() : "NULL"));
+		if (entity != null) {
+			try {
+				HibernateUtil.beginTransaction();
+				//HibernateUtil.getSession().clear();
+				Slide slide = (Slide) HibernateUtil.getSession().merge(entity);
+				//Hibernate.initialize(slide.getTemplate());
+				HibernateUtil.commitTransaction();
+
+				return slide;
 			} catch (Throwable e) {
 				log.error(e.getMessage());
 				HibernateUtil.rollbackTransaction();

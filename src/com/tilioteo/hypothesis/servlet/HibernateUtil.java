@@ -33,36 +33,23 @@ public class HibernateUtil {
 	private static ServiceRegistry serviceRegistry = null;
 	private static ServletContext servletContext = null;
 
-	//private static final ThreadLocal<Session> threadLocal = new ThreadLocal<Session>();
-	
 	/**
 	 * All hibernate operations take place within a session. The session for the
 	 * current thread is provided here.
 	 */
 	public static Session getSession() throws NullPointerException {
-		/*Session session = threadLocal.get();
-		
-		if (null == session || !session.isOpen()) {
-			session = sessionFactory.openSession();
-			threadLocal.set(session);
+		SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
+		if (null == sessions) {
+			sessions = new SessionMap();
+			VaadinSession.getCurrent().setAttribute(SessionMap.class, sessions);
 		}
-		return session;*/
-		
-		Session session = VaadinSession.getCurrent().getAttribute(Session.class);
+
+		Session session = sessions.get(Thread.currentThread());
 		if (null == session) {
 			session = sessionFactory.openSession();
-			VaadinSession.getCurrent().setAttribute(Session.class, session);
+			sessions.put(Thread.currentThread(), session);
 		}
 		return session;
-		
-		/*Session session = getSessionFactory().getCurrentSession();
-		if (session.isOpen()) {
-			log.trace("Using allready opened Hibernate Session.");
-			return session;
-		} else {
-			log.trace("Opening new Hibernate Session.");
-			return sessionFactory.openSession();
-		}*/
 	}
 
 	public static SessionFactory getSessionFactory()
@@ -191,17 +178,18 @@ public class HibernateUtil {
 		log.trace("Cleaning session.");
 		
 		try {
-			Session session = VaadinSession.getCurrent().getAttribute(Session.class);
-			if (session != null) {
-				if (session.getTransaction().isActive()) {
-					session.getTransaction().commit();
+			SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
+			if (sessions != null) {
+				for (Session session : sessions.values()) {
+					if (session.getTransaction().isActive()) {
+						session.getTransaction().commit();
+					}
+					session.flush();
+					session.close();
 				}
-				session.flush();
-				session.close();
+				sessions.clear();
 			}
-			VaadinSession.getCurrent().setAttribute(Session.class, null);
+			VaadinSession.getCurrent().setAttribute(SessionMap.class, null);
 		} catch (Throwable e) {}
-		
-		//threadLocal.remove();
 	}
 }

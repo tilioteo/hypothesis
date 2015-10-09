@@ -61,6 +61,8 @@ import com.tilioteo.hypothesis.persistence.BranchService;
 import com.tilioteo.hypothesis.persistence.OutputService;
 import com.tilioteo.hypothesis.persistence.PermissionService;
 import com.tilioteo.hypothesis.persistence.PersistenceService;
+import com.tilioteo.hypothesis.persistence.SlideService;
+import com.tilioteo.hypothesis.persistence.TaskService;
 import com.tilioteo.hypothesis.persistence.TestService;
 import com.vaadin.ui.UI;
 
@@ -83,6 +85,8 @@ public class ProcessManager implements Serializable {
 	private BranchService branchService;
 	private PermissionService permissionService;
 	private OutputService outputService;
+	
+	private AsynchronousService asynchronousService;
 	
 	private boolean testProcessing = false;
 	private boolean slideProcessing = false;
@@ -110,6 +114,8 @@ public class ProcessManager implements Serializable {
 		branchService = BranchService.newInstance();
 
 		outputService = OutputService.newInstance();
+		
+		asynchronousService = new AsynchronousService(testService, outputService, persistenceService, branchService, TaskService.newInstance(), SlideService.newInstance());
 		
 		Broadcaster.register(slideManager);
 	}
@@ -505,8 +511,8 @@ public class ProcessManager implements Serializable {
 		BranchOutput branchOutput = new BranchOutput(currentTest, currentBranch);
 		branchOutput.setXmlData(data);
 		branchOutput.setOutput(data);
-
-		outputService.saveBranchOutput(branchOutput);
+		
+		asynchronousService.saveBranchOutput(branchOutput);
 	}
 
 	private void saveUserProcessEvent(AbstractUserEvent processEvent) {
@@ -522,8 +528,7 @@ public class ProcessManager implements Serializable {
 					updateSlideEventData(event, (SlideEvent)processEvent);
 				}
 				
-				updateEvent(event);
-				updateTest(currentTest, processEvent.getTimestamp(), null);
+				saveTestEvent(currentTest, event, processEvent.getTimestamp(), null);
 			}
 		}
 	}
@@ -533,26 +538,10 @@ public class ProcessManager implements Serializable {
 			Event event = createEvent(processEvent);
 
 			if (event != null) {
-				updateEvent(event);
-
 				Status status = processEvent instanceof HasStatus ? ((HasStatus) processEvent).getStatus() : null;
-				updateTest(currentTest, processEvent.getTimestamp(), status);
+				
+				saveTestEvent(currentTest, event, processEvent.getTimestamp(), status);
 			}
-		}
-	}
-
-	private void updateEvent(Event event) {
-		if (event != null) {
-			event.setBranch(currentBranch);
-			event.setTask(currentTask);
-			event.setSlide(currentSlide);
-			
-			if (event.getType().equals(ProcessEventTypes.getFinishSlideEventId())) {
-				String slideData = slideManager.getSerializedSlideData();
-				event.setXmlData(slideData);
-			}
-			
-			testService.saveEvent(event, currentTest);
 		}
 	}
 
@@ -582,42 +571,16 @@ public class ProcessManager implements Serializable {
 		event.setXmlData(XmlUtility.writeString(doc));
 	}
 	
-	private void updateMergedTest(SimpleTest test, Date date) {
-		if (test != null) {
-			test.setLastAccess(date);
-			test.setLastBranch(currentBranch);
-			test.setLastTask(currentTask);
-			test.setLastSlide(currentSlide);
-			testService.updateTest(test);
-		}
-	}
+	private void saveTestEvent(SimpleTest test, Event event, Date date, Status status) {
+		
+		String slideData = event.getType().equals(ProcessEventTypes.getFinishSlideEventId()) ? slideManager.getSerializedSlideData() : null;
 
-	private void updateTest(SimpleTest test, Date date, Status status) {
-		test = persistenceService.merge(test);
+		Long testId = test != null ? test.getId() : null;
+		Long branchId = currentBranch != null ? currentBranch.getId() : null;
+		Long taskId = currentTask != null ? currentTask.getId() : null;
+		Long slideId = currentSlide != null ? currentSlide.getId() : null;
 
-		if (test != null) {
-			
-			if (status != null && !test.getStatus().equals(status)) {
-				test.setStatus(status);
-			
-				switch (status) {
-				case BROKEN_BY_CLIENT:
-				case BROKEN_BY_ERROR:
-					test.setBroken(date);
-					break;
-				case STARTED:
-					test.setStarted(date);
-					break;
-				case FINISHED:
-					test.setFinished(date);
-					break;
-				default:
-					break;
-				}
-			}
-			
-			updateMergedTest(test, date);
-		}
+		asynchronousService.saveTestEvent(event, date, slideData, status, testId, branchId, taskId, slideId);
 	}
 	
 	public void fireTestError() {
