@@ -109,6 +109,8 @@ public class ProcessUI extends HUI {
 			log.debug(TOKEN_PARAMETER +"="+ token);
 			lastToken = token;
 			processModel.followToken(token);
+			
+			setLoadingIndicatorVisible(false);
 		} else {
 			log.debug(TOKEN_PARAMETER + "=(null)");
 			processModel.fireError(Messages.getString("Message.Error.InvalidAccess"));
@@ -317,5 +319,9 @@ public class ProcessUI extends HUI {
 	
 	public boolean isAnimated() {
 		return animate;
+	}
+	
+	public void setLoadingIndicatorVisible(boolean visible) {
+		Page.getCurrent().getJavaScript().execute("var x=document.getElementsByClassName(\"v-loading-indicator\");if(x.length>0){x[0].style.zIndex=\"" + (visible ? 9999 : 0) + "\"}");
 	}
 }
