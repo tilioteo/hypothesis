@@ -41,6 +41,13 @@
 		<dependency org="com.vaadin" name="vaadin-client-compiler"
 			rev="&vaadin.version;" conf="widgetset-compile->default" />
 
+		<!-- GWT Javascript API Exporter, needed for widget set compilation -->
+		<dependency org="org.timepedia.exporter" name="gwtexporter" rev="2.5.1"
+			 conf="widgetset-compile->default" />
+
+		<!-- Dom4j -->
+		<dependency org="jaxen" name="jaxen" rev="1.1.6" />
+
 		<!-- MBassador event bus -->
 		<dependency org="net.engio" name="mbassador" rev="1.2.1" />
 
@@ -52,5 +59,28 @@
 
 		<!-- Apache POI - Java API To Access Microsoft Format Files -->
 		<dependency org="org.apache.poi" name="poi-ooxml" rev="3.13" />
+
+		<!-- Apache Commons IO -->
+		<dependency org="org.apache.poi" name="poi-ooxml" rev="3.13" />
+
+		<!-- Hibernate -->
+		<dependency org="org.hibernate" name="hibernate-core" rev="4.3.0.Final" />
+		<!--dependency org="org.hibernate" name="hibernate-c3p0" rev="4.3.0.Final" /-->
+		
+		<!-- PostgreSQL Driver -->
+		<dependency org="org.postgresql" name="postgresql" rev="9.4-1204-jdbc41" />
+
+		<!-- Spring -->
+		<dependency org="org.springframework" name="spring-context" rev="4.2.1.RELEASE" />
+		<dependency org="org.springframework" name="spring-web" rev="4.2.1.RELEASE" />
+
+		<!-- Java Topology Suite -->
+		<dependency org="com.vividsolutions" name="jts" rev="1.13" />
+
+		<!-- Proj4j -->
+		<dependency org="org.osgeo" name="proj4j" rev="0.1.0" />
+
+		<!-- Log4j -->
+		<dependency org="log4j" name="log4j" rev="1.2.17" />
 	</dependencies>
 </ivy-module>
