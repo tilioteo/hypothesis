@@ -19,20 +19,22 @@ public class AsynchronousCommandExecutor extends ArrayBlockingQueue<Command> imp
 	private static final long serialVersionUID = -1913670527503390523L;
 
 	private Thread thread;
+	boolean suspended = false;
+	boolean stopped = false;
 	
-	private boolean running = false;
-
 	public AsynchronousCommandExecutor() {
 		super(1024);
+		
+		thread = new Thread(this);
+		thread.start();
 	}
 
 	@Override
 	public void put(Command command) throws InterruptedException {
 		super.put(command);
 		
-		if (!running) {
-			thread = new Thread(this);
-			thread.start();
+		if (suspended) {
+			resume();
 		}
 	}
 	
@@ -49,22 +51,44 @@ public class AsynchronousCommandExecutor extends ArrayBlockingQueue<Command> imp
 
 	@Override
 	public void run() {
-		setRunning(true);
-
 		try {
-			while (!isEmpty()) {
-				final Command command = take();
+			while (true) {
+				while (!isEmpty()) {
+					final Command command = take();
 
-				Command.Executor.execute(command);
+					Command.Executor.execute(command);
+				}
+				
+				suspend();
+				
+				synchronized (this) {
+					while (suspended) {
+						wait();
+					}
+					
+					if (stopped) {
+						break;
+					}
+				}
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		setRunning(false);
 	}
 	
-	private synchronized void setRunning(boolean running) {
-		this.running = running;
+	synchronized void stop() {
+		stopped = true;
+		suspended = false;
+		notify();
+	}
+	
+	synchronized void suspend() {
+		suspended = true;
+	}
+	
+	synchronized void resume() {
+		suspended = false;
+		notify();
 	}
 	
 }

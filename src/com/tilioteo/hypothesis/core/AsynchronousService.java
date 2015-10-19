@@ -104,4 +104,7 @@ public class AsynchronousService {
 		});
 	}
 	
+	public void cleanup() {
+		commandExecutor.stop();
+	}
 }

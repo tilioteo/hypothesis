@@ -610,6 +610,7 @@ public class ProcessManager implements Serializable {
 	}
 	
 	public void clean() {
+		asynchronousService.cleanup();
 		bus.unregister(this);
 		Broadcaster.unregister(slideManager);
 	}
