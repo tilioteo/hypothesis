@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>hypothesis-base-ui</artifactId>
+	<name>hypothesis-base-ui</name>
+	<packaging>jar</packaging>
+
+	<parent>
+		<artifactId>hypothesis-ui</artifactId>
+		<groupId>com.tilioteo.hypothesis</groupId>
+		<version>${project.version}</version>
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-server</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-push</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-themes</artifactId>
+		</dependency>
+
+		<!--dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-theme-compiler</artifactId>
+			<version>${vaadin.version}</version>
+		</dependency-->
+		
+		<!-- Custom components -->
+		<dependency>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>vbuttons</artifactId>
+			<version>${vbuttons.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>client-jre-controls</artifactId>
+			<version>${client.jre.controls.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vaadin.addon</groupId>
+			<artifactId>confirmdialog</artifactId>
+			<version>${confirmdialog.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>animator</artifactId>
+			<version>${animator.version}</version>
+		</dependency>
+
+		<!--dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>hypothesis-interfaces</artifactId>
+			<version>${project.version}</version>
+		</dependency-->
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>hypothesis-widgetset</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>hypothesis-event-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

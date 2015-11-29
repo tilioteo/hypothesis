@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>hypothesis-event-model</artifactId>
+	<name>hypothesis-event-model</name>
+
+	<parent>
+		<groupId>com.tilioteo.hypothesis</groupId>
+		<artifactId>hypothesis-backend</artifactId>
+		<version>${project.version}</version>
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>hypothesis-data-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.engio</groupId>
+			<artifactId>mbassador</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
