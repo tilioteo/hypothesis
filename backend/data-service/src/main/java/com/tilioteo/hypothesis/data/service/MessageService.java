@@ -19,11 +19,11 @@ public class MessageService implements Serializable {
 	private static Logger log = Logger.getLogger(MessageService.class);
 
 	private HibernateDao<Message, String> messageDao;
-	
+
 	public static MessageService newInstance() {
 		return new MessageService(new HibernateDao<Message, String>(Message.class));
 	}
-	
+
 	protected MessageService(HibernateDao<Message, String> messageDao) {
 		this.messageDao = messageDao;
 	}

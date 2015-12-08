@@ -1,18 +1,16 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.builder.xml;
+package com.tilioteo.hypothesis.builder;
 
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.Element;
 
-import com.tilioteo.expressions.ExpressionFactory;
-import com.tilioteo.hypothesis.builder.BranchControllerFactory;
-import com.tilioteo.hypothesis.builder.BuilderConstants;
 import com.tilioteo.hypothesis.business.BranchController;
+import com.tilioteo.hypothesis.common.utility.DocumentUtility;
+import com.tilioteo.hypothesis.common.utility.EvaluableUtility;
+import com.tilioteo.hypothesis.data.DocumentReader;
 import com.tilioteo.hypothesis.evaluation.AbstractBasePath;
 import com.tilioteo.hypothesis.evaluation.DefaultPath;
 import com.tilioteo.hypothesis.evaluation.Expression;
@@ -20,32 +18,30 @@ import com.tilioteo.hypothesis.evaluation.Formula;
 import com.tilioteo.hypothesis.evaluation.Nick;
 import com.tilioteo.hypothesis.evaluation.Path;
 import com.tilioteo.hypothesis.evaluation.Pattern;
-import com.tilioteo.hypothesis.utility.XmlUtility;
+import com.tilioteo.hypothesis.interfaces.Document;
+import com.tilioteo.hypothesis.interfaces.DocumentConstants;
+import com.tilioteo.hypothesis.interfaces.Element;
 
 /**
  * @author kamil
  *
  */
 @SuppressWarnings("serial")
-public class BranchControllerXmlFactory implements BranchControllerFactory {
+public class BranchControllerFactoryImpl implements BranchControllerFactory {
 
-	private static Logger log = Logger.getLogger(BranchControllerXmlFactory.class);
+	private static Logger log = Logger.getLogger(BranchControllerFactoryImpl.class);
 
 	@Override
-	public BranchController buildBranchController(String data) {
+	public BranchController buildBranchController(String data, DocumentReader reader) {
 
-		Document document = null;
-		try {
-			document = XmlUtility.readString(data);
-		} catch (Throwable e) {
-		}
+		Document document = reader.readString(data);
 
 		if (null == document) {
 			log.warn("Branch document is NULL");
 			return null;
 		}
 
-		if (XmlDocumentUtility.isValidBranchXml(document)) {
+		if (DocumentUtility.isValidBranchDocument(document)) {
 			return buildBranchController(document);
 		}
 
@@ -55,12 +51,12 @@ public class BranchControllerXmlFactory implements BranchControllerFactory {
 	private BranchController buildBranchController(Document document) {
 		BranchController controller = new BranchController();
 
-		createPaths(document.getRootElement(), controller);
+		createPaths(document.root(), controller);
 		return null;
 	}
 
 	private void createPaths(Element rootElement, BranchController controller) {
-		List<Element> paths = XmlDocumentUtility.getPathElements(rootElement);
+		List<Element> paths = DocumentUtility.getPathElements(rootElement);
 		AbstractBasePath path = null;
 		for (Element pathElement : paths) {
 			path = createAbstractBasePath(pathElement);
@@ -68,7 +64,7 @@ public class BranchControllerXmlFactory implements BranchControllerFactory {
 				controller.addPath(path);
 		}
 
-		Element defaultPathElement = XmlDocumentUtility.getDefaultPathElement(rootElement);
+		Element defaultPathElement = DocumentUtility.getDefaultPathElement(rootElement);
 		path = createAbstractBasePath(defaultPathElement);
 		if (path != null)
 			controller.addPath(path);
@@ -76,9 +72,9 @@ public class BranchControllerXmlFactory implements BranchControllerFactory {
 
 	private AbstractBasePath createAbstractBasePath(Element pathElement) {
 		if (pathElement != null) {
-			if (BuilderConstants.PATH.equals(pathElement.getName())) {
+			if (DocumentConstants.PATH.equals(pathElement.getName())) {
 				return createPath(pathElement);
-			} else if (BuilderConstants.DEFAULT_PATH.equals(pathElement.getName())) {
+			} else if (DocumentConstants.DEFAULT_PATH.equals(pathElement.getName())) {
 				return createDefaultPath(pathElement);
 			}
 		}
@@ -101,13 +97,13 @@ public class BranchControllerXmlFactory implements BranchControllerFactory {
 	}
 
 	private void setBranchKey(DefaultPath path, Element pathElement) {
-		Element branchKeyElement = XmlDocumentUtility.getBranchKeyElement(pathElement);
-		path.setBranchKey(XmlDocumentUtility.getTrimmedText(branchKeyElement));
+		Element branchKeyElement = DocumentUtility.getBranchKeyElement(pathElement);
+		path.setBranchKey(DocumentUtility.getTrimmedText(branchKeyElement));
 	}
 
 	private Formula createFormula(Element element) {
 		if (element != null) {
-			Element subElement = XmlDocumentUtility.getPatternElement(element);
+			Element subElement = DocumentUtility.getPatternElement(element);
 			if (subElement != null)
 				return createPattern(subElement);
 		}
@@ -117,7 +113,7 @@ public class BranchControllerXmlFactory implements BranchControllerFactory {
 
 	private Pattern createPattern(Element subElement) {
 		Pattern pattern = new Pattern();
-		List<Element> nicks = XmlDocumentUtility.getNickElements(subElement);
+		List<Element> nicks = DocumentUtility.getNickElements(subElement);
 		int i = 0;
 		for (Element nickElement : nicks) {
 			Nick nick = createNick(nickElement);
@@ -128,20 +124,13 @@ public class BranchControllerXmlFactory implements BranchControllerFactory {
 	}
 
 	private Nick createNick(Element nickElement) {
-		Long slideId = XmlDocumentUtility.getSlideId(nickElement);
+		Long slideId = DocumentUtility.getSlideId(nickElement);
 		Nick nick = new Nick(slideId);
 
-		Expression expression = createExpression(XmlDocumentUtility.getExpressionElement(nickElement));
+		Expression expression = EvaluableUtility.createExpression(nickElement);
 		nick.setExpression(expression);
 
 		return nick;
-	}
-
-	private Expression createExpression(Element element) {
-		if (element != null && element.getName().equals(BuilderConstants.EXPRESSION)) {
-			return new Expression(ExpressionFactory.parseString(element.getTextTrim()));
-		}
-		return null;
 	}
 
 }

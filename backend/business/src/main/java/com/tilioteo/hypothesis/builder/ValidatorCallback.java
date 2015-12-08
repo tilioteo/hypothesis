@@ -1,12 +1,11 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.builder.xml;
+package com.tilioteo.hypothesis.builder;
 
 import java.io.Serializable;
 
-import org.dom4j.Element;
-
+import com.tilioteo.hypothesis.interfaces.Element;
 import com.vaadin.data.Validatable;
 
 /**

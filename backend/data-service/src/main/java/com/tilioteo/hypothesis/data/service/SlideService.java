@@ -15,12 +15,12 @@ public class SlideService {
 
 	private static Logger log = Logger.getLogger(SlideService.class);
 
-	private HibernateDao<Slide, Long> slideDao; 
+	private HibernateDao<Slide, Long> slideDao;
 
 	public static SlideService newInstance() {
 		return new SlideService(new HibernateDao<Slide, Long>(Slide.class));
 	}
-	
+
 	protected SlideService(HibernateDao<Slide, Long> taskDao) {
 		this.slideDao = taskDao;
 	}
@@ -29,7 +29,7 @@ public class SlideService {
 		log.debug("SlideService::findById(" + (id != null ? id : "NULL") + ")");
 		try {
 			slideDao.beginTransaction();
-			
+
 			Slide task = slideDao.findById(id, false);
 			slideDao.commit();
 			return task;

@@ -23,13 +23,14 @@ public class BranchService implements Serializable {
 
 	private static Logger log = Logger.getLogger(BranchService.class);
 
-	private HibernateDao<Branch, Long> branchDao; 
+	private HibernateDao<Branch, Long> branchDao;
 	private HibernateDao<BranchTrek, Long> branchTrekDao;
 
 	public static BranchService newInstance() {
-		return new BranchService(new HibernateDao<Branch, Long>(Branch.class), new HibernateDao<BranchTrek, Long>(BranchTrek.class));
+		return new BranchService(new HibernateDao<Branch, Long>(Branch.class),
+				new HibernateDao<BranchTrek, Long>(BranchTrek.class));
 	}
-	
+
 	protected BranchService(HibernateDao<Branch, Long> branchDao, HibernateDao<BranchTrek, Long> branchTrekDao) {
 		this.branchDao = branchDao;
 		this.branchTrekDao = branchTrekDao;
@@ -39,7 +40,7 @@ public class BranchService implements Serializable {
 		log.debug("BranchService::findById(" + (id != null ? id : "NULL") + ")");
 		try {
 			branchDao.beginTransaction();
-			
+
 			Branch branch = branchDao.findById(id, false);
 			branchDao.commit();
 			return branch;
@@ -55,10 +56,8 @@ public class BranchService implements Serializable {
 		try {
 			BranchMap branchMap = new BranchMap();
 			branchTrekDao.beginTransaction();
-			List<BranchTrek> branchTreks = branchTrekDao
-					.findByCriteria(Restrictions.and(
-							Restrictions.eq(EntityConstants.PACK, pack),
-							Restrictions.eq(EntityConstants.BRANCH, branch)));
+			List<BranchTrek> branchTreks = branchTrekDao.findByCriteria(Restrictions
+					.and(Restrictions.eq(EntityConstants.PACK, pack), Restrictions.eq(EntityConstants.BRANCH, branch)));
 
 			for (BranchTrek branchTrek : branchTreks) {
 				branchMap.put(branchTrek.getKey(), branchTrek.getNextBranch());

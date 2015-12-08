@@ -19,9 +19,7 @@ import com.tilioteo.hypothesis.evaluation.AbstractBaseAction;
 import com.tilioteo.hypothesis.evaluation.IndexedExpression;
 import com.tilioteo.hypothesis.event.data.ComponentData;
 import com.tilioteo.hypothesis.event.data.Message;
-import com.tilioteo.hypothesis.event.interfaces.MessageEventListener;
 import com.tilioteo.hypothesis.event.interfaces.ProcessEvent;
-import com.tilioteo.hypothesis.event.interfaces.ViewportEventListener;
 import com.tilioteo.hypothesis.event.model.ActionEvent;
 import com.tilioteo.hypothesis.event.model.MessageEvent;
 import com.tilioteo.hypothesis.event.model.MessageEventManager;
@@ -30,11 +28,14 @@ import com.tilioteo.hypothesis.event.model.ViewportEventManager;
 import com.tilioteo.hypothesis.eventbus.ProcessEventBus;
 import com.tilioteo.hypothesis.interfaces.Action;
 import com.tilioteo.hypothesis.interfaces.Command;
+import com.tilioteo.hypothesis.interfaces.ComponentEventCallback;
 import com.tilioteo.hypothesis.interfaces.Evaluator;
 import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
 import com.tilioteo.hypothesis.interfaces.Field;
+import com.tilioteo.hypothesis.interfaces.MessageEventListener;
 import com.tilioteo.hypothesis.interfaces.SlidePresenter;
 import com.tilioteo.hypothesis.interfaces.Variable;
+import com.tilioteo.hypothesis.interfaces.ViewportEventListener;
 import com.tilioteo.hypothesis.servlet.BroadcastService;
 import com.tilioteo.hypothesis.servlet.BroadcastService.BroadcastListener;
 import com.tilioteo.hypothesis.slide.ui.Window;
@@ -54,7 +55,7 @@ import com.vaadin.ui.UI;
 public class SlideContainerPresenter implements SlidePresenter, Evaluator, BroadcastListener {
 
 	public static final String COMPONENT_DATA = "ComponentData";
-	
+
 	private SlideContainer container;
 
 	private ProcessEventBus bus = null;
@@ -78,25 +79,30 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	private EventManager eventManager;
 	private MessageManager messageManager = null;
-	
+
 	private Long userId = null;
+
+	public SlideContainerPresenter() {
+		eventManager = new EventManager(this);
+		messageManager = new MessageManager();
+	}
 
 	public void clear() {
 		container = null;
-		
+
 		viewportEventManager.removeAllListeners();
 		messageEventManager.removeAllListeners();
-		
+
 		components.clear();
 		fields.clear();
 		windows.clear();
 		timers.clear();
-		
+
 		variables.clear();
 		actions.clear();
-		
+
 		shortcuts.clear();
-		
+
 		inputExpressions.clear();
 		outputExpressions.clear();
 	}
@@ -107,14 +113,14 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 			bus = ProcessEventBus.get(ui);
 
 			if (ui instanceof HypothesisUI) {
-				this.ui = (HypothesisUI)ui;
-				
+				this.ui = (HypothesisUI) ui;
+
 				addTimers(this.ui);
 				addShortcutKeys(this.ui);
-				
+
 				viewportEventManager.setEnabled(true);
 				messageEventManager.setEnabled(true);
-				
+
 				BroadcastService.register(this);
 			}
 			fireEvent(new ViewportEvent.Show(component));
@@ -137,14 +143,14 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	public void detach(Component component, HasComponents parent, UI ui, VaadinSession session) {
 		bus = null;
 		this.ui = null;
-		
+
 		viewportEventManager.setEnabled(false);
 		messageEventManager.setEnabled(false);
-		
+
 		BroadcastService.unregister(this);
 
 		if (ui instanceof HypothesisUI) {
-			HypothesisUI hui = (HypothesisUI)ui;
+			HypothesisUI hui = (HypothesisUI) ui;
 			hui.removeAllTimers();
 			hui.removeAllShortcutKeys();
 		}
@@ -272,17 +278,20 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		return eventManager;
 	}
 
+	@Override
 	public void addViewportInitListener(ViewportEventListener listener) {
 		viewportEventManager.addListener(ViewportEvent.Init.class, listener);
 	}
 
+	@Override
 	public void addViewportShowListener(ViewportEventListener listener) {
 		viewportEventManager.addListener(ViewportEvent.Show.class, listener);
 	}
 
-	public void addShortcutKey(ShortcutKey shortcutKey) {
-		if (shortcutKey != null) {
-			shortcuts.add(shortcutKey);
+	@Override
+	public void addShortcutKey(Component shortcutKey) {
+		if (shortcutKey != null && shortcutKey instanceof ShortcutKey) {
+			shortcuts.add((ShortcutKey) shortcutKey);
 		}
 	}
 
@@ -293,26 +302,26 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	public void setSlideContainer(SlideContainer container) {
 		this.container = container;
 	}
-	
-	public Component getSlideContainer() {
+
+	public SlideContainer getSlideContainer() {
 		return container;
 	}
 
 	public boolean isValidSlide() {
 		boolean valid = true;
-		
+
 		// validate fields
 		for (Field field : fields.values()) {
 			valid = valid && field.isValid();
 		}
-		
+
 		return valid;
 	}
 
 	public Message createMessage(String uid) {
 		return messageManager.createMessage(uid, userId);
 	}
-	
+
 	public void postMessage(String message) {
 		BroadcastService.broadcastExcept(this, message);
 	}
@@ -320,13 +329,13 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	@Override
 	public void receiveBroadcast(final String event) {
 		if (ui != null && ui.getSession() != null) { // prevent from detached ui
-			
+
 			// deserialize received message
 			final Message message = Message.fromJson(event);
-			
+
 			if (message != null) {
 				Long receiverId = message.getReceiverId();
-				
+
 				if (null == userId || null == receiverId || receiverId.equals(userId)) {
 					// ok - receive this message
 					ui.access(new Runnable() {
@@ -336,7 +345,8 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 							if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
 								try {
 									ui.push();
-								} catch (Throwable e) {}
+								} catch (Throwable e) {
+								}
 							}
 						}
 					});
@@ -349,20 +359,20 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	public void buildDone() {
 		addNavigatorVariable();
 		addDocumentVariable();
-		
+
 		fireEvent(new ViewportEvent.Init(container));
 	}
 
 	private void addNavigatorVariable() {
-		Variable<Object> variable = new com.tilioteo.hypothesis.evaluation.Variable<Object>(
-				ObjectConstants.NAVIGATOR, new SlideNavigator(this));
-		
+		Variable<Object> variable = new com.tilioteo.hypothesis.evaluation.Variable<Object>(ObjectConstants.NAVIGATOR,
+				new SlideNavigator(this));
+
 		variables.put(variable.getName(), variable);
 	}
 
 	private void addDocumentVariable() {
-		Variable<Object> variable = new com.tilioteo.hypothesis.evaluation.Variable<Object>(
-				ObjectConstants.DOCUMENT, new SlideDocument(this));
+		Variable<Object> variable = new com.tilioteo.hypothesis.evaluation.Variable<Object>(ObjectConstants.DOCUMENT,
+				new SlideDocument(this));
 
 		variables.put(variable.getName(), variable);
 	}
@@ -383,17 +393,33 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	@Override
+	public void handleEvent(Component component, String typeName, String eventName, Action action,
+			ComponentEventCallback callback) {
+		eventManager.handleEvent(component, typeName, eventName, action, callback);
+	}
+
+	@Override
 	public Map<Integer, ExchangeVariable> getInputs() {
 		return inputExpressions;
 	}
-	
+
 	@Override
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
+	@Override
 	public HashMap<String, Field> getFields() {
 		return fields;
 	}
-	
+
+	@Override
+	public String getSlideId() {
+		if (container != null && container.getData() != null) {
+			return container.getData().toString();
+		}
+
+		return null;
+	}
+
 }

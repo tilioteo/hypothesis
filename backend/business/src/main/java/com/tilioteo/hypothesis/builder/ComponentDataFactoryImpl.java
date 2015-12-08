@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.builder.xml;
+package com.tilioteo.hypothesis.builder;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -13,27 +13,26 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.jackrabbit.util.ISO9075;
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.vaadin.special.ui.SelectButton;
 
 import com.tilioteo.common.Strings;
-import com.tilioteo.hypothesis.builder.BuilderConstants;
-import com.tilioteo.hypothesis.builder.ComponentDataFactory;
 import com.tilioteo.hypothesis.business.ObjectConstants;
 import com.tilioteo.hypothesis.business.Structured;
+import com.tilioteo.hypothesis.data.DocumentWriter;
 import com.tilioteo.hypothesis.evaluation.Action;
 import com.tilioteo.hypothesis.event.data.ComponentData;
 import com.tilioteo.hypothesis.event.model.ActionEvent;
+import com.tilioteo.hypothesis.interfaces.Document;
+import com.tilioteo.hypothesis.interfaces.DocumentConstants;
+import com.tilioteo.hypothesis.interfaces.Element;
 import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
+import com.tilioteo.hypothesis.interfaces.SlidePresenter;
 import com.tilioteo.hypothesis.interfaces.Variable;
-import com.tilioteo.hypothesis.presenter.SlideContainerPresenter;
 import com.tilioteo.hypothesis.slide.ui.ComboBox;
 import com.tilioteo.hypothesis.slide.ui.DateField;
 import com.tilioteo.hypothesis.slide.ui.SelectPanel;
 import com.tilioteo.hypothesis.slide.ui.TextArea;
 import com.tilioteo.hypothesis.slide.ui.TextField;
-import com.tilioteo.hypothesis.utility.XmlUtility;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractTextField;
 
@@ -42,35 +41,28 @@ import com.vaadin.ui.AbstractTextField;
  *
  */
 @SuppressWarnings("serial")
-public class ComponentDataXmlFactory implements ComponentDataFactory {
+public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 	@Override
-	public String buildComponentData(ComponentData data) {
-		Document document = createEventDataXml();
+	public String buildComponentData(ComponentData data, DocumentWriter writer) {
+		Document document = DocumentFactory.createEventDataDocument();
 
-		addEventHeader(document.getRootElement(), data);
-		addEventData(document.getRootElement(), data);
+		addEventHeader(document.root(), data);
+		addEventData(document.root(), data);
 
-		return XmlUtility.writeString(document);
-	}
-
-	private Document createEventDataXml() {
-		Document eventData = XmlUtility.createDocument();
-		eventData.addElement(BuilderConstants.EVENT_DATA);
-		
-		return eventData;
+		return writer.writeString(document);
 	}
 
 	private void addEventHeader(Element root, ComponentData data) {
-		Element element = root.addElement(BuilderConstants.SOURCE);
-		element.addAttribute(BuilderConstants.TYPE, data.getTypeName());
+		Element element = root.createChild(DocumentConstants.SOURCE);
+		element.setAttribute(DocumentConstants.TYPE, data.getTypeName());
 
 		if (!Strings.isNullOrEmpty(data.getId())) {
-			element.addAttribute(BuilderConstants.ID, data.getId());
+			element.setAttribute(DocumentConstants.ID, data.getId());
 		}
 
 		if (!Strings.isNullOrEmpty(data.getSender().getCaption())) {
-			element.addText(data.getSender().getCaption());
+			element.setText(data.getSender().getCaption());
 		}
 	}
 
@@ -101,7 +93,7 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 							name = field.getName();
 						}
 
-						Element baseElement = ensureSubElement(root, BuilderConstants.SOURCE);
+						Element baseElement = ensureSubElement(root, DocumentConstants.SOURCE);
 
 						String[] elementNames = name.split("/");
 						boolean isAttribute = false;
@@ -136,7 +128,7 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 						if (!isAttribute) {
 							baseElement.setText(value);
 						} else if (!Strings.isNullOrEmpty(attributeName)) {
-							baseElement.addAttribute(attributeName, value);
+							baseElement.setAttribute(attributeName, value);
 						}
 					}
 				} catch (Throwable e) {
@@ -152,30 +144,30 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 	}
 
 	private Element ensureSubElement(Element baseElement, String name) {
-		Element element = (Element) baseElement.selectSingleNode(name);
+		Element element = baseElement.selectElement(name);
 		if (null == element) {
-			element = baseElement.addElement(name);
+			element = baseElement.createChild(name);
 		}
-		
+
 		return element;
 	}
 
 	@Override
-	public String buildActionData(ActionEvent event) {
-		Document document = createEventDataXml();
+	public String buildActionData(ActionEvent event, DocumentWriter writer) {
+		Document document = DocumentFactory.createEventDataDocument();
 
-		addActionEventHeader(document.getRootElement(), event);
-		addActionOutputs(document.getRootElement(), event);
+		addActionEventHeader(document.root(), event);
+		addActionOutputs(document.root(), event);
 
-		return XmlUtility.writeString(document);
+		return writer.writeString(document);
 	}
 
 	private void addActionEventHeader(Element root, ActionEvent event) {
-		Element element = root.addElement(BuilderConstants.SOURCE);
-		element.addAttribute(BuilderConstants.TYPE, BuilderConstants.ACTION);
+		Element element = root.createChild(DocumentConstants.SOURCE);
+		element.setAttribute(DocumentConstants.TYPE, DocumentConstants.ACTION);
 
 		if (event.getAction() != null && event.getAction().getId() != null) {
-			element.addAttribute(BuilderConstants.ID, event.getAction().getId());
+			element.setAttribute(DocumentConstants.ID, event.getAction().getId());
 		}
 	}
 
@@ -185,14 +177,14 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 			Map<Integer, ExchangeVariable> outputs = action.getOutputs();
 
 			if (!outputs.isEmpty()) {
-				Element element = root.addElement(BuilderConstants.OUTPUT_VALUES);
+				Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
 				for (ExchangeVariable output : outputs.values()) {
 					String indexString = "" + output.getIndex();
 					Object value = output.getValue();
 
 					if (value != null) {
-						Element outputValueElement = element.addElement(BuilderConstants.OUTPUT_VALUE);
-						outputValueElement.addAttribute(BuilderConstants.INDEX, indexString);
+						Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
+						outputValueElement.setAttribute(DocumentConstants.INDEX, indexString);
 						writeOutputValue(outputValueElement, value);
 					}
 				}
@@ -201,37 +193,33 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 	}
 
 	@Override
-	public String buildSlideContainerData(SlideContainerPresenter presenter) {
-		Document document = createEventDataXml();
+	public String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer) {
+		Document document = DocumentFactory.createEventDataDocument();
 
-		addSlideContainerEventHeader(document.getRootElement(), presenter);
-		addFields(document.getRootElement(), presenter);
-		addVariables(document.getRootElement(), presenter);
-		addOutputs(document.getRootElement(), presenter);
+		addSlideContainerEventHeader(document.root(), presenter);
+		addFields(document.root(), presenter);
+		addVariables(document.root(), presenter);
+		addOutputs(document.root(), presenter);
 
-		return XmlUtility.writeString(document);
+		return writer.writeString(document);
 	}
 
-	private void addSlideContainerEventHeader(Element root, SlideContainerPresenter presenter) {
-		Element element = root.addElement(BuilderConstants.SOURCE);
-		element.addAttribute(BuilderConstants.TYPE, BuilderConstants.SLIDE);
-		String id = null;
-		if (presenter.getSlideContainer() instanceof AbstractComponent
-				&& ((AbstractComponent) presenter.getSlideContainer()).getData() != null) {
-			id = ((AbstractComponent) presenter.getSlideContainer()).getData().toString();
-		}
+	private void addSlideContainerEventHeader(Element root, SlidePresenter presenter) {
+		Element element = root.createChild(DocumentConstants.SOURCE);
+		element.setAttribute(DocumentConstants.TYPE, DocumentConstants.SLIDE);
+		String id = presenter.getSlideId();
 
 		if (!Strings.isNullOrEmpty(id)) {
-			element.addAttribute(BuilderConstants.ID, id);
+			element.setAttribute(DocumentConstants.ID, id);
 		}
 
 	}
 
-	private void addFields(Element root, SlideContainerPresenter presenter) {
+	private void addFields(Element root, SlidePresenter presenter) {
 		Map<String, com.tilioteo.hypothesis.interfaces.Field> fields = presenter.getFields();
 
 		if (!fields.isEmpty()) {
-			Element element = root.addElement(BuilderConstants.FIELDS);
+			Element element = root.createChild(DocumentConstants.FIELDS);
 
 			for (com.tilioteo.hypothesis.interfaces.Field field : fields.values()) {
 				if (field instanceof AbstractComponent) {
@@ -244,14 +232,14 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 	private void writeFieldData(Element element, AbstractComponent field) {
 		String fieldType = getFieldType(field);
 		if (!Strings.isNullOrEmpty(fieldType)) {
-			Element fieldElement = element.addElement(BuilderConstants.FIELD);
-			fieldElement.addAttribute(BuilderConstants.TYPE, fieldType);
-			fieldElement.addAttribute(BuilderConstants.ID, (String) field.getData());
+			Element fieldElement = element.createChild(DocumentConstants.FIELD);
+			fieldElement.setAttribute(DocumentConstants.TYPE, fieldType);
+			fieldElement.setAttribute(DocumentConstants.ID, (String) field.getData());
 
-			Element captionElement = fieldElement.addElement(BuilderConstants.CAPTION);
+			Element captionElement = fieldElement.createChild(DocumentConstants.CAPTION);
 			String caption = field.getCaption();
 			if (!Strings.isNullOrEmpty(caption)) {
-				captionElement.addText(caption);
+				captionElement.setText(caption);
 			}
 
 			writeValue(fieldElement, field);
@@ -261,15 +249,15 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 	// TODO make it better way, maybe annotation
 	private String getFieldType(AbstractComponent field) {
 		if (field instanceof ComboBox) {
-			return BuilderConstants.COMBOBOX;
+			return DocumentConstants.COMBOBOX;
 		} else if (field instanceof DateField) {
-			return BuilderConstants.DATE_FIELD;
+			return DocumentConstants.DATE_FIELD;
 		} else if (field instanceof SelectPanel) {
-			return BuilderConstants.SELECT_PANEL;
+			return DocumentConstants.SELECT_PANEL;
 		} else if (field instanceof TextArea) {
-			return BuilderConstants.TEXT_AREA;
+			return DocumentConstants.TEXT_AREA;
 		} else if (field instanceof TextField) {
-			return BuilderConstants.TEXT_FIELD;
+			return DocumentConstants.TEXT_FIELD;
 		}
 
 		return null;
@@ -277,14 +265,14 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 
 	// TODO make it better way
 	private void writeValue(Element element, AbstractComponent field) {
-		Element valueElement = element.addElement(BuilderConstants.VALUE);
+		Element valueElement = element.createChild(DocumentConstants.VALUE);
 
 		if (field instanceof ComboBox) {
 			ComboBox comboBox = (ComboBox) field;
 
 			if (comboBox.getValue() != null) {
-				valueElement.addAttribute(BuilderConstants.ID, (String) comboBox.getValue());
-				valueElement.addText(comboBox.getItemCaption(comboBox.getValue()));
+				valueElement.setAttribute(DocumentConstants.ID, (String) comboBox.getValue());
+				valueElement.setText(comboBox.getItemCaption(comboBox.getValue()));
 			}
 		} else if (field instanceof DateField) {
 			DateField dateField = (DateField) field;
@@ -292,7 +280,7 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 			if (dateField.getValue() != null) {
 				Date date = dateField.getValue();
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-				valueElement.addText(format.format(date));
+				valueElement.setText(format.format(date));
 			}
 		} else if (field instanceof SelectPanel) {
 			SelectPanel selectPanel = (SelectPanel) field;
@@ -301,24 +289,24 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 			if (!selectedButtons.isEmpty()) {
 				for (SelectButton selected : selectedButtons) {
 					if (null == valueElement) {
-						valueElement = element.addElement(BuilderConstants.VALUE);
+						valueElement = element.createChild(DocumentConstants.VALUE);
 					}
-					valueElement.addAttribute(BuilderConstants.ID,
+					valueElement.setAttribute(DocumentConstants.ID,
 							String.format("%d", selectPanel.getChildIndex(selected) + 1));
-					valueElement.addText(selected.getCaption());
+					valueElement.setText(selected.getCaption());
 					valueElement = null;
 				}
 			}
 		} else if (field instanceof AbstractTextField) {
-			valueElement.addText(((AbstractTextField) field).getValue());
+			valueElement.setText(((AbstractTextField) field).getValue());
 		}
 	}
 
-	private void addVariables(Element root, SlideContainerPresenter presenter) {
+	private void addVariables(Element root, SlidePresenter presenter) {
 		Map<String, Variable<?>> variables = presenter.getVariables();
 
 		if (!variables.isEmpty()) {
-			Element element = root.addElement(BuilderConstants.VARIABLES);
+			Element element = root.createChild(DocumentConstants.VARIABLES);
 
 			for (Variable<?> variable : variables.values()) {
 				String name = variable.getName();
@@ -333,30 +321,30 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 	@SuppressWarnings("unchecked")
 	private void writeVariableData(Element element, Variable<?> variable) {
 		Class<?> type = variable.getType();
-		String typeName = BuilderConstants.OBJECT;
+		String typeName = DocumentConstants.OBJECT;
 		String valueString = "";
 
 		if (type.equals(Integer.class)) {
-			typeName = BuilderConstants.INTEGER;
+			typeName = DocumentConstants.INTEGER;
 			valueString = variable.getStringValue();
 
 		} else if (type.equals(Double.class)) {
-			typeName = BuilderConstants.FLOAT;
+			typeName = DocumentConstants.FLOAT;
 			valueString = variable.getStringValue();
 
 		} else if (type.equals(Boolean.class)) {
-			typeName = BuilderConstants.BOOLEAN;
+			typeName = DocumentConstants.BOOLEAN;
 			valueString = variable.getStringValue();
 
 		} else if (type.equals(String.class)) {
-			typeName = BuilderConstants.STRING;
+			typeName = DocumentConstants.STRING;
 			valueString = variable.getStringValue();
 
 		} else if (type.equals(Object.class)) {
 			Object value = variable.getValue();
 
 			if (value != null && value.getClass() == ArrayList.class) {
-				typeName = BuilderConstants.OBJECT_ARRAY;
+				typeName = DocumentConstants.OBJECT_ARRAY;
 
 				ArrayList<?> array = (ArrayList<?>) value;
 				if (array.size() > 0) {
@@ -374,29 +362,29 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 						if (itemType.equals(Integer.class)) {
 							for (Integer item : (ArrayList<Integer>) value) {
 								if (valueString.length() > 0) {
-									valueString += BuilderConstants.STR_COMMA;
+									valueString += DocumentConstants.STR_COMMA;
 								}
 								valueString += item.toString();
 							}
-							typeName = BuilderConstants.INTEGER_ARRAY;
+							typeName = DocumentConstants.INTEGER_ARRAY;
 
 						} else if (itemType.equals(Double.class)) {
 							for (Double item : (ArrayList<Double>) value) {
 								if (valueString.length() > 0) {
-									valueString += BuilderConstants.STR_COMMA;
+									valueString += DocumentConstants.STR_COMMA;
 								}
 								valueString += item.toString();
 							}
-							typeName = BuilderConstants.FLOAT_ARRAY;
+							typeName = DocumentConstants.FLOAT_ARRAY;
 
 						} else if (itemType.equals(String.class)) {
 							for (String item : (ArrayList<String>) value) {
 								if (valueString.length() > 0) {
-									valueString += BuilderConstants.STR_COMMA;
+									valueString += DocumentConstants.STR_COMMA;
 								}
 								valueString += item;
 							}
-							typeName = BuilderConstants.STRING_ARRAY;
+							typeName = DocumentConstants.STRING_ARRAY;
 						}
 					}
 				}
@@ -404,26 +392,26 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 		}
 
 		if (!typeName.isEmpty()) {
-			Element variableElement = element.addElement(BuilderConstants.VARIABLE);
-			variableElement.addAttribute(BuilderConstants.ID, variable.getName());
-			variableElement.addAttribute(BuilderConstants.TYPE, typeName);
-			variableElement.addText(valueString);
+			Element variableElement = element.createChild(DocumentConstants.VARIABLE);
+			variableElement.setAttribute(DocumentConstants.ID, variable.getName());
+			variableElement.setAttribute(DocumentConstants.TYPE, typeName);
+			variableElement.setText(valueString);
 		}
 	}
 
-	private void addOutputs(Element root, SlideContainerPresenter presenter) {
+	private void addOutputs(Element root, SlidePresenter presenter) {
 		Map<Integer, ExchangeVariable> outputs = presenter.getOutputs();
 
 		if (!outputs.isEmpty()) {
-			Element element = root.addElement(BuilderConstants.OUTPUT_VALUES);
+			Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
 
 			for (ExchangeVariable output : outputs.values()) {
 				String indexString = "" + output.getIndex();
 				Object value = output.getValue();
 
 				if (value != null) {
-					Element outputElement = element.addElement(BuilderConstants.OUTPUT_VALUE);
-					outputElement.addAttribute(BuilderConstants.INDEX, indexString);
+					Element outputElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
+					outputElement.setAttribute(DocumentConstants.INDEX, indexString);
 					writeOutputValue(outputElement, value);
 				}
 			}
@@ -442,22 +430,22 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 		}
 
 		if (type == double.class || type == float.class || type.isAssignableFrom(Double.class)) {
-			element.addAttribute(BuilderConstants.TYPE, BuilderConstants.FLOAT);
+			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT);
 			// use Locale.ROOT for locale neutral formating of decimals
-			element.addText(String.format(Locale.ROOT, "%g", ((Double) value).doubleValue()));
+			element.setText(String.format(Locale.ROOT, "%g", ((Double) value).doubleValue()));
 		} else if (type == byte.class || type == int.class || type == short.class
 				|| type.isAssignableFrom(Integer.class)) {
-			element.addAttribute(BuilderConstants.TYPE, BuilderConstants.INTEGER);
-			element.addText(((Integer) value).toString());
+			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER);
+			element.setText(((Integer) value).toString());
 		} else if (type == long.class || type.isAssignableFrom(Long.class)) {
-			element.addAttribute(BuilderConstants.TYPE, BuilderConstants.INTEGER);
-			element.addText(((Long) value).toString());
+			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER);
+			element.setText(((Long) value).toString());
 		} else if (type == boolean.class || type.isAssignableFrom(Boolean.class)) {
-			element.addAttribute(BuilderConstants.TYPE, BuilderConstants.BOOLEAN);
-			element.addText(((Boolean) value).toString());
+			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.BOOLEAN);
+			element.setText(((Boolean) value).toString());
 		} else if (type.isAssignableFrom(String.class) || value instanceof String) {
-			element.addAttribute(BuilderConstants.TYPE, BuilderConstants.STRING);
-			element.addText((String) value);
+			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.STRING);
+			element.setText((String) value);
 		} else if (type == ArrayList.class) {
 			ArrayList<?> array = (ArrayList<?>) value;
 			if (array.size() > 0) {
@@ -467,41 +455,41 @@ public class ComponentDataXmlFactory implements ComponentDataFactory {
 				if (itemType.equals(Integer.class)) {
 					for (Integer item : (ArrayList<Integer>) value) {
 						if (str.length() > 0) {
-							str += BuilderConstants.STR_COMMA;
+							str += DocumentConstants.STR_COMMA;
 						}
 						str += item.toString();
 					}
-					element.addAttribute(BuilderConstants.TYPE, BuilderConstants.INTEGER_ARRAY);
-					element.addText(str);
+					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER_ARRAY);
+					element.setText(str);
 
 				} else if (itemType.equals(Double.class)) {
 					for (Double item : (ArrayList<Double>) value) {
 						if (str.length() > 0) {
-							str += BuilderConstants.STR_COMMA;
+							str += DocumentConstants.STR_COMMA;
 						}
 						str += item.toString();
 					}
-					element.addAttribute(BuilderConstants.TYPE, BuilderConstants.FLOAT_ARRAY);
-					element.addText(str);
+					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT_ARRAY);
+					element.setText(str);
 
 				} else if (itemType.equals(String.class)) {
 					for (String item : (ArrayList<String>) value) {
 						if (str.length() > 0) {
-							str += BuilderConstants.STR_COMMA;
+							str += DocumentConstants.STR_COMMA;
 						}
 						str += item;
 					}
-					element.addAttribute(BuilderConstants.TYPE, BuilderConstants.STRING_ARRAY);
-					element.addText(str);
+					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.STRING_ARRAY);
+					element.setText(str);
 
 				} else {
-					element.addAttribute(BuilderConstants.TYPE, BuilderConstants.OBJECT_ARRAY);
+					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.OBJECT_ARRAY);
 				}
 			} else {
-				element.addAttribute(BuilderConstants.TYPE, BuilderConstants.OBJECT_ARRAY);
+				element.setAttribute(DocumentConstants.TYPE, DocumentConstants.OBJECT_ARRAY);
 			}
 		} else {
-			element.addAttribute(BuilderConstants.TYPE, BuilderConstants.OBJECT);
+			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.OBJECT);
 		}
 	}
 

@@ -34,12 +34,6 @@
 			<artifactId>vaadin-themes</artifactId>
 		</dependency>
 
-		<!--dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-theme-compiler</artifactId>
-			<version>${vaadin.version}</version>
-		</dependency-->
-		
 		<!-- Custom components -->
 		<dependency>
 			<groupId>com.github.tilioteo</groupId>
@@ -64,12 +58,6 @@
 			<artifactId>animator</artifactId>
 			<version>${animator.version}</version>
 		</dependency>
-
-		<!--dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>hypothesis-interfaces</artifactId>
-			<version>${project.version}</version>
-		</dependency-->
 
 		<dependency>
 			<groupId>${project.groupId}</groupId>

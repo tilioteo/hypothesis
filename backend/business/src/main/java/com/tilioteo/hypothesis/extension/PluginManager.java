@@ -18,7 +18,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.tilioteo.common.Strings;
-import com.tilioteo.hypothesis.builder.BuilderConstants;
+import com.tilioteo.hypothesis.common.ValidationSets;
 import com.tilioteo.hypothesis.event.model.ProcessEventTypes;
 import com.tilioteo.hypothesis.interfaces.Plugin;
 import com.tilioteo.hypothesis.interfaces.SlideComponentPlugin;
@@ -99,8 +99,7 @@ public class PluginManager implements Serializable {
 	}
 
 	private Element getClassElement(Element element) {
-		// TODO Auto-generated method stub
-		return null;
+		return (Element) element.selectSingleNode("class");
 	}
 
 	/**
@@ -114,6 +113,7 @@ public class PluginManager implements Serializable {
 				registerPluginClass(clazz);
 			}
 		} catch (Throwable e) {
+			log.error("Plugin class " + className + " cannot be found.");
 		}
 	}
 
@@ -171,13 +171,13 @@ public class PluginManager implements Serializable {
 					for (ValidParentGroup parentGroup : parentGroups) {
 						switch (parentGroup) {
 						case CONTAINER:
-							BuilderConstants.VALID_CONTAINER_CHILDREN.add(elementName);
+							ValidationSets.VALID_CONTAINER_CHILDREN.add(elementName);
 							break;
 						case PANEL:
-							BuilderConstants.VALID_PANEL_CHILDREN.add(elementName);
+							ValidationSets.VALID_PANEL_CHILDREN.add(elementName);
 							break;
 						case VIEWPORT:
-							BuilderConstants.VALID_VIEWPORT_CHILDREN.add(elementName);
+							ValidationSets.VALID_VIEWPORT_CHILDREN.add(elementName);
 							break;
 						}
 					}

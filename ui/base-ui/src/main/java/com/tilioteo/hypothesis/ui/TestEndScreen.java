@@ -75,7 +75,7 @@ public class TestEndScreen extends VerticalLayout implements ProcessView, ClickL
 	public void setInfoLabelCaption(String caption) {
 		this.infoLabelCaption = caption;
 		if (infoLabel != null) {
-			infoLabel.setCaption(caption);
+			infoLabel.setValue(caption);
 		}
 	}
 

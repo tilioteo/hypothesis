@@ -15,12 +15,12 @@ public class TaskService {
 
 	private static Logger log = Logger.getLogger(TaskService.class);
 
-	private HibernateDao<Task, Long> taskDao; 
+	private HibernateDao<Task, Long> taskDao;
 
 	public static TaskService newInstance() {
 		return new TaskService(new HibernateDao<Task, Long>(Task.class));
 	}
-	
+
 	protected TaskService(HibernateDao<Task, Long> taskDao) {
 		this.taskDao = taskDao;
 	}
@@ -29,7 +29,7 @@ public class TaskService {
 		log.debug("TaskService::findById(" + (id != null ? id : "NULL") + ")");
 		try {
 			taskDao.beginTransaction();
-			
+
 			Task task = taskDao.findById(id, false);
 			taskDao.commit();
 			return task;

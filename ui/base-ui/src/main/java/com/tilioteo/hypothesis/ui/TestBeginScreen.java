@@ -150,7 +150,7 @@ public class TestBeginScreen extends VerticalLayout implements ProcessView, Clic
 	public void setInfoLabelCaption(String caption) {
 		this.infoLabelCaption = caption;
 		if (infoLabel != null) {
-			infoLabel.setCaption(caption);
+			infoLabel.setValue(caption);
 		}
 	}
 

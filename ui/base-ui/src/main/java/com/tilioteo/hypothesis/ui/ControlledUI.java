@@ -43,11 +43,11 @@ public abstract class ControlledUI extends UI implements HasUIPresenter {
 
 		presenter.refresh(request);
 	}
-	
+
 	@Override
 	public void attach() {
 		super.attach();
-		
+
 		presenter.attach();
 	}
 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.slide.ui;
+package com.tilioteo.hypothesis.interfaces;
 
 /**
  * @author kamil

@@ -1,42 +1,40 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.builder.xml;
+package com.tilioteo.hypothesis.common.utility;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.dom4j.Element;
-
 import com.tilioteo.common.Strings;
 import com.tilioteo.expressions.ExpressionFactory;
-import com.tilioteo.hypothesis.builder.BuilderConstants;
-import com.tilioteo.hypothesis.evaluation.AbstractBaseAction;
-import com.tilioteo.hypothesis.evaluation.Action;
 import com.tilioteo.hypothesis.evaluation.Call;
 import com.tilioteo.hypothesis.evaluation.Expression;
 import com.tilioteo.hypothesis.evaluation.IfStatement;
 import com.tilioteo.hypothesis.evaluation.IndexedExpression;
 import com.tilioteo.hypothesis.evaluation.SwitchStatement;
+import com.tilioteo.hypothesis.interfaces.Action;
+import com.tilioteo.hypothesis.interfaces.DocumentConstants;
+import com.tilioteo.hypothesis.interfaces.Element;
 import com.tilioteo.hypothesis.interfaces.Evaluable;
 import com.tilioteo.hypothesis.interfaces.Evaluator;
+import com.tilioteo.hypothesis.interfaces.ReferenceCallback;
 import com.tilioteo.hypothesis.interfaces.Variable;
-import com.tilioteo.hypothesis.utility.XmlUtility;
 
 /**
  * @author kamil
  *
  */
-public class EvaluableXmlUtility {
+public class EvaluableUtility {
 
 	public static void createActions(Element element, Evaluator evaluator) {
-		List<Element> actions = XmlDocumentUtility.getActionsElements(element);
+		List<Element> actions = DocumentUtility.getActionsElements(element);
 		for (Element actionElement : actions) {
-			String id = XmlDocumentUtility.getId(actionElement);
+			String id = DocumentUtility.getId(actionElement);
 			if (!Strings.isNullOrEmpty(id)) {
-				AbstractBaseAction action = createAction(actionElement, evaluator);
+				Action action = createAction(actionElement, evaluator);
 				if (action != null) {
 					evaluator.setAction(id, action);
 				}
@@ -44,16 +42,16 @@ public class EvaluableXmlUtility {
 		}
 	}
 
-	private static AbstractBaseAction createAction(Element element, Evaluator evaluator) {
+	private static Action createAction(Element element, Evaluator evaluator) {
 		if (element != null) {
-			String id = XmlDocumentUtility.getId(element);
+			String id = DocumentUtility.getId(element);
 			return createAction(element, id, evaluator);
 		}
 
 		return null;
 	}
 
-	public static AbstractBaseAction createAnonymousAction(Element element, Evaluator evaluator) {
+	public static Action createAnonymousAction(Element element, Evaluator evaluator) {
 		if (element != null) {
 			String id = UUID.randomUUID().toString();
 			return createInnerAction(element, id, evaluator);
@@ -62,19 +60,19 @@ public class EvaluableXmlUtility {
 		return null;
 	}
 
-	private static AbstractBaseAction createAction(Element element, String id, Evaluator evaluator) {
-		if (element.getName().equals(BuilderConstants.ACTION)) {
+	private static Action createAction(Element element, String id, Evaluator evaluator) {
+		if (element.getName().equals(DocumentConstants.ACTION)) {
 			return createInnerAction(element, id, evaluator);
 		}
 
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static AbstractBaseAction createInnerAction(Element element, String id, Evaluator evaluator) {
+	private static Action createInnerAction(Element element, String id, Evaluator evaluator) {
 		if (element != null && !Strings.isNullOrEmpty(id)) {
-			Action action = new Action(evaluator, id);
-			List<Element> elements = element.elements();
+			com.tilioteo.hypothesis.evaluation.Action action = new com.tilioteo.hypothesis.evaluation.Action(evaluator,
+					id);
+			List<Element> elements = element.children();
 			for (Element evaluableElement : elements) {
 				Evaluable evaluable = createEvaluable(evaluableElement, evaluator);
 				if (evaluable != null)
@@ -92,13 +90,13 @@ public class EvaluableXmlUtility {
 		if (element != null) {
 			String name = element.getName();
 
-			if (name.equals(BuilderConstants.EXPRESSION)) {
+			if (name.equals(DocumentConstants.EXPRESSION)) {
 				return createExpression(element);
-			} else if (name.equals(BuilderConstants.IF)) {
+			} else if (name.equals(DocumentConstants.IF)) {
 				return createIfStatement(element, evaluator);
-			} else if (name.equals(BuilderConstants.SWITCH)) {
+			} else if (name.equals(DocumentConstants.SWITCH)) {
 				return createSwitchStatement(element, evaluator);
-			} else if (name.equals(BuilderConstants.CALL)) {
+			} else if (name.equals(DocumentConstants.CALL)) {
 				return createCall(element, evaluator);
 			}
 		}
@@ -106,28 +104,27 @@ public class EvaluableXmlUtility {
 		return null;
 	}
 
-	private static Expression createExpression(Element element) {
-		if (element != null && element.getName().equals(BuilderConstants.EXPRESSION)) {
-			return new Expression(ExpressionFactory.parseString(element.getTextTrim()));
+	public static Expression createExpression(Element element) {
+		if (element != null && element.getName().equals(DocumentConstants.EXPRESSION)) {
+			return new Expression(ExpressionFactory.parseString(DocumentUtility.getTrimmedText(element)));
 		}
 
 		return null;
 	}
 
 	private static IfStatement createIfStatement(Element element, Evaluator evaluator) {
-		if (element != null && element.getName().equals(BuilderConstants.IF)) {
-			Element expressionElement = XmlDocumentUtility.getExpressionElement(element);
-			Element trueElement = XmlDocumentUtility.getTrueElement(element);
-			Element falseElement = XmlDocumentUtility.getFalseElement(element);
+		if (element != null && element.getName().equals(DocumentConstants.IF)) {
+			Element expressionElement = DocumentUtility.getExpressionElement(element);
+			Element trueElement = DocumentUtility.getTrueElement(element);
+			Element falseElement = DocumentUtility.getFalseElement(element);
 			Expression expression = createExpression(expressionElement);
 
 			if (expression != null) {
 				IfStatement statement = new IfStatement(evaluator, expression);
 
 				for (int i = 0; i < 2; ++i) {
-					@SuppressWarnings("unchecked")
-					List<Element> elements = i == 0 ? trueElement != null ? trueElement.elements() : null
-							: falseElement != null ? falseElement.elements() : null;
+					List<Element> elements = i == 0 ? trueElement != null ? trueElement.children() : null
+							: falseElement != null ? falseElement.children() : null;
 					if (elements != null) {
 						for (Element evaluableElement : elements) {
 							Evaluable evaluable = createEvaluable(evaluableElement, evaluator);
@@ -148,11 +145,10 @@ public class EvaluableXmlUtility {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static SwitchStatement createSwitchStatement(Element element, Evaluator evaluator) {
-		if (element != null && element.getName().equals(BuilderConstants.SWITCH)) {
-			Element expressionElement = XmlDocumentUtility.getExpressionElement(element);
-			List<Element> caseElements = XmlDocumentUtility.getCaseElements(element);
+		if (element != null && element.getName().equals(DocumentConstants.SWITCH)) {
+			Element expressionElement = DocumentUtility.getExpressionElement(element);
+			List<Element> caseElements = DocumentUtility.getCaseElements(element);
 
 			Expression expression = createExpression(expressionElement);
 
@@ -160,8 +156,8 @@ public class EvaluableXmlUtility {
 				SwitchStatement statement = new SwitchStatement(evaluator, expression);
 
 				for (Element caseElement : caseElements) {
-					String caseValue = XmlDocumentUtility.getValue(caseElement);
-					List<Element> elements = caseElement.elements();
+					String caseValue = DocumentUtility.getValue(caseElement);
+					List<Element> elements = caseElement.children();
 					if (elements != null) {
 						for (Element evaluableElement : elements) {
 							Evaluable evaluable = createEvaluable(evaluableElement, evaluator);
@@ -180,8 +176,8 @@ public class EvaluableXmlUtility {
 	}
 
 	private static Call createCall(Element element, Evaluator evaluator) {
-		if (element != null && element.getName().equals(BuilderConstants.CALL)) {
-			String actionId = XmlDocumentUtility.getAction(element);
+		if (element != null && element.getName().equals(DocumentConstants.CALL)) {
+			String actionId = DocumentUtility.getAction(element);
 			if (!Strings.isNullOrEmpty(actionId)) {
 				return new Call(evaluator, actionId);
 			}
@@ -190,12 +186,11 @@ public class EvaluableXmlUtility {
 		return null;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void createActionOutputValues(Action action, Element element) {
-		List<Element> outputElements = (List<Element>) (List) XmlUtility.findNodesByNameStarting(element,
-				BuilderConstants.OUTPUT_VALUE);
+		List<Element> outputElements = DocumentUtility.findElementsByNameStarting(element,
+				DocumentConstants.OUTPUT_VALUE);
 		for (Element outputElement : outputElements) {
-			IndexedExpression outputValue = createValueExpression(outputElement, BuilderConstants.OUTPUT_VALUE);
+			IndexedExpression outputValue = createValueExpression(outputElement, DocumentConstants.OUTPUT_VALUE);
 			if (outputValue != null) {
 				action.getOutputs().put(outputValue.getIndex(), outputValue);
 			}
@@ -211,7 +206,7 @@ public class EvaluableXmlUtility {
 
 		try {
 			int index = Integer.parseInt(indexString);
-			Expression expression = createExpression(XmlDocumentUtility.getExpressionElement(element));
+			Expression expression = createExpression(DocumentUtility.getExpressionElement(element));
 
 			return new IndexedExpression(index, expression);
 		} catch (NumberFormatException e) {
@@ -221,9 +216,9 @@ public class EvaluableXmlUtility {
 	}
 
 	public static void createVariables(Element element, Evaluator evaluator, ReferenceCallback callback) {
-		List<Element> variables = XmlDocumentUtility.getVariablesElements(element);
+		List<Element> variables = DocumentUtility.getVariablesElements(element);
 		for (Element variableElement : variables) {
-			String id = XmlDocumentUtility.getId(variableElement);
+			String id = DocumentUtility.getId(variableElement);
 			if (!Strings.isNullOrEmpty(id)) {
 				Variable<?> variable = createVariable(variableElement, evaluator, callback);
 				if (variable != null)
@@ -233,18 +228,18 @@ public class EvaluableXmlUtility {
 	}
 
 	private static Variable<?> createVariable(Element element, Evaluator evaluator, ReferenceCallback callback) {
-		if (element.getName().equals(BuilderConstants.VARIABLE)) {
-			String id = XmlDocumentUtility.getId(element);
-			String type = XmlDocumentUtility.getType(element);
-			String value = XmlDocumentUtility.getValue(element);
-			String values = XmlDocumentUtility.getValues(element);
+		if (element.getName().equals(DocumentConstants.VARIABLE)) {
+			String id = DocumentUtility.getId(element);
+			String type = DocumentUtility.getType(element);
+			String value = DocumentUtility.getValue(element);
+			String values = DocumentUtility.getValues(element);
 			Variable<?> variable = null;
 
-			if (BuilderConstants.OBJECT.equalsIgnoreCase(type)) {
+			if (DocumentConstants.OBJECT.equalsIgnoreCase(type)) {
 				variable = new com.tilioteo.hypothesis.evaluation.Variable<Object>(id);
-				Element reference = XmlDocumentUtility.getReferenceSubElement(element);
+				Element reference = DocumentUtility.getReferenceSubElement(element);
 				if (callback != null && reference != null) {
-					String referenceId = XmlDocumentUtility.getId(reference);
+					String referenceId = DocumentUtility.getId(reference);
 					String referenceName = reference.getName();
 
 					Object referencedObject = callback.getReference(referenceName, referenceId, evaluator);
@@ -252,10 +247,10 @@ public class EvaluableXmlUtility {
 						variable.setRawValue(referencedObject);
 					}
 				} else {
-					Element instance = XmlDocumentUtility.getInstanceSubElement(element);
+					Element instance = DocumentUtility.getInstanceSubElement(element);
 					if (instance != null) {
-						if (instance.getName().equals(BuilderConstants.CLASS)) {
-							String className = XmlDocumentUtility.getName(instance);
+						if (instance.getName().equals(DocumentConstants.CLASS)) {
+							String className = DocumentUtility.getName(instance);
 							if (!Strings.isNullOrEmpty(className)) {
 								try {
 									Class<?> clazz = Class.forName(className);
@@ -271,19 +266,19 @@ public class EvaluableXmlUtility {
 						}
 					}
 				}
-			} else if (BuilderConstants.INTEGER.equalsIgnoreCase(type))
+			} else if (DocumentConstants.INTEGER.equalsIgnoreCase(type))
 				variable = new com.tilioteo.hypothesis.evaluation.Variable<Integer>(id, Strings.toInteger(value));
-			else if (BuilderConstants.BOOLEAN.equalsIgnoreCase(type))
+			else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type))
 				variable = new com.tilioteo.hypothesis.evaluation.Variable<Boolean>(id, Boolean.parseBoolean(value));
-			else if (BuilderConstants.FLOAT.equalsIgnoreCase(type))
+			else if (DocumentConstants.FLOAT.equalsIgnoreCase(type))
 				variable = new com.tilioteo.hypothesis.evaluation.Variable<Double>(id, Strings.toDouble(value));
-			else if (BuilderConstants.STRING.equalsIgnoreCase(type))
+			else if (DocumentConstants.STRING.equalsIgnoreCase(type))
 				variable = new com.tilioteo.hypothesis.evaluation.Variable<String>(id, value);
 
-			else if (BuilderConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
+			else if (DocumentConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
 				variable = new com.tilioteo.hypothesis.evaluation.Variable<Object>(id);
 				ArrayList<Integer> array = new ArrayList<Integer>();
-				Integer[] integers = Strings.toIntegerArray(values, BuilderConstants.STR_COMMA);
+				Integer[] integers = Strings.toIntegerArray(values, DocumentConstants.STR_COMMA);
 				if (integers != null) {
 					for (Integer integer : integers) {
 						if (integer != null) {
@@ -292,10 +287,10 @@ public class EvaluableXmlUtility {
 					}
 				}
 				variable.setRawValue(array);
-			} else if (BuilderConstants.FLOAT_ARRAY.equalsIgnoreCase(type)) {
+			} else if (DocumentConstants.FLOAT_ARRAY.equalsIgnoreCase(type)) {
 				variable = new com.tilioteo.hypothesis.evaluation.Variable<Object>(id);
 				ArrayList<Double> array = new ArrayList<Double>();
-				Double[] doubles = Strings.toDoubleArray(values, BuilderConstants.STR_COMMA);
+				Double[] doubles = Strings.toDoubleArray(values, DocumentConstants.STR_COMMA);
 				if (doubles != null) {
 					for (Double dbl : doubles) {
 						if (dbl != null) {
@@ -304,11 +299,11 @@ public class EvaluableXmlUtility {
 					}
 				}
 				variable.setRawValue(array);
-			} else if (BuilderConstants.STRING_ARRAY.equalsIgnoreCase(type)) {
+			} else if (DocumentConstants.STRING_ARRAY.equalsIgnoreCase(type)) {
 				variable = new com.tilioteo.hypothesis.evaluation.Variable<Object>(id);
 				ArrayList<String> array = new ArrayList<String>();
-				String[] strings = Strings.toStringArray(values, BuilderConstants.STR_COMMA,
-						BuilderConstants.STR_QUOTED_STRING_SPLIT_PATTERN);
+				String[] strings = Strings.toStringArray(values, DocumentConstants.STR_COMMA,
+						DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN);
 				if (strings != null) {
 					for (String string : strings) {
 						if (string != null) {

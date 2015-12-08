@@ -242,23 +242,11 @@ public class PackPanel extends Panel {
 		if (legacyButtonClickListener != null) {
 			button.addClickListener(legacyButtonClickListener);
 		}
-		/*button.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				MainEventBus.get().post(new MainUIEvent.StartLegacyTestEvent(getNoGuestUser(), pack, button));
-			}
-		});*/
-		
+
 		if (legacyButtonWindowClosedListener != null) {
 			button.addWindowClosedListener(legacyButtonWindowClosedListener);
 		}
-		/*button.addWindowClosedListener(new OpenPopupButton.WindowClosedListener() {
-			@Override
-			public void windowClosed(WindowClosedEvent event) {
-				MainEventBus.get().post(new MainUIEvent.LegacyWindowClosedEvent());
-			}
-		});*/
-		
+
 		return button;
 	}
 

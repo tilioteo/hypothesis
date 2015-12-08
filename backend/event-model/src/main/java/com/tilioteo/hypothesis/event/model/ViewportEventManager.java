@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import javax.swing.event.EventListenerList;
 
-import com.tilioteo.hypothesis.event.interfaces.ViewportEventListener;
+import com.tilioteo.hypothesis.interfaces.ViewportEventListener;
 
 /**
  * @author Kamil Morong - Hypothesis

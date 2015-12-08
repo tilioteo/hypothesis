@@ -5,9 +5,10 @@ package com.tilioteo.hypothesis.builder;
 
 import java.io.Serializable;
 
+import com.tilioteo.hypothesis.data.DocumentWriter;
 import com.tilioteo.hypothesis.event.data.ComponentData;
 import com.tilioteo.hypothesis.event.model.ActionEvent;
-import com.tilioteo.hypothesis.presenter.SlideContainerPresenter;
+import com.tilioteo.hypothesis.interfaces.SlidePresenter;
 
 /**
  * @author kamil
@@ -15,10 +16,10 @@ import com.tilioteo.hypothesis.presenter.SlideContainerPresenter;
  */
 public interface ComponentDataFactory extends Serializable {
 
-	public String buildComponentData(ComponentData data);
+	public String buildComponentData(ComponentData data, DocumentWriter writer);
 
-	public String buildActionData(ActionEvent event);
+	public String buildActionData(ActionEvent event, DocumentWriter writer);
 
-	public String buildSlideContainerData(SlideContainerPresenter presenter);
+	public String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer);
 
 }

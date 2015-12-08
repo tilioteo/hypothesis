@@ -4,8 +4,6 @@
 package com.tilioteo.hypothesis.data.service;
 
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -25,16 +23,6 @@ public class HibernateDao<T, ID extends Serializable> extends AbstractDao<T, ID>
 	public HibernateDao(Class<T> clazz) {
 		super(clazz);
 	}
-
-	/**
-	 * Sets the hibernate session for making transactions with the db
-	 * 
-	 * @param s
-	 *            the session to be set
-	 */
-	/*
-	 * public void setSession(Session s) { this.session = s; }
-	 */
 
 	@Override
 	public void beginTransaction() {

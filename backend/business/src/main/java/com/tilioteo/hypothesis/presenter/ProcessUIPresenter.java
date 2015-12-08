@@ -80,7 +80,7 @@ public class ProcessUIPresenter implements UIPresenter {
 
 	public ProcessUIPresenter(ProcessUI ui) {
 		this.ui = ui;
-		
+
 		bus = ProcessEventBus.createInstance(this);
 
 		tokenService = TokenService.newInstance();
@@ -191,10 +191,11 @@ public class ProcessUIPresenter implements UIPresenter {
 		Token token = tokenService.findTokenByUid(tokenUid);
 		processManager.setAutoSlideShow(false);
 		// TODO maybe in the future send broadcast message to main view
-		/*if (token != null && token.getViewUid() != null) {
-			ProcessUIMessage message = new ProcessUIMessage(token.getViewUid());
-			Broadcaster.broadcast(message.toString());
-		}*/
+		/*
+		 * if (token != null && token.getViewUid() != null) { ProcessUIMessage
+		 * message = new ProcessUIMessage(token.getViewUid());
+		 * Broadcaster.broadcast(message.toString()); }
+		 */
 
 		processManager.processToken(token, false);
 	}
@@ -228,13 +229,11 @@ public class ProcessUIPresenter implements UIPresenter {
 		ui.showErrorDialog(errorDialog);
 	}
 
-	/*public boolean isFullscreen() {
-		return requestFullscreen;
-	}
-
-	public boolean isAnimated() {
-		return animate;
-	}*/
+	/*
+	 * public boolean isFullscreen() { return requestFullscreen; }
+	 * 
+	 * public boolean isAnimated() { return animate; }
+	 */
 
 	@Handler
 	public void doAfterFinishSlide(final AfterFinishSlideEvent event) {
@@ -266,11 +265,11 @@ public class ProcessUIPresenter implements UIPresenter {
 				event.getTest() != null ? event.getTest().getId() : "NULL"));
 
 		preparedTest = event.getTest();
-		
+
 		TestBeginScreen screen = new TestBeginScreen(requestFullscreen, 5);
 		screen.setInfoLabelCaption(Messages.getString("Message.Info.TestReady"));
 		screen.setControlButtonCaption(Messages.getString("Caption.Button.Run"));
-		
+
 		screen.setNextCommand(new Command() {
 			@Override
 			public void execute() {
@@ -282,7 +281,7 @@ public class ProcessUIPresenter implements UIPresenter {
 				});
 			}
 		});
-		
+
 		ui.setContent(screen);
 	}
 
@@ -304,7 +303,7 @@ public class ProcessUIPresenter implements UIPresenter {
 				bus.post(new CloseTestEvent());
 			}
 		});
-		
+
 		ui.setContent(screen);
 	}
 

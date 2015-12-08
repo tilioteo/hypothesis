@@ -9,11 +9,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.tilioteo.hypothesis.builder.ComponentDataBuilder;
-import com.tilioteo.hypothesis.builder.ComponentDataFactory;
 import com.tilioteo.hypothesis.builder.SlideBuilder;
-import com.tilioteo.hypothesis.builder.SlideContainerFactory;
-import com.tilioteo.hypothesis.builder.xml.ComponentDataXmlFactory;
-import com.tilioteo.hypothesis.builder.xml.SlideContainerXmlFactory;
+import com.tilioteo.hypothesis.data.DocumentReader;
+import com.tilioteo.hypothesis.data.DocumentWriter;
+import com.tilioteo.hypothesis.data.XmlDocumentReader;
+import com.tilioteo.hypothesis.data.XmlDocumentWriter;
 import com.tilioteo.hypothesis.data.model.Slide;
 import com.tilioteo.hypothesis.data.model.Task;
 import com.tilioteo.hypothesis.evaluation.IndexedExpression;
@@ -21,7 +21,6 @@ import com.tilioteo.hypothesis.evaluation.Variable;
 import com.tilioteo.hypothesis.event.model.ActionEvent;
 import com.tilioteo.hypothesis.event.model.ComponentEvent;
 import com.tilioteo.hypothesis.interfaces.ExchangeVariable;
-import com.tilioteo.hypothesis.presenter.SlideContainerPresenter;
 import com.tilioteo.hypothesis.ui.SlideContainer;
 import com.vaadin.ui.Component;
 
@@ -34,8 +33,8 @@ public class SlideManager extends ListManager<Task, Slide> {
 
 	private static Logger log = Logger.getLogger(SlideManager.class);
 
-	private SlideContainerFactory factory = new SlideContainerXmlFactory();
-	private ComponentDataFactory dataFactory = new ComponentDataXmlFactory();
+	private DocumentReader reader = new XmlDocumentReader();
+	private DocumentWriter writer = new XmlDocumentWriter();
 
 	private Slide current = null;
 	private SlideContainer container = null;
@@ -66,7 +65,7 @@ public class SlideManager extends ListManager<Task, Slide> {
 	private void buildSlideContainer() {
 		log.debug("Building slide container.");
 
-		container = SlideBuilder.buildSlideContainer(current, factory);
+		container = SlideBuilder.buildSlideContainer(current, reader);
 		if (container != null) {
 			container.getPresenter().setUserId(userId);
 			setInputValues();
@@ -76,8 +75,7 @@ public class SlideManager extends ListManager<Task, Slide> {
 
 	public String getSerializedSlideData() {
 		if (container != null) {
-			return ComponentDataBuilder.buildSlideContainerData((SlideContainerPresenter) container.getPresenter(),
-					dataFactory);
+			return ComponentDataBuilder.buildSlideContainerData(container.getPresenter(), writer);
 		}
 
 		return null;
@@ -174,11 +172,11 @@ public class SlideManager extends ListManager<Task, Slide> {
 	}
 
 	public String getActionData(ActionEvent event) {
-		return ComponentDataBuilder.buildActionData(event, dataFactory);
+		return ComponentDataBuilder.buildActionData(event, writer);
 	}
 
 	public String getComponentData(ComponentEvent componentEvent) {
-		return ComponentDataBuilder.buildComponentData(componentEvent.getData(), dataFactory);
+		return ComponentDataBuilder.buildComponentData(componentEvent.getData(), writer);
 	}
 
 }

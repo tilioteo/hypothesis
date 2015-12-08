@@ -48,11 +48,11 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 
 		return null;
 	}
-	
+
 	@Override
 	public void attach() {
 		super.attach();
-		
+
 		setUser(SessionManager.getLoggedUser());
 	}
 

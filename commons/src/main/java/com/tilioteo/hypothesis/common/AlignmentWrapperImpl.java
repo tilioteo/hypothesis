@@ -1,25 +1,26 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.builder;
+package com.tilioteo.hypothesis.common;
 
-import java.io.Serializable;
-
+import com.tilioteo.hypothesis.interfaces.AlignmentWrapper;
 import com.vaadin.ui.Alignment;
 
 /**
- * @author Kamil Morong - Hypothesis
- * 
+ * @author kamil
+ *
  */
 @SuppressWarnings("serial")
-public class AlignmentWrapper implements Serializable {
+public class AlignmentWrapperImpl implements AlignmentWrapper {
 
 	private Alignment alignment = null;
 
+	@Override
 	public Alignment getAlignment() {
 		return alignment;
 	}
 
+	@Override
 	public void setAlignment(Alignment alignment) {
 		this.alignment = alignment;
 	}

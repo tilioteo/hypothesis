@@ -6,6 +6,7 @@ package com.tilioteo.hypothesis.builder;
 import java.io.Serializable;
 
 import com.tilioteo.hypothesis.business.BranchController;
+import com.tilioteo.hypothesis.data.DocumentReader;
 
 /**
  * @author kamil
@@ -13,6 +14,6 @@ import com.tilioteo.hypothesis.business.BranchController;
  */
 public interface BranchControllerFactory extends Serializable {
 
-	public BranchController buildBranchController(String data);
+	public BranchController buildBranchController(String data, DocumentReader reader);
 
 }

@@ -34,6 +34,53 @@
             <version>${project.version}</version>
         </dependency>
 
+		<dependency>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>vbuttons</artifactId>
+			<version>${vbuttons.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>client-jre-controls</artifactId>
+			<version>${client.jre.controls.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vaadin.addon</groupId>
+			<artifactId>confirmdialog</artifactId>
+			<version>${confirmdialog.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>animator</artifactId>
+			<version>${animator.version}</version>
+		</dependency>
+
+  		<!-- Optional plugin libraries -->
+		<dependency>
+			<groupId>com.tilioteo.hypothesis.plugin</groupId>
+			<artifactId>h-maps</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>vmaps</artifactId>
+			<version>0.9.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tilioteo.hypothesis.plugin</groupId>
+			<artifactId>h-processing</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>vprocjs</artifactId>
+			<version>0.2.1-mod</version>
+		</dependency>
+
     </dependencies>
 
     <build>
@@ -42,7 +89,7 @@
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <configuration>
-                    <extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+                    <extraJvmArgs>-Xmx1024M -Xss1024k</extraJvmArgs>
                     <webappDirectory>${basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
                     <draftCompile>true</draftCompile>
                     <compileReport>false</compileReport>
@@ -58,6 +105,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -69,6 +117,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

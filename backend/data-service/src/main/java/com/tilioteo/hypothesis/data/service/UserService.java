@@ -17,18 +17,15 @@ public class UserService implements Serializable {
 	private static Logger log = Logger.getLogger(UserService.class);
 
 	private HibernateDao<User, Long> userDao;
-	
-	//private PersistenceService persistenceService;
 
 	public static UserService newInstance() {
 		return new UserService(new HibernateDao<User, Long>(User.class));
 	}
-	
+
 	protected UserService(HibernateDao<User, Long> userDao) {
 		this.userDao = userDao;
-		//persistenceService = PersistenceService.newInstance();
 	}
-	
+
 	public User merge(User user) {
 		try {
 			userDao.beginTransaction();
@@ -55,7 +52,7 @@ public class UserService implements Serializable {
 		try {
 			userDao.beginTransaction();
 			user = mergeInit(user);
-			//userDao.clear();
+			// userDao.clear();
 			user = userDao.makePersistent(user);
 			userDao.commit();
 			return user;
@@ -70,8 +67,7 @@ public class UserService implements Serializable {
 	public boolean anotherSuperuserExists(Long id) {
 		log.debug("anotherSuperuserExists");
 		for (User user : findAll()) {
-			if (user.hasRole(RoleService.ROLE_SUPERUSER)
-					&& !id.equals(user.getId())) {
+			if (user.hasRole(RoleService.ROLE_SUPERUSER) && !id.equals(user.getId())) {
 				return true;
 			}
 		}
@@ -95,7 +91,7 @@ public class UserService implements Serializable {
 		try {
 			userDao.beginTransaction();
 			user = mergeInit(user);
-			//userDao.clear();
+			// userDao.clear();
 			userDao.makeTransient(user);
 			userDao.commit();
 		} catch (Throwable e) {
@@ -122,8 +118,8 @@ public class UserService implements Serializable {
 		log.debug("findOwnerUsers");
 		try {
 			userDao.beginTransaction();
-			List<User> allUsers = userDao.findByCriteria(Restrictions.eq(
-					FieldConstants.PROPERTY_OWNER_ID, owner.getId()));
+			List<User> allUsers = userDao
+					.findByCriteria(Restrictions.eq(FieldConstants.PROPERTY_OWNER_ID, owner.getId()));
 			userDao.commit();
 			return allUsers;
 		} catch (Throwable e) {
@@ -151,8 +147,7 @@ public class UserService implements Serializable {
 		log.debug("findUserByUsername");
 		try {
 			userDao.beginTransaction();
-			List<User> users = userDao.findByCriteria(Restrictions.eq(
-					FieldConstants.USERNAME, username));
+			List<User> users = userDao.findByCriteria(Restrictions.eq(FieldConstants.USERNAME, username));
 			userDao.commit();
 			return users.get(0);
 		} catch (Throwable e) {
@@ -166,9 +161,9 @@ public class UserService implements Serializable {
 		log.debug("findUserByUsernamePassword");
 		try {
 			userDao.beginTransaction();
-			List<User> users = userDao.findByCriteria(Restrictions.and(
-					Restrictions.eq(FieldConstants.USERNAME, username),
-					Restrictions.eq(FieldConstants.PASSWORD, password)));
+			List<User> users = userDao
+					.findByCriteria(Restrictions.and(Restrictions.eq(FieldConstants.USERNAME, username),
+							Restrictions.eq(FieldConstants.PASSWORD, password)));
 			userDao.commit();
 
 			if (users.isEmpty() || users.size() > 1) {
@@ -188,10 +183,9 @@ public class UserService implements Serializable {
 		log.debug("usernameExists");
 		try {
 			userDao.beginTransaction();
-			Criterion crit = (id == null) ? Restrictions.eq(
-					FieldConstants.USERNAME, username) : Restrictions.and(
-					Restrictions.eq(FieldConstants.USERNAME, username),
-					Restrictions.ne(FieldConstants.ID, id));
+			Criterion crit = (id == null) ? Restrictions.eq(FieldConstants.USERNAME, username)
+					: Restrictions.and(Restrictions.eq(FieldConstants.USERNAME, username),
+							Restrictions.ne(FieldConstants.ID, id));
 			List<User> users = userDao.findByCriteria(crit);
 			userDao.commit();
 			return !users.isEmpty();

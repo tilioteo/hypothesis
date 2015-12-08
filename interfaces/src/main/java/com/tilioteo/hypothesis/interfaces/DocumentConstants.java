@@ -1,17 +1,15 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.builder;
-
-import com.tilioteo.common.collections.StringSet;
+package com.tilioteo.hypothesis.interfaces;
 
 /**
  * @author Kamil Morong - Hypothesis
  * 
- *         Constants for parsing slide xml
+ *         Constants for parsing slide, task, branch and message documents
  * 
  */
-public class BuilderConstants {
+public interface DocumentConstants {
 
 	public static final String SLIDE_TEMPLATE = "SlideTemplate";
 	public static final String SLIDE_CONTENT = "SlideContent"; // used?
@@ -49,6 +47,7 @@ public class BuilderConstants {
 	public static final String LABEL = "Label";
 	public static final String TIMER_LABEL = "TimerLabel";
 	public static final String PROPERTIES = "Properties";
+	public static final String PROPERTY = "Property";
 	public static final String HANDLERS = "Handlers";
 	public static final String VALIDATORS = "Validators";
 	public static final String REFERENCE = "Reference";
@@ -135,7 +134,7 @@ public class BuilderConstants {
 	public static final String INDEX = "Index";
 	public static final String X = "X"; // used?
 	public static final String Y = "Y"; // used?
-	
+
 	public static final String BRANCH = "Branch";
 	public static final String PATH = "Path";
 	public static final String PATTERN = "Pattern";
@@ -143,30 +142,13 @@ public class BuilderConstants {
 	public static final String BRANCH_KEY = "BranchKey";
 	public static final String DEFAULT_PATH = "DefaultPath";
 	public static final String SLIDE_ID = "SlideId";
-	
+
 	public static final String TASK = "Task";
 	public static final String NODES = "Nodes";
 	public static final String NODE = "Node";
 	public static final String EVALUATE = "Evaluate";
-	
 
 	public static final String STR_COMMA = ",";
-	public static final String STR_QUOTED_STRING_SPLIT_PATTERN=	"['']";
-
-	// TODO replace with DTD schema
-	public static final StringSet VALID_SLIDE_ROOT_ELEMENTS = new StringSet(
-			new String[] { SLIDE, SLIDE_TEMPLATE });
-
-	public static final StringSet VALID_PANEL_CHILDREN = new StringSet(
-			new String[] { HORIZONTAL_LAYOUT, VERTICAL_LAYOUT, FORM_LAYOUT });
-
-	public static final StringSet VALID_VIEWPORT_CHILDREN = new StringSet(
-			VALID_PANEL_CHILDREN, new String[] { PANEL });
-
-	public static final StringSet VALID_CONTAINER_CHILDREN = new StringSet(
-			VALID_VIEWPORT_CHILDREN, new String[] { BUTTON, COMBOBOX, BUTTON_PANEL,
-					DATE_FIELD, IMAGE, VIDEO, AUDIO, LABEL, SELECT_PANEL, TEXT_AREA, TEXT_FIELD, TIMER_LABEL });
-
-	public static final StringSet VALID_WINDOW_CHILDREN = VALID_PANEL_CHILDREN;
+	public static final String STR_QUOTED_STRING_SPLIT_PATTERN = "['']";
 
 }

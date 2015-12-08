@@ -16,12 +16,12 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 @SuppressWarnings("serial")
 @Configuration
 public class ContextConfig implements Serializable {
-	
+
 	@Bean
 	public ReloadableResourceBundleMessageSource reloadableResourceBundleMessageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 		messageSource.setBasename("classpath:com/tilioteo/hypothesis/server/messages");
-		
+
 		return messageSource;
 	}
 }

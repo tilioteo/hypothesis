@@ -3,6 +3,11 @@
  */
 package com.tilioteo.hypothesis.servlet;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.Manifest;
+
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -40,6 +45,19 @@ public class ServletUtil {
 		}*/
 
 		return url.toString();
+	}
+	
+	public static Manifest getManifest(ServletContext context) {
+		InputStream inputStream = context.getResourceAsStream("/META-INF/MANIFEST.MF");
+		Manifest manifest = null;;
+		try {
+			manifest = new Manifest(inputStream);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return manifest;
 	}
 
 }

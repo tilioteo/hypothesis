@@ -14,7 +14,7 @@ import com.vaadin.ui.UI;
  * @author kamil
  *
  */
-public interface SlidePresenter {
+public interface SlidePresenter extends Evaluator {
 
 	public void attach(Component slideContainer, HasComponents parent, UI ui, VaadinSession session);
 
@@ -30,6 +30,25 @@ public interface SlidePresenter {
 
 	public Map<String, Variable<?>> getVariables();
 
+	public Map<String, Field> getFields();
+
 	public void setUserId(Long userId);
+
+	public void handleEvent(Component component, String typeName, String eventName, Action action,
+			ComponentEventCallback callback);
+
+	public void addViewportInitListener(ViewportEventListener viewportEventListener);
+
+	public void addViewportShowListener(ViewportEventListener viewportEventListener);
+
+	public void addShortcutKey(Component shortcutKey);
+
+	public void addMessageListener(String uid, MessageEventListener messageEventListener);
+
+	public Component getComponent(String id);
+
+	public void setComponent(String id, Component component);
+	
+	public String getSlideId();
 
 }

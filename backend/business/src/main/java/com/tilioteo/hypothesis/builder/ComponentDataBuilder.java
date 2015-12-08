@@ -3,35 +3,45 @@
  */
 package com.tilioteo.hypothesis.builder;
 
+import java.io.Serializable;
+
+import com.tilioteo.hypothesis.data.DocumentWriter;
 import com.tilioteo.hypothesis.event.data.ComponentData;
 import com.tilioteo.hypothesis.event.model.ActionEvent;
-import com.tilioteo.hypothesis.presenter.SlideContainerPresenter;
+import com.tilioteo.hypothesis.interfaces.SlidePresenter;
 
 /**
  * @author kamil
  *
  */
-public class ComponentDataBuilder {
+@SuppressWarnings("serial")
+public class ComponentDataBuilder implements Serializable {
 
-	public static String buildComponentData(ComponentData data, ComponentDataFactory factory) {
-		if (data != null && factory != null) {
-			return factory.buildComponentData(data);
+	public static String buildComponentData(ComponentData data, DocumentWriter writer) {
+		ComponentDataFactory factory = new ComponentDataFactoryImpl();
+
+		if (data != null && writer != null) {
+			return factory.buildComponentData(data, writer);
 		}
 
 		return null;
 	}
 
-	public static String buildActionData(ActionEvent event, ComponentDataFactory factory) {
-		if (event != null && factory != null) {
-			return factory.buildActionData(event);
+	public static String buildActionData(ActionEvent event, DocumentWriter writer) {
+		ComponentDataFactory factory = new ComponentDataFactoryImpl();
+
+		if (event != null && writer != null) {
+			return factory.buildActionData(event, writer);
 		}
 
 		return null;
 	}
 
-	public static String buildSlideContainerData(SlideContainerPresenter presenter, ComponentDataFactory factory) {
-		if (presenter != null && factory != null) {
-			return factory.buildSlideContainerData(presenter);
+	public static String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer) {
+		ComponentDataFactory factory = new ComponentDataFactoryImpl();
+
+		if (presenter != null && writer != null) {
+			return factory.buildSlideContainerData(presenter, writer);
 		}
 
 		return null;

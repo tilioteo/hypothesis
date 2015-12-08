@@ -24,7 +24,7 @@ public class RoleService implements Serializable {
 	public static RoleService newInstance() {
 		return new RoleService(new HibernateDao<Role, Long>(Role.class));
 	}
-	
+
 	protected RoleService(HibernateDao<Role, Long> roleDao) {
 		this.roleDao = new HibernateDao<Role, Long>(Role.class);
 	}
@@ -62,7 +62,7 @@ public class RoleService implements Serializable {
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			roleDao.rollback();
-			//throw e;
+			// throw e;
 			return null;
 		}
 	}
@@ -124,8 +124,7 @@ public class RoleService implements Serializable {
 		log.debug("findRoleByName");
 		try {
 			roleDao.beginTransaction();
-			List<Role> roles = roleDao.findByCriteria(Restrictions.eq(
-					FieldConstants.NAME, roleName));
+			List<Role> roles = roleDao.findByCriteria(Restrictions.eq(FieldConstants.NAME, roleName));
 			roleDao.commit();
 			return (roles.isEmpty() || roles.size() > 1) ? null : roles.get(0);
 		} catch (Throwable e) {

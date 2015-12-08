@@ -10,6 +10,7 @@ import java.util.Set;
 import com.tilioteo.hypothesis.event.data.ComponentData;
 import com.tilioteo.hypothesis.event.model.ComponentEvent;
 import com.tilioteo.hypothesis.interfaces.Action;
+import com.tilioteo.hypothesis.interfaces.ComponentEventCallback;
 import com.tilioteo.hypothesis.presenter.SlideContainerPresenter;
 import com.tilioteo.hypothesis.utility.ReflectionUtility;
 import com.vaadin.ui.AbstractComponent;
@@ -21,23 +22,16 @@ import com.vaadin.ui.Component;
  */
 public class EventManager {
 
-	public static interface Callback {
-		public void initEvent(ComponentEvent componentEvent);
-	}
-
-	public static final Callback DEFAULT_CALLBACK = new Callback() {
-		@Override
-		public void initEvent(ComponentEvent componentEvent) {
-		}
-	};
-
 	private SlideContainerPresenter presenter;
+
+	private int generateCount = 0;
 
 	public EventManager(SlideContainerPresenter presenter) {
 		this.presenter = presenter;
 	}
 
-	public void handleEvent(Component component, String typeName, String eventName, Action action, Callback callback) {
+	public void handleEvent(Component component, String typeName, String eventName, Action action,
+			ComponentEventCallback callback) {
 		ComponentEvent event = new ComponentEvent(component, typeName, eventName);
 		callback.initEvent(event);
 
@@ -71,8 +65,10 @@ public class EventManager {
 		}
 
 		try {
-			Class<?> dataClass = ComponentDataPojoGenerator.generate(ComponentData.class.getName() + "$Generated",
-					ComponentData.class, properties, structures);
+			generateCount++;
+			Class<?> dataClass = ComponentDataPojoGenerator.generate(
+					ComponentData.class.getName() + "$Generated" + generateCount, ComponentData.class, properties,
+					structures);
 
 			ComponentData data = (ComponentData) dataClass.newInstance();
 
@@ -91,9 +87,11 @@ public class EventManager {
 			field.setAccessible(true);
 			field.set(data, component);
 
+			String str = component instanceof AbstractComponent && ((AbstractComponent) component).getData() != null
+					? ((AbstractComponent) component).getData().toString() : null;
 			field = ReflectionUtility.getDeclaredField(data, "id");
 			field.setAccessible(true);
-			field.set(data, component instanceof AbstractComponent ? ((AbstractComponent) component).getData() : null);
+			field.set(data, str);
 
 			field = ReflectionUtility.getDeclaredField(data, "eventName");
 			field.setAccessible(true);
@@ -109,6 +107,7 @@ public class EventManager {
 
 			return data;
 		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 
 		return null;

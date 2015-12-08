@@ -3,11 +3,16 @@
  */
 package com.tilioteo.hypothesis.presenter;
 
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
 import com.tilioteo.hypothesis.eventbus.MainEventBus;
 import com.tilioteo.hypothesis.interfaces.MainPresenter;
+import com.tilioteo.hypothesis.servlet.ServletUtil;
 import com.tilioteo.hypothesis.ui.MainScreen;
 import com.tilioteo.hypothesis.ui.menu.HypothesisMenu;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
@@ -26,7 +31,11 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class MainPresenterImpl implements MainPresenter {
 
-	private static final String VERSION = "1.5.0";
+	private static String VERSION;// = Manifests.read("Version");
+	private static String VERSION_SPECIFIC;// =
+											// Manifests.read("Version-Specific");
+	private static String VERSION_ADDITIONAL;// =
+												// Manifests.read("Version-Additional");*/
 
 	private ComponentContainer content;
 
@@ -36,6 +45,11 @@ public class MainPresenterImpl implements MainPresenter {
 
 		menuPresenter = new HypothesisMenuPresenter(bus);
 
+		Manifest manifest = ServletUtil.getManifest(VaadinServlet.getCurrent().getServletContext());
+		Attributes attributes = manifest.getMainAttributes();
+		VERSION = attributes.getValue("Version");
+		VERSION_SPECIFIC = attributes.getValue("Version-Specific");
+		VERSION_ADDITIONAL = attributes.getValue("Version-Additional");
 	}
 
 	@Override
@@ -73,6 +87,14 @@ public class MainPresenterImpl implements MainPresenter {
 		layout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
 		layout.setExpandRatio(space, 0.6f);
 		layout.setExpandRatio(label, 1.0f);
+
+		if (!VERSION_ADDITIONAL.isEmpty()) {
+			Label additional = new Label(VERSION_ADDITIONAL);
+			layout.addComponent(additional);
+			layout.setComponentAlignment(additional, Alignment.MIDDLE_RIGHT);
+			// layout.setExpandRatio(additional, 0.3f);
+		}
+
 		return panel;
 	}
 

@@ -190,6 +190,13 @@
 						VAADIN/gwt-unitCache/**,
 						VAADIN/widgetsets/WEB-INF/**
 					</packagingExcludes>
+					<archive>
+						<manifestEntries>
+							<Version>${project.version}</Version>
+							<Version-Specific>${project.version.specific}</Version-Specific>
+							<Version-Additional>${project.version.additional}</Version-Additional>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 

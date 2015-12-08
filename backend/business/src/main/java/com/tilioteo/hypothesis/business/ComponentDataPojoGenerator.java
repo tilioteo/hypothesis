@@ -11,6 +11,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
+import javassist.LoaderClassPath;
 import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
@@ -34,7 +35,8 @@ public class ComponentDataPojoGenerator {
 		ConstPool constpool = ccFile.getConstPool();
 
 		// define a super class to extend
-		cc.setSuperclass(resolveCtClass(superClass));
+		CtClass superCtClass = resolveCtClass(superClass);
+		cc.setSuperclass(superCtClass);
 
 		// add this to define an interface to implement, ie:
 		// cc.addInterface(resolveCtClass(Serializable.class));
@@ -92,6 +94,8 @@ public class ComponentDataPojoGenerator {
 
 	private static CtClass resolveCtClass(Class<?> clazz) throws NotFoundException {
 		ClassPool pool = ClassPool.getDefault();
+		ClassLoader loader = clazz.getClassLoader();
+		pool.appendClassPath(new LoaderClassPath(loader));
 		return pool.get(clazz.getName());
 	}
 

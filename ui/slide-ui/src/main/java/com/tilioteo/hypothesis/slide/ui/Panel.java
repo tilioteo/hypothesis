@@ -3,6 +3,8 @@
  */
 package com.tilioteo.hypothesis.slide.ui;
 
+import com.tilioteo.hypothesis.interfaces.Maskable;
+
 /**
  * @author Kamil Morong - Hypothesis
  * 

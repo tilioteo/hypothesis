@@ -14,19 +14,19 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
  *
  */
 public class Messages {
-	
+
 	private static MessageSource messageSource = null;
 	private static Locale locale = Locale.ENGLISH;
-	
+
 	public static void initMessageSource(ApplicationContext applicationContext) {
 		messageSource = applicationContext.getBean(ReloadableResourceBundleMessageSource.class);
 	}
-	
+
 	public static void initMessageSource(ApplicationContext applicationContext, Locale locale) {
 		initMessageSource(applicationContext);
 		setLocale(locale);
 	}
-	
+
 	private static void setLocale(Locale locale) {
 		if (locale != null) {
 			if (locale != Messages.locale) {
@@ -37,7 +37,6 @@ public class Messages {
 		}
 	}
 
-	
 	public static String getString(String key, Object... arguments) {
 		if (messageSource != null) {
 			try {
@@ -50,6 +49,6 @@ public class Messages {
 	}
 
 	public static String getString(String key) {
-		return getString(key, (Object[])null);
+		return getString(key, (Object[]) null);
 	}
 }

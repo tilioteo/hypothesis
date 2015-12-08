@@ -14,7 +14,7 @@ import com.vaadin.ui.Component;
  * 
  */
 @SuppressWarnings("serial")
-public class ComponentEvent extends AbstractUserEvent {
+public class ComponentEvent extends AbstractUserEvent implements com.tilioteo.hypothesis.interfaces.ComponentEvent {
 
 	private Component component;
 	private ComponentData data;
@@ -45,6 +45,7 @@ public class ComponentEvent extends AbstractUserEvent {
 		}
 	}
 
+	@Override
 	public void setProperty(String name, Object value) {
 		setProperty(name, value, null);
 	}
@@ -68,4 +69,5 @@ public class ComponentEvent extends AbstractUserEvent {
 	public void setData(ComponentData data) {
 		this.data = data;
 	}
+
 }

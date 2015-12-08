@@ -27,7 +27,7 @@ public class TokenService implements Serializable {
 	private static final int TOKEN_VALID_TIME = 120 * 1000; // 2 minutes
 
 	private HibernateDao<Token, String> tokenDao;
-	
+
 	public static TokenService newInstance() {
 		return new TokenService(new HibernateDao<Token, String>(Token.class));
 	}
@@ -55,10 +55,9 @@ public class TokenService implements Serializable {
 			// first purge invalid tokens and then find token by uid
 			Date date = new Date();
 			date.setTime(date.getTime() - TOKEN_VALID_TIME);
-			
+
 			tokenDao.beginTransaction();
-			List<Token> tokens = tokenDao.findByCriteria(Restrictions.lt(
-					FieldConstants.DATETIME, date));
+			List<Token> tokens = tokenDao.findByCriteria(Restrictions.lt(FieldConstants.DATETIME, date));
 			for (Token invalidToken : tokens) {
 				tokenDao.makeTransient(invalidToken);
 			}
@@ -68,7 +67,7 @@ public class TokenService implements Serializable {
 			log.error(e.getMessage());
 			tokenDao.rollback();
 		}
-		
+
 		try {
 			tokenDao.beginTransaction();
 			Token token = tokenDao.findById(uid, true);

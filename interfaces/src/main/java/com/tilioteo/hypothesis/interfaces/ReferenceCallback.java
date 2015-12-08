@@ -1,11 +1,9 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.builder.xml;
+package com.tilioteo.hypothesis.interfaces;
 
 import java.io.Serializable;
-
-import com.tilioteo.hypothesis.interfaces.Evaluator;
 
 /**
  * @author kamil

@@ -10,10 +10,10 @@ import com.vaadin.ui.VerticalLayout;
 public class ManagementView extends VerticalLayout implements View {
 
 	private ManagementPresenter presenter;
-	
+
 	public ManagementView(ManagementPresenter presenter) {
 		this.presenter = presenter;
-		
+
 		setSizeFull();
 		setMargin(true);
 		setSpacing(true);

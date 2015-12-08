@@ -6,12 +6,12 @@
 	<groupId>com.tilioteo</groupId>
 	<artifactId>hypothesis</artifactId>
 	<packaging>pom</packaging>
-	<version>1.15.0-SNAPSHOT</version>
+	<version>1.5.0-SNAPSHOT</version>
 	<name>hypothesis-parent</name>
 
 	<properties>
 
-		<vaadin.version>7.5.8</vaadin.version>
+		<vaadin.version>7.5.10</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.source.version>1.7</project.source.version>
@@ -20,6 +20,7 @@
 
 		<junit.version>4.11</junit.version>
 		<dom4j.version>1.6.1</dom4j.version>
+		<jaxen.version>1.1.6</jaxen.version>
 		<log4j.version>1.2.17</log4j.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<postgresql.version>9.4-1206-jdbc41</postgresql.version>
@@ -34,7 +35,8 @@
 		<animator.version>1.7.4</animator.version>
 		<commons.version>1.0.0</commons.version>
 		<expressions.version>1.0.0</expressions.version>
-		<javautil.version>0.1.0</javautil.version>
+		<jcabi.version>1.1</jcabi.version>
+		<slf4j.version>1.7.13</slf4j.version>
 	</properties>
 
 	<profiles>
@@ -45,7 +47,10 @@
 			</activation>
 			<properties>
 				<build.profile.id>debug</build.profile.id>
-				
+
+				<project.version.specific>Debuging</project.version.specific>
+				<project.version.additional>Debuging</project.version.additional>
+
 				<vaadin.production>false</vaadin.production>
 				<vaadin.compile.style>DETAILED</vaadin.compile.style>
 
@@ -63,7 +68,10 @@
 			<id>production</id>
 			<properties>
 				<build.profile.id>production</build.profile.id>
-				
+
+				<project.version.specific>Production</project.version.specific>
+				<project.version.additional></project.version.additional>
+
 				<vaadin.production>true</vaadin.production>
 				<vaadin.compile.style>OBF</vaadin.compile.style>
 
@@ -163,6 +171,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>jaxen</groupId>
+				<artifactId>jaxen</artifactId>
+				<version>${jaxen.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>${hibernate.version}</version>
@@ -205,10 +219,35 @@
 			</dependency>
 
 			<dependency>
+				<groupId>com.jcabi</groupId>
+				<artifactId>jcabi-manifests</artifactId>
+				<version>${jcabi.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
 				<scope>test</scope>
+			</dependency>
+
+			<!-- Optional plugin libraries -->
+			<dependency>
+				<groupId>com.tilioteo.hypothesis.plugin</groupId>
+				<artifactId>h-maps</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tilioteo.hypothesis.plugin</groupId>
+				<artifactId>h-processing</artifactId>
+				<version>1.0.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -233,10 +272,16 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
-
+		
+		<repository>
+			<id>lib_id</id>
+			<url>file://${project.basedir}/lib</url>
+		</repository>
 	</repositories>
+
 	<modules>
 		<module>interfaces</module>
+		<module>commons</module>
 		<module>widgetset</module>
 		<module>ui</module>
 		<module>backend</module>

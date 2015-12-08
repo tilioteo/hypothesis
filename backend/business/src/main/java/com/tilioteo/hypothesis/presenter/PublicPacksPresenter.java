@@ -188,10 +188,6 @@ public class PublicPacksPresenter implements PacksPresenter {
 		return permissionService.getPublishedPacks();
 	}
 
-	/*public PacksView getView() {
-		return view;
-	}*/
-
 	protected void refreshView() {
 		view.clearMainLayout();
 
@@ -226,6 +222,8 @@ public class PublicPacksPresenter implements PacksPresenter {
 		panel.setLegacyButtonCaption(Messages.getString("Caption.Button.StartLegacy"));
 		panel.setLegacyButtonClickListener(legacyButtonClickListener);
 		panel.setLegacyButtonWindowClosedListener(legacyButtonWindowClosedListener);
+		
+		panel.setJavaRequired(pack.isJavaRequired());
 
 		panelBeans.put(panel, beanItem);
 
@@ -233,7 +231,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 	}
 
 	private PackPanel getParentPanel(Component component) {
-		while (component != null || !(component instanceof PackPanel)) {
+		while (component != null && !(component instanceof PackPanel)) {
 			component = component.getParent();
 		}
 
@@ -267,7 +265,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 		view.setJavaNotInstalledCaption(Messages.getString("Message.Info.JavaNotInstalled"));
 		view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"));
 
-		afterCreate();
+		//afterCreate();
 		
 		return view;
 	}

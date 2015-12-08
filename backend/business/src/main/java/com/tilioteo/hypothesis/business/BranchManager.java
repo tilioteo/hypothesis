@@ -8,8 +8,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.tilioteo.hypothesis.builder.BranchBuilder;
-import com.tilioteo.hypothesis.builder.BranchControllerFactory;
-import com.tilioteo.hypothesis.builder.xml.BranchControllerXmlFactory;
+import com.tilioteo.hypothesis.data.DocumentReader;
+import com.tilioteo.hypothesis.data.XmlDocumentReader;
 import com.tilioteo.hypothesis.data.model.Branch;
 import com.tilioteo.hypothesis.data.model.Pack;
 import com.tilioteo.hypothesis.data.model.Slide;
@@ -24,7 +24,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
 	private static Logger log = Logger.getLogger(BranchManager.class);
 
-	private BranchControllerFactory factory = new BranchControllerXmlFactory();
+	private DocumentReader reader = new XmlDocumentReader();
 
 	private Branch current = null;
 	private BranchController controller = null;
@@ -51,7 +51,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	private void buildBranchController() {
 		log.debug("Building branch controller.");
 
-		controller = BranchBuilder.buildBranchController(current, factory);
+		controller = BranchBuilder.buildBranchController(current, reader);
 	}
 
 	/*@Override

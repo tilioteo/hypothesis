@@ -12,6 +12,7 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.tilioteo.hypothesis.interfaces.DocumentConstants;
 import com.tilioteo.hypothesis.utility.XmlUtility;
 
 /**
@@ -26,7 +27,7 @@ public class SlideDataParser {
 		Document doc = XmlUtility.readString(xmlString);
 		if (doc != null) {
 			@SuppressWarnings("unchecked")
-			List<Element> elements = doc.getRootElement().selectNodes(String.format(XmlUtility.DESCENDANT_FMT, BuilderConstants.OUTPUT_VALUE));
+			List<Element> elements = doc.getRootElement().selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.OUTPUT_VALUE));
 
 			if (elements.size() > 0) {
 				for (int i = 0; i < 10; ++i) {
@@ -35,7 +36,7 @@ public class SlideDataParser {
 			}
 			
 			for (Element element : elements) {
-				String index = element.attributeValue(BuilderConstants.INDEX);
+				String index = element.attributeValue(DocumentConstants.INDEX);
 
 				try {
 					int i = Integer.parseInt(index);
@@ -55,12 +56,12 @@ public class SlideDataParser {
 		Document doc = XmlUtility.readString(xmlString);
 		if (doc != null) {
 			@SuppressWarnings("unchecked")
-			List<Element> elements = doc.getRootElement().selectNodes(String.format(XmlUtility.DESCENDANT_FMT, BuilderConstants.FIELD));
+			List<Element> elements = doc.getRootElement().selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.FIELD));
 			for (Element element : elements) {
-				String id = element.attributeValue(BuilderConstants.ID);
+				String id = element.attributeValue(DocumentConstants.ID);
 				
 				String caption = null;
-				Element captionElement = (Element) element.selectSingleNode(BuilderConstants.CAPTION);
+				Element captionElement = (Element) element.selectSingleNode(DocumentConstants.CAPTION);
 				if (captionElement != null) {
 					caption = captionElement.getTextTrim();
 				}
@@ -68,9 +69,9 @@ public class SlideDataParser {
 				wrapper.fieldCaptionMap.put(id, caption.isEmpty() ? null : caption);
 
 				String valueId = null;
-				Element valueElement = (Element) element.selectSingleNode(BuilderConstants.VALUE);
+				Element valueElement = (Element) element.selectSingleNode(DocumentConstants.VALUE);
 				if (valueElement != null) {
-					valueId = valueElement.attributeValue(BuilderConstants.ID);
+					valueId = valueElement.attributeValue(DocumentConstants.ID);
 					String value = valueElement.getText();
 					if (valueId != null && !valueId.isEmpty()) {
 						wrapper.fieldValueMap.put(id, valueId);

@@ -58,6 +58,7 @@ public class Action extends AbstractBaseAction {
 		return builder.toString();
 	}
 
+	@Override
 	public Map<Integer, ExchangeVariable> getOutputs() {
 		Map<String, com.tilioteo.hypothesis.interfaces.Variable<?>> variables = getVariables();
 		if (variables != null) {

@@ -9,26 +9,13 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 
 /**
- * @author Kamil Morong - Hypothesis
- * 
+ * @author kamil
+ *
  */
-@SuppressWarnings("serial")
-public final class ComponentWrapper implements Serializable {
+public interface ComponentWrapper extends Serializable {
 
-	private Component component;
-	private Alignment alignment;
+	public Component getComponent();
 
-	public ComponentWrapper(Component component, Alignment alignment) {
-		this.component = component;
-		this.alignment = alignment;
-	}
-
-	public Alignment getAlignment() {
-		return alignment;
-	}
-
-	public Component getComponent() {
-		return component;
-	}
+	public Alignment getAlignment();
 
 }

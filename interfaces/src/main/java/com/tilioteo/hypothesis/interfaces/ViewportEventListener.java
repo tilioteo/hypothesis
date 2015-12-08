@@ -1,12 +1,11 @@
 /**
  * 
  */
-package com.tilioteo.hypothesis.event.interfaces;
+package com.tilioteo.hypothesis.interfaces;
 
 import java.io.Serializable;
 import java.util.EventListener;
-
-import com.tilioteo.hypothesis.event.model.ViewportEvent;
+import java.util.EventObject;
 
 /**
  * @author Kamil Morong - Hypothesis
@@ -14,6 +13,6 @@ import com.tilioteo.hypothesis.event.model.ViewportEvent;
  */
 public interface ViewportEventListener extends EventListener, Serializable {
 
-	public void handleEvent(ViewportEvent event);
+	public void handleEvent(EventObject event);
 
 }
