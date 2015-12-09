@@ -31,26 +31,26 @@
 	</context-param>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>com.tilioteo.hypothesis.context.ContextConfig</param-value>
+		<param-value>org.hypothesis.context.ContextConfig</param-value>
 	</context-param>	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	
 	<!--servlet>
 		<servlet-name>main-servlet</servlet-name>
-		<servlet-class>com.tilioteo.hypothesis.servlet.MainServlet</servlet-class>
+		<servlet-class>org.hypothesis.servlet.MainServlet</servlet-class>
 		<init-param>
 			<param-name>UIProvider</param-name>
-			<param-value>com.tilioteo.hypothesis.provider.MainUIProvider</param-value>
+			<param-value>org.hypothesis.provider.MainUIProvider</param-value>
 		</init-param>
 	</servlet>
 
 	<servlet>
 		<servlet-name>process-servlet</servlet-name>
-		<servlet-class>com.tilioteo.hypothesis.servlet.ProcessServlet</servlet-class>
+		<servlet-class>org.hypothesis.servlet.ProcessServlet</servlet-class>
 		<init-param>
 			<param-name>UIProvider</param-name>
-			<param-value>com.tilioteo.hypothesis.provider.ProcessUIProvider</param-value>
+			<param-value>org.hypothesis.provider.ProcessUIProvider</param-value>
 		</init-param>
 	</servlet-->
 </web-app>

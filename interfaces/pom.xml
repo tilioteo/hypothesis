@@ -6,10 +6,9 @@
 
 	<artifactId>hypothesis-interfaces</artifactId>
 	<name>hypothesis-interfaces</name>
-	<groupId>com.tilioteo.hypothesis</groupId>
 
 	<parent>
-		<groupId>com.tilioteo</groupId>
+		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis</artifactId>
 		<version>${project.version}</version>
 	</parent>

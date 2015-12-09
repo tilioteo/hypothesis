@@ -8,9 +8,9 @@
 	<packaging>jar</packaging>
 
 	<parent>
-		<groupId>com.tilioteo.hypothesis</groupId>
-		<version>${project.version}</version>
+		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis-ui</artifactId>
+		<version>${project.version}</version>
 	</parent>
 
 	<properties>
@@ -130,7 +130,7 @@
 							<!-- Package format version - do not change -->
 							<Vaadin-Package-Version>1</Vaadin-Package-Version>
 							<Vaadin-License-Title>${Vaadin-License-Title}</Vaadin-License-Title>
-							<Vaadin-Widgetsets>com.tilioteo.hypothesis.slide.WidgetSet</Vaadin-Widgetsets>
+							<Vaadin-Widgetsets>org.hypothesis.slide.WidgetSet</Vaadin-Widgetsets>
 						</manifestEntries>
 					</archive>
 				</configuration>

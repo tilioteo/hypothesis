@@ -5,12 +5,11 @@
 
 	<artifactId>hypothesis-package</artifactId>
 	<name>hypothesis-package</name>
-	<groupId>com.tilioteo.hypothesis</groupId>
 	<packaging>war</packaging>
 
 	<parent>
+		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis</artifactId>
-		<groupId>com.tilioteo</groupId>
 		<version>${project.version}</version>
 	</parent>
 
@@ -38,23 +37,15 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!--dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>hypothesis-widgetset</artifactId>
-			<version>${project.version}</version>
-			<classifier>sources</classifier>
-			<scope>provided</scope>
-		</dependency-->
+		<!--dependency> <groupId>${project.groupId}</groupId> <artifactId>hypothesis-widgetset</artifactId> 
+			<version>${project.version}</version> <classifier>sources</classifier> <scope>provided</scope> 
+			</dependency -->
 	</dependencies>
 
 	<build>
-		<!--resources>
-			<resource>
-				<directory>src/main/webapp</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources-->
-		
+		<!--resources> <resource> <directory>src/main/webapp</directory> <filtering>true</filtering> 
+			</resource> </resources -->
+
 		<!--plugins -->
 		<!-- Do not produce and install artifacts when not using the production 
 			profile -->
@@ -129,7 +120,7 @@
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
 				<configuration>
-					<module>com.tilioteo.hypothesis.WidgetSet</module>
+					<module>org.hypothesis.WidgetSet</module>
 					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
 					<warSourceDirectory>${vaadin.resource.directory}</warSourceDirectory>
 					<webappDirectory>${vaadin.resource.directory}/VAADIN/widgetsets</webappDirectory>
@@ -142,7 +133,7 @@
 				<executions>
 					<execution>
 						<goals>
-							<!--goal>compile</goal-->
+							<!--goal>compile</goal -->
 							<goal>compile-theme</goal>
 						</goals>
 					</execution>
@@ -173,7 +164,7 @@
 							<excludes>
 								<!-- Exclude larger development time widgetset. -->
 								<!-- The relevant classes are copied to the WAR above. -->
-								<!--exclude>WEB-INF/lib/hypothesis-widgetset-*.jar</exclude-->
+								<!--exclude>WEB-INF/lib/hypothesis-widgetset-*.jar</exclude -->
 								<!-- Exclude the Sass compiler and its dependencies. -->
 								<!-- The production WAR includes a precompiled theme. -->
 								<exclude>WEB-INF/lib/vaadin-sass-compiler-*.jar</exclude>
@@ -250,7 +241,7 @@
 										<ignore></ignore>
 									</action>
 								</pluginExecution>
-								
+
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.apache.maven.plugins</groupId>

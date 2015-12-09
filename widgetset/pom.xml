@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <artifactId>hypothesis-widgetset</artifactId>
-    <name>hypothesis-widgetset</name>
-    <groupId>com.tilioteo.hypothesis</groupId>
-    <packaging>jar</packaging>
-    
-    <parent>
-        <artifactId>hypothesis</artifactId>
-        <groupId>com.tilioteo</groupId>
-        <version>${project.version}</version>
-    </parent>
+	<artifactId>hypothesis-widgetset</artifactId>
+	<name>hypothesis-widgetset</name>
+	<packaging>jar</packaging>
 
-    <dependencies>
-    	<!-- Versions for these are configured in the parent POM -->
-    	<dependency>
+	<parent>
+		<groupId>org.hypothesis</groupId>
+		<artifactId>hypothesis</artifactId>
+		<version>${project.version}</version>
+	</parent>
+
+	<dependencies>
+		<!-- Versions for these are configured in the parent POM -->
+		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client</artifactId>
-			<!-- TODO this should have scope provided once http://dev.vaadin.com/ticket/14788 is resolved -->
+			<!-- TODO this should have scope provided once http://dev.vaadin.com/ticket/14788 
+				is resolved -->
 			<!-- <scope>provided</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client-compiler</artifactId>
-			<!-- TODO this should have scope provided once http://dev.vaadin.com/ticket/14788 is resolved -->
+			<!-- TODO this should have scope provided once http://dev.vaadin.com/ticket/14788 
+				is resolved -->
 			<!-- <scope>provided</scope> -->
 		</dependency>
 
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>hypothesis-slide-ui</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>hypothesis-slide-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.github.tilioteo</groupId>
@@ -58,115 +60,94 @@
 			<version>${animator.version}</version>
 		</dependency>
 
-  		<!-- Optional plugin libraries -->
-		<dependency>
-			<groupId>com.tilioteo.hypothesis.plugin</groupId>
-			<artifactId>h-maps</artifactId>
-		</dependency>
+		<!-- Optional plugin libraries -->
+	</dependencies>
 
-		<dependency>
-			<groupId>com.github.tilioteo</groupId>
-			<artifactId>vmaps</artifactId>
-			<version>0.9.8</version>
-		</dependency>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<configuration>
+					<extraJvmArgs>-Xmx1024M -Xss1024k</extraJvmArgs>
+					<webappDirectory>${basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
+					<draftCompile>true</draftCompile>
+					<compileReport>false</compileReport>
+					<style>${vaadin.compile.style}</style>
+					<strict>true</strict>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>update-widgetset</goal>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
-		<dependency>
-			<groupId>com.tilioteo.hypothesis.plugin</groupId>
-			<artifactId>h-processing</artifactId>
-		</dependency>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
-		<dependency>
-			<groupId>com.github.tilioteo</groupId>
-			<artifactId>vprocjs</artifactId>
-			<version>0.2.1-mod</version>
-		</dependency>
-
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.vaadin</groupId>
-                <artifactId>vaadin-maven-plugin</artifactId>
-                <configuration>
-                    <extraJvmArgs>-Xmx1024M -Xss1024k</extraJvmArgs>
-                    <webappDirectory>${basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
-                    <draftCompile>true</draftCompile>
-                    <compileReport>false</compileReport>
-                    <style>${vaadin.compile.style}</style>
-                    <strict>true</strict>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>update-widgetset</goal>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Vaadin-Package-Version>1</Vaadin-Package-Version>
-                            <Vaadin-Widgetsets>com.tilioteo.hypothesis.WidgetSet</Vaadin-Widgetsets>
-                        </manifestEntries>
-                    </archive>
-                    <!-- Exclude some unnecessary files generated by the GWT compiler. -->
-                    <excludes>
-                    	<exclude>VAADIN/gwt-unitCache/**</exclude>
-                    	<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-        	<plugins>
-        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-        		<!-- TODO Remove when http://dev.vaadin.com/ticket/14924 is resolved -->
-        		<plugin>
-        			<groupId>org.eclipse.m2e</groupId>
-        			<artifactId>lifecycle-mapping</artifactId>
-        			<version>1.0.0</version>
-        			<configuration>
-        				<lifecycleMappingMetadata>
-        					<pluginExecutions>
-        						<pluginExecution>
-        							<pluginExecutionFilter>
-        								<groupId>com.vaadin</groupId>
-        								<artifactId>vaadin-maven-plugin</artifactId>
-        								<versionRange>[7.1.11,)</versionRange>
-        								<goals>
-        									<goal>resources</goal>
-        									<goal>update-widgetset</goal>
-        								</goals>
-        							</pluginExecutionFilter>
-        							<action>
-        								<ignore></ignore>
-        							</action>
-        						</pluginExecution>
-        					</pluginExecutions>
-        				</lifecycleMappingMetadata>
-        			</configuration>
-        		</plugin>
-        	</plugins>
-        </pluginManagement>
-    </build>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Vaadin-Package-Version>1</Vaadin-Package-Version>
+							<Vaadin-Widgetsets>org.hypothesis.WidgetSet</Vaadin-Widgetsets>
+						</manifestEntries>
+					</archive>
+					<!-- Exclude some unnecessary files generated by the GWT compiler. -->
+					<excludes>
+						<exclude>VAADIN/gwt-unitCache/**</exclude>
+						<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<!-- TODO Remove when http://dev.vaadin.com/ticket/14924 is resolved -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.vaadin</groupId>
+										<artifactId>vaadin-maven-plugin</artifactId>
+										<versionRange>[7.1.11,)</versionRange>
+										<goals>
+											<goal>resources</goal>
+											<goal>update-widgetset</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 </project>

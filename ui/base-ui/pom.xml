@@ -9,8 +9,8 @@
 	<packaging>jar</packaging>
 
 	<parent>
+		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis-ui</artifactId>
-		<groupId>com.tilioteo.hypothesis</groupId>
 		<version>${project.version}</version>
 	</parent>
 

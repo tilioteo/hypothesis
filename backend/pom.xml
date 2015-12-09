@@ -5,11 +5,10 @@
 
 	<artifactId>hypothesis-backend</artifactId>
 	<name>hypothesis-backend</name>
-	<groupId>com.tilioteo.hypothesis</groupId>
 	<packaging>pom</packaging>
 
 	<parent>
-		<groupId>com.tilioteo</groupId>
+		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis</artifactId>
 		<version>${project.version}</version>
 	</parent>
@@ -24,7 +23,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.tilioteo.hypothesis</groupId>
+			<groupId>org.hypothesis</groupId>
 			<artifactId>hypothesis-interfaces</artifactId>
 			<version>${project.version}</version>
 		</dependency>

@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.tilioteo</groupId>
+	<groupId>org.hypothesis</groupId>
 	<artifactId>hypothesis</artifactId>
 	<packaging>pom</packaging>
 	<version>1.5.0-SNAPSHOT</version>
@@ -238,17 +238,6 @@
 			</dependency>
 
 			<!-- Optional plugin libraries -->
-			<dependency>
-				<groupId>com.tilioteo.hypothesis.plugin</groupId>
-				<artifactId>h-maps</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.tilioteo.hypothesis.plugin</groupId>
-				<artifactId>h-processing</artifactId>
-				<version>1.0.0</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -271,11 +260,6 @@
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
-		</repository>
-		
-		<repository>
-			<id>lib_id</id>
-			<url>file://${project.basedir}/lib</url>
 		</repository>
 	</repositories>
 

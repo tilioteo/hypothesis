@@ -25,24 +25,24 @@
 			Check the database schema on startup -->
 		<property name="hibernate.hbm2ddl.auto">validate</property>
 		<!--<property name="hibernate.hbm2ddl.auto">update</property>-->
-		<mapping class="com.tilioteo.hypothesis.data.model.SlideTemplate" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Slide" />
-		<mapping class="com.tilioteo.hypothesis.data.model.SlideOrder" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Task" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Branch" />
-		<mapping class="com.tilioteo.hypothesis.data.model.BranchOutput" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Pack" />
-		<mapping class="com.tilioteo.hypothesis.data.model.BranchTrek" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Event" />
-		<mapping class="com.tilioteo.hypothesis.data.model.ExportEvent"/>
-		<mapping class="com.tilioteo.hypothesis.data.model.SimpleTest" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Test" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Token" />
-		<mapping class="com.tilioteo.hypothesis.data.model.User" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Group" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Role" />
-		<mapping class="com.tilioteo.hypothesis.data.model.UserPermission" />
-		<mapping class="com.tilioteo.hypothesis.data.model.GroupPermission" />
-		<mapping class="com.tilioteo.hypothesis.data.model.Message" />
+		<mapping class="org.hypothesis.data.model.SlideTemplate" />
+		<mapping class="org.hypothesis.data.model.Slide" />
+		<mapping class="org.hypothesis.data.model.SlideOrder" />
+		<mapping class="org.hypothesis.data.model.Task" />
+		<mapping class="org.hypothesis.data.model.Branch" />
+		<mapping class="org.hypothesis.data.model.BranchOutput" />
+		<mapping class="org.hypothesis.data.model.Pack" />
+		<mapping class="org.hypothesis.data.model.BranchTrek" />
+		<mapping class="org.hypothesis.data.model.Event" />
+		<mapping class="org.hypothesis.data.model.ExportEvent"/>
+		<mapping class="org.hypothesis.data.model.SimpleTest" />
+		<mapping class="org.hypothesis.data.model.Test" />
+		<mapping class="org.hypothesis.data.model.Token" />
+		<mapping class="org.hypothesis.data.model.User" />
+		<mapping class="org.hypothesis.data.model.Group" />
+		<mapping class="org.hypothesis.data.model.Role" />
+		<mapping class="org.hypothesis.data.model.UserPermission" />
+		<mapping class="org.hypothesis.data.model.GroupPermission" />
+		<mapping class="org.hypothesis.data.model.Message" />
 	</session-factory>
 </hibernate-configuration>
