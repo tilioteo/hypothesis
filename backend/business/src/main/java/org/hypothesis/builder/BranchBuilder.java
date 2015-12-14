@@ -11,7 +11,9 @@ import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.model.Branch;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")

@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.servlet;
 
@@ -18,13 +19,18 @@ import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.context.LogUtil;
 
 /**
- * @author Kamil Morong - Tilioteo Ltd.
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  *         Servlet filter to handle Hibernate Session per-request
  * 
  */
-/*@WebFilter(urlPatterns = { "/*" }, dispatcherTypes = { DispatcherType.REQUEST,
-		DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR })*/
+/*
+ * @WebFilter(urlPatterns = { "/*" }, dispatcherTypes = {
+ * DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE,
+ * DispatcherType.ERROR })
+ */
 public class HibernateSessionInterceptor implements Filter {
 
 	private static Logger log = Logger.getLogger(HibernateSessionInterceptor.class);
@@ -35,8 +41,8 @@ public class HibernateSessionInterceptor implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
 		try {
 			log.debug("Starting a database transaction");
 			HibernateUtil.beginTransaction();
@@ -62,8 +68,7 @@ public class HibernateSessionInterceptor implements Filter {
 			try {
 				HibernateUtil.rollbackTransaction();
 			} catch (Throwable rbEx) {
-				log.error("Could not rollback transaction after exception!",
-						rbEx);
+				log.error("Could not rollback transaction after exception!", rbEx);
 			}
 			throw e;
 		} catch (Throwable e) {
@@ -72,8 +77,7 @@ public class HibernateSessionInterceptor implements Filter {
 			try {
 				HibernateUtil.rollbackTransaction();
 			} catch (Throwable rbEx) {
-				log.error("Could not rollback transaction after exception!",
-						rbEx);
+				log.error("Could not rollback transaction after exception!", rbEx);
 			}
 
 			// Let others handle it... maybe another interceptor for exceptions?
@@ -81,11 +85,6 @@ public class HibernateSessionInterceptor implements Filter {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		log.debug("Initializing filter...");

@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.builder;
 
@@ -9,7 +10,9 @@ import org.hypothesis.data.DocumentReader;
 import org.hypothesis.ui.SlideContainer;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public interface SlideContainerFactory extends Serializable {

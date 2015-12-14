@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.event.model;
 
@@ -7,8 +8,10 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 public class ProcessEventTypes {
 

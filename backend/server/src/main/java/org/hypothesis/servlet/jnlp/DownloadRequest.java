@@ -1,9 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/*
  * @(#)DownloadRequest.java	1.7 05/11/17
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -38,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,7 +49,7 @@ import org.apache.log4j.Logger;
  */
 public class DownloadRequest {
 	private static Logger log = Logger.getLogger(DownloadRequest.class);
-	
+
 	// Arguments
 	private static final String ARG_ARCH = "arch";
 	private static final String ARG_OS = "os";
@@ -151,8 +147,7 @@ public class DownloadRequest {
 		this((ServletContext) null, pathRemapper, request);
 	}
 
-	public DownloadRequest(ServletContext context, PathRemapper pathRemapper,
-			HttpServletRequest request) {
+	public DownloadRequest(ServletContext context, PathRemapper pathRemapper, HttpServletRequest request) {
 		_context = context;
 		_httpRequest = request;
 		_path = request.getRequestURI();
@@ -286,15 +281,10 @@ public class DownloadRequest {
 	// Debug
 	@Override
 	public String toString() {
-		return "DownloadRequest[path=" + _path
-				+ showEntry(" encoding=", _encoding)
-				+ showEntry(" query=", _query)
-				+ showEntry(" TestJRE=", _testJRE)
-				+ showEntry(" version=", _version)
-				+ showEntry(" currentVersionId=", _currentVersionId)
-				+ showEntry(" os=", _os) + showEntry(" arch=", _arch)
-				+ showEntry(" locale=", _locale)
-				+ showEntry(" knownPlatforms=", _knownPlatforms)
-				+ " isPlatformRequest=" + _isPlatformRequest + "]";
+		return "DownloadRequest[path=" + _path + showEntry(" encoding=", _encoding) + showEntry(" query=", _query)
+				+ showEntry(" TestJRE=", _testJRE) + showEntry(" version=", _version)
+				+ showEntry(" currentVersionId=", _currentVersionId) + showEntry(" os=", _os)
+				+ showEntry(" arch=", _arch) + showEntry(" locale=", _locale)
+				+ showEntry(" knownPlatforms=", _knownPlatforms) + " isPlatformRequest=" + _isPlatformRequest + "]";
 	}
 }

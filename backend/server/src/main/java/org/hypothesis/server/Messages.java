@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.server;
 
@@ -10,7 +11,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public class Messages {

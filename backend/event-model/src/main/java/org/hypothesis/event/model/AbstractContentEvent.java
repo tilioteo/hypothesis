@@ -8,8 +8,10 @@ import com.vaadin.server.ErrorHandler;
 import com.vaadin.ui.Component;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public abstract class AbstractContentEvent extends AbstractRunningEvent {

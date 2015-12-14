@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.builder;
 
@@ -17,7 +18,9 @@ import org.hypothesis.interfaces.Evaluable;
 import org.hypothesis.interfaces.Evaluator;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")

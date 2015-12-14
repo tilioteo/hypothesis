@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.data.service;
 
 import java.io.Serializable;
@@ -11,6 +15,12 @@ import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Group;
 import org.hypothesis.data.model.User;
 
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
 @SuppressWarnings("serial")
 public class GroupService implements Serializable {
 

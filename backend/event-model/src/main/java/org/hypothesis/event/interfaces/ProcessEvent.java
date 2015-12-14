@@ -5,7 +5,9 @@
 package org.hypothesis.event.interfaces;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public interface ProcessEvent extends HypothesisEvent {

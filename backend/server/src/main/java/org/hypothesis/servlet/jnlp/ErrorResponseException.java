@@ -1,13 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/**
- * @author morong
- *
- */
-/*
  * @(#)ErrorResponseException.java	1.6 05/11/17
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -42,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 /**
  * An exception that holds a DownloadResponse object. This exception can be

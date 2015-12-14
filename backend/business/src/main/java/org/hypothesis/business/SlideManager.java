@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.business;
 
@@ -25,8 +26,10 @@ import org.hypothesis.ui.SlideContainer;
 import com.vaadin.ui.Component;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class SlideManager extends ListManager<Task, Slide> {
@@ -126,8 +129,8 @@ public class SlideManager extends ListManager<Task, Slide> {
 					String name = inputExpression.getExpression().getSimpleVariableName();
 					Object value = nextInputValues.get(index);
 					if (name != null && value != null) {
-						org.hypothesis.interfaces.Variable<?> variable = container.getPresenter()
-								.getVariables().get(name);
+						org.hypothesis.interfaces.Variable<?> variable = container.getPresenter().getVariables()
+								.get(name);
 						if (variable != null)
 							variable.setRawValue(value);
 						else {

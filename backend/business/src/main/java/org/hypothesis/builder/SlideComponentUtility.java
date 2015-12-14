@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.builder;
 
@@ -39,7 +40,9 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractMedia;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public class SlideComponentUtility {

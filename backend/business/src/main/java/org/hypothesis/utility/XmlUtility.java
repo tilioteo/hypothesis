@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.utility;
 
@@ -23,7 +24,9 @@ import org.dom4j.io.XMLWriter;
 import com.tilioteo.common.Strings;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
@@ -42,23 +45,18 @@ public class XmlUtility implements Serializable {
 		}
 	}
 
-	/*public static boolean writeFile(final Document doc, final File file) {
-		if (doc != null && file.getName().length() > 0) {
-			try {
-				OutputFormat outputFormat = OutputFormat.createPrettyPrint();
-				outputFormat.setEncoding(doc.getXMLEncoding());
-				
-				XMLWriter writer = new XMLWriter(new FileWriter(file), outputFormat);
-				writer.write(doc);
-				writer.close();
-				return true;
-			}
-			catch (Throwable e) {
-			}
-		}
-		
-		return false;
-	}*/
+	/*
+	 * public static boolean writeFile(final Document doc, final File file) { if
+	 * (doc != null && file.getName().length() > 0) { try { OutputFormat
+	 * outputFormat = OutputFormat.createPrettyPrint();
+	 * outputFormat.setEncoding(doc.getXMLEncoding());
+	 * 
+	 * XMLWriter writer = new XMLWriter(new FileWriter(file), outputFormat);
+	 * writer.write(doc); writer.close(); return true; } catch (Throwable e) { }
+	 * }
+	 * 
+	 * return false; }
+	 */
 
 	public static Document createDocument() {
 		Document doc = DocumentFactory.getInstance().createDocument();

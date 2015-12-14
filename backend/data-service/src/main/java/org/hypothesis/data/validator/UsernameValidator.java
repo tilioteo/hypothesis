@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.data.validator;
 
 import org.hypothesis.data.service.UserService;
@@ -5,6 +9,12 @@ import org.hypothesis.data.service.UserService;
 import org.hypothesis.server.Messages;
 import com.vaadin.data.Validator;
 
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
 @SuppressWarnings("serial")
 public class UsernameValidator implements Validator {
 

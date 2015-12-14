@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.context;
 
@@ -18,13 +19,15 @@ import org.hypothesis.server.SessionMap;
 import com.vaadin.server.VaadinSession;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  *         Utilitiy to work with Hibernate
  * 
  */
 public class HibernateUtil {
-	
+
 	public static final String CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION = "hibernateConfigLocation";
 
 	private static Logger log = Logger.getLogger(HibernateUtil.class);
@@ -52,8 +55,7 @@ public class HibernateUtil {
 		return session;
 	}
 
-	public static SessionFactory getSessionFactory()
-			throws NullPointerException {
+	public static SessionFactory getSessionFactory() throws NullPointerException {
 		if (sessionFactory != null) {
 			return sessionFactory;
 		} else {
@@ -62,8 +64,7 @@ public class HibernateUtil {
 		}
 	}
 
-	public static void initSessionFactory(ServletContext servletContext)
-			throws ExceptionInInitializerError {
+	public static void initSessionFactory(ServletContext servletContext) throws ExceptionInInitializerError {
 		log.trace("Initializing Hibernate SessionFactory...");
 
 		if (HibernateUtil.servletContext != servletContext) {
@@ -74,8 +75,7 @@ public class HibernateUtil {
 
 		if (null == sessionFactory) {
 			try {
-				String configFileName = servletContext
-						.getInitParameter(CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION);
+				String configFileName = servletContext.getInitParameter(CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION);
 
 				Configuration configuration = null;
 				if (null == configFileName || configFileName.length() == 0) {
@@ -83,22 +83,19 @@ public class HibernateUtil {
 					configuration = new Configuration().configure();
 				} else {
 					configFileName = servletContext.getRealPath(configFileName);
-					log.debug(String
-							.format("Creating new Hibernate SessionFactory using configuration file %s.",
-									configFileName));
+					log.debug(String.format("Creating new Hibernate SessionFactory using configuration file %s.",
+							configFileName));
 					File configFile = new File(configFileName);
 					configuration = new Configuration().configure(configFile);
 				}
 
-				serviceRegistry = new StandardServiceRegistryBuilder()
-						.applySettings(configuration.getProperties()).build();
-				sessionFactory = configuration
-						.buildSessionFactory(serviceRegistry);
+				serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties())
+						.build();
+				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 			} catch (Throwable ex) {
 				// Make sure you log the exception, as it might be swallowed
 				log.error("Initial SessionFactory creation failed.");
-				System.err.println("Initial SessionFactory creation failed."
-						+ ex);
+				System.err.println("Initial SessionFactory creation failed." + ex);
 				throw new ExceptionInInitializerError(ex);
 			}
 		} else {
@@ -131,51 +128,46 @@ public class HibernateUtil {
 	public static void rollbackTransaction() {
 		try {
 			final Session session = getSession();
-	
+
 			if (session.getTransaction().isActive()) {
 				log.trace("Rollbacking active database transaction.");
 				session.getTransaction().rollback();
 			} else {
 				log.trace("Session has no active database transaction to rollback.");
 			}
+		} catch (Throwable e) {
 		}
-		catch (Throwable e) {}
 	}
 
-	/*public static void closeSession() {
-		/*log.trace("Closing Hibernate Session.");
-		Session session = threadLocal.get();
-		if (session != null) {
-			session.close();
-		}
-		threadLocal.set(null);*/
-		/*
-		final Session session = getSessionFactory().getCurrentSession();
-
-		commitTransaction();
-		session.flush();
-
-		if (session.isOpen()) {
-			log.trace("Close opened Hibernate Session.");
-			session.close();
-		}
-	}*/
+	/*
+	 * public static void closeSession() { /*log.trace(
+	 * "Closing Hibernate Session."); Session session = threadLocal.get(); if
+	 * (session != null) { session.close(); } threadLocal.set(null);
+	 */
+	/*
+	 * final Session session = getSessionFactory().getCurrentSession();
+	 * 
+	 * commitTransaction(); session.flush();
+	 * 
+	 * if (session.isOpen()) { log.trace("Close opened Hibernate Session.");
+	 * session.close(); } }
+	 */
 
 	public static void shutdown() {
 		log.trace("Closing Hibernate SessionFactory.");
 		if (sessionFactory != null) {
 			cleanup();
-			
+
 			sessionFactory.close();
 			sessionFactory = null;
 		} else {
 			log.trace("Hibernate SessionFactory was not initialized.");
 		}
 	}
-	
+
 	public static void cleanup() {
 		log.trace("Cleaning session.");
-		
+
 		try {
 			SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
 			if (sessions != null) {
@@ -189,6 +181,7 @@ public class HibernateUtil {
 				sessions.clear();
 			}
 			VaadinSession.getCurrent().setAttribute(SessionMap.class, null);
-		} catch (Throwable e) {}
+		} catch (Throwable e) {
+		}
 	}
 }

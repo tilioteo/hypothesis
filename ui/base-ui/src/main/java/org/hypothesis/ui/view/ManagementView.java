@@ -14,7 +14,7 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
- * Hypothesis
+ *         Hypothesis
  *
  */
 @SuppressWarnings({ "serial" })

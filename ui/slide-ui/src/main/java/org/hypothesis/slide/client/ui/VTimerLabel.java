@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.slide.client.ui;
 
@@ -19,11 +20,12 @@ import com.google.gwt.user.client.ui.Label;
 import com.vaadin.shared.Connector;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
-public class VTimerLabel extends Label implements StartEventHandler,
-		StopEventHandler, UpdateEventHandler {
+public class VTimerLabel extends Label implements StartEventHandler, StopEventHandler, UpdateEventHandler {
 
 	public static final String CLASSNAME = "v-timerlabel";
 
@@ -54,7 +56,7 @@ public class VTimerLabel extends Label implements StartEventHandler,
 			this.time = time;
 
 		// NOTE don't know why need to substract one hour to display right time?
-		setText(dateTimeFormat.format(new Date(this.time-3600000)));
+		setText(dateTimeFormat.format(new Date(this.time - 3600000)));
 	}
 
 	public void setUpdateInterval(int updateInterval) {

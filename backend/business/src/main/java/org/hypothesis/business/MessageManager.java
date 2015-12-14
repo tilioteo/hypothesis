@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.business;
 
@@ -19,7 +20,9 @@ import org.hypothesis.interfaces.Element;
 import com.tilioteo.common.Strings;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")

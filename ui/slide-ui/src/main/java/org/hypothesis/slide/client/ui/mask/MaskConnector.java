@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.slide.client.ui.mask;
 
@@ -19,25 +20,27 @@ import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.shared.ui.Connect;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
 @Connect(org.hypothesis.slide.ui.Mask.class)
 public class MaskConnector extends AbstractExtensionConnector {
-	
+
 	private Widget widget;
 	private Element maskElement = null;
 	Position position = null;
-	
+
 	public MaskConnector() {
 		registerRpc(MaskClientRpc.class, new MaskClientRpc() {
-			
+
 			@Override
 			public void show() {
 				mask();
 			}
-			
+
 			@Override
 			public void hide() {
 				unmask();
@@ -50,7 +53,7 @@ public class MaskConnector extends AbstractExtensionConnector {
 		widget = ((ComponentConnector) target).getWidget();
 		position = positionFromString(widget.getElement().getStyle().getPosition());
 	}
-	
+
 	protected void mask() {
 		if (null == maskElement && widget != null) {
 			Element parentElement = widget.getElement();
@@ -63,16 +66,16 @@ public class MaskConnector extends AbstractExtensionConnector {
 			style.setLeft(0, Unit.PX);
 			style.setWidth(100, Unit.PCT);
 			style.setHeight(100, Unit.PCT);
-			
+
 			style.setProperty("background", getState().color);
-			//style.setOpacity(getState().opacity);
-			
+			// style.setOpacity(getState().opacity);
+
 			if (null == position) {
 				widget.getElement().getStyle().setPosition(Style.Position.RELATIVE);
 			}
 		}
 	}
-	
+
 	private Position positionFromString(String position) {
 		if (position != null && !position.trim().isEmpty()) {
 			for (Position pos : Position.values()) {
@@ -83,12 +86,12 @@ public class MaskConnector extends AbstractExtensionConnector {
 		}
 		return null;
 	}
-	
+
 	protected void unmask() {
 		if (maskElement != null) {
 			maskElement.removeFromParent();
 			maskElement = null;
-			
+
 			if (null == position) {
 				widget.getElement().getStyle().clearPosition();
 			} else {
@@ -96,24 +99,25 @@ public class MaskConnector extends AbstractExtensionConnector {
 			}
 		}
 	}
-	
+
 	@Override
 	public MaskState getState() {
-		return (MaskState)super.getState();
+		return (MaskState) super.getState();
 	}
 
 	@Override
 	public void onStateChanged(StateChangeEvent stateChangeEvent) {
 		super.onStateChanged(stateChangeEvent);
-		
+
 		if (maskElement != null) {
 			Style style = maskElement.getStyle();
 			if (stateChangeEvent.hasPropertyChanged("color")) {
 				style.setBackgroundColor(getState().color);
 			}
-			/*if (stateChangeEvent.hasPropertyChanged("opacity")) {
-				style.setOpacity(getState().opacity);
-			}*/
+			/*
+			 * if (stateChangeEvent.hasPropertyChanged("opacity")) {
+			 * style.setOpacity(getState().opacity); }
+			 */
 		}
 	}
 }

@@ -1,9 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet;
-
-/*
  * @(#)JnlpDownloadServlet.java	1.10 07/03/15
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -38,6 +33,7 @@ package org.hypothesis.servlet;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet;
 
 import java.io.IOException;
 
@@ -78,7 +74,7 @@ import org.hypothesis.servlet.jnlp.PathRemapper;
 @SuppressWarnings("serial")
 @WebServlet(value = "/resource/*", asyncSupported = true)
 public class JnlpDownloadServlet extends HttpServlet {
-	
+
 	private static Logger log = Logger.getLogger(JnlpDownloadServlet.class);
 
 	// Servlet configuration
@@ -95,8 +91,7 @@ public class JnlpDownloadServlet extends HttpServlet {
 	 * Given a DownloadPath and a DownloadRequest, it constructs the data stream
 	 * to return to the requester
 	 */
-	private DownloadResponse constructResponse(JnlpResource jnlpres,
-			DownloadRequest dreq) throws IOException {
+	private DownloadResponse constructResponse(JnlpResource jnlpres, DownloadRequest dreq) throws IOException {
 		// String path = jnlpres.getPath();
 		if (jnlpres.isJnlpFile()) {
 			// It is a JNLP file. It need to be macro-expanded, so it is handled
@@ -113,24 +108,20 @@ public class JnlpDownloadServlet extends HttpServlet {
 
 		// Check if a JARDiff can be returned
 		if (dreq.getCurrentVersionId() != null && jnlpres.isJarFile()) {
-			DownloadResponse response = _jarDiffHandler.getJarDiffEntry(
-					/* _resourceCatalog, */dreq, jnlpres);
+			DownloadResponse response = _jarDiffHandler.getJarDiffEntry(/* _resourceCatalog, */dreq, jnlpres);
 			if (response != null) {
 				return response;
 			}
 		}
 
 		// check and see if we can use pack resource
-		JnlpResource jr = new JnlpResource(getServletContext(),
-				jnlpres.getName(), jnlpres.getVersionId(), jnlpres.getOSList(),
-				jnlpres.getArchList(), jnlpres.getLocaleList(),
-				jnlpres.getPath(), jnlpres.getReturnVersionId(),
-				dreq.getEncoding());
+		JnlpResource jr = new JnlpResource(getServletContext(), jnlpres.getName(), jnlpres.getVersionId(),
+				jnlpres.getOSList(), jnlpres.getArchList(), jnlpres.getLocaleList(), jnlpres.getPath(),
+				jnlpres.getReturnVersionId(), dreq.getEncoding());
 
 		// Return WAR file resource
-		return DownloadResponse
-				.getFileDownloadResponse(jr.getResource(), jr.getMimeType(),
-						jr.getLastModified(), jr.getReturnVersionId());
+		return DownloadResponse.getFileDownloadResponse(jr.getResource(), jr.getMimeType(), jr.getLastModified(),
+				jr.getReturnVersionId());
 	}
 
 	/*
@@ -145,47 +136,40 @@ public class JnlpDownloadServlet extends HttpServlet {
 	 * requests
 	 */
 	@Override
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		handleRequest(request, response, false);
 	}
 
 	@Override
-	public void doHead(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public void doHead(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		handleRequest(request, response, true);
 	}
 
-	private JnlpResource handleBasicDownload(DownloadRequest dreq)
-			throws ErrorResponseException, IOException {
+	private JnlpResource handleBasicDownload(DownloadRequest dreq) throws ErrorResponseException, IOException {
 		// Do not return directory names for basic protocol
 		if (dreq.getPath() == null || dreq.getPath().endsWith("/")) {
-			throw new ErrorResponseException(
-					DownloadResponse.getNoContentResponse());
+			throw new ErrorResponseException(DownloadResponse.getNoContentResponse());
 		}
 
 		// Lookup resource
-		JnlpResource jnlpres = new JnlpResource(getServletContext(),
-				dreq.getPath());
+		JnlpResource jnlpres = new JnlpResource(getServletContext(), dreq.getPath());
 		if (!jnlpres.exists()) {
-			throw new ErrorResponseException(
-					DownloadResponse.getNoContentResponse());
+			throw new ErrorResponseException(DownloadResponse.getNoContentResponse());
 		}
 		return jnlpres;
 	}
 
-	private void handleRequest(HttpServletRequest request,
-			HttpServletResponse response, boolean isHead) throws IOException {
+	private void handleRequest(HttpServletRequest request, HttpServletResponse response, boolean isHead)
+			throws IOException {
 		String requestStr = request.getRequestURI();
-		
+
 		log.trace("reguest: " + requestStr);
-		
+
 		if (request.getQueryString() != null)
 			requestStr += "?" + request.getQueryString().trim();
 
 		// Parse HTTP request
-		DownloadRequest dreq = new DownloadRequest(getServletContext(),
-				pathRemapper, request);
+		DownloadRequest dreq = new DownloadRequest(getServletContext(), pathRemapper, request);
 
 		long ifModifiedSince = request.getDateHeader("If-Modified-Since");
 
@@ -200,16 +184,13 @@ public class JnlpDownloadServlet extends HttpServlet {
 			DownloadResponse dres = null;
 
 			if (isHead) {
-				int cl = jnlpres.getResource().openConnection()
-						.getContentLength();
+				int cl = jnlpres.getResource().openConnection().getContentLength();
 
 				// head request response
-				dres = DownloadResponse.getHeadRequestResponse(
-						jnlpres.getMimeType(), jnlpres.getVersionId(),
+				dres = DownloadResponse.getHeadRequestResponse(jnlpres.getMimeType(), jnlpres.getVersionId(),
 						jnlpres.getLastModified(), cl);
 
-			} else if (ifModifiedSince != -1
-					&& (ifModifiedSince / 1000) >= (jnlpres.getLastModified() / 1000)) {
+			} else if (ifModifiedSince != -1 && (ifModifiedSince / 1000) >= (jnlpres.getLastModified() / 1000)) {
 				// We divide the value returned by getLastModified here by 1000
 				// because if protocol is HTTP, last 3 digits will always be
 				// zero. However, if protocol is JNDI, that's not the case.
@@ -244,8 +225,7 @@ public class JnlpDownloadServlet extends HttpServlet {
 		super.init(config);
 
 		// Get extension from Servlet configuration, or use default
-		JnlpResource.setDefaultExtensions(
-				config.getInitParameter(PARAM_JNLP_EXTENSION),
+		JnlpResource.setDefaultExtensions(config.getInitParameter(PARAM_JNLP_EXTENSION),
 				config.getInitParameter(PARAM_JAR_EXTENSION));
 
 		_jnlpFileHandler = new JnlpFileHandler(config.getServletContext());
@@ -272,8 +252,7 @@ public class JnlpDownloadServlet extends HttpServlet {
 	 * Interprets the download request and convert it into a resource that is
 	 * part of the Web Archive.
 	 */
-	private JnlpResource locateResource(DownloadRequest dreq)
-			throws IOException, ErrorResponseException {
+	private JnlpResource locateResource(DownloadRequest dreq) throws IOException, ErrorResponseException {
 		/* if (dreq.getVersion() == null) { */
 		return handleBasicDownload(dreq);
 		/*
@@ -283,8 +262,8 @@ public class JnlpDownloadServlet extends HttpServlet {
 
 	/*
 	 * private JnlpResource handleVersionRequest(DownloadRequest dreq) throws
-	 * IOException, ErrorResponseException {
-	 * _log.addDebug("Version-based/Extension based lookup"); return
+	 * IOException, ErrorResponseException { _log.addDebug(
+	 * "Version-based/Extension based lookup"); return
 	 * _resourceCatalog.lookupResource(dreq); }
 	 */
 
@@ -292,13 +271,10 @@ public class JnlpDownloadServlet extends HttpServlet {
 	 * Make sure that it is a valid request. This is also the place to implement
 	 * the reverse IP lookup
 	 */
-	private void validateRequest(DownloadRequest dreq)
-			throws ErrorResponseException {
+	private void validateRequest(DownloadRequest dreq) throws ErrorResponseException {
 		String path = dreq.getPath();
-		if (/* path.endsWith(ResourceCatalog.VERSION_XML_FILENAME) || */path
-				.indexOf("__") != -1) {
-			throw new ErrorResponseException(
-					DownloadResponse.getNoContentResponse());
+		if (/* path.endsWith(ResourceCatalog.VERSION_XML_FILENAME) || */path.indexOf("__") != -1) {
+			throw new ErrorResponseException(DownloadResponse.getNoContentResponse());
 		}
 	}
 }

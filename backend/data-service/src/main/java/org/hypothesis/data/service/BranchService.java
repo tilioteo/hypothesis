@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.data.service;
 
@@ -14,8 +15,10 @@ import org.hypothesis.data.model.BranchTrek;
 import org.hypothesis.data.model.Pack;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class BranchService implements Serializable {

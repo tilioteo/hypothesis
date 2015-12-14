@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.event.model;
 
@@ -11,8 +12,10 @@ import org.hypothesis.event.data.ComponentData;
 import com.vaadin.ui.Component;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class ComponentEvent extends AbstractUserEvent implements org.hypothesis.interfaces.ComponentEvent {

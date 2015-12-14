@@ -1,13 +1,16 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.slide.ui;
 
 import org.hypothesis.interfaces.Field;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings({ "serial" })
 public class TextField extends com.vaadin.ui.TextField implements Field {
@@ -16,32 +19,18 @@ public class TextField extends com.vaadin.ui.TextField implements Field {
 		super();
 	}
 
-	/**
 	@Override
-	public void writeDataToElement(Element element) {
-		element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.TEXT_FIELD);
-		element.addAttribute(SlideXmlConstants.ID, (String) getData());
-		Element captionElement = element.addElement(SlideXmlConstants.CAPTION);
-		if (getCaption() != null) {
-			captionElement.addText(getCaption());
+	public void setValue(String newValue) throws com.vaadin.data.Property.ReadOnlyException {
+		boolean readOnly = false;
+		if (isReadOnly()) {
+			readOnly = true;
+			setReadOnly(false);
 		}
-		Element valueElement = element.addElement(SlideXmlConstants.VALUE);
-		valueElement.addText((String) getValue());
+		super.setValue(newValue);
+
+		if (readOnly) {
+			setReadOnly(true);
+		}
 	}
-	*/
-	
-    @Override
-    public void setValue(String newValue) throws com.vaadin.data.Property.ReadOnlyException {
-        boolean readOnly = false;
-    	if (isReadOnly()) {
-    		readOnly = true;
-    		setReadOnly(false);
-    	}
-    	super.setValue(newValue);
-    	
-    	if (readOnly) {
-    		setReadOnly(true);
-    	}
-    }
 
 }

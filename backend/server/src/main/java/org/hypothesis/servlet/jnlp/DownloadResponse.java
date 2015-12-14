@@ -1,9 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/*
  * @(#)DownloadResponse.java	1.8 07/03/15
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -38,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -58,12 +54,10 @@ import javax.servlet.http.HttpServletResponse;
  * some common types.
  */
 abstract public class DownloadResponse {
-	static private class ByteArrayFileDownloadResponse extends
-			FileDownloadResponse {
+	static private class ByteArrayFileDownloadResponse extends FileDownloadResponse {
 		private byte[] _content;
 
-		ByteArrayFileDownloadResponse(byte[] content, String mimeType,
-				String versionId, long lastModified) {
+		ByteArrayFileDownloadResponse(byte[] content, String mimeType, String versionId, long lastModified) {
 			super(mimeType, versionId, lastModified);
 			_content = content;
 		}
@@ -87,8 +81,7 @@ abstract public class DownloadResponse {
 	static private class DiskFileDownloadResponse extends FileDownloadResponse {
 		private File _file;
 
-		DiskFileDownloadResponse(File file, String mimeType, String versionId,
-				long lastModified) {
+		DiskFileDownloadResponse(File file, String mimeType, String versionId, long lastModified) {
 			super(mimeType, versionId, lastModified, file.getName());
 			_file = file;
 		}
@@ -115,16 +108,14 @@ abstract public class DownloadResponse {
 		private long _lastModified;
 		private String _fileName;
 
-		FileDownloadResponse(String mimeType, String versionId,
-				long lastModified) {
+		FileDownloadResponse(String mimeType, String versionId, long lastModified) {
 			_mimeType = mimeType;
 			_versionId = versionId;
 			_lastModified = lastModified;
 			_fileName = null;
 		}
 
-		FileDownloadResponse(String mimeType, String versionId,
-				long lastModified, String fileName) {
+		FileDownloadResponse(String mimeType, String versionId, long lastModified, String fileName) {
 			_mimeType = mimeType;
 			_versionId = versionId;
 			_lastModified = lastModified;
@@ -137,9 +128,8 @@ abstract public class DownloadResponse {
 				length = getContentLength();
 			} catch (IOException ioe) { /* ignore */
 			}
-			return "Mimetype=" + getMimeType() + " VersionId=" + getVersionId()
-					+ " Timestamp=" + new Date(getLastModified()) + " Length="
-					+ length;
+			return "Mimetype=" + getMimeType() + " VersionId=" + getVersionId() + " Timestamp="
+					+ new Date(getLastModified()) + " Length=" + length;
 		}
 
 		abstract InputStream getContent() throws IOException;
@@ -161,8 +151,7 @@ abstract public class DownloadResponse {
 
 		/** Post information to an HttpResponse */
 		@Override
-		public void sendRespond(HttpServletResponse response)
-				throws IOException {
+		public void sendRespond(HttpServletResponse response) throws IOException {
 			// Set header information
 			response.setContentType(getMimeType());
 			response.setContentLength(getContentLength());
@@ -203,8 +192,7 @@ abstract public class DownloadResponse {
 		private long _lastModified;
 		private int _contentLength;
 
-		HeadRequestResponse(String mimeType, String versionId,
-				long lastModified, int contentLength) {
+		HeadRequestResponse(String mimeType, String versionId, long lastModified, int contentLength) {
 			_mimeType = mimeType;
 			_versionId = versionId;
 			_lastModified = lastModified;
@@ -213,8 +201,7 @@ abstract public class DownloadResponse {
 
 		/** Post information to an HttpResponse */
 		@Override
-		public void sendRespond(HttpServletResponse response)
-				throws IOException {
+		public void sendRespond(HttpServletResponse response) throws IOException {
 			// Set header information
 			response.setContentType(_mimeType);
 			response.setContentLength(_contentLength);
@@ -235,16 +222,14 @@ abstract public class DownloadResponse {
 			String msg = Integer.toString(jnlpErrorCode);
 			String dsc = "No description";
 			try {
-				dsc = /* JnlpDownloadServlet.getResourceBundle().getString( */"servlet.jnlp.err."
-						+ msg/* ) */;
+				dsc = /* JnlpDownloadServlet.getResourceBundle().getString( */"servlet.jnlp.err." + msg/* ) */;
 			} catch (MissingResourceException mre) { /* ignore */
 			}
 			_message = msg + " " + dsc;
 		}
 
 		@Override
-		public void sendRespond(HttpServletResponse response)
-				throws IOException {
+		public void sendRespond(HttpServletResponse response) throws IOException {
 			response.setContentType(JNLP_ERROR_MIMETYPE);
 			PrintWriter pw = response.getWriter();
 			pw.println(_message);
@@ -259,34 +244,29 @@ abstract public class DownloadResponse {
 	@SuppressWarnings("unused")
 	static private class NoContentResponse extends DownloadResponse {
 		@Override
-		public void sendRespond(HttpServletResponse response)
-				throws IOException {
+		public void sendRespond(HttpServletResponse response) throws IOException {
 			response.sendError(HttpServletResponse.SC_NO_CONTENT);
 		}
 	}
 
 	static private class NotFoundResponse extends DownloadResponse {
 		@Override
-		public void sendRespond(HttpServletResponse response)
-				throws IOException {
+		public void sendRespond(HttpServletResponse response) throws IOException {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}
 
 	static private class NotModifiedResponse extends DownloadResponse {
 		@Override
-		public void sendRespond(HttpServletResponse response)
-				throws IOException {
+		public void sendRespond(HttpServletResponse response) throws IOException {
 			response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
 		}
 	}
 
-	static private class ResourceFileDownloadResponse extends
-			FileDownloadResponse {
+	static private class ResourceFileDownloadResponse extends FileDownloadResponse {
 		URL _url;
 
-		ResourceFileDownloadResponse(URL url, String mimeType,
-				String versionId, long lastModified) {
+		ResourceFileDownloadResponse(URL url, String mimeType, String versionId, long lastModified) {
 			super(mimeType, versionId, lastModified, url.toString());
 			_url = url;
 		}
@@ -334,32 +314,26 @@ abstract public class DownloadResponse {
 
 	public static final String PACK200_GZIP_ENCODING = "pack200-gzip";
 
-	static DownloadResponse getFileDownloadResponse(byte[] content,
-			String mimeType, long timestamp, String versionId) {
-		return new ByteArrayFileDownloadResponse(content, mimeType, versionId,
-				timestamp);
+	static DownloadResponse getFileDownloadResponse(byte[] content, String mimeType, long timestamp, String versionId) {
+		return new ByteArrayFileDownloadResponse(content, mimeType, versionId, timestamp);
 	}
 
-	static DownloadResponse getFileDownloadResponse(File file, String mimeType,
-			long timestamp, String versionId) {
-		return new DiskFileDownloadResponse(file, mimeType, versionId,
-				timestamp);
+	static DownloadResponse getFileDownloadResponse(File file, String mimeType, long timestamp, String versionId) {
+		return new DiskFileDownloadResponse(file, mimeType, versionId, timestamp);
 	}
 
 	//
 	// Private classes implementing the various types
 	//
 
-	public static DownloadResponse getFileDownloadResponse(URL resource,
-			String mimeType, long timestamp, String versionId) {
-		return new ResourceFileDownloadResponse(resource, mimeType, versionId,
-				timestamp);
+	public static DownloadResponse getFileDownloadResponse(URL resource, String mimeType, long timestamp,
+			String versionId) {
+		return new ResourceFileDownloadResponse(resource, mimeType, versionId, timestamp);
 	}
 
-	public static DownloadResponse getHeadRequestResponse(String mimeType,
-			String versionId, long lastModified, int contentLength) {
-		return new HeadRequestResponse(mimeType, versionId, lastModified,
-				contentLength);
+	public static DownloadResponse getHeadRequestResponse(String mimeType, String versionId, long lastModified,
+			int contentLength) {
+		return new HeadRequestResponse(mimeType, versionId, lastModified, contentLength);
 	}
 
 	static DownloadResponse getJnlpErrorResponse(int jnlpErrorCode) {

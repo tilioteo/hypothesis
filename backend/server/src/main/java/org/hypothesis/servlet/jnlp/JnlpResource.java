@@ -1,13 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/**
- * @author morong
- *
- */
-/*
  * @(#)JnlpResource.java	1.8 05/11/17
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -42,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,8 +67,7 @@ public class JnlpResource {
 	private static String _jnlpExtension = JNLP_EXTENSION;
 	private static String _jarExtension = JAR_EXTENSION;
 
-	public static void setDefaultExtensions(String jnlpExtension,
-			String jarExtension) {
+	public static void setDefaultExtensions(String jnlpExtension, String jarExtension) {
 		if (jnlpExtension != null && jnlpExtension.length() > 0) {
 			if (!jnlpExtension.startsWith("."))
 				jnlpExtension = "." + jnlpExtension;
@@ -113,16 +104,13 @@ public class JnlpResource {
 		this(context, null, null, null, null, null, path, null);
 	}
 
-	public JnlpResource(ServletContext context, String name, String versionId,
-			String[] osList, String[] archList, String[] localeList,
-			String path, String returnVersionId) {
-		this(context, name, versionId, osList, archList, localeList, path,
-				returnVersionId, null);
+	public JnlpResource(ServletContext context, String name, String versionId, String[] osList, String[] archList,
+			String[] localeList, String path, String returnVersionId) {
+		this(context, name, versionId, osList, archList, localeList, path, returnVersionId, null);
 	}
 
-	public JnlpResource(ServletContext context, String name, String versionId,
-			String[] osList, String[] archList, String[] localeList,
-			String path, String returnVersionId, String encoding) {
+	public JnlpResource(ServletContext context, String name, String versionId, String[] osList, String[] archList,
+			String[] localeList, String path, String returnVersionId, String encoding) {
 		// Matching arguments
 		// _encoding = encoding;
 		_name = name;
@@ -147,18 +135,14 @@ public class JnlpResource {
 
 				boolean found = false;
 				// pack200 compression
-				if (encoding != null
-						&& _mimeType != null
-						&& (_mimeType.compareTo(JAR_MIME_TYPE) == 0 || _mimeType
-								.compareTo(JAR_MIME_TYPE_NEW) == 0)
-						&& encoding.toLowerCase().indexOf(
-								DownloadResponse.PACK200_GZIP_ENCODING) > -1) {
+				if (encoding != null && _mimeType != null
+						&& (_mimeType.compareTo(JAR_MIME_TYPE) == 0 || _mimeType.compareTo(JAR_MIME_TYPE_NEW) == 0)
+						&& encoding.toLowerCase().indexOf(DownloadResponse.PACK200_GZIP_ENCODING) > -1) {
 					search_path = orig_path + ".pack.gz";
 					_resource = context.getResource(search_path);
 					// Get last modified time
 					if (_resource != null) {
-						_lastModified = getLastModified(context, _resource,
-								search_path);
+						_lastModified = getLastModified(context, _resource, search_path);
 						if (_lastModified != 0) {
 							_path = search_path;
 							found = true;
@@ -169,16 +153,13 @@ public class JnlpResource {
 				}
 
 				// gzip compression
-				if (found == false
-						&& encoding != null
-						&& encoding.toLowerCase().indexOf(
-								DownloadResponse.GZIP_ENCODING) > -1) {
+				if (found == false && encoding != null
+						&& encoding.toLowerCase().indexOf(DownloadResponse.GZIP_ENCODING) > -1) {
 					search_path = orig_path + ".gz";
 					_resource = context.getResource(search_path);
 					// Get last modified time
 					if (_resource != null) {
-						_lastModified = getLastModified(context, _resource,
-								search_path);
+						_lastModified = getLastModified(context, _resource, search_path);
 						if (_lastModified != 0) {
 							_path = search_path;
 							found = true;
@@ -195,8 +176,7 @@ public class JnlpResource {
 					_resource = context.getResource(search_path);
 					// Get last modified time
 					if (_resource != null) {
-						_lastModified = getLastModified(context, _resource,
-								search_path);
+						_lastModified = getLastModified(context, _resource, search_path);
 						if (_lastModified != 0) {
 							_path = search_path;
 							found = true;
@@ -317,12 +297,9 @@ public class JnlpResource {
 	/** Print info about an entry */
 	@Override
 	public String toString() {
-		return "JnlpResource[WAR Path: " + _path
-				+ showEntry(" versionId=", _versionId)
-				+ showEntry(" name=", _name) + " lastModified="
-				+ new Date(_lastModified) + showEntry(" osList=", _osList)
-				+ showEntry(" archList=", _archList)
-				+ showEntry(" localeList=", _localeList) + "]"
+		return "JnlpResource[WAR Path: " + _path + showEntry(" versionId=", _versionId) + showEntry(" name=", _name)
+				+ " lastModified=" + new Date(_lastModified) + showEntry(" osList=", _osList)
+				+ showEntry(" archList=", _archList) + showEntry(" localeList=", _localeList) + "]"
 				+ showEntry(" returnVersionId=", _returnVersionId) + "]";
 
 	}

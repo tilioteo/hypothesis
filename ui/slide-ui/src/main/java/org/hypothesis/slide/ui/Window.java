@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.slide.ui;
 
@@ -12,8 +13,10 @@ import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.UI;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class Window extends com.vaadin.ui.Window {
@@ -22,13 +25,13 @@ public class Window extends com.vaadin.ui.Window {
 	private boolean opened = false;
 
 	private ArrayList<CloseListener> closeListeners = new ArrayList<CloseListener>();
-	
+
 	private UI futureUI = null;
-	
+
 	public Window() {
 		super();
 	}
-	
+
 	public void setFutureUI(UI ui) {
 		this.futureUI = ui;
 	}
@@ -40,16 +43,16 @@ public class Window extends com.vaadin.ui.Window {
 		}
 		fireEvent(new OpenEvent(this));
 	}
-	
+
 	@Override
 	public void setParent(HasComponents parent) {
 		super.setParent(parent);
-		
+
 		if (getParent() != null) {
 			opened = true;
 		}
 	}
-	
+
 	public void open() {
 		if (!opened && futureUI != null) {
 			futureUI.addWindow(this);
@@ -62,92 +65,91 @@ public class Window extends com.vaadin.ui.Window {
 		super.close();
 		opened = false;
 	}
-	
+
 	public boolean isOpened() {
 		return opened;
 	}
 
-    /**
-     * Add an init listener to the component. The listener is called when
-     * the window is opened for the first time.
-     *  
-     * Use {@link #removeInitListener(InitListener)} to remove the listener.
-     * 
-     * @param listener
-     *            The listener to add
-     */
+	/**
+	 * Add an init listener to the component. The listener is called when the
+	 * window is opened for the first time.
+	 * 
+	 * Use {@link #removeInitListener(InitListener)} to remove the listener.
+	 * 
+	 * @param listener
+	 *            The listener to add
+	 */
 	public void addInitListener(InitListener listener) {
-        addListener(InitEvent.class, listener, WINDOW_INIT_METHOD);
+		addListener(InitEvent.class, listener, WINDOW_INIT_METHOD);
 	}
 
-    /**
-     * Remove an init listener from the component. The listener should earlier
-     * have been added using {@link #addInitListener(InitListener)}.
-     * 
-     * @param listener
-     *            The listener to remove
-     */
+	/**
+	 * Remove an init listener from the component. The listener should earlier
+	 * have been added using {@link #addInitListener(InitListener)}.
+	 * 
+	 * @param listener
+	 *            The listener to remove
+	 */
 	public void removeInitListener(InitListener listener) {
-        removeListener(InitEvent.class, listener, WINDOW_INIT_METHOD);
+		removeListener(InitEvent.class, listener, WINDOW_INIT_METHOD);
 	}
 
-    /**
-     * Add an open listener to the component. The listener is called whenever
-     * the window is opened.
-     *  
-     * Use {@link #removeOpenListener(OpenListener)} to remove the listener.
-     * 
-     * @param listener
-     *            The listener to add
-     */
+	/**
+	 * Add an open listener to the component. The listener is called whenever
+	 * the window is opened.
+	 * 
+	 * Use {@link #removeOpenListener(OpenListener)} to remove the listener.
+	 * 
+	 * @param listener
+	 *            The listener to add
+	 */
 	public void addOpenListener(OpenListener listener) {
-        addListener(OpenEvent.class, listener, WINDOW_OPEN_METHOD);
+		addListener(OpenEvent.class, listener, WINDOW_OPEN_METHOD);
 	}
 
-    /**
-     * Remove an open listener from the component. The listener should earlier
-     * have been added using {@link #addOpenListener(OpenListener)}.
-     * 
-     * @param listener
-     *            The listener to remove
-     */
+	/**
+	 * Remove an open listener from the component. The listener should earlier
+	 * have been added using {@link #addOpenListener(OpenListener)}.
+	 * 
+	 * @param listener
+	 *            The listener to remove
+	 */
 	public void removeOpenListener(OpenListener listener) {
-        removeListener(OpenEvent.class, listener, WINDOW_OPEN_METHOD);
+		removeListener(OpenEvent.class, listener, WINDOW_OPEN_METHOD);
 	}
 
-    @Override
+	@Override
 	public void addCloseListener(CloseListener listener) {
-    	super.addCloseListener(listener);
-    	closeListeners.add(listener);
-    }
-    
-    public void removeAllCloseListeners() {
-    	for (CloseListener listener : closeListeners) {
-    		removeCloseListener(listener);
-    	}
-    	closeListeners.clear();
-    }
+		super.addCloseListener(listener);
+		closeListeners.add(listener);
+	}
 
-    private static final Method WINDOW_INIT_METHOD;
-    
-    static {
-        try {
-            WINDOW_INIT_METHOD = InitListener.class.getDeclaredMethod(
-                    "initWindow", new Class[] { InitEvent.class });
-        } catch (final java.lang.NoSuchMethodException e) {
-            // This should never happen
-            throw new java.lang.RuntimeException(
-                    "Internal error, window init method not found");
-        }
-    }
+	public void removeAllCloseListeners() {
+		for (CloseListener listener : closeListeners) {
+			removeCloseListener(listener);
+		}
+		closeListeners.clear();
+	}
 
-    /**
-     * Class for holding information about a window init event. An
-     * {@link InitEvent} is fired when the <code>Window</code> is opened for the first time.
-     * 
-     * @author kamil.
-     * @see InitListener
-     */
+	private static final Method WINDOW_INIT_METHOD;
+
+	static {
+		try {
+			WINDOW_INIT_METHOD = InitListener.class.getDeclaredMethod("initWindow", new Class[] { InitEvent.class });
+		} catch (final java.lang.NoSuchMethodException e) {
+			// This should never happen
+			throw new java.lang.RuntimeException("Internal error, window init method not found");
+		}
+	}
+
+	/**
+	 * Class for holding information about a window init event. An
+	 * {@link InitEvent} is fired when the <code>Window</code> is opened for the
+	 * first time.
+	 * 
+	 * @author kamil.
+	 * @see InitListener
+	 */
 	public class InitEvent extends Component.Event {
 
 		public InitEvent(Component source) {
@@ -163,46 +165,44 @@ public class Window extends com.vaadin.ui.Window {
 			return (Window) getSource();
 		}
 	}
-	
-    /**
-     * Interface for listening for a {@link InitEvent} fired by a
-     * {@link Window} when user opens the window for the first time.
-     * 
-     * @see InitEvent
-     * @author kamil
-     */
+
+	/**
+	 * Interface for listening for a {@link InitEvent} fired by a {@link Window}
+	 * when user opens the window for the first time.
+	 * 
+	 * @see InitEvent
+	 * @author kamil
+	 */
 	public interface InitListener extends Serializable {
 
 		/**
-		 * Called when the user opens a window for first time. A reference to the
-         * window is given by {@link InitEvent#getWindow()}.
+		 * Called when the user opens a window for first time. A reference to
+		 * the window is given by {@link InitEvent#getWindow()}.
 		 * 
-         * @param event
-         *            An event containing information about the window.
+		 * @param event
+		 *            An event containing information about the window.
 		 */
 		public void initWindow(InitEvent event);
 	}
 
-    private static final Method WINDOW_OPEN_METHOD;
-    
-    static {
-        try {
-            WINDOW_OPEN_METHOD = OpenListener.class.getDeclaredMethod(
-                    "openWindow", new Class[] { OpenEvent.class });
-        } catch (final java.lang.NoSuchMethodException e) {
-            // This should never happen
-            throw new java.lang.RuntimeException(
-                    "Internal error, window open method not found");
-        }
-    }
+	private static final Method WINDOW_OPEN_METHOD;
 
-    /**
-     * Class for holding information about a window open event. An
-     * {@link OpenEvent} is fired whenever the <code>Window</code> is opened.
-     * 
-     * @author kamil.
-     * @see OpenListener
-     */
+	static {
+		try {
+			WINDOW_OPEN_METHOD = OpenListener.class.getDeclaredMethod("openWindow", new Class[] { OpenEvent.class });
+		} catch (final java.lang.NoSuchMethodException e) {
+			// This should never happen
+			throw new java.lang.RuntimeException("Internal error, window open method not found");
+		}
+	}
+
+	/**
+	 * Class for holding information about a window open event. An
+	 * {@link OpenEvent} is fired whenever the <code>Window</code> is opened.
+	 * 
+	 * @author kamil.
+	 * @see OpenListener
+	 */
 	public class OpenEvent extends Component.Event {
 
 		public OpenEvent(Component source) {
@@ -219,21 +219,21 @@ public class Window extends com.vaadin.ui.Window {
 		}
 	}
 
-    /**
-     * Interface for listening for a {@link OpenEvent} fired by a
-     * {@link Window} whenever the user opens the window.
-     * 
-     * @see OpenEvent
-     * @author kamil
-     */
+	/**
+	 * Interface for listening for a {@link OpenEvent} fired by a {@link Window}
+	 * whenever the user opens the window.
+	 * 
+	 * @see OpenEvent
+	 * @author kamil
+	 */
 	public interface OpenListener extends Serializable {
 
 		/**
-		 * Called whenever the user opens a window. A reference to the
-         * window is given by {@link OpenEvent#getWindow()}.
+		 * Called whenever the user opens a window. A reference to the window is
+		 * given by {@link OpenEvent#getWindow()}.
 		 * 
-         * @param event
-         *            An event containing information about the window.
+		 * @param event
+		 *            An event containing information about the window.
 		 */
 		public void openWindow(OpenEvent event);
 	}

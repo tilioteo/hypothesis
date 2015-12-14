@@ -1,9 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/*
  * @(#)JarDiffConstants.java	1.6 05/11/17
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -38,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 /**
  * Constants used by creating patch and applying patch for JarDiff.
@@ -45,8 +41,10 @@ package org.hypothesis.servlet.jnlp;
  * @version 1.8, 06/26/03
  */
 public interface JarDiffConstants {
+
 	public final String VERSION_HEADER = "version 1.0";
 	public final String INDEX_NAME = "META-INF/INDEX.JD";
 	public final String REMOVE_COMMAND = "remove";
 	public final String MOVE_COMMAND = "move";
+
 }

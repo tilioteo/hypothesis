@@ -9,8 +9,10 @@ import org.hypothesis.event.interfaces.ProcessViewEvent;
 import com.vaadin.ui.Notification;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public abstract class AbstractNotificationEvent implements ProcessViewEvent {

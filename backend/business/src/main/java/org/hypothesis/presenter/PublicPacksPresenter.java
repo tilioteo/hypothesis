@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.presenter;
 
@@ -36,7 +37,9 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
@@ -120,13 +123,13 @@ public class PublicPacksPresenter implements PacksPresenter {
 	@Override
 	public void attach() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void detach() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -222,7 +225,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 		panel.setLegacyButtonCaption(Messages.getString("Caption.Button.StartLegacy"));
 		panel.setLegacyButtonClickListener(legacyButtonClickListener);
 		panel.setLegacyButtonWindowClosedListener(legacyButtonWindowClosedListener);
-		
+
 		panel.setJavaRequired(pack.isJavaRequired());
 
 		panelBeans.put(panel, beanItem);
@@ -265,8 +268,8 @@ public class PublicPacksPresenter implements PacksPresenter {
 		view.setJavaNotInstalledCaption(Messages.getString("Message.Info.JavaNotInstalled"));
 		view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"));
 
-		//afterCreate();
-		
+		// afterCreate();
+
 		return view;
 	}
 

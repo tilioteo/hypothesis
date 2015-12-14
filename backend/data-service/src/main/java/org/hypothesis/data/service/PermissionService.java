@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.data.service;
 
@@ -21,8 +22,10 @@ import org.hypothesis.data.model.User;
 import org.hypothesis.data.model.UserPermission;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class PermissionService implements Serializable {
@@ -33,14 +36,14 @@ public class PermissionService implements Serializable {
 	private HibernateDao<GroupPermission, Long> groupPermissionDao;
 	private HibernateDao<Pack, Long> packDao;
 	private TestService testService;
-	
-	//private PersistenceService persistenceService;
+
 	private UserService userService;
 
 	public static PermissionService newInstance() {
-		return new PermissionService(new HibernateDao<UserPermission, Long>(UserPermission.class), new HibernateDao<GroupPermission, Long>(GroupPermission.class));
+		return new PermissionService(new HibernateDao<UserPermission, Long>(UserPermission.class),
+				new HibernateDao<GroupPermission, Long>(GroupPermission.class));
 	}
-	
+
 	protected PermissionService(HibernateDao<UserPermission, Long> userPermitionDao,
 			HibernateDao<GroupPermission, Long> groupPermitionDao) {
 		this(userPermitionDao, groupPermitionDao, TestService.newInstance());
@@ -52,20 +55,13 @@ public class PermissionService implements Serializable {
 		this.groupPermissionDao = groupPermitionDao;
 		this.packDao = new HibernateDao<Pack, Long>(Pack.class);
 		this.testService = testService;
-		
-		//persistenceService = PersistenceService.newInstance();
+
 		userService = UserService.newInstance();
 	}
-	
+
 	public TestService getTestManager() {
 		return testService;
 	}
-
-	/*private GroupPermission mergeInit(GroupPermission groupPermission) {
-		groupPermissionDao.clear();
-		groupPermission = groupPermissionDao.merge(groupPermission);
-		return groupPermission;
-	}*/
 
 	public GroupPermission addGroupPermission(GroupPermission groupPermission) {
 		log.debug("addGroupPermission");
@@ -78,7 +74,7 @@ public class PermissionService implements Serializable {
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
-			//throw e;
+			// throw e;
 			return null;
 		}
 	}
@@ -94,7 +90,7 @@ public class PermissionService implements Serializable {
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
-			//throw e;
+			// throw e;
 			return null;
 		}
 	}
@@ -111,7 +107,7 @@ public class PermissionService implements Serializable {
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
-			//throw e;
+			// throw e;
 		}
 	}
 
@@ -127,7 +123,7 @@ public class PermissionService implements Serializable {
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
-			//throw e;
+			// throw e;
 		}
 	}
 
@@ -145,7 +141,7 @@ public class PermissionService implements Serializable {
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
-			//throw e;
+			// throw e;
 		}
 	}
 
@@ -208,17 +204,18 @@ public class PermissionService implements Serializable {
 		Set<Pack> disabledPacks = getUserPacks(user, false, null);
 
 		Set<Group> groups = userService.merge(user).getGroups();
-		//Set<Group> groups = persistenceService.merge(user).getGroups();
+		// Set<Group> groups = persistenceService.merge(user).getGroups();
 		if (!groups.isEmpty()) {
 			try {
 				groupPermissionDao.beginTransaction();
-				List<GroupPermission> groupsPermissions = groupPermissionDao.findByCriteria(Restrictions.in(EntityConstants.GROUP, groups));
+				List<GroupPermission> groupsPermissions = groupPermissionDao
+						.findByCriteria(Restrictions.in(EntityConstants.GROUP, groups));
 				groupPermissionDao.commit();
 
 				for (GroupPermission groupPermission : groupsPermissions) {
 					Pack groupPack = groupPermission.getPack();
 					if (!disabledPacks.contains(groupPack)) {
-						packs.add(/*persistenceService.merge*/(groupPack));
+						packs.add(/* persistenceService.merge */(groupPack));
 					}
 				}
 			} catch (Throwable e) {
@@ -234,8 +231,8 @@ public class PermissionService implements Serializable {
 	 * @SuppressWarnings("unchecked") public Set<Pack> findUserPacks(Long
 	 * userId, boolean excludeFinished) { try { Set<Pack> packs = new
 	 * HashSet<Pack>(); Session session = Util.getSession();
-	 * session.beginTransaction(); Query query =
-	 * session.createSQLQuery("select * from tbl_pack where tbl_pack.id in " +
+	 * session.beginTransaction(); Query query = session.createSQLQuery(
+	 * "select * from tbl_pack where tbl_pack.id in " +
 	 * "(select pack_id from tbl_user_permition where user_id = :id and enabled = true) or ("
 	 * +
 	 * "tbl_pack.id in (select pack_id from tbl_group_permition left join tbl_group_user using (group_id) where user_id = :id) "
@@ -251,10 +248,9 @@ public class PermissionService implements Serializable {
 	public Set<Pack> findUserPacks2(User user, boolean excludeFinished) {
 		log.debug("findUserPacks2");
 		try {
-			// Set<Pack> packs = new HashSet<Pack>();
 			Hashtable<Long, Pack> packs = new Hashtable<Long, Pack>();
 			user = userService.merge(user);
-			//user = persistenceService.merge(user);
+
 			if (!user.getGroups().isEmpty()) {
 				Set<GroupPermission> groupsPermissions = getGroupsPermissions(user.getGroups());
 				for (GroupPermission groupPermission : groupsPermissions) {
@@ -275,7 +271,7 @@ public class PermissionService implements Serializable {
 			return new HashSet<Pack>(packs.values());
 		} catch (Throwable e) {
 			log.error(e.getMessage());
-			//throw e;
+			// throw e;
 			return null;
 		}
 	}
@@ -300,8 +296,8 @@ public class PermissionService implements Serializable {
 		Set<GroupPermission> groupPermissions = new HashSet<GroupPermission>();
 		try {
 			groupPermissionDao.beginTransaction();
-			List<GroupPermission> grpPerms = groupPermissionDao.findByCriteria(
-					Restrictions.eq(EntityConstants.GROUP, group));
+			List<GroupPermission> grpPerms = groupPermissionDao
+					.findByCriteria(Restrictions.eq(EntityConstants.GROUP, group));
 			groupPermissionDao.commit();
 			groupPermissions.addAll(grpPerms);
 		} catch (Throwable e) {
@@ -316,8 +312,8 @@ public class PermissionService implements Serializable {
 		try {
 			Set<GroupPermission> groupsPermissions = new HashSet<GroupPermission>();
 			groupPermissionDao.beginTransaction();
-			List<GroupPermission> grpsPerms = groupPermissionDao.findByCriteria(
-					Restrictions.in(EntityConstants.GROUP, groups));
+			List<GroupPermission> grpsPerms = groupPermissionDao
+					.findByCriteria(Restrictions.in(EntityConstants.GROUP, groups));
 			groupPermissionDao.commit();
 			groupsPermissions.addAll(grpsPerms);
 
@@ -325,7 +321,7 @@ public class PermissionService implements Serializable {
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
-			//throw e;
+			// throw e;
 			return null;
 		}
 	}
@@ -335,8 +331,8 @@ public class PermissionService implements Serializable {
 		try {
 			Set<GroupPermission> groupPermissions = new HashSet<GroupPermission>();
 			groupPermissionDao.beginTransaction();
-			List<GroupPermission> grpPerms = groupPermissionDao.findByCriteria(
-					Restrictions.eq(EntityConstants.PACK, pack));
+			List<GroupPermission> grpPerms = groupPermissionDao
+					.findByCriteria(Restrictions.eq(EntityConstants.PACK, pack));
 			groupPermissionDao.commit();
 			groupPermissions.addAll(grpPerms);
 
@@ -353,10 +349,8 @@ public class PermissionService implements Serializable {
 		try {
 			Set<UserPermission> userPermissions = new HashSet<UserPermission>();
 			userPermissionDao.beginTransaction();
-			List<UserPermission> usrPerms = userPermissionDao.findByCriteria(
-					Restrictions.and(
-							Restrictions.eq(EntityConstants.PACK, pack),
-							Restrictions.eq(FieldConstants.ENABLED, enabled)));
+			List<UserPermission> usrPerms = userPermissionDao.findByCriteria(Restrictions.and(
+					Restrictions.eq(EntityConstants.PACK, pack), Restrictions.eq(FieldConstants.ENABLED, enabled)));
 			userPermissionDao.commit();
 			userPermissions.addAll(usrPerms);
 
@@ -377,14 +371,15 @@ public class PermissionService implements Serializable {
 				if (enabled == null || userPermission.getEnabled().equals(enabled)) {
 					Pack pack = userPermission.getPack();
 					// TODO check pass is not null
-					//if (userPermission.getPass() == null || excludeFinished == null || !excludeFinished) {
-						packs.add(pack);
-					/*} else {
-						List<SimpleTest> finishedTests = testService.findTestsBy(user, pack, Status.FINISHED);
-						if (userPermission.getPass() < finishedTests.size()) {
-							packs.add(pack);
-						}
-					}*/
+					// if (userPermission.getPass() == null || excludeFinished
+					// == null || !excludeFinished) {
+					packs.add(pack);
+					/*
+					 * } else { List<SimpleTest> finishedTests =
+					 * testService.findTestsBy(user, pack, Status.FINISHED); if
+					 * (userPermission.getPass() < finishedTests.size()) {
+					 * packs.add(pack); } }
+					 */
 				}
 			}
 			return packs;
@@ -399,8 +394,8 @@ public class PermissionService implements Serializable {
 		Set<UserPermission> userPermissions = new HashSet<UserPermission>();
 		try {
 			userPermissionDao.beginTransaction();
-			List<UserPermission> usrPerms = userPermissionDao.findByCriteria(
-					Restrictions.eq(EntityConstants.USER, user));
+			List<UserPermission> usrPerms = userPermissionDao
+					.findByCriteria(Restrictions.eq(EntityConstants.USER, user));
 			userPermissionDao.commit();
 			userPermissions.addAll(usrPerms);
 		} catch (Throwable e) {
@@ -410,16 +405,13 @@ public class PermissionService implements Serializable {
 		return userPermissions;
 	}
 
-	public Set<UserPermission> getUsersPermissions(Set<User> users,
-			boolean enabled) {
+	public Set<UserPermission> getUsersPermissions(Set<User> users, boolean enabled) {
 		log.debug("getUsersPermissions");
 		try {
 			Set<UserPermission> usersPermissions = new HashSet<UserPermission>();
 			userPermissionDao.beginTransaction();
-			List<UserPermission> usrsPerms = userPermissionDao.findByCriteria(
-					Restrictions.and(
-							Restrictions.in(EntityConstants.USER, users),
-							Restrictions.eq(FieldConstants.ENABLED, enabled)));
+			List<UserPermission> usrsPerms = userPermissionDao.findByCriteria(Restrictions.and(
+					Restrictions.in(EntityConstants.USER, users), Restrictions.eq(FieldConstants.ENABLED, enabled)));
 			userPermissionDao.commit();
 			usersPermissions.addAll(usrsPerms);
 
@@ -430,7 +422,7 @@ public class PermissionService implements Serializable {
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Pack> getPublishedPacks() {
 		log.debug("getPublishedPacks");

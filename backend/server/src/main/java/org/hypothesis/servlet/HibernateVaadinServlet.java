@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.servlet;
 
@@ -18,12 +19,13 @@ import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinServlet;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
-public class HibernateVaadinServlet extends VaadinServlet implements
-		SessionInitListener, SessionDestroyListener {
+public class HibernateVaadinServlet extends VaadinServlet implements SessionInitListener, SessionDestroyListener {
 
 	private static Logger log = Logger.getLogger(HibernateVaadinServlet.class);
 

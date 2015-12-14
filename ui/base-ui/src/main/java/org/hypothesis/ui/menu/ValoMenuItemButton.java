@@ -13,7 +13,9 @@ import com.vaadin.ui.UI;
 import net.engio.mbassy.listener.Handler;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
@@ -30,7 +32,6 @@ public class ValoMenuItemButton extends Button {
 		setIcon(icon);
 		setCaption(caption);
 
-		// MainEventBus.get().register(this);
 		addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {

@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.event.model;
 
@@ -8,7 +9,9 @@ import org.hypothesis.event.model.FinishSlideEvent.Direction;
 import com.vaadin.server.ErrorHandler;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")

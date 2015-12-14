@@ -8,7 +8,9 @@ import org.hypothesis.data.model.Group;
 import org.hypothesis.data.model.User;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
@@ -55,11 +57,11 @@ public interface MainUIEvent extends HypothesisEvent {
 		}
 	}
 
-	/*public static class MaskEvent implements MainUIEvent {
-	}
-
-	public static class LegacyWindowClosedEvent implements MainUIEvent {
-	}*/
+	/*
+	 * public static class MaskEvent implements MainUIEvent { }
+	 * 
+	 * public static class LegacyWindowClosedEvent implements MainUIEvent { }
+	 */
 
 	public static final class CloseOpenWindowsEvent implements MainUIEvent {
 	}

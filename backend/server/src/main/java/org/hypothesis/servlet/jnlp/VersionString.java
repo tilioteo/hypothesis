@@ -1,9 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/*
  * @(#)VersionString.java 1.6 05/11/17
  *
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -38,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 import java.util.ArrayList;
 import java.util.Iterator;

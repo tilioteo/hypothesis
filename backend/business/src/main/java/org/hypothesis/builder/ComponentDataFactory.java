@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.builder;
 
@@ -11,7 +12,9 @@ import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.interfaces.SlidePresenter;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public interface ComponentDataFactory extends Serializable {

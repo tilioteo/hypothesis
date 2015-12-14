@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.presenter;
 
@@ -33,7 +34,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import net.engio.mbassy.listener.Handler;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
@@ -152,8 +155,8 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 
 			if (user != null) {
 				if (view.isAllowed(user.getRoles())) {
-					Component menuItemComponent = new ValoMenuItemButton(
-							Messages.getString(view.getCaption()), view.getViewName(), view.getIcon());
+					Component menuItemComponent = new ValoMenuItemButton(Messages.getString(view.getCaption()),
+							view.getViewName(), view.getIcon());
 
 					menuItemComponent.addAttachListener(new AttachListener() {
 						@Override

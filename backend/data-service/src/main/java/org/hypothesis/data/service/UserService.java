@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.data.service;
 
 import java.io.Serializable;
@@ -10,6 +14,12 @@ import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.User;
 
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
 @SuppressWarnings("serial")
 public class UserService implements Serializable {
 
@@ -51,7 +61,6 @@ public class UserService implements Serializable {
 		try {
 			userDao.beginTransaction();
 			user = mergeInit(user);
-			// userDao.clear();
 			user = userDao.makePersistent(user);
 			userDao.commit();
 			return user;
@@ -90,7 +99,6 @@ public class UserService implements Serializable {
 		try {
 			userDao.beginTransaction();
 			user = mergeInit(user);
-			// userDao.clear();
 			userDao.makeTransient(user);
 			userDao.commit();
 		} catch (Throwable e) {

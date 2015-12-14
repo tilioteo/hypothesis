@@ -1,12 +1,15 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.utility;
 
 import java.lang.reflect.Field;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public class ReflectionUtility {
@@ -41,11 +44,10 @@ public class ReflectionUtility {
 		return null;
 	}
 
-	/*public static Field[] getDeclaredFields(Object obj) {
-		if (obj != null) {
-			Field[] fields = obj.getClass().getd
-		}
-		
-		return null;
-	}*/
+	/*
+	 * public static Field[] getDeclaredFields(Object obj) { if (obj != null) {
+	 * Field[] fields = obj.getClass().getd }
+	 * 
+	 * return null; }
+	 */
 }

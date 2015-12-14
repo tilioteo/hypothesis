@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.presenter;
 
@@ -80,7 +81,9 @@ import com.vaadin.ui.VerticalLayout;
 import net.engio.mbassy.listener.Handler;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings({ "serial" })
@@ -386,7 +389,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 				sortedPacks.add(key);
 				packMap.put(key, pack);
 			}
-	
+
 			Collections.sort(sortedPacks);
 		}
 	}
@@ -551,7 +554,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	@Override
 	public View createView() {
 		loggedUser = SessionManager.getLoggedUser();
-		
+
 		return new ExportView(this);
 	}
 
@@ -936,7 +939,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 									SlideDataParser.FieldWrapper wrapper = SlideDataParser.parseFields(xmlData);
 									Map<String, String> fieldCaptions = wrapper.getFieldCaptionMap();
 									Map<String, String> fieldValues = wrapper.getFieldValueMap();
-									Map<String, Map<String, String>> fieldValueCaptions = wrapper.getFieldValueCaptionMap();
+									Map<String, Map<String, String>> fieldValueCaptions = wrapper
+											.getFieldValueCaptionMap();
 
 									for (String fieldName : fieldCaptions.keySet()) {
 										if (fieldColumnMap.containsKey(fieldName)) {

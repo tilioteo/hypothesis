@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.navigator;
 
 import java.util.HashSet;
@@ -15,6 +19,12 @@ import org.hypothesis.presenter.UserPacksPresenter;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
 public enum HypothesisViewType {
 	PACKS("/packs", "Caption.View.Packs", UserPacksPresenter.class, FontAwesome.BARS, true, new Role[] {RoleService.ROLE_USER, RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
 	PUBLIC("/public", "Caption.View.Public", PublicPacksPresenter.class, FontAwesome.EYE, true, new Role[] {null, RoleService.ROLE_USER, RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),

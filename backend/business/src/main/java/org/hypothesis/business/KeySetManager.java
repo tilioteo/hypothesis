@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.business;
 
@@ -12,8 +13,10 @@ import org.hypothesis.data.interfaces.HasId;
 import org.hypothesis.data.interfaces.HasList;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implements Serializable {
@@ -61,9 +64,9 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 	 * 
 	 * @param element
 	 */
-	/*protected void setCurrent(E element) {
-		this.element = element;
-	}*/
+	/*
+	 * protected void setCurrent(E element) { this.element = element; }
+	 */
 
 	public void setListFromParent(T parent) {
 		keyset.clear();

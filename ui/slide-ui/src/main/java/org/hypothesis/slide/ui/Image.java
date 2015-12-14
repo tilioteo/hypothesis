@@ -1,23 +1,26 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.slide.ui;
 
 import org.hypothesis.interfaces.Maskable;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class Image extends org.vaadin.special.ui.Image implements Maskable {
 
 	private Mask mask = null;
-	
+
 	public Image() {
 		super();
 	}
-	
+
 	@Override
 	public void mask() {
 		if (null == mask) {

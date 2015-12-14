@@ -1,9 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/*
  * @(#)VersionID.java 1.7 05/11/17
  *
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -38,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,8 +113,7 @@ public class VersionID implements Comparable<VersionID> {
 		if (matchTuple(o)) {
 			VersionID ov = (VersionID) o;
 			if (_rest == null || _rest.equals(ov._rest)) {
-				if ((_useGreaterThan == ov._useGreaterThan)
-						&& (_usePrefixMatch == ov._usePrefixMatch)) {
+				if ((_useGreaterThan == ov._useGreaterThan) && (_usePrefixMatch == ov._usePrefixMatch)) {
 					return true;
 				}
 			}
@@ -164,8 +159,7 @@ public class VersionID implements Comparable<VersionID> {
 				// So far so good
 			} else {
 				if (e1 instanceof Integer && e2 instanceof Integer) {
-					return ((Integer) e1).intValue() > ((Integer) e2)
-							.intValue();
+					return ((Integer) e1).intValue() > ((Integer) e2).intValue();
 				} else {
 					String s1 = t1[i].toString();
 					String s2 = t2[i].toString();
@@ -219,8 +213,7 @@ public class VersionID implements Comparable<VersionID> {
 			}
 		}
 		return (_usePrefixMatch) ? this.isPrefixMatch(vid)
-				: (_useGreaterThan) ? vid.isGreaterThanOrEqual(this)
-						: matchTuple(vid);
+				: (_useGreaterThan) ? vid.isGreaterThanOrEqual(this) : matchTuple(vid);
 	}
 
 	/** Compares if two version IDs are equal */

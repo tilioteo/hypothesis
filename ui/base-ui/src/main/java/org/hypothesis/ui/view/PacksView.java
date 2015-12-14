@@ -28,26 +28,26 @@ import com.vaadin.ui.themes.ValoTheme;
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
- * Hypothesis
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
 public class PacksView extends HorizontalLayout implements View {
-	
+
 	private PacksPresenter presenter;
-	
+
 	private VerticalLayout mainLayout;
 	private JavaInfoPanel javaInfoPanel;
 	private Panel mainPanel;
 
 	private Mask mask = null;
 	private boolean isMasked = false;
-	
+
 	private boolean isEmptyInfo = false;
-	
+
 	private Label emptyInfoLabel = null;
 	private String emptyInfoCaption = "emptyInfoCaption";
-	
+
 	private String checkingJavaInfoCaption = "checkingJavaInfoCaption";
 	private String javaInstalledCaption = "javaInstalledCaption";
 	private String javaNotInstalledCaption = "javaNotInstalledCaption";
@@ -63,7 +63,7 @@ public class PacksView extends HorizontalLayout implements View {
 
 	public PacksView(PacksPresenter presenter) {
 		this.presenter = presenter;
-		
+
 		setSizeFull();
 
 		Panel contentPanel = buildContentPanel();
@@ -138,7 +138,7 @@ public class PacksView extends HorizontalLayout implements View {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		presenter.enter(event);
-		
+
 		if (javaInfoPanel != null && javaInfoPanel.isVisible() && !javaInfoPanel.isJavaOk()) {
 			try {
 				javaInfoPanel.checkJavaVersion();
@@ -162,20 +162,20 @@ public class PacksView extends HorizontalLayout implements View {
 			}
 		}
 	}
-	
+
 	@Override
 	public void attach() {
 		super.attach();
-		
+
 		presenter.attach();
-		
+
 		DeployJava.get(getUI()).addJavaCheckedListener(javaCheckedListener);
 	}
-	
+
 	@Override
 	public void detach() {
 		DeployJava.get(getUI()).removeJavaCheckedListener(javaCheckedListener);
-		
+
 		presenter.detach();
 
 		super.detach();
@@ -198,7 +198,7 @@ public class PacksView extends HorizontalLayout implements View {
 			isMasked = false;
 		}
 	}
-	
+
 	public void clearMainLayout() {
 		mainLayout.removeAllComponents();
 		isEmptyInfo = false;
@@ -217,38 +217,38 @@ public class PacksView extends HorizontalLayout implements View {
 		layout.setComponentAlignment(emptyInfoLabel, Alignment.MIDDLE_CENTER);
 
 		mainPanel.setContent(layout);
-		
+
 		isEmptyInfo = true;
 	}
-	
+
 	public void addPackPanel(PackPanel panel) {
 		if (panel != null) {
 			if (isEmptyInfo) {
 				clearMainLayout();
 			}
-			
+
 			panel.setHeight(150.0f, Unit.PIXELS);
 			panel.setJavaInstalled(javaInfoPanel.isJavaOk());
-			
+
 			mainLayout.addComponent(panel);
 		}
 	}
-	
+
 	public void setEmptyInfoCaption(String caption) {
 		this.emptyInfoCaption = caption;
-		
+
 		if (emptyInfoLabel != null) {
 			emptyInfoLabel.setCaption(caption);
 		}
 	}
-	
+
 	public void setCheckingJavaInfo(String caption) {
 		this.checkingJavaInfoCaption = caption;
 		if (javaInfoPanel != null) {
 			javaInfoPanel.setCheckInfoText(caption);
 		}
 	}
-	
+
 	public void setJavaInstalledCaption(String caption) {
 		this.javaInstalledCaption = caption;
 		if (javaInfoPanel != null) {

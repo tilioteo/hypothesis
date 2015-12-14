@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.data.service;
 
@@ -8,7 +9,9 @@ import java.io.Serializable;
 import org.hypothesis.data.interfaces.GenericDao;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
@@ -21,7 +24,8 @@ public abstract class AbstractDao<T, ID extends Serializable> implements Generic
 	 */
 	protected AbstractDao(Class<T> clazz) {
 		this.persistentClass = clazz;
-		// this.persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+		// this.persistentClass = (Class<T>) ((ParameterizedType)
+		// getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 
 	/**

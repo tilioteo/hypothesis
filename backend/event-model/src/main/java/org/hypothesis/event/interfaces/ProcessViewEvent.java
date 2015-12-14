@@ -7,7 +7,9 @@ package org.hypothesis.event.interfaces;
 import org.hypothesis.interfaces.ProcessView;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")

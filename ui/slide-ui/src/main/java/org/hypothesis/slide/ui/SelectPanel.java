@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.slide.ui;
 
@@ -20,21 +21,23 @@ import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Field, Validatable {
 
-    /**
-     * Is automatic validation enabled.
-     */
-    private boolean validationVisible = true;
+	/**
+	 * Is automatic validation enabled.
+	 */
+	private boolean validationVisible = true;
 
-    /**
-     * The list of validators.
-     */
-    private LinkedList<Validator> validators = null;
+	/**
+	 * The list of validators.
+	 */
+	private LinkedList<Validator> validators = null;
 
 	public SelectPanel() {
 		super();
@@ -44,16 +47,16 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 	public void addSelected(SelectButton button) {
 		super.addSelected(button);
 		if (childList.contains(button) && validators != null && !validators.isEmpty()) {
-            markAsDirty();
+			markAsDirty();
 		}
 	}
-	
+
 	@Override
 	public void removeSelected(SelectButton button) {
 		boolean contained = selectedButtons.contains(button);
 		super.removeSelected(button);
 		if (contained && validators != null && !validators.isEmpty()) {
-            markAsDirty();
+			markAsDirty();
 		}
 	}
 
@@ -63,7 +66,7 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 		}
 		return false;
 	}
-	
+
 	public void setSelected(int index, boolean value) {
 		if (index >= 0 && index < childList.size()) {
 			if (value) {
@@ -74,70 +77,48 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 		}
 	}
 
-	/**
-	@Override
-	public void writeDataToElement(Element element) {
-		element.addAttribute(SlideXmlConstants.TYPE, SlideXmlConstants.SELECT_PANEL);
-		element.addAttribute(SlideXmlConstants.ID, (String) getData());
-		Element captionElement = element.addElement(SlideXmlConstants.CAPTION);
-		if (getCaption() != null) {
-			captionElement.addText(getCaption());
-		}
-
-		if (selectedButtons.size() > 0) {
-			for (SelectButton selected : selectedButtons) {
-				Element valueElement = element.addElement(SlideXmlConstants.VALUE);
-				valueElement.addAttribute(SlideXmlConstants.ID, String.format("%d", getChildIndex(selected) + 1));
-				valueElement.addText(selected.getCaption());
-			}
-		} else {
-			element.addElement(SlideXmlConstants.VALUE);
-		}
-	}
-	*/
-
 	@Override
 	public boolean isValid() {
-        try {
-            validate();
-            return true;
-        } catch (InvalidValueException e) {
-            return false;
-        }
+		try {
+			validate();
+			return true;
+		} catch (InvalidValueException e) {
+			return false;
+		}
 	}
 
 	@Override
 	public void addValidator(Validator validator) {
-        if (validators == null) {
-            validators = new LinkedList<Validator>();
-        }
-        validators.add(validator);
-        markAsDirty();
+		if (validators == null) {
+			validators = new LinkedList<Validator>();
+		}
+		validators.add(validator);
+		markAsDirty();
 	}
 
 	@Override
 	public void removeValidator(Validator validator) {
-        if (validators != null) {
-            validators.remove(validator);
-        }
-        markAsDirty();
+		if (validators != null) {
+			validators.remove(validator);
+		}
+		markAsDirty();
 	}
 
 	@Override
 	public void removeAllValidators() {
-        if (validators != null) {
-            validators.clear();
-        }
-        markAsDirty();
+		if (validators != null) {
+			validators.clear();
+		}
+		markAsDirty();
 	}
 
 	@Override
 	public Collection<Validator> getValidators() {
-        if (validators == null) {
-            return Collections.emptyList();
-        } else {
-            return Collections.unmodifiableCollection(validators);
-        }
+		if (validators == null) {
+			return Collections.emptyList();
+		} else {
+			return Collections.unmodifiableCollection(validators);
+		}
 	}
 
 	@Override
@@ -145,83 +126,80 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 		validate(getSelectedButtons());
 	}
 
-    protected void validate(Collection<SelectButton> values) throws InvalidValueException {
+	protected void validate(Collection<SelectButton> values) throws InvalidValueException {
 
-        List<InvalidValueException> validationExceptions = new ArrayList<InvalidValueException>();
-        if (validators != null) {
-            // Gets all the validation errors
-            for (Validator v : validators) {
-                try {
-                    v.validate(values);
-                } catch (final InvalidValueException e) {
-                    validationExceptions.add(e);
-                }
-            }
-        }
+		List<InvalidValueException> validationExceptions = new ArrayList<InvalidValueException>();
+		if (validators != null) {
+			// Gets all the validation errors
+			for (Validator v : validators) {
+				try {
+					v.validate(values);
+				} catch (final InvalidValueException e) {
+					validationExceptions.add(e);
+				}
+			}
+		}
 
-        // If there were no errors
-        if (validationExceptions.isEmpty()) {
-            return;
-        }
+		// If there were no errors
+		if (validationExceptions.isEmpty()) {
+			return;
+		}
 
-        // If only one error occurred, throw it forwards
-        if (validationExceptions.size() == 1) {
-            throw validationExceptions.get(0);
-        }
+		// If only one error occurred, throw it forwards
+		if (validationExceptions.size() == 1) {
+			throw validationExceptions.get(0);
+		}
 
-        InvalidValueException[] exceptionArray = validationExceptions
-                .toArray(new InvalidValueException[validationExceptions.size()]);
+		InvalidValueException[] exceptionArray = validationExceptions
+				.toArray(new InvalidValueException[validationExceptions.size()]);
 
-        // Create a composite validator and include all exceptions
-        throw new InvalidValueException(null, exceptionArray);
-    }
+		// Create a composite validator and include all exceptions
+		throw new InvalidValueException(null, exceptionArray);
+	}
 
-    @Override
-    public ErrorMessage getErrorMessage() {
+	@Override
+	public ErrorMessage getErrorMessage() {
 
-        /*
-         * Check validation errors only if automatic validation is enabled.
-         * Empty, required fields will generate a validation error containing
-         * the requiredError string. For these fields the exclamation mark will
-         * be hidden but the error must still be sent to the client.
-         */
-        InvalidValueException validationError = null;
-        if (isValidationVisible()) {
-            try {
-                validate();
-            } catch (InvalidValueException e) {
-                if (!e.isInvisible()) {
-                    validationError = e;
-                }
-            }
-        }
+		/*
+		 * Check validation errors only if automatic validation is enabled.
+		 * Empty, required fields will generate a validation error containing
+		 * the requiredError string. For these fields the exclamation mark will
+		 * be hidden but the error must still be sent to the client.
+		 */
+		InvalidValueException validationError = null;
+		if (isValidationVisible()) {
+			try {
+				validate();
+			} catch (InvalidValueException e) {
+				if (!e.isInvisible()) {
+					validationError = e;
+				}
+			}
+		}
 
-        // Check if there are any systems errors
-        final ErrorMessage superError = super.getErrorMessage();
+		// Check if there are any systems errors
+		final ErrorMessage superError = super.getErrorMessage();
 
-        // Return if there are no errors at all
-        if (superError == null && validationError == null) {
-            return null;
-        }
+		// Return if there are no errors at all
+		if (superError == null && validationError == null) {
+			return null;
+		}
 
-        // Throw combination of the error types
-        return new CompositeErrorMessage(
-                new ErrorMessage[] {
-                        superError,
-                        AbstractErrorMessage
-                                .getErrorMessageForException(validationError) });
-    }
+		// Throw combination of the error types
+		return new CompositeErrorMessage(
+				new ErrorMessage[] { superError, AbstractErrorMessage.getErrorMessageForException(validationError) });
+	}
 
-    public boolean isValidationVisible() {
-        return validationVisible;
-    }
+	public boolean isValidationVisible() {
+		return validationVisible;
+	}
 
-    public void setValidationVisible(boolean validateAutomatically) {
-        if (validationVisible != validateAutomatically) {
-            markAsDirty();
-            validationVisible = validateAutomatically;
-        }
-    }
+	public void setValidationVisible(boolean validateAutomatically) {
+		if (validationVisible != validateAutomatically) {
+			markAsDirty();
+			validationVisible = validateAutomatically;
+		}
+	}
 
 	@Override
 	public boolean isInvalidAllowed() {
@@ -232,7 +210,7 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 	public void setInvalidAllowed(boolean invalidValueAllowed) throws UnsupportedOperationException {
 		// nop
 	}
-	
+
 	public boolean hasClickListener() {
 		return !clickListeners.isEmpty();
 	}

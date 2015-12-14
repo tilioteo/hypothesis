@@ -1,9 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/*
  * @(#)JarDiffHandler.java	1.9 05/11/30
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -38,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -76,8 +72,7 @@ public class JarDiffHandler {
 		private boolean _minimal; // True if this is a minimal jardiff
 
 		/** Constructor used to generate a query object */
-		public JarDiffKey(String name, String fromVersionId,
-				String toVersionId, boolean minimal) {
+		public JarDiffKey(String name, String fromVersionId, String toVersionId, boolean minimal) {
 			_name = name;
 			_fromVersionId = fromVersionId;
 			_toVersionId = toVersionId;
@@ -128,8 +123,7 @@ public class JarDiffHandler {
 
 		@Override
 		public int hashCode() {
-			return _name.hashCode() + _fromVersionId.hashCode()
-					+ _toVersionId.hashCode();
+			return _name.hashCode() + _fromVersionId.hashCode() + _toVersionId.hashCode();
 		}
 
 		public boolean isMinimal() {
@@ -156,8 +150,7 @@ public class JarDiffHandler {
 				String verString = st.nextToken();
 				int index = verString.indexOf(javawsAgent);
 				if (index != -1) {
-					verString = verString.substring(index
-							+ javawsAgent.length() + 1);
+					verString = verString.substring(index + javawsAgent.length() + 1);
 					return VersionString.contains(version, verString);
 				}
 			}
@@ -221,8 +214,7 @@ public class JarDiffHandler {
 			}
 
 		} catch (IOException ioe) {
-			System.err.println("Got exception while downloading resource: "
-					+ ioe);
+			System.err.println("Got exception while downloading resource: " + ioe);
 			ret = false;
 
 			if (file != null)
@@ -232,15 +224,13 @@ public class JarDiffHandler {
 				in.close();
 				in = null;
 			} catch (IOException ioe) {
-				System.err.println("Got exception while downloading resource: "
-						+ ioe);
+				System.err.println("Got exception while downloading resource: " + ioe);
 			}
 			try {
 				out.close();
 				out = null;
 			} catch (IOException ioe) {
-				System.err.println("Got exception while downloading resource: "
-						+ ioe);
+				System.err.println("Got exception while downloading resource: " + ioe);
 			}
 
 			if (delete) {
@@ -250,9 +240,8 @@ public class JarDiffHandler {
 		return ret;
 	}
 
-	private File generateJarDiff(
-			/* ResourceCatalog catalog, */DownloadRequest dreq,
-			JnlpResource res, boolean doJarDiffWorkAround) {
+	private File generateJarDiff(/* ResourceCatalog catalog, */DownloadRequest dreq, JnlpResource res,
+			boolean doJarDiffWorkAround) {
 		boolean del_old = false;
 		boolean del_new = false;
 
@@ -287,21 +276,19 @@ public class JarDiffHandler {
 			}
 
 			// Create temp. file to store JarDiff file in
-			File tempDir = (File) _servletContext
-					.getAttribute("javax.servlet.context.tempdir");
+			File tempDir = (File) _servletContext.getAttribute("javax.servlet.context.tempdir");
 
 			// fix for 4653036: JarDiffHandler() should use
 			// javax.servlet.context.tempdir to store the jardiff
 			File outputFile = File.createTempFile("jnlp", ".jardiff", tempDir);
 
-			System.out.println("Generating Jardiff between " + oldFilePath
-					+ " and " + newFilePath + " Store in " + outputFile);
+			System.out.println(
+					"Generating Jardiff between " + oldFilePath + " and " + newFilePath + " Store in " + outputFile);
 
 			// Generate JarDiff
 			OutputStream os = new FileOutputStream(outputFile);
 
-			JarDiff.createPatch(oldFilePath, newFilePath, os,
-					!doJarDiffWorkAround);
+			JarDiff.createPatch(oldFilePath, newFilePath, os, !doJarDiffWorkAround);
 			os.close();
 
 			try {
@@ -335,11 +322,10 @@ public class JarDiffHandler {
 		} catch (IOException ioe) {
 			System.err.println("Failed to genereate jardiff " + ioe);
 			return null;
-		}/*
-		 * catch (ErrorResponseException ere) {
-		 * System.err.println("Failed to genereate jardiff " + ere); return
-		 * null; }
-		 */
+		} /*
+			 * catch (ErrorResponseException ere) { System.err.println(
+			 * "Failed to genereate jardiff " + ere); return null; }
+			 */
 	}
 
 	/** Returns a JarDiff for the given request */
@@ -353,19 +339,16 @@ public class JarDiffHandler {
 		boolean doJarDiffWorkAround = isJavawsVersion(dreq, "1.0*");
 
 		// First do a lookup to find a match
-		JarDiffKey key = new JarDiffKey(res.getName(),
-				dreq.getCurrentVersionId(), res.getReturnVersionId(),
+		JarDiffKey key = new JarDiffKey(res.getName(), dreq.getCurrentVersionId(), res.getReturnVersionId(),
 				!doJarDiffWorkAround);
 
 		JarDiffEntry entry = _jarDiffEntries.get(key);
 		// If entry is not found, then the querty has not been made.
 		if (entry == null) {
-			File f = generateJarDiff(/* catalog, */dreq, res,
-					doJarDiffWorkAround);
+			File f = generateJarDiff(/* catalog, */dreq, res, doJarDiffWorkAround);
 			if (f == null) {
-				System.err.println("servlet.log.warning.jardiff.failed "
-						+ res.getName() + " " + dreq.getCurrentVersionId()
-						+ " " + res.getReturnVersionId());
+				System.err.println("servlet.log.warning.jardiff.failed " + res.getName() + " "
+						+ dreq.getCurrentVersionId() + " " + res.getReturnVersionId());
 			}
 			// Store entry in table
 			entry = new JarDiffEntry(f);
@@ -376,9 +359,8 @@ public class JarDiffHandler {
 		if (entry.getJarDiffFile() == null) {
 			return null;
 		} else {
-			return DownloadResponse.getFileDownloadResponse(entry
-					.getJarDiffFile(), _jarDiffMimeType, entry.getJarDiffFile()
-					.lastModified(), res.getReturnVersionId());
+			return DownloadResponse.getFileDownloadResponse(entry.getJarDiffFile(), _jarDiffMimeType,
+					entry.getJarDiffFile().lastModified(), res.getReturnVersionId());
 		}
 	}
 
@@ -388,8 +370,7 @@ public class JarDiffHandler {
 	private String getRealPath(String path) throws IOException {
 		URL fileURL = _servletContext.getResource(path);
 
-		File tempDir = (File) _servletContext
-				.getAttribute("javax.servlet.context.tempdir");
+		File tempDir = (File) _servletContext.getAttribute("javax.servlet.context.tempdir");
 
 		// download file into temp dir
 		if (fileURL != null) {

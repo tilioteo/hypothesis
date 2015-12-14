@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.data.service;
 
@@ -15,20 +16,24 @@ import org.hypothesis.data.model.Task;
 import org.hypothesis.interfaces.Command;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public class AsynchronousService {
-	
+
 	private TestService testService;
 	private BranchService branchService;
 	private TaskService taskService;
 	private SlideService slideService;
 	private OutputService outputService;
-	
+
 	private AsynchronousCommandExecutor commandExecutor = new AsynchronousCommandExecutor();
-	
-	public AsynchronousService(TestService testService, OutputService outputService, PersistenceService persistenceService, BranchService branchService, TaskService taskService, SlideService slideService) {
+
+	public AsynchronousService(TestService testService, OutputService outputService,
+			PersistenceService persistenceService, BranchService branchService, TaskService taskService,
+			SlideService slideService) {
 		this.testService = testService;
 		this.outputService = outputService;
 		this.branchService = branchService;
@@ -47,7 +52,8 @@ public class AsynchronousService {
 	}
 
 	@SuppressWarnings("serial")
-	public void saveTestEvent(final Event event, final Date date, final String slideData, final Status status, final Long testId, final Long branchId, final Long taskId, final Long slideId) {
+	public void saveTestEvent(final Event event, final Date date, final String slideData, final Status status,
+			final Long testId, final Long branchId, final Long taskId, final Long slideId) {
 		commandExecutor.add(new Command() {
 			@Override
 			public void execute() {
@@ -62,15 +68,15 @@ public class AsynchronousService {
 					event.setBranch(branch);
 					event.setTask(task);
 					event.setSlide(slide);
-				
+
 					if (slideData != null) {
 						event.setData(slideData);
 					}
-				
+
 					// update test
 					if (status != null && !test.getStatus().equals(status)) {
 						test.setStatus(status);
-						
+
 						switch (status) {
 						case BROKEN_BY_CLIENT:
 						case BROKEN_BY_ERROR:
@@ -91,7 +97,7 @@ public class AsynchronousService {
 					test.setLastBranch(branch);
 					test.setLastTask(task);
 					test.setLastSlide(slide);
-					
+
 					// persist event and test
 					testService.saveEvent(event, test);
 					testService.updateTest(test);
@@ -99,7 +105,7 @@ public class AsynchronousService {
 			}
 		});
 	}
-	
+
 	public void cleanup() {
 		commandExecutor.stop();
 	}

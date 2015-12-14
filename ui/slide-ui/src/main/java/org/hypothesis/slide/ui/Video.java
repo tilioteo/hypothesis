@@ -1,19 +1,22 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.slide.ui;
 
 import org.hypothesis.interfaces.Maskable;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
 public class Video extends org.vaadin.special.ui.Video implements Maskable {
-	
+
 	private Mask mask = null;
-	
+
 	public Video() {
 		super();
 	}
@@ -44,4 +47,3 @@ public class Video extends org.vaadin.special.ui.Video implements Maskable {
 	}
 
 }
-

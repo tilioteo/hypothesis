@@ -1,17 +1,21 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.slide.shared.ui.mask;
 
 import com.vaadin.shared.communication.ClientRpc;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public interface MaskClientRpc extends ClientRpc {
-	
+
 	public void show();
+
 	public void hide();
 
 }

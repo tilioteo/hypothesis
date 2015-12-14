@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.business;
 
@@ -16,7 +17,9 @@ import org.hypothesis.interfaces.ExchangeVariable;
 import org.hypothesis.interfaces.Variable;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
@@ -64,8 +67,8 @@ public class TaskController implements Serializable, Evaluator {
 				if (outputs != null) {
 					for (Integer index : outputs.keySet()) {
 						ExchangeVariable exchangeVariable = outputs.get(index);
-						Variable<?> variable = org.hypothesis.evaluation.Variable
-								.createVariable("output" + index, exchangeVariable.getValue());
+						Variable<?> variable = org.hypothesis.evaluation.Variable.createVariable("output" + index,
+								exchangeVariable.getValue());
 						node.getVariables().put(variable.getName(), variable);
 					}
 				}

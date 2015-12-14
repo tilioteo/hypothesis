@@ -1,30 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
-
-/*
  * @(#)JarDiff.java	1.7 05/11/17
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -59,6 +33,28 @@ import java.util.jar.JarOutputStream;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 
 /**
  * JarDiff is able to create a jar file containing the delta between two jar
@@ -77,8 +73,7 @@ public class JarDiff implements JarDiffConstants {
 		/**
 		 * Returns true if the two InputStreams differ.
 		 */
-		private static boolean differs(InputStream oldIS, InputStream newIS)
-				throws IOException {
+		private static boolean differs(InputStream oldIS, InputStream newIS) throws IOException {
 			int newSize = 0;
 			int oldSize;
 			// int total = 0;
@@ -156,8 +151,7 @@ public class JarDiff implements JarDiffConstants {
 			return !retValue;
 		}
 
-		public String getBestMatch(JarFile2 file, JarEntry entry)
-				throws IOException {
+		public String getBestMatch(JarFile2 file, JarEntry entry) throws IOException {
 			// check for same name and same content, return name if found
 			if (contains(file, entry)) {
 				return (entry.getName());
@@ -179,8 +173,7 @@ public class JarDiff implements JarDiffConstants {
 			return _jar;
 		}
 
-		public String hasSameContent(JarFile2 file, JarEntry entry)
-				throws IOException {
+		public String hasSameContent(JarFile2 file, JarEntry entry) throws IOException {
 
 			String thisName = null;
 
@@ -197,10 +190,8 @@ public class JarDiff implements JarDiffConstants {
 						JarEntry thisEntry = li.next();
 
 						// check for content match
-						InputStream oldIS = getJarFile().getInputStream(
-								thisEntry);
-						InputStream newIS = file.getJarFile().getInputStream(
-								entry);
+						InputStream oldIS = getJarFile().getInputStream(thisEntry);
+						InputStream newIS = file.getJarFile().getInputStream(entry);
 
 						if (!differs(oldIS, newIS)) {
 							thisName = thisEntry.getName();
@@ -281,8 +272,7 @@ public class JarDiff implements JarDiffConstants {
 	 * gives the names of the files that were removed, <code>movedMap</code>
 	 * maps from the new name to the old name.
 	 */
-	private static void createIndex(JarOutputStream jos,
-			List<String> oldEntries, Map<String, String> movedMap)
+	private static void createIndex(JarOutputStream jos, List<String> oldEntries, Map<String, String> movedMap)
 			throws IOException {
 		StringWriter writer = new StringWriter();
 
@@ -329,8 +319,8 @@ public class JarDiff implements JarDiffConstants {
 	 * Creates a patch from the two passed in files, writing the result to
 	 * <code>os</code>.
 	 */
-	public static void createPatch(String oldPath, String newPath,
-			OutputStream os, boolean minimal) throws IOException {
+	public static void createPatch(String oldPath, String newPath, OutputStream os, boolean minimal)
+			throws IOException {
 		JarFile2 oldJar = new JarFile2(oldPath);
 		JarFile2 newJar = new JarFile2(newPath);
 
@@ -368,8 +358,7 @@ public class JarDiff implements JarDiffConstants {
 						// Should do implicit move? Yes, if names are the same,
 						// and
 						// no move command already exist from oldJar
-						if (oldname.equals(newname)
-								&& !moveSrc.contains(oldname)) {
+						if (oldname.equals(newname) && !moveSrc.contains(oldname)) {
 							implicit.add(newname);
 						} else {
 							// The 1.0.1/1.0 JarDiffPatcher cannot handle
@@ -380,9 +369,7 @@ public class JarDiff implements JarDiffConstants {
 							// instead add the target as a new file. This way
 							// the jardiff can be applied by 1.0.1/1.0
 							// JarDiffPatcher also.
-							if (!minimal
-									&& (implicit.contains(oldname) || moveSrc
-											.contains(oldname))) {
+							if (!minimal && (implicit.contains(oldname) || moveSrc.contains(oldname))) {
 								// generate non-minimal jardiff
 								// for backward compatibility
 
@@ -412,9 +399,7 @@ public class JarDiff implements JarDiffConstants {
 				while (jarEntries.hasNext()) {
 					JarEntry oldEntry = jarEntries.next();
 					String oldName = oldEntry.getName();
-					if (!implicit.contains(oldName)
-							&& !moveSrc.contains(oldName)
-							&& !newEntries.contains(oldName)) {
+					if (!implicit.contains(oldName) && !moveSrc.contains(oldName) && !newEntries.contains(oldName)) {
 						deleted.add(oldName);
 					}
 				}
@@ -462,26 +447,21 @@ public class JarDiff implements JarDiffConstants {
 
 		for (int counter = 0; counter < args.length; counter++) {
 			// for backward compatibilty with 1.0.1/1.0
-			if (args[counter].equals("-nonminimal")
-					|| args[counter].equals("-n")) {
+			if (args[counter].equals("-nonminimal") || args[counter].equals("-n")) {
 				minimal = false;
-			} else if (args[counter].equals("-creatediff")
-					|| args[counter].equals("-c")) {
+			} else if (args[counter].equals("-creatediff") || args[counter].equals("-c")) {
 				diff = true;
-			} else if (args[counter].equals("-applydiff")
-					|| args[counter].equals("-a")) {
+			} else if (args[counter].equals("-applydiff") || args[counter].equals("-a")) {
 				diff = false;
 				/*
 				 * } else if (args[counter].equals("-debug") ||
 				 * args[counter].equals("-d")) { _debug = true;
 				 */
-			} else if (args[counter].equals("-output")
-					|| args[counter].equals("-o")) {
+			} else if (args[counter].equals("-output") || args[counter].equals("-o")) {
 				if (++counter < args.length) {
 					outputFile = args[counter];
 				}
-			} else if (args[counter].equals("-applydiff")
-					|| args[counter].equals("-a")) {
+			} else if (args[counter].equals("-applydiff") || args[counter].equals("-a")) {
 				diff = false;
 			} else {
 				if ((counter + 2) != args.length) {
@@ -492,14 +472,12 @@ public class JarDiff implements JarDiffConstants {
 					try {
 						OutputStream os = new FileOutputStream(outputFile);
 
-						JarDiff.createPatch(args[counter], args[counter + 1],
-								os, minimal);
+						JarDiff.createPatch(args[counter], args[counter + 1], os, minimal);
 						os.close();
 					} catch (IOException ioe) {
 						try {
-							System.out
-									.println(/* getResources().getString( */"jardiff.error.create"/* ) */
-											+ " " + ioe);
+							System.out.println(/* getResources().getString( */"jardiff.error.create"/* ) */
+									+ " " + ioe);
 						} catch (MissingResourceException mre) {
 						}
 					}
@@ -507,14 +485,12 @@ public class JarDiff implements JarDiffConstants {
 					try {
 						OutputStream os = new FileOutputStream(outputFile);
 
-						new JarDiffPatcher().applyPatch(null, args[counter],
-								args[counter + 1], os);
+						new JarDiffPatcher().applyPatch(null, args[counter], args[counter + 1], os);
 						os.close();
 					} catch (IOException ioe) {
 						try {
-							System.out
-									.println(/* getResources().getString( */"jardiff.error.apply"/* ) */
-											+ " " + ioe);
+							System.out.println(/* getResources().getString( */"jardiff.error.apply"/* ) */
+									+ " " + ioe);
 						} catch (MissingResourceException mre) {
 						}
 					}
@@ -526,12 +502,11 @@ public class JarDiff implements JarDiffConstants {
 	}
 
 	private static void showHelp() {
-		System.out
-				.println("JarDiff: [-nonminimal (for backward compatibility with 1.0.1/1.0] [-creatediff | -applydiff] [-output file] old.jar new.jar");
+		System.out.println(
+				"JarDiff: [-nonminimal (for backward compatibility with 1.0.1/1.0] [-creatediff | -applydiff] [-output file] old.jar new.jar");
 	}
 
-	private static void writeEntry(JarOutputStream jos, JarEntry entry,
-			InputStream data) throws IOException {
+	private static void writeEntry(JarOutputStream jos, JarEntry entry, InputStream data) throws IOException {
 		jos.putNextEntry(entry);
 
 		try {
@@ -554,13 +529,11 @@ public class JarDiff implements JarDiffConstants {
 		}
 	}
 
-	private static void writeEntry(JarOutputStream jos, JarEntry entry,
-			JarFile2 file) throws IOException {
+	private static void writeEntry(JarOutputStream jos, JarEntry entry, JarFile2 file) throws IOException {
 		writeEntry(jos, entry, file.getJarFile().getInputStream(entry));
 	}
 
-	private static void writeEscapedString(Writer writer, String string)
-			throws IOException {
+	private static void writeEscapedString(Writer writer, String string) throws IOException {
 		int index = 0;
 		int last = 0;
 		char[] chars = null;

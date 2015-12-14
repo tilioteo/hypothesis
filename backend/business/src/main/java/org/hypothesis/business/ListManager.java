@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.business;
 
@@ -11,8 +12,10 @@ import java.util.Random;
 import org.hypothesis.data.interfaces.HasList;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class ListManager<T extends HasList<E>, E> implements Serializable {
@@ -79,9 +82,9 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 	 * 
 	 * @param element
 	 */
-	/*public void setCurrent(E element) {
-		this.element = element;
-	}*/
+	/*
+	 * public void setCurrent(E element) { this.element = element; }
+	 */
 
 	public void setListFromParent(T parent) {
 		this.parent = parent;

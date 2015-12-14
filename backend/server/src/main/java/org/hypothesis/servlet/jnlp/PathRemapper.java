@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.servlet.jnlp;
 
@@ -9,8 +10,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  *         This class is specialized hash map to mask (and replace) external url
  *         path to right internal url
  * 
@@ -36,8 +39,7 @@ public class PathRemapper {
 
 			if (potentialMatches.size() > 0) {
 				Collections.sort(potentialMatches);
-				String match = potentialMatches
-						.get(potentialMatches.size() - 1);
+				String match = potentialMatches.get(potentialMatches.size() - 1);
 				return path.replace(match, pathremap.get(match));
 			}
 		}

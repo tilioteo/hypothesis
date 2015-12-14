@@ -1,9 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/*
  * @(#)Patcher.java	1.6 05/11/17
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -38,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -59,6 +55,6 @@ public interface Patcher {
 	 * Applies a patch previously created with <code>createPatch</code>. Pass in
 	 * a delegate to be notified of the status of the patch.
 	 */
-	public void applyPatch(PatchDelegate delegate, String oldJarPath,
-			String deltaPath, OutputStream result) throws IOException;
+	public void applyPatch(PatchDelegate delegate, String oldJarPath, String deltaPath, OutputStream result)
+			throws IOException;
 }

@@ -1,9 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/*
  * @(#)JarDiffPatcher.java	1.7 05/11/17
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -38,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,8 +76,8 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 	 * JarDiff.getResources(); }
 	 */
 
-	public void applyPatch(Patcher.PatchDelegate delegate, String oldJarPath,
-			String jarDiffPath, OutputStream result) throws IOException {
+	public void applyPatch(Patcher.PatchDelegate delegate, String oldJarPath, String jarDiffPath, OutputStream result)
+			throws IOException {
 		File oldFile = new File(oldJarPath);
 		File diffFile = new File(jarDiffPath);
 		JarOutputStream jos = new JarOutputStream(result);
@@ -208,16 +204,15 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 		jos.finish();
 	}
 
-	private void determineNameMapping(JarFile jarDiff, Set<String> ignoreSet,
-			Map<String, String> renameMap) throws IOException {
+	private void determineNameMapping(JarFile jarDiff, Set<String> ignoreSet, Map<String, String> renameMap)
+			throws IOException {
 		InputStream is = jarDiff.getInputStream(jarDiff.getEntry(INDEX_NAME));
 
 		if (is == null) {
 			handleException("jardiff.error.noindex", null);
 
 		}
-		LineNumberReader indexReader = new LineNumberReader(
-				new InputStreamReader(is, "UTF-8"));
+		LineNumberReader indexReader = new LineNumberReader(new InputStreamReader(is, "UTF-8"));
 		String line = indexReader.readLine();
 
 		if (line == null || !line.equals(VERSION_HEADER)) {
@@ -226,16 +221,14 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 
 		while ((line = indexReader.readLine()) != null) {
 			if (line.startsWith(REMOVE_COMMAND)) {
-				List<String> sub = getSubpaths(line.substring(REMOVE_COMMAND
-						.length()));
+				List<String> sub = getSubpaths(line.substring(REMOVE_COMMAND.length()));
 
 				if (sub.size() != 1) {
 					handleException("jardiff.error.badremove", line);
 				}
 				ignoreSet.add(sub.get(0));
 			} else if (line.startsWith(MOVE_COMMAND)) {
-				List<String> sub = getSubpaths(line.substring(MOVE_COMMAND
-						.length()));
+				List<String> sub = getSubpaths(line.substring(MOVE_COMMAND.length()));
 
 				if (sub.size() != 2) {
 					handleException("jardiff.error.badmove", line);
@@ -269,8 +262,7 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 
 				while (index < length) {
 					char aChar = path.charAt(index);
-					if (aChar == '\\' && (index + 1) < length
-							&& path.charAt(index + 1) == ' ') {
+					if (aChar == '\\' && (index + 1) < length && path.charAt(index + 1) == ' ') {
 
 						if (subString == null) {
 							subString = path.substring(last, index);
@@ -296,8 +288,7 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 		return sub;
 	}
 
-	private void handleException(String errorMsg, String line)
-			throws IOException {
+	private void handleException(String errorMsg, String line) throws IOException {
 		try {
 			throw new IOException(/* getResources().getString( */errorMsg/* ) */
 					+ " " + line);
@@ -308,15 +299,13 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 		}
 	}
 
-	private void updateDelegate(Patcher.PatchDelegate delegate,
-			double currentSize, double size) {
+	private void updateDelegate(Patcher.PatchDelegate delegate, double currentSize, double size) {
 		if (delegate != null) {
 			delegate.patching((int) (currentSize / size));
 		}
 	}
 
-	private void writeEntry(JarOutputStream jos, JarEntry entry,
-			InputStream data) throws IOException {
+	private void writeEntry(JarOutputStream jos, JarEntry entry, InputStream data) throws IOException {
 		// Create a new ZipEntry to clear the compressed size. 5079423
 		jos.putNextEntry(new ZipEntry(entry.getName()));
 
@@ -330,8 +319,7 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 		data.close();
 	}
 
-	private void writeEntry(JarOutputStream jos, JarEntry entry, JarFile file)
-			throws IOException {
+	private void writeEntry(JarOutputStream jos, JarEntry entry, JarFile file) throws IOException {
 		writeEntry(jos, entry, file.getInputStream(entry));
 	}
 }

@@ -14,7 +14,7 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
- * Hypothesis
+ *         Hypothesis
  *
  */
 @SuppressWarnings({ "serial" })
@@ -34,18 +34,18 @@ public class ExportView extends VerticalLayout implements View {
 		addComponent(content);
 		setExpandRatio(content, 1);
 	}
-	
+
 	@Override
 	public void attach() {
 		super.attach();
-		
+
 		presenter.attach();
 	}
-	
+
 	@Override
 	public void detach() {
 		presenter.detach();
-		
+
 		super.detach();
 	}
 

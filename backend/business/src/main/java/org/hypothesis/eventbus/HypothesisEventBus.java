@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.eventbus;
 
 import java.io.Serializable;
@@ -10,8 +14,12 @@ import net.engio.mbassy.bus.error.IPublicationErrorHandler;
 import net.engio.mbassy.bus.error.PublicationError;
 
 /**
- * A simple wrapper for MBassador event bus. Defines methods for relevant
- * actions.
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ *         A simple wrapper for MBassador event bus. Defines methods for
+ *         relevant actions.
  */
 @SuppressWarnings("serial")
 public abstract class HypothesisEventBus<T> implements Serializable, IPublicationErrorHandler {

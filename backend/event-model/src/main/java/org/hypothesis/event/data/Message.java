@@ -15,7 +15,9 @@ import elemental.json.Json;
 import elemental.json.JsonObject;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")

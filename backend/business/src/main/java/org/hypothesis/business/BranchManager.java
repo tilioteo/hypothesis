@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.business;
 
@@ -15,8 +16,10 @@ import org.hypothesis.data.model.Slide;
 import org.hypothesis.interfaces.ExchangeVariable;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class BranchManager extends KeySetManager<Pack, Branch, Long> {
@@ -53,33 +56,25 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 		controller = BranchBuilder.buildBranchController(current, reader);
 	}
 
-	/*@Override
-	public Branch find(Branch item) {
-		if (item != current) {
-			super.find(item);
-		}
-		return current();
-	}*/
+	/*
+	 * @Override public Branch find(Branch item) { if (item != current) {
+	 * super.find(item); } return current(); }
+	 */
 
-	/*@Override
-	public Branch get(Long key) {
-		clearBranchRelatives();
-		super.get(key);
-		return current();
-	}*/
+	/*
+	 * @Override public Branch get(Long key) { clearBranchRelatives();
+	 * super.get(key); return current(); }
+	 */
 
-	/*public String getSerializedData() {
-		return nextKey;
-	}*/
+	/*
+	 * public String getSerializedData() { return nextKey; }
+	 */
 
-	/*@Override
-	public void setCurrent(Branch item) {
-		if (item != super.current()) {
-			clearBranchRelatives();
-			super.setCurrent(item);
-			buildBranch();
-		}
-	}*/
+	/*
+	 * @Override public void setCurrent(Branch item) { if (item !=
+	 * super.current()) { clearBranchRelatives(); super.setCurrent(item);
+	 * buildBranch(); } }
+	 */
 
 	public BranchController getController() {
 		return controller;

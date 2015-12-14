@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.business;
 
@@ -15,8 +16,10 @@ import org.hypothesis.data.model.Task;
 import org.hypothesis.interfaces.ExchangeVariable;
 
 /**
- * @author Kamil Morong - Hypothesis
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 public class TaskManager extends ListManager<Branch, Task> {

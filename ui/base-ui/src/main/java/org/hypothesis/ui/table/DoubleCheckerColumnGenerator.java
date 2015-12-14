@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.ui.table;
 
 import com.vaadin.data.Item;
@@ -13,7 +17,7 @@ import com.vaadin.ui.themes.ValoTheme;
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
- * Hypothesis
+ *         Hypothesis
  *
  */
 @SuppressWarnings({ "serial", "unchecked" })

@@ -7,8 +7,10 @@ package org.hypothesis.event.interfaces;
 import java.io.Serializable;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
  * 
+ *         Hypothesis
+ *
  */
 public interface HypothesisEvent extends Serializable {
 

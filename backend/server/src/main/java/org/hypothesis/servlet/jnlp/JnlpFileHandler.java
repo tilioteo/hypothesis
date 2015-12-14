@@ -1,13 +1,4 @@
 /**
- * 
- */
-package org.hypothesis.servlet.jnlp;
-
-/**
- * @author morong
- *
- */
-/*
  * @(#)JnlpFileHandler.java	1.12 05/11/17
  * 
  * Copyright (c) 2006 Sun Microsystems, Inc. All Rights Reserved.
@@ -42,6 +33,7 @@ package org.hypothesis.servlet.jnlp;
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
+package org.hypothesis.servlet.jnlp;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -112,8 +104,7 @@ public class JnlpFileHandler {
 	}
 
 	/* Main method to lookup an entry */
-	public synchronized DownloadResponse getJnlpFile(JnlpResource jnlpres,
-			DownloadRequest dreq) throws IOException {
+	public synchronized DownloadResponse getJnlpFile(JnlpResource jnlpres, DownloadRequest dreq) throws IOException {
 		String path = jnlpres.getPath();
 		URL resource = jnlpres.getResource();
 		long lastModified = jnlpres.getLastModified();
@@ -143,8 +134,7 @@ public class JnlpFileHandler {
 
 		StringBuffer jnlpFileTemplate = new StringBuffer();
 		URLConnection conn = resource.openConnection();
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-				conn.getInputStream(), "UTF-8"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 		String line = br.readLine();
 		if (line != null && line.startsWith("TS:")) {
 			timeStamp = parseTimeStamp(line.substring(3));
@@ -159,8 +149,7 @@ public class JnlpFileHandler {
 			line = br.readLine();
 		}
 
-		String jnlpFileContent = specializeJnlpTemplate(dreq.getHttpRequest(),
-				path, jnlpFileTemplate.toString());
+		String jnlpFileContent = specializeJnlpTemplate(dreq.getHttpRequest(), path, jnlpFileTemplate.toString());
 		if (!jnlpFileContent.equals(jnlpFileTemplate.toString())) {
 			timeStamp = new Date().getTime();
 		}
@@ -169,8 +158,8 @@ public class JnlpFileHandler {
 		byte[] byteContent = jnlpFileContent.getBytes("UTF-8");
 
 		// Create entry
-		DownloadResponse resp = DownloadResponse.getFileDownloadResponse(
-				byteContent, mimeType, timeStamp, jnlpres.getReturnVersionId());
+		DownloadResponse resp = DownloadResponse.getFileDownloadResponse(byteContent, mimeType, timeStamp,
+				jnlpres.getReturnVersionId());
 		jnlpFile = new JnlpFileEntry(resp, lastModified);
 		_jnlpFiles.put(reqUrl, jnlpFile);
 
@@ -178,8 +167,7 @@ public class JnlpFileHandler {
 	}
 
 	/* Main method to lookup an entry (NEW for JavaWebStart 1.5+) */
-	public synchronized DownloadResponse getJnlpFileEx(JnlpResource jnlpres,
-			DownloadRequest dreq) throws IOException {
+	public synchronized DownloadResponse getJnlpFileEx(JnlpResource jnlpres, DownloadRequest dreq) throws IOException {
 		String path = jnlpres.getPath();
 		URL resource = jnlpres.getResource();
 		long lastModified = jnlpres.getLastModified();
@@ -212,8 +200,7 @@ public class JnlpFileHandler {
 
 		StringBuffer jnlpFileTemplate = new StringBuffer();
 		URLConnection conn = resource.openConnection();
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-				conn.getInputStream(), "UTF-8"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
 		String line = br.readLine();
 		if (line != null && line.startsWith("TS:")) {
 			timeStamp = parseTimeStamp(line.substring(3));
@@ -228,8 +215,7 @@ public class JnlpFileHandler {
 			line = br.readLine();
 		}
 
-		String jnlpFileContent = specializeJnlpTemplate(dreq.getHttpRequest(),
-				path, jnlpFileTemplate.toString());
+		String jnlpFileContent = specializeJnlpTemplate(dreq.getHttpRequest(), path, jnlpFileTemplate.toString());
 
 		/*
 		 * SQE: We need to add query string back to href in jnlp file. We also
@@ -246,12 +232,10 @@ public class JnlpFileHandler {
 			byte[] cb = jnlpFileContent.getBytes("UTF-8");
 			ByteArrayInputStream bis = new ByteArrayInputStream(cb);
 			try {
-				DocumentBuilderFactory factory = DocumentBuilderFactory
-						.newInstance();
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder builder = factory.newDocumentBuilder();
 				Document document = builder.parse(bis);
-				if (document != null
-						&& document.getNodeType() == Node.DOCUMENT_NODE) {
+				if (document != null && document.getNodeType() == Node.DOCUMENT_NODE) {
 					boolean modified = false;
 					Element root = document.getDocumentElement();
 
@@ -272,16 +256,14 @@ public class JnlpFileHandler {
 							}
 						}
 					}
-					TransformerFactory tFactory = TransformerFactory
-							.newInstance();
+					TransformerFactory tFactory = TransformerFactory.newInstance();
 					Transformer transformer = tFactory.newTransformer();
 					DOMSource source = new DOMSource(document);
 					StringWriter sw = new StringWriter();
 					StreamResult result = new StreamResult(sw);
 					transformer.transform(source, result);
 					jnlpFileContent = sw.toString();
-					System.out.println("Converted jnlpFileContent: "
-							+ jnlpFileContent);
+					System.out.println("Converted jnlpFileContent: " + jnlpFileContent);
 					// Since we modified the file on the fly, we always update
 					// the timestamp value with current time
 					if (modified) {
@@ -297,8 +279,8 @@ public class JnlpFileHandler {
 		byte[] byteContent = jnlpFileContent.getBytes("UTF-8");
 
 		// Create entry
-		DownloadResponse resp = DownloadResponse.getFileDownloadResponse(
-				byteContent, mimeType, timeStamp, jnlpres.getReturnVersionId());
+		DownloadResponse resp = DownloadResponse.getFileDownloadResponse(byteContent, mimeType, timeStamp,
+				jnlpres.getReturnVersionId());
 		jnlpFile = new JnlpFileEntry(resp, lastModified);
 		_jnlpFiles.put(reqUrl, jnlpFile);
 
@@ -317,8 +299,7 @@ public class JnlpFileHandler {
 		url.append(scheme); // http, https
 		url.append("://");
 		url.append(req.getServerName());
-		if ((scheme.equals("http") && port != 80)
-				|| (scheme.equals("https") && port != 443)) {
+		if ((scheme.equals("http") && port != 80) || (scheme.equals("https") && port != 443)) {
 			url.append(':');
 			url.append(req.getServerPort());
 		}
@@ -425,8 +406,7 @@ public class JnlpFileHandler {
 	 * This method performs the following substituations $$name $$codebase
 	 * $$context
 	 */
-	private String specializeJnlpTemplate(HttpServletRequest request,
-			String respath, String jnlpTemplate) {
+	private String specializeJnlpTemplate(HttpServletRequest request, String respath, String jnlpTemplate) {
 		String url = request.getRequestURL().toString();
 
 		String urlprefix = getUrlPrefix(request);
@@ -438,11 +418,9 @@ public class JnlpFileHandler {
 		jnlpTemplate = substitute(jnlpTemplate, "$$name", name);
 		// fix for 5039951: Add $$hostname macro
 		jnlpTemplate = substitute(jnlpTemplate, "$$href", name);
-		jnlpTemplate = substitute(jnlpTemplate, "$$hostname",
-				request.getServerName());
+		jnlpTemplate = substitute(jnlpTemplate, "$$hostname", request.getServerName());
 		jnlpTemplate = substitute(jnlpTemplate, "$$codebase", codebase);
-		jnlpTemplate = substitute(jnlpTemplate, "$$context", urlprefix
-				+ request.getContextPath());
+		jnlpTemplate = substitute(jnlpTemplate, "$$context", urlprefix + request.getContextPath());
 		// fix for 6256326: add $$site macro to sample jnlp servlet
 		jnlpTemplate = substitute(jnlpTemplate, "$$site", urlprefix);
 
@@ -450,11 +428,9 @@ public class JnlpFileHandler {
 		Enumeration<String> enu = request.getParameterNames();
 		while (enu.hasMoreElements()) {
 			String paramName = enu.nextElement();
-			propXmlBuffer.append(this.getPropertyXML(paramName,
-					request.getParameter(paramName)));
+			propXmlBuffer.append(this.getPropertyXML(paramName, request.getParameter(paramName)));
 		}
-		jnlpTemplate = substitute(jnlpTemplate, "$$properties",
-				propXmlBuffer.toString());
+		jnlpTemplate = substitute(jnlpTemplate, "$$properties", propXmlBuffer.toString());
 
 		return jnlpTemplate;
 	}
@@ -465,8 +441,7 @@ public class JnlpFileHandler {
 			int idx = target.indexOf(key, start);
 			if (idx == -1)
 				return target;
-			target = target.substring(0, idx) + value
-					+ target.substring(idx + key.length());
+			target = target.substring(0, idx) + value + target.substring(idx + key.length());
 			start = idx + value.length();
 		} while (true);
 	}

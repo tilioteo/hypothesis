@@ -1,13 +1,16 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.data.service;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
-public class EntityConstants {
+public interface EntityConstants {
 
 	public static final String USER = "user";
 	public static final String GROUP = "group";
