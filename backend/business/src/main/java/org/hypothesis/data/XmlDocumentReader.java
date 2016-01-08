@@ -4,6 +4,8 @@
  */
 package org.hypothesis.data;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import org.dom4j.Attribute;
@@ -37,6 +39,7 @@ public class XmlDocumentReader implements DocumentReader {
 				return document;
 			}
 		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 
 		return null;
@@ -44,9 +47,31 @@ public class XmlDocumentReader implements DocumentReader {
 
 	private String composeName(org.dom4j.Element element) {
 		String namespace = element.getNamespaceURI();
-		if (!namespace.isEmpty() && !namespace.endsWith(DocumentImpl.NAMESPACE_SEPARATOR)) {
-			namespace += DocumentImpl.NAMESPACE_SEPARATOR;
+		
+		if (!namespace.isEmpty()) {
+			try {
+				URL url = new URL(namespace);
+				
+				String[] parts = url.getHost().split("\\.");
+				namespace = "";
+				
+				for (int i = parts.length-1; i >= 0; --i) {
+					namespace += parts[i] + Document.NAMESPACE_SEPARATOR;
+				}
+				
+				parts = url.getPath().split("/");
+				for (int i = 0; i < parts.length; ++i) {
+					if (!parts[i].isEmpty()) {
+						namespace += parts[i] + Document.NAMESPACE_SEPARATOR;
+					}
+				}
+				
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				
+			}
 		}
+		
 		return namespace.isEmpty() ? element.getName() : namespace + element.getName();
 	}
 

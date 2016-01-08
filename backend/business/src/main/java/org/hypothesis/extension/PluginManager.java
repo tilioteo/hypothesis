@@ -166,21 +166,22 @@ public class PluginManager implements Serializable {
 				} else {
 					namespaceElementMap.put(namespace, plugin.getElements());
 				}
-
+				
 				Map<String, Set<ValidParentGroup>> elementParentGroups = plugin.getElementParentGroups();
 				for (String elementName : elementParentGroups.keySet()) {
+					String fullElementName = namespace + org.hypothesis.interfaces.Document.NAMESPACE_SEPARATOR + elementName;
 					Set<ValidParentGroup> parentGroups = elementParentGroups.get(elementName);
 
 					for (ValidParentGroup parentGroup : parentGroups) {
 						switch (parentGroup) {
 						case CONTAINER:
-							ValidationSets.VALID_CONTAINER_CHILDREN.add(elementName);
+							ValidationSets.VALID_CONTAINER_CHILDREN.add(fullElementName);
 							break;
 						case PANEL:
-							ValidationSets.VALID_PANEL_CHILDREN.add(elementName);
+							ValidationSets.VALID_PANEL_CHILDREN.add(fullElementName);
 							break;
 						case VIEWPORT:
-							ValidationSets.VALID_VIEWPORT_CHILDREN.add(elementName);
+							ValidationSets.VALID_VIEWPORT_CHILDREN.add(fullElementName);
 							break;
 						}
 					}
