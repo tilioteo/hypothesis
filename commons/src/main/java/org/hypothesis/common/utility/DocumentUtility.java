@@ -564,6 +564,7 @@ public final class DocumentUtility {
 					Long id = Long.parseLong(idString);
 					return id;
 				} catch (NumberFormatException e) {
+					e.printStackTrace();
 				}
 			}
 		}

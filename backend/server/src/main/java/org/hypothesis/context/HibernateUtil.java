@@ -182,6 +182,7 @@ public class HibernateUtil {
 			}
 			VaadinSession.getCurrent().setAttribute(SessionMap.class, null);
 		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 }

@@ -146,6 +146,7 @@ public class XmlUtility implements Serializable {
 				Document doc = reader.read(file);
 				return doc;
 			} catch (Throwable e) {
+				e.printStackTrace();
 			}
 		}
 
@@ -162,7 +163,7 @@ public class XmlUtility implements Serializable {
 				Document doc = reader.read(stringReader);
 				return doc;
 			} catch (Throwable e) {
-				e.getMessage();
+				e.printStackTrace();
 			}
 		}
 
@@ -179,6 +180,7 @@ public class XmlUtility implements Serializable {
 				writer.close();
 				string = stringWriter.toString();
 			} catch (Throwable e) {
+				e.printStackTrace();
 			}
 		}
 

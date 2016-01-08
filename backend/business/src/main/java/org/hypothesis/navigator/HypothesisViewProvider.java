@@ -78,6 +78,7 @@ public class HypothesisViewProvider implements ViewProvider {
 					((HasMainEventBus) presenter).setMainEventBus(bus);
 				}
 			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
 			}
 		}
 

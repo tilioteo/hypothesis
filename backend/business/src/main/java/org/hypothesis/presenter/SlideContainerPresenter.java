@@ -349,6 +349,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 								try {
 									ui.push();
 								} catch (Throwable e) {
+									e.printStackTrace();
 								}
 							}
 						}

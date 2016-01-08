@@ -46,6 +46,7 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 					return list;
 				}
 			} catch (Throwable e) {
+				e.printStackTrace();
 			}
 		}
 

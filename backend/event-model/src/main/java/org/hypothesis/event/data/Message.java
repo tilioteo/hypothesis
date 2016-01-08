@@ -136,6 +136,7 @@ public class Message implements Serializable {
 					return data.getString(name);
 				}
 			} catch (Throwable e) {
+				e.printStackTrace();
 			}
 		}
 		return null;
@@ -149,6 +150,7 @@ public class Message implements Serializable {
 		try {
 			return (long) json.getNumber(MESSAGE_SENDER);
 		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 
 		return null;
@@ -159,6 +161,7 @@ public class Message implements Serializable {
 			Long id = (long) json.getNumber(MESSAGE_RECEIVER);
 			return id;
 		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 
 		return null;
@@ -177,7 +180,9 @@ public class Message implements Serializable {
 			Date date = dateFormat.parse(string);
 			return date;
 		} catch (ParseException e) {
+			e.printStackTrace();
 		}
+		
 		return null;
 	}
 
@@ -194,6 +199,7 @@ public class Message implements Serializable {
 
 			return stringToDate(str);
 		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 
 		return null;
@@ -228,6 +234,7 @@ public class Message implements Serializable {
 			}
 
 		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 
 		return null;
