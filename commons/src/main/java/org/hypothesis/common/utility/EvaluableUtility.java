@@ -195,10 +195,13 @@ public class EvaluableUtility {
 	private static void createActionOutputValues(Action action, Element element) {
 		List<Element> outputElements = DocumentUtility.findElementsByNameStarting(element,
 				DocumentConstants.OUTPUT_VALUE);
-		for (Element outputElement : outputElements) {
-			IndexedExpression outputValue = createValueExpression(outputElement, DocumentConstants.OUTPUT_VALUE);
-			if (outputValue != null) {
-				action.getOutputs().put(outputValue.getIndex(), outputValue);
+		
+		if (outputElements != null) {
+			for (Element outputElement : outputElements) {
+				IndexedExpression outputValue = createValueExpression(outputElement, DocumentConstants.OUTPUT_VALUE);
+				if (outputValue != null) {
+					action.getOutputs().put(outputValue.getIndex(), outputValue);
+				}
 			}
 		}
 	}
@@ -218,6 +221,7 @@ public class EvaluableUtility {
 				return new IndexedExpression(index, expression);
 			}
 		} catch (NumberFormatException e) {
+			e.printStackTrace();
 		}
 
 		return null;
@@ -271,7 +275,7 @@ public class EvaluableUtility {
 										variable.setRawValue(object);
 									}
 								} catch (Throwable e) {
-
+									e.printStackTrace();
 								}
 							}
 						}

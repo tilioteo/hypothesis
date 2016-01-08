@@ -60,9 +60,9 @@ public class AsynchronousService {
 				SimpleTest test = testService.findById(testId);
 
 				if (test != null) {
-					Branch branch = branchService.findById(branchId);
-					Task task = taskService.findById(taskId);
-					Slide slide = slideService.findById(slideId);
+					Branch branch = branchId != null ? branchService.findById(branchId) : null;
+					Task task = taskId != null ? taskService.findById(taskId) : null;
+					Slide slide = slideId != null ? slideService.findById(slideId) : null;
 
 					// update event
 					event.setBranch(branch);
