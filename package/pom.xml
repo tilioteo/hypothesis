@@ -15,6 +15,8 @@
 
 	<properties>
 		<vaadin.resource.directory>${project.build.directory}/${project.build.finalName}</vaadin.resource.directory>
+		
+		<swt.version>4.3</swt.version>
 	</properties>
 
 	<dependencies>
@@ -37,9 +39,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!--dependency> <groupId>${project.groupId}</groupId> <artifactId>hypothesis-widgetset</artifactId> 
-			<version>${project.version}</version> <classifier>sources</classifier> <scope>provided</scope> 
-			</dependency -->
 	</dependencies>
 
 	<build>
@@ -156,6 +155,10 @@
 							<directory>src/main/webapp</directory>
 							<filtering>true</filtering>
 						</resource>
+						<resource>
+							<directory>lib</directory>
+							<targetPath>WEB-INF/lib</targetPath>
+						</resource>
 					</webResources>
 					<overlays>
 						<overlay>
@@ -167,11 +170,11 @@
 								<!--exclude>WEB-INF/lib/hypothesis-widgetset-*.jar</exclude -->
 								<!-- Exclude the Sass compiler and its dependencies. -->
 								<!-- The production WAR includes a precompiled theme. -->
-								<exclude>WEB-INF/lib/vaadin-sass-compiler-*.jar</exclude>
+								<!--exclude>WEB-INF/lib/vaadin-sass-compiler-*.jar</exclude>
 								<exclude>WEB-INF/lib/sac-*.jar</exclude>
-								<exclude>WEB-INF/lib/flute-*.jar</exclude>
+								<exclude>WEB-INF/lib/flute-*.jar</exclude-->
 								<!-- Exclude Jetty dependencies. -->
-								<exclude>WEB-INF/lib/jetty-*.jar</exclude>
+								<!--exclude>WEB-INF/lib/jetty-*.jar</exclude-->
 							</excludes>
 						</overlay>
 					</overlays>
@@ -179,7 +182,11 @@
 					<packagingExcludes>
 						WEB-INF/classes,
 						VAADIN/gwt-unitCache/**,
-						VAADIN/widgetsets/WEB-INF/**
+						VAADIN/widgetsets/WEB-INF/**,
+						WEB-INF/lib/vaadin-sass-compiler-*.jar,
+						WEB-INF/lib/sac-*.jar,
+						WEB-INF/lib/flute-*.jar,
+						WEB-INF/lib/jetty-*.jar
 					</packagingExcludes>
 					<archive>
 						<manifestEntries>
@@ -205,14 +212,14 @@
 
 			<!-- The Jetty plugin allows us to easily test the production build by 
 				running jetty:run on the command line. -->
-			<plugin>
+			<!--plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jetty.plugin.version}</version>
 				<configuration>
 					<baseResource>${vaadin.resource.directory}</baseResource>
 				</configuration>
-			</plugin>
+			</plugin-->
 		</plugins>
 		<!--/build -->
 
