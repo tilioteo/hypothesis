@@ -2,13 +2,9 @@
 <module>
 	<inherits name="com.vaadin.DefaultWidgetSet" />
 
-    <inherits name="org.vaadin.tltv.vprocjs.ProcessingJsWidgetset" />
-
     <inherits name="org.vaadin.jouni.animator.AnimatorWidgetset" />
 
     <inherits name="org.vaadin.special.SpecialWidgetset" />
-
-    <inherits name="com.tilioteo.hypothesis.plugin.processing.WidgetSet" />
 
     <inherits name="org.hypothesis.slide.WidgetSet" />
 
@@ -16,17 +12,4 @@
 
     <inherits name="org.vaadin.button.ButtonWidgetset" />
 
-    <inherits name="com.gwtent.reflection.Reflection" />
-
-    <inherits name="com.tilioteo.hypothesis.plugin.map.WidgetSet" />
-
-    <inherits name="org.vaadin.maps.WidgetSet" />
-
-    <inherits name="com.gwtent.reflection.Reflection" />
-
-    <inherits name="com.gwtent.reflection.Reflection" />
-
-    <inherits name="com.gwtent.reflection.Reflection" />
-
-    <inherits name="com.gwtent.reflection.Reflection" />
 </module>
