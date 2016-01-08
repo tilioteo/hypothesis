@@ -113,7 +113,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			if (DocumentUtility.isValidSlideDocument(document)) {
 				return buildSlideContainer(document);
 			}
-		} catch (Throwable t) {
+		} catch (Throwable e) {
 			log.error("buildFromString()");
 		}
 
@@ -1113,8 +1113,9 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private ComponentWrapper createPluginComponent(Element element, SlidePresenter presenter) {
-		String name = parseElementName(element.getName());
-		String namespace = parseElementNamespace(element.getName());
+		String name = element.getShortName();
+		String namespace = element.getNamespace();
+		
 		if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(namespace)) {
 			// find registered plugin
 			SlideComponentPlugin componentPlugin = PluginManager.get().getComponentPlugin(namespace, name);
@@ -1125,14 +1126,6 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		}
 
 		return null;
-	}
-
-	private String parseElementName(String name) {
-		return name.substring(name.lastIndexOf(Document.NAMESPACE_SEPARATOR) + 1);
-	}
-
-	private String parseElementNamespace(String name) {
-		return name.substring(0, name.lastIndexOf(Document.NAMESPACE_SEPARATOR));
 	}
 
 }
