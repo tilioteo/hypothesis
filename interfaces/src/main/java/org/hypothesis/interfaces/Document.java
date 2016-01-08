@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 public interface Document extends Serializable {
 
-	public static String NAMESPACE_SEPARATOR = "/";
+	public static String NAMESPACE_SEPARATOR = ".";
 
 	public Element root();
 

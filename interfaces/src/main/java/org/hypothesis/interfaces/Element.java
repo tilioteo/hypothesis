@@ -17,6 +17,10 @@ import java.util.Map;
 public interface Element extends Serializable, Iterable<Element> {
 
 	public String getName();
+	
+	public String getNamespace();
+	
+	public String getShortName();
 
 	public void setName(String name);
 
@@ -65,5 +69,7 @@ public interface Element extends Serializable, Iterable<Element> {
 	public Element selectElement(String name);
 
 	public List<Element> selectElements(String name);
+	
+	public String toString(boolean detailed, int ident);
 
 }

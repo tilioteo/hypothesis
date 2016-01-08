@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 
 /**
@@ -24,6 +25,9 @@ import org.hypothesis.interfaces.Element;
 public class ElementImpl implements Element {
 
 	private String name;
+	private String namespace;
+	private String shortName;
+	
 	private String text = null;
 
 	private ElementImpl parent = null;
@@ -32,7 +36,7 @@ public class ElementImpl implements Element {
 	private HashMap<String, String> attributes = new HashMap<>();
 
 	protected ElementImpl(String name, String text) {
-		this.name = name;
+		setName(name);
 		this.text = text;
 	}
 
@@ -41,7 +45,7 @@ public class ElementImpl implements Element {
 	}
 
 	protected ElementImpl(Element element) {
-		this.name = element.getName();
+		setName(element.getName());
 		this.text = element.getText();
 
 		for (Entry<String, String> entry : element.attributes().entrySet()) {
@@ -57,10 +61,27 @@ public class ElementImpl implements Element {
 	public String getName() {
 		return name;
 	}
+	
+	@Override
+	public String getNamespace() {
+		return namespace;
+	}
+	
+	@Override
+	public String getShortName() {
+		return shortName;
+	}
 
 	@Override
 	public void setName(String name) {
 		this.name = name;
+		
+		if (name != null) {
+			int lastIndex = name.lastIndexOf(Document.NAMESPACE_SEPARATOR);
+			
+			this.namespace = lastIndex > 0 ? name.substring(0, lastIndex) : "";
+			this.shortName = lastIndex > 0 ? name.substring(lastIndex + 1) : name;
+		}
 	}
 
 	@Override
@@ -260,7 +281,19 @@ public class ElementImpl implements Element {
 
 	@Override
 	public String toString() {
+		return toString(false);
+	}
+
+	public String toString(boolean detailed) {
+		return toString(detailed, 0);
+	}
+
+	public String toString(boolean detailed, int ident) {
 		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < ident ; ++i) {
+			builder.append("\t");
+		}
+		
 		builder.append("<" + name + ":" + text + "(");
 
 		if (!attributes.isEmpty()) {
@@ -268,16 +301,31 @@ public class ElementImpl implements Element {
 			for (Entry<String, String> entry : attributes.entrySet()) {
 				str += entry.toString() + ",";
 			}
-			builder.append(str.substring(0, str.length() - 2));
+			builder.append(str.substring(0, str.length() - 1));
 		}
 		builder.append(")[");
 
 		if (!children.isEmpty()) {
 			String str = "";
-			for (Element element : children) {
-				str += element.getName() + ",";
+			
+			if (!detailed) {
+				for (Element element : children) {
+					str += element.getName() + ",";
+				}
+				builder.append(str.substring(0, str.length() - 1));
+			} else {
+				builder.append("\n");
+				
+				for (Element element : children) {
+					builder.append(element.toString(detailed, ident + 1));
+					builder.append("\n");
+				}
 			}
-			builder.append(str.substring(0, str.length() - 1));
+			
+			for (int i = 0; i < ident ; ++i) {
+				builder.append("\t");
+			}
+			
 		}
 		builder.append("]>");
 

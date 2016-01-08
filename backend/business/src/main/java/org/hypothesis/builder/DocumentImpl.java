@@ -38,7 +38,7 @@ public class DocumentImpl implements Document {
 	@Override
 	public String toString() {
 		if (root != null) {
-			return "root=" + root.toString();
+			return "root=" + root.toString(true, 0);
 		} else {
 			return "root=(null)";
 		}
