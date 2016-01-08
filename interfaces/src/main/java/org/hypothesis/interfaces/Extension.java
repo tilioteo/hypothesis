@@ -12,6 +12,6 @@ import java.io.Serializable;
  *         Hypothesis
  *
  */
-public interface SlideObject extends Serializable {
+public interface Extension extends Serializable {
 
 }
