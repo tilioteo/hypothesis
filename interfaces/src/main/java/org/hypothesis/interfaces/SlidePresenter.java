@@ -6,6 +6,7 @@ package org.hypothesis.interfaces;
 
 import java.util.Map;
 
+import com.vaadin.server.Extension;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
@@ -44,7 +45,9 @@ public interface SlidePresenter extends Evaluator {
 
 	public void addViewportShowListener(ViewportEventListener viewportEventListener);
 
-	public void addShortcutKey(Component shortcutKey);
+	//public void addShortcutKey(Component shortcutKey);
+	
+	public void addKeyAction(Extension keyAction);
 
 	public void addMessageListener(String uid, MessageEventListener messageEventListener);
 

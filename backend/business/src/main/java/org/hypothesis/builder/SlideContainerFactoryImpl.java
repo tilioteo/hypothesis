@@ -63,11 +63,11 @@ import org.vaadin.special.data.NumberRangeValidator;
 import org.vaadin.special.data.NumberValidator;
 import org.vaadin.special.data.SelectPanelEmptyValidator;
 import org.vaadin.special.event.MouseEvents;
+import org.vaadin.special.ui.KeyAction;
+import org.vaadin.special.ui.KeyAction.KeyActionEvent;
+import org.vaadin.special.ui.KeyAction.KeyActionListener;
 import org.vaadin.special.ui.Media;
 import org.vaadin.special.ui.SelectButton;
-import org.vaadin.special.ui.ShortcutKey;
-import org.vaadin.special.ui.ShortcutKey.KeyPressEvent;
-import org.vaadin.special.ui.ShortcutKey.KeyPressListener;
 
 import com.tilioteo.common.Strings;
 import com.tilioteo.common.collections.StringMap;
@@ -211,8 +211,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addTimerHandlers(Timer component, Element element, SlideContainerPresenter presenter) {
 		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
 			@Override
-			public void setComponentHandler(Component component, Element element, String name, String actionId,
-					final Action action, final SlidePresenter presenter) {
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
 				final Timer timer = (Timer) component;
 
 				if (DocumentConstants.START.equals(name)) {
@@ -317,8 +317,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addWindowHandlers(Window component, Element element, SlideContainerPresenter presenter) {
 		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
 			@Override
-			public void setComponentHandler(Component component, Element element, String name, String actionId,
-					final Action action, final SlidePresenter presenter) {
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
 				final Window window = (Window) component;
 
 				if (DocumentConstants.INIT.equals(name)) {
@@ -368,8 +368,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addViewportHandlers(SlideContainer component, Element element, SlideContainerPresenter presenter) {
 		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
 			@Override
-			public void setComponentHandler(Component component, Element element, String name, String actionId,
-					final Action action, final SlidePresenter presenter) {
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
 				final SlideContainer container = (SlideContainer) component;
 
 				if (DocumentConstants.INIT.equals(name)) {
@@ -389,26 +389,52 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						}
 					});
 				} else if (DocumentConstants.SHORTCUT.equals(name)) {
-					String key = DocumentUtility.getKey(element);
+					String key = DocumentUtility.getKey(handler);
 					ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);
 					if (shortcutKeys != null) {
-						ShortcutKey shortcutKey = new ShortcutKey(shortcutKeys.getKeyCode(),
-								shortcutKeys.getModifiers());
-						final String shortcut = shortcutKey.toString();
-						shortcutKey.addKeyPressListener(new KeyPressListener() {
+						KeyAction keyAction = new KeyAction(shortcutKeys.getKeyCode(), shortcutKeys.getModifiers());
+
+						// ShortcutKey shortcutKey = new
+						// ShortcutKey(shortcutKeys.getKeyCode(),
+						// shortcutKeys.getModifiers());
+
+						final String shortcut = keyAction.toString();
+
+						keyAction.addKeypressListener(new KeyActionListener() {
 							@Override
-							public void keyPress(final KeyPressEvent event) {
+							public void keyPressed(final KeyActionEvent keyPressEvent) {
 								presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.ShortcutKey,
 										action, new ComponentEventCallback() {
 									@Override
 									public void initEvent(ComponentEvent componentEvent) {
+										componentEvent.setTimestamp(keyPressEvent.getServerDatetime());
+										componentEvent.setClientTimestamp(keyPressEvent.getClientDatetime());
 										componentEvent.setProperty("shortcutKey", shortcut, "shortcut@key");
 									}
 								});
 							}
 						});
 
-						presenter.addShortcutKey(shortcutKey);
+						// shortcutKey.addKeyPressListener(new
+						// KeyPressListener() {
+						// @Override
+						// public void keyPress(final KeyPressEvent event) {
+						// presenter.handleEvent(container,
+						// DocumentConstants.SLIDE,
+						// ProcessEventTypes.ShortcutKey,
+						// action, new ComponentEventCallback() {
+						// @Override
+						// public void initEvent(ComponentEvent componentEvent)
+						// {
+						// componentEvent.setProperty("shortcutKey", shortcut,
+						// "shortcut@key");
+						// }
+						// });
+						// }
+						// });
+
+						// presenter.addShortcutKey(shortcutKey);
+						presenter.addKeyAction(keyAction);
 					}
 				} else if (DocumentConstants.MESSAGE.equals(name)) {
 					String uid = DocumentUtility.getUid(element);
@@ -636,8 +662,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addImageHandlers(Image component, Element element, SlidePresenter presenter) {
 		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
 			@Override
-			public void setComponentHandler(Component component, Element element, String name, String actionId,
-					final Action action, final SlidePresenter presenter) {
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
 				final Image image = (Image) component;
 
 				if (DocumentConstants.CLICK.equals(name)) {
@@ -692,8 +718,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addVideoHandlers(Video component, Element element, SlidePresenter presenter) {
 		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
 			@Override
-			public void setComponentHandler(Component component, Element element, String name, String actionId,
-					final Action action, final SlidePresenter presenter) {
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
 				final Video video = (Video) component;
 
 				if (DocumentConstants.CLICK.equals(name)) {
@@ -768,8 +794,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addAudioHandlers(Audio component, Element element, SlidePresenter presenter) {
 		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
 			@Override
-			public void setComponentHandler(Component component, Element element, String name, String actionId,
-					final Action action, final SlidePresenter presenter) {
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
 				final Audio audio = (Audio) component;
 
 				if (DocumentConstants.LOAD.equals(name)) {
@@ -830,8 +856,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addButtonHandlers(Button component, Element element, SlidePresenter presenter) {
 		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
 			@Override
-			public void setComponentHandler(Component component, Element element, String name, String actionId,
-					final Action action, final SlidePresenter presenter) {
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
 				final Button button = (Button) component;
 
 				if (DocumentConstants.CLICK.equals(name)) {
@@ -860,8 +886,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addButtonPanelHandlers(ButtonPanel component, Element element, SlidePresenter presenter) {
 		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
 			@Override
-			public void setComponentHandler(Component component, Element element, String name, String actionId,
-					final Action action, final SlidePresenter presenter) {
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
 				final ButtonPanel buttonPanel = (ButtonPanel) component;
 
 				if (DocumentConstants.CLICK.equals(name)) {
@@ -902,8 +928,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addSelectPanelHandlers(final SelectPanel component, Element element, final SlidePresenter presenter) {
 		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
 			@Override
-			public void setComponentHandler(Component component, Element element, String name, String actionId,
-					final Action action, final SlidePresenter presenter) {
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
 				final SelectPanel selectPanel = (SelectPanel) component;
 
 				if (DocumentConstants.CLICK.equals(name)) {
@@ -1115,7 +1141,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private ComponentWrapper createPluginComponent(Element element, SlidePresenter presenter) {
 		String name = element.getShortName();
 		String namespace = element.getNamespace();
-		
+
 		if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(namespace)) {
 			// find registered plugin
 			SlideComponentPlugin componentPlugin = PluginManager.get().getComponentPlugin(namespace, name);

@@ -39,11 +39,13 @@ import org.hypothesis.servlet.BroadcastService.BroadcastListener;
 import org.hypothesis.slide.ui.Window;
 import org.hypothesis.ui.HypothesisUI;
 import org.hypothesis.ui.SlideContainer;
-import org.vaadin.special.ui.ShortcutKey;
+import org.vaadin.special.ui.KeyAction;
 import org.vaadin.special.ui.Timer;
 
+import com.vaadin.server.Extension;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.communication.PushMode;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.UI;
@@ -75,7 +77,8 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	private HashMap<String, Variable<?>> variables = new HashMap<>();
 	private HashMap<String, Action> actions = new HashMap<>();
 
-	private HashSet<ShortcutKey> shortcuts = new HashSet<>();
+	// private HashSet<ShortcutKey> shortcuts = new HashSet<>();
+	private HashSet<KeyAction> keyActions = new HashSet<>();
 
 	private HashMap<Integer, ExchangeVariable> inputExpressions = new HashMap<>();
 	private HashMap<Integer, ExchangeVariable> outputExpressions = new HashMap<>();
@@ -104,7 +107,8 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		variables.clear();
 		actions.clear();
 
-		shortcuts.clear();
+		// shortcuts.clear();
+		keyActions.clear();
 
 		inputExpressions.clear();
 		outputExpressions.clear();
@@ -113,16 +117,19 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	@Override
 	public void attach(Component component, HasComponents parent, UI ui, VaadinSession session) {
 		if (component instanceof SlideContainer) {
+			viewportEventManager.setEnabled(true);
+			messageEventManager.setEnabled(true);
+
 			bus = ProcessEventBus.get(ui);
+
+			fireEvent(new ViewportEvent.Init(container));
 
 			if (ui instanceof HypothesisUI) {
 				this.ui = (HypothesisUI) ui;
 
 				addTimers(this.ui);
-				addShortcutKeys(this.ui);
-
-				viewportEventManager.setEnabled(true);
-				messageEventManager.setEnabled(true);
+				addKeyActions(ui);
+				// addShortcutKeys(this.ui);
 
 				BroadcastService.register(this);
 			}
@@ -136,9 +143,14 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 	}
 
-	private void addShortcutKeys(HypothesisUI hui) {
-		for (ShortcutKey shortcutKey : shortcuts) {
-			hui.addShortcutKey(shortcutKey);
+	/*
+	 * private void addShortcutKeys(HypothesisUI hui) { for (ShortcutKey
+	 * shortcutKey : shortcuts) { hui.addShortcutKey(shortcutKey); } }
+	 */
+
+	private void addKeyActions(AbstractComponent component) {
+		for (KeyAction keyAction : keyActions) {
+			keyAction.extend(component);
 		}
 	}
 
@@ -155,7 +167,14 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		if (ui instanceof HypothesisUI) {
 			HypothesisUI hui = (HypothesisUI) ui;
 			hui.removeAllTimers();
-			hui.removeAllShortcutKeys();
+			// hui.removeAllShortcutKeys();
+			removeKeyActions();
+		}
+	}
+
+	private void removeKeyActions() {
+		for (KeyAction keyAction : keyActions) {
+			keyAction.remove();
 		}
 	}
 
@@ -291,10 +310,16 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		viewportEventManager.addListener(ViewportEvent.Show.class, listener);
 	}
 
+	/*
+	 * @Override public void addShortcutKey(Component shortcutKey) { if
+	 * (shortcutKey != null && shortcutKey instanceof ShortcutKey) {
+	 * shortcuts.add((ShortcutKey) shortcutKey); } }
+	 */
+
 	@Override
-	public void addShortcutKey(Component shortcutKey) {
-		if (shortcutKey != null && shortcutKey instanceof ShortcutKey) {
-			shortcuts.add((ShortcutKey) shortcutKey);
+	public void addKeyAction(Extension keyAction) {
+		if (keyAction != null && keyAction instanceof KeyAction) {
+			keyActions.add((KeyAction) keyAction);
 		}
 	}
 
@@ -363,8 +388,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	public void buildDone() {
 		addNavigatorVariable();
 		addDocumentVariable();
-
-		fireEvent(new ViewportEvent.Init(container));
 	}
 
 	private void addNavigatorVariable() {

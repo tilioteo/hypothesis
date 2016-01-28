@@ -634,7 +634,7 @@ public final class DocumentUtility {
 				}
 
 				if (!Strings.isNullOrEmpty(actionId) && !Strings.isNullOrEmpty(name)) {
-					callback.setComponentHandler(component, element, name, actionId, anonymousAction, presenter);
+					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction, presenter);
 				}
 			}
 		}
