@@ -38,7 +38,7 @@ public class ComponentDataPojoGenerator {
 		try {
 			cc = pool.get(className);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			e.getMessage();
 		}
 
 		if (null == cc) {
