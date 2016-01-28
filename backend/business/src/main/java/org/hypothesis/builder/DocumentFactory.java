@@ -99,6 +99,8 @@ public class DocumentFactory {
 		destination.setText(source.getText());
 
 		List<Element> destSubElements = new ArrayList<Element>();
+		
+		boolean destSubEmpty = destSubElements.isEmpty();
 
 		List<Element> sourceSubElements = source.children();
 		for (Element sourceSubElement : sourceSubElements) {
@@ -106,16 +108,19 @@ public class DocumentFactory {
 			String id = sourceSubElement.getAttribute(DocumentConstants.ID);
 
 			Element destinationSubElement = null;
-			if (!Strings.isNullOrEmpty(id)) {
-				HashMap<String, String> attributes = new HashMap<>();
-				attributes.put(DocumentConstants.ID, id);
-				destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes, false);
-			} else {
-				destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, null, false);
-				// if previously created element found then skip to avoid
-				// rewrite
-				if (destSubElements.contains(destinationSubElement)) {
-					destinationSubElement = null;
+			
+			if (!destSubEmpty) {
+				if (!Strings.isNullOrEmpty(id)) {
+					HashMap<String, String> attributes = new HashMap<>();
+					attributes.put(DocumentConstants.ID, id);
+					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes, false);
+				} else {
+					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, null, false);
+					// if previously created element found then skip to avoid
+					// rewrite
+					if (destSubElements.contains(destinationSubElement)) {
+						destinationSubElement = null;
+					}
 				}
 			}
 
