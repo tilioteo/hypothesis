@@ -84,10 +84,14 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 				try {
 					if (field.get(data) != null) {
 						String value = field.get(data).toString();
-						if (Double.class.isAssignableFrom(field.getType())
+						/*if (Double.class.isAssignableFrom(field.getType())
 								|| Float.class.isAssignableFrom(field.getType())) {
-							value = String.format(Locale.ROOT, "%g", field.getDouble(data));
-						}
+							
+							try {
+								Double doubleValue = Double.valueOf(value);
+								value = String.format(Locale.ROOT, "%g", doubleValue);
+							} catch(NumberFormatException e) {}
+						}*/
 
 						String name;
 						if (structured != null) {
