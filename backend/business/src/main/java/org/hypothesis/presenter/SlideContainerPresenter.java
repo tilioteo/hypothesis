@@ -127,6 +127,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 			if (ui instanceof HypothesisUI) {
 				this.ui = (HypothesisUI) ui;
 
+				addWindows(ui);
 				addTimers(this.ui);
 				addKeyActions(ui);
 				// addShortcutKeys(this.ui);
@@ -134,6 +135,12 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 				BroadcastService.register(this);
 			}
 			fireEvent(new ViewportEvent.Show(component));
+		}
+	}
+
+	private void addWindows(UI ui) {
+		for (Window window : windows.values()) {
+			window.setFutureUI(ui);
 		}
 	}
 
@@ -169,6 +176,13 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 			hui.removeAllTimers();
 			// hui.removeAllShortcutKeys();
 			removeKeyActions();
+			removeWindows();
+		}
+	}
+
+	private void removeWindows() {
+		for (Window window : windows.values()) {
+			window.setFutureUI(null);
 		}
 	}
 
@@ -259,6 +273,10 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	public void setWindow(String id, Window window) {
 		if (window != null) {
 			windows.put(id, window);
+			
+			if (ui != null) {
+				window.setFutureUI(ui);
+			}
 		}
 	}
 
