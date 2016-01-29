@@ -973,7 +973,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 							componentEvent.setProperty("button", event.getSource());
 							componentEvent.setProperty("selectedIndex",
-									component.getChildIndex(event.getSelectButton()) + 1, "selected/index");
+									component.getChildIndex(event.getSelectButton()) + 1, "selected@index");
 						}
 					});
 				}
