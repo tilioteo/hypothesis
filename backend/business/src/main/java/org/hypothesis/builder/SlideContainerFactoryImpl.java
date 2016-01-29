@@ -467,55 +467,56 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		if (element != null) {
 			String id = DocumentUtility.getId(element);
 
-			if (!Strings.isNullOrEmpty(id)) {
-				String name = element.getName();
+			String name = element.getName();
 
-				Component component = null;
+			Component component = null;
 
-				StringMap properties = DocumentUtility.getPropertyValueMap(element);
-				AlignmentWrapper alignmentWrapper = new AlignmentWrapperImpl();
+			StringMap properties = DocumentUtility.getPropertyValueMap(element);
+			AlignmentWrapper alignmentWrapper = new AlignmentWrapperImpl();
 
-				if (name.equals(DocumentConstants.VERTICAL_LAYOUT))
-					component = createVerticalLayout(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.HORIZONTAL_LAYOUT))
-					component = createHorizontalLayout(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.FORM_LAYOUT))
-					component = createFormLayout(element, properties, alignmentWrapper, presenter);
+			if (name.equals(DocumentConstants.VERTICAL_LAYOUT))
+				component = createVerticalLayout(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.HORIZONTAL_LAYOUT))
+				component = createHorizontalLayout(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.FORM_LAYOUT))
+				component = createFormLayout(element, properties, alignmentWrapper, presenter);
 
-				else if (name.equals(DocumentConstants.PANEL))
-					component = createPanel(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.IMAGE))
-					component = createImage(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.VIDEO))
-					component = createVideo(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.AUDIO))
-					component = createAudio(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.BUTTON))
-					component = createButton(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.BUTTON_PANEL))
-					component = createButtonPanel(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.PANEL))
+				component = createPanel(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.IMAGE))
+				component = createImage(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.VIDEO))
+				component = createVideo(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.AUDIO))
+				component = createAudio(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.BUTTON))
+				component = createButton(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.BUTTON_PANEL))
+				component = createButtonPanel(element, properties, alignmentWrapper, presenter);
 
-				else if (name.equals(DocumentConstants.SELECT_PANEL))
-					component = createSelectPanel(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.TEXT_FIELD))
-					component = createTextField(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.TEXT_AREA))
-					component = createTextArea(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.DATE_FIELD))
-					component = createDateField(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.COMBOBOX))
-					component = createComboBox(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.TIMER_LABEL))
-					component = createTimerLabel(element, properties, alignmentWrapper, presenter);
-				else if (name.equals(DocumentConstants.LABEL))
-					component = createLabel(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.SELECT_PANEL))
+				component = createSelectPanel(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.TEXT_FIELD))
+				component = createTextField(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.TEXT_AREA))
+				component = createTextArea(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.DATE_FIELD))
+				component = createDateField(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.COMBOBOX))
+				component = createComboBox(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.TIMER_LABEL))
+				component = createTimerLabel(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.LABEL))
+				component = createLabel(element, properties, alignmentWrapper, presenter);
 
-				if (component != null) {
+			if (component != null) {
+				if (id != null) {
 					presenter.setComponent(id, component);
-					return new ComponentWrapperImpl(component, alignmentWrapper.getAlignment());
-				} else {
-					return createPluginComponent(element, presenter);
 				}
+				
+				return new ComponentWrapperImpl(component, alignmentWrapper.getAlignment());
+			} else {
+				return createPluginComponent(element, presenter);
 			}
 		}
 
