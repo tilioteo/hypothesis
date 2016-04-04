@@ -5,6 +5,7 @@
 package org.hypothesis.navigator;
 
 import org.hypothesis.eventbus.MainEventBus;
+import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.interfaces.ViewPresenter;
 import org.hypothesis.presenter.HasMainEventBus;
 
@@ -76,6 +77,10 @@ public class HypothesisViewProvider implements ViewProvider {
 
 				if (presenter instanceof HasMainEventBus) {
 					((HasMainEventBus) presenter).setMainEventBus(bus);
+				}
+				
+				if (presenter instanceof ManagementPresenter) {
+					((ManagementPresenter) presenter).init();
 				}
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();

@@ -10,6 +10,7 @@ import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
+import org.hypothesis.server.Messages;
 
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
@@ -80,10 +81,10 @@ public class UserSettingsWindowPresenter implements Serializable {
 	private FormLayout buildForm() {
 		FormLayout form = new FormLayout();
 
-		usernameField = new TextField("Username");
+		usernameField = new TextField(Messages.getString("Caption.Field.Username"));
 		form.addComponent(usernameField);
 
-		passwordField = new TextField("Password");
+		passwordField = new TextField(Messages.getString("Caption.Field.Password"));
 		form.addComponent(passwordField);
 
 		return form;
@@ -94,7 +95,7 @@ public class UserSettingsWindowPresenter implements Serializable {
 		footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
 		footer.setWidth(100.0f, Unit.PERCENTAGE);
 
-		Button ok = new Button("OK");
+		Button ok = new Button(Messages.getString("Caption.Button.OK"));
 		ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		ok.addClickListener(new ClickListener() {
 			@Override
@@ -104,7 +105,7 @@ public class UserSettingsWindowPresenter implements Serializable {
 					User user = fieldGroup.getItemDataSource().getBean();
 					userService.add(user);
 
-					Notification success = new Notification("Profile updated successfully");
+					Notification success = new Notification(Messages.getString("Message.Info.ProfileUpdated"));
 					success.setDelayMsec(2000);
 					success.setPosition(Position.BOTTOM_CENTER);
 					success.show(Page.getCurrent());
@@ -112,7 +113,7 @@ public class UserSettingsWindowPresenter implements Serializable {
 					bus.post(new MainUIEvent.ProfileUpdatedEvent());
 					window.close();
 				} catch (CommitException e) {
-					Notification.show("Error while updating profile", Type.ERROR_MESSAGE);
+					Notification.show(Messages.getString("Message.Error.ProfileUpdate"), Type.ERROR_MESSAGE);
 				}
 
 			}
@@ -121,7 +122,7 @@ public class UserSettingsWindowPresenter implements Serializable {
 		footer.addComponent(ok);
 		footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
 
-		Button cancel = new Button("Storno");
+		Button cancel = new Button(Messages.getString("Caption.Button.Cancel"));
 		cancel.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
@@ -137,7 +138,7 @@ public class UserSettingsWindowPresenter implements Serializable {
 	private void createWindow() {
 		window = new Window();
 		// window.addCloseListener(this);
-		window.setCloseShortcut(KeyCode.ESCAPE, null);
+		window.addCloseShortcut(KeyCode.ESCAPE, null);
 		window.setResizable(false);
 		window.setClosable(false);
 		// window.setWidth(50, Unit.PERCENTAGE);

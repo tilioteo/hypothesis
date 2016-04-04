@@ -60,8 +60,9 @@ public class GroupService implements Serializable {
 		log.debug("addGroup");
 		try {
 			groupDao.beginTransaction();
-			group = mergeInit(group);
+			//group = mergeInit(group);
 			// groupDao.clear();
+			group = groupDao.merge(group);
 			group = groupDao.makePersistent(group);
 			groupDao.commit();
 			return group;

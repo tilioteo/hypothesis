@@ -69,7 +69,7 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 	protected void createWindow() {
 		window = new Window();
 		window.addCloseListener(this);
-		window.setCloseShortcut(KeyCode.ESCAPE, null);
+		window.addCloseShortcut(KeyCode.ESCAPE, null);
 		window.setResizable(false);
 		window.setClosable(false);
 		window.setWidth(50, Unit.PERCENTAGE);

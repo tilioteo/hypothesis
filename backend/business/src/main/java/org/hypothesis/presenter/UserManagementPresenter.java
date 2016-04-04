@@ -35,6 +35,7 @@ import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
@@ -84,8 +85,23 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		permissionService = PermissionService.newInstance();
 		userService = UserService.newInstance();
 		groupService = GroupService.newInstance();
+	}
 
+	@Override
+	public void init() {
 		userWindowPresenter = new UserWindowPresenter(bus);
+	}
+
+	@Override
+	public void setMainEventBus(MainEventBus bus) {
+		if (this.bus != null) {
+			this.bus.unregister(this);
+		}
+		
+		super.setMainEventBus(bus);
+		if (this.bus != null) {
+			this.bus.register(this);
+		}
 	}
 
 	@Override

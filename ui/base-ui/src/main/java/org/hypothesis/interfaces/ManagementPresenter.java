@@ -18,5 +18,7 @@ public interface ManagementPresenter extends ViewPresenter {
 	public Component buildHeader();
 
 	public Table buildTable();
+	
+	public void init();
 
 }

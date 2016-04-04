@@ -60,7 +60,8 @@ public class UserService implements Serializable {
 		log.debug("addUser");
 		try {
 			userDao.beginTransaction();
-			user = mergeInit(user);
+			//user = mergeInit(user);
+			user = userDao.merge(user);
 			user = userDao.makePersistent(user);
 			userDao.commit();
 			return user;
