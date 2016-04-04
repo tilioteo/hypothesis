@@ -181,11 +181,14 @@ public class ProcessManager implements Serializable {
 		currentTest = event.getTest();
 		saveRunningEvent(event);
 
-		currentBranch = persistenceService.merge(branchManager.find(currentTest.getLastBranch()));
+		persistenceService.merge(branchManager.find(currentTest.getLastBranch()));
+		currentBranch = branchManager.current();
 
 		if (currentBranch != null) {
 
-			currentTask = persistenceService.merge(taskManager.find(currentTest.getLastTask()));
+			taskManager.setListFromParent(currentBranch);
+			persistenceService.merge(taskManager.find(currentTest.getLastTask()));
+			currentTask = taskManager.current();
 
 			if (currentTask != null) {
 
@@ -263,12 +266,7 @@ public class ProcessManager implements Serializable {
 		saveRunningEvent(event);
 
 		BranchMap branchMap = branchService.getBranchMap(currentPack, currentBranch);
-		String key = branchManager.getNextBranchKey();
-
-		Branch nextBranch = null;
-		if (branchMap != null && key != null) {
-			nextBranch = branchMap.get(key);
-		}
+		Branch nextBranch = branchManager.getNextBranch(branchMap);
 
 		if (nextBranch != null) {
 			currentBranch = persistenceService.merge(nextBranch);
@@ -349,6 +347,7 @@ public class ProcessManager implements Serializable {
 
 			setSlideManagerParent(currentTask);
 			currentSlide = slideManager.current();
+			
 			if (currentSlide != null) {
 				slideProcessing = true;
 				renderSlide();

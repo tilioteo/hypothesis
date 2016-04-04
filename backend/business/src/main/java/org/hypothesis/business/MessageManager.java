@@ -42,10 +42,10 @@ public class MessageManager implements Serializable {
 		if (entity != null) {
 			Document document = reader.readString(entity.getData());
 			if (DocumentUtility.isValidMessageDocument(document)) {
-				List<Element> properties = DocumentUtility.getPropertyElements(document.root());
+				Message message = new Message(uid, userId);
 
+				List<Element> properties = DocumentUtility.getPropertyElements(document.root());
 				if (properties != null) {
-					Message message = new Message(uid, userId);
 
 					Method method = null;
 					try {
@@ -88,9 +88,9 @@ public class MessageManager implements Serializable {
 							}
 						}
 					}
-
-					return message;
 				}
+
+				return message;
 			}
 		}
 

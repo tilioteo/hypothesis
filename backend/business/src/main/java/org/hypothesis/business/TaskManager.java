@@ -44,10 +44,19 @@ public class TaskManager extends ListManager<Branch, Task> {
 
 			if (current != null) {
 				buildTaskController();
+			} else {
+				controller = null;
 			}
 		}
 
 		return current;
+	}
+	
+	@Override
+	public Task next() {
+		super.next();
+
+		return current();
 	}
 
 	private void buildTaskController() {
@@ -66,6 +75,7 @@ public class TaskManager extends ListManager<Branch, Task> {
 		if (controller != null) {
 			controller.getNextSlideIndex(current, slide);
 		}
+		
 		return 0;
 	}
 

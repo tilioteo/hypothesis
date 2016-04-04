@@ -55,7 +55,10 @@ public class EventManager {
 		Set<String> names = event.getPropertyNames();
 		for (String name : names) {
 			Object value = event.getProperty(name);
-			if (value != null) {
+			Class<?> clazz = event.getPropertyClass(name);
+			if (clazz != null) {
+				properties.put(name, clazz);
+			} else if (value != null) {
 				properties.put(name, value.getClass());
 			} else {
 				properties.put(name, Object.class);

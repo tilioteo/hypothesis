@@ -16,7 +16,11 @@ public interface ComponentEvent {
 
 	public void setProperty(String name, Object value);
 
+	public void setProperty(String name, Class<?> clazz, Object value);
+
 	public void setProperty(String name, Object value, String pattern);
+
+	public void setProperty(String name,  Class<?> clazz, Object value, String pattern);
 
 	public void setClientTimestamp(Date clientTimestamp);
 

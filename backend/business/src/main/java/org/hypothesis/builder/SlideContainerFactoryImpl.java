@@ -437,7 +437,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						presenter.addKeyAction(keyAction);
 					}
 				} else if (DocumentConstants.MESSAGE.equals(name)) {
-					String uid = DocumentUtility.getUid(element);
+					String uid = DocumentUtility.getUid(handler);
 					if (!Strings.isNullOrEmpty(uid)) {
 						presenter.addMessageListener(uid, new MessageEventListener() {
 							@Override
@@ -450,7 +450,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 										@Override
 										public void initEvent(ComponentEvent componentEvent) {
 											componentEvent.setProperty("message", messageEvent.getMessage(), "");
-											componentEvent.setProperty("messageUID", messageEvent.getMessage(),
+											componentEvent.setProperty("messageUID", messageEvent.getMessage().getUid(),
 													"message@UID");
 										}
 									});
@@ -944,7 +944,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 									componentEvent.setTimestamp(event.getServerDatetime());
 									componentEvent.setClientTimestamp(event.getClientDatetime());
 
-									componentEvent.setProperty("button", event.getSource(), "");
+									componentEvent.setProperty("button", SelectButton.class, event.getSelectButton(), "");
 									componentEvent.setProperty("selectedCaption", event.getSelectButton().getCaption(),
 											"selected");
 									componentEvent.setProperty("selectedIndex",

@@ -11,6 +11,7 @@ import org.hypothesis.builder.BranchBuilder;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.data.model.Branch;
+import org.hypothesis.data.model.BranchMap;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.interfaces.ExchangeVariable;
@@ -44,12 +45,14 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
 			if (current != null) {
 				buildBranchController();
+			} else {
+				controller = null;
 			}
 		}
 
 		return current;
 	}
-
+	
 	private void buildBranchController() {
 		log.debug("Building branch controller.");
 
@@ -86,9 +89,16 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 		}
 	}
 
-	public String getNextBranchKey() {
-		if (controller != null) {
-			return controller.getNextBranchKey();
+	public Branch getNextBranch(BranchMap branchMap) {
+		if (branchMap != null && controller != null) {
+			String key = controller.getNextBranchKey();
+			
+			Branch branch = branchMap.get(key);
+			
+			if (branch != null) {
+				find(branch);
+				return current();
+			}
 		}
 
 		return null;

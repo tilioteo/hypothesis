@@ -54,7 +54,8 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 		BranchController controller = new BranchController();
 
 		createPaths(document.root(), controller);
-		return null;
+		
+		return controller;
 	}
 
 	private void createPaths(Element rootElement, BranchController controller) {
@@ -135,7 +136,8 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 		Long slideId = DocumentUtility.getSlideId(nickElement);
 		Nick nick = new Nick(slideId);
 
-		Expression expression = EvaluableUtility.createExpression(nickElement);
+		Element expressionElement = DocumentUtility.getExpressionElement(nickElement);
+		Expression expression = EvaluableUtility.createExpression(expressionElement);
 		nick.setExpression(expression);
 
 		return nick;
