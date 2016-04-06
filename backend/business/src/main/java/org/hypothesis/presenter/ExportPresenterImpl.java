@@ -40,6 +40,7 @@ import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.TestService;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ExportPresenter;
 import org.hypothesis.server.Messages;
@@ -128,6 +129,11 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	@Override
 	public void setMainEventBus(MainEventBus bus) {
 		this.bus = bus;
+	}
+
+	@Override
+	public MainEventBus getMainEventBus() {
+		return bus;
 	}
 
 	@Override

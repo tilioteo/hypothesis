@@ -4,11 +4,6 @@
  */
 package org.hypothesis.presenter;
 
-import java.io.File;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ProcessManager;
 import org.hypothesis.data.model.SimpleTest;
@@ -26,10 +21,9 @@ import org.hypothesis.event.model.FinishTestEvent;
 import org.hypothesis.event.model.NextSlideEvent;
 import org.hypothesis.event.model.PriorSlideEvent;
 import org.hypothesis.event.model.RenderContentEvent;
+import org.hypothesis.eventbus.HasProcessEventBus;
 import org.hypothesis.eventbus.ProcessEventBus;
-import org.hypothesis.extension.PluginManager;
 import org.hypothesis.interfaces.Command;
-import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.slide.ui.Window;
 import org.hypothesis.ui.ErrorDialog;
@@ -39,8 +33,6 @@ import org.hypothesis.ui.TestEndScreen;
 
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.server.WrappedHttpSession;
-import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Notification;
@@ -55,7 +47,7 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class ProcessUIPresenter implements UIPresenter {
+public class ProcessUIPresenter extends AbstractUIPresenter implements HasProcessEventBus {
 
 	public static final String FULLSCREEN_PARAMETER = "fs";
 	public static final String BACK_PARAMETER = "bk";
@@ -112,20 +104,6 @@ public class ProcessUIPresenter implements UIPresenter {
 			log.debug(TOKEN_PARAMETER + "=(null)");
 			lastToken = null;
 			fireError(Messages.getString("Message.Error.InvalidAccess"));
-		}
-	}
-
-	private void initializePlugins(VaadinRequest request) {
-		WrappedSession session = request.getWrappedSession();
-		HttpSession httpSession = ((WrappedHttpSession) session).getHttpSession();
-		ServletContext servletContext = httpSession.getServletContext();
-
-		String configFileName = servletContext.getInitParameter(PluginManager.PLUGIN_CONFIG_LOCATION);
-
-		if (configFileName != null && configFileName.length() > 0) {
-			configFileName = servletContext.getRealPath(configFileName);
-			File configFile = new File(configFileName);
-			PluginManager.get().initializeFromFile(configFile);
 		}
 	}
 
@@ -339,6 +317,11 @@ public class ProcessUIPresenter implements UIPresenter {
 			log.debug("closing ProcessUI");
 			ui.requestClose();
 		}
+	}
+
+	@Override
+	public ProcessEventBus getProcessEventBus() {
+		return bus;
 	}
 
 }

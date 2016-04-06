@@ -9,7 +9,6 @@ import java.util.HashMap;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.HasUIPresenter;
 import org.hypothesis.interfaces.UIPresenter;
-import org.hypothesis.presenter.MainUIPresenter;
 
 import com.vaadin.ui.UI;
 
@@ -22,17 +21,17 @@ import com.vaadin.ui.UI;
 @SuppressWarnings("serial")
 public class MainEventBus extends HypothesisEventBus<MainUIEvent> {
 
-	private static HashMap<MainUIPresenter, MainEventBus> map = new HashMap<>();
+	private static HashMap<HasMainEventBus, MainEventBus> map = new HashMap<>();
 
-	public static final MainEventBus createInstance(MainUIPresenter presenter) {
+	public static final MainEventBus createInstance(HasMainEventBus hasMainEventBus) {
 		MainEventBus eventBus = new MainEventBus();
-		map.put(presenter, eventBus);
+		map.put(hasMainEventBus, eventBus);
 
 		return eventBus;
 	}
 
-	public static final void destroyInstance(MainUIPresenter presenter) {
-		map.remove(presenter);
+	public static final void destroyInstance(HasMainEventBus hasMainEventBus) {
+		map.remove(hasMainEventBus);
 	}
 
 	public static final MainEventBus getCurrent() {
@@ -44,7 +43,7 @@ public class MainEventBus extends HypothesisEventBus<MainUIEvent> {
 		if (ui instanceof HasUIPresenter) {
 			UIPresenter presenter = ((HasUIPresenter) ui).getPresenter();
 
-			if (presenter instanceof MainUIPresenter) {
+			if (presenter instanceof HasMainEventBus) {
 				return map.get(presenter);
 			}
 		}

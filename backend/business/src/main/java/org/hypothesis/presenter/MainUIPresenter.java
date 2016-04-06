@@ -15,10 +15,10 @@ import org.hypothesis.event.interfaces.MainUIEvent.InvalidLoginEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidUserPermissionEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.UserLoggedOutEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.UserLoginRequestedEvent;
+import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.LoginPresenter;
 import org.hypothesis.interfaces.MainPresenter;
-import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.navigator.HypothesisNavigator;
 import org.hypothesis.navigator.HypothesisViewType;
 import org.hypothesis.server.LocaleManager;
@@ -26,6 +26,7 @@ import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.MainUI;
 
+import com.tilioteo.common.Strings;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
@@ -39,7 +40,7 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class MainUIPresenter implements UIPresenter {
+public class MainUIPresenter extends AbstractUIPresenter implements HasMainEventBus {
 
 	private MainUI ui;
 	private MainScreen mainScreen = null;
@@ -70,6 +71,8 @@ public class MainUIPresenter implements UIPresenter {
 		SessionManager.setMainUID(uid);
 
 		userService = UserService.newInstance();
+
+		initializePlugins(request);
 
 		// pid = request.getParameter("pid");
 
@@ -103,20 +106,53 @@ public class MainUIPresenter implements UIPresenter {
 	 */
 	private void updateUIContent() {
 		User user = SessionManager.getLoggedUser();
-
+		
 		if (user != null) {
 			// Authenticated user
 			ui.setContent(getMainView());
 			ui.removeStyleName("loginview");
-			if (!User.GUEST.equals(user)) {
-				ui.getNavigator().navigateTo(HypothesisViewType.PACKS.getViewName());
+			
+			String viewName = getViewName();
+
+			if (!Strings.isNullOrEmpty(viewName) && userCanAccessView(user, viewName)) {
+				ui.getNavigator().navigateTo(viewName);
 			} else {
-				ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
+				if (!User.GUEST.equals(user)) {
+					ui.getNavigator().navigateTo(HypothesisViewType.PACKS.getViewName());
+				} else {
+					ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
+				}
 			}
 		} else {
 			ui.setContent(getLoginScreen());
 			ui.addStyleName("loginview");
 		}
+	}
+	
+	private boolean userCanAccessView(User user, String viewName) {
+		HypothesisViewType viewType = HypothesisViewType.getByViewName(viewName);
+		if (viewType != null) {
+			return viewType.isAllowed(user.getRoles());
+		}
+
+		return false;
+	}
+
+	private String getViewName() {
+		String fragment = Page.getCurrent().getUriFragment();
+		if (!Strings.isNullOrEmpty(fragment) && fragment.startsWith("!")) {
+			fragment = fragment.substring(1);
+			int l = fragment.lastIndexOf("/");
+			if (l > 0) {
+				fragment = fragment.substring(0, l);
+			}
+			l = fragment.indexOf("?");
+			if (l >= 0) {
+				fragment = fragment.substring(0, l);
+			}
+		}
+		
+		return fragment;
 	}
 
 	private void setUser(User user) {
@@ -194,6 +230,16 @@ public class MainUIPresenter implements UIPresenter {
 		if (bus != null) {
 			bus.unregister(this);
 		}
+	}
+
+	@Override
+	public void setMainEventBus(MainEventBus bus) {
+		// nop
+	}
+
+	@Override
+	public MainEventBus getMainEventBus() {
+		return bus;
 	}
 
 }

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import org.hypothesis.event.interfaces.ProcessEvent;
 import org.hypothesis.interfaces.HasUIPresenter;
 import org.hypothesis.interfaces.UIPresenter;
-import org.hypothesis.presenter.ProcessUIPresenter;
 
 import com.vaadin.ui.UI;
 
@@ -22,17 +21,17 @@ import com.vaadin.ui.UI;
 @SuppressWarnings("serial")
 public class ProcessEventBus extends HypothesisEventBus<ProcessEvent> {
 
-	private static HashMap<ProcessUIPresenter, ProcessEventBus> map = new HashMap<>();
+	private static HashMap<HasProcessEventBus, ProcessEventBus> map = new HashMap<>();
 
-	public static final ProcessEventBus createInstance(ProcessUIPresenter presenter) {
+	public static final ProcessEventBus createInstance(HasProcessEventBus hasProcessEventBus) {
 		ProcessEventBus eventBus = new ProcessEventBus();
-		map.put(presenter, eventBus);
+		map.put(hasProcessEventBus, eventBus);
 
 		return eventBus;
 	}
 
-	public static final void destroyInstance(ProcessUIPresenter presenter) {
-		map.remove(presenter);
+	public static final void destroyInstance(HasProcessEventBus hasProcessEventBus) {
+		map.remove(hasProcessEventBus);
 	}
 
 	public static final ProcessEventBus getCurrent() {
@@ -44,7 +43,7 @@ public class ProcessEventBus extends HypothesisEventBus<ProcessEvent> {
 		if (ui instanceof HasUIPresenter) {
 			UIPresenter presenter = ((HasUIPresenter) ui).getPresenter();
 
-			if (presenter instanceof ProcessUIPresenter) {
+			if (presenter instanceof HasProcessEventBus) {
 				return map.get(presenter);
 			}
 		}

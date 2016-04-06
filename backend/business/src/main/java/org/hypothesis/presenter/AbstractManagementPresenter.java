@@ -6,6 +6,7 @@ package org.hypothesis.presenter;
 
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.model.User;
+import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.server.Messages;
@@ -59,6 +60,11 @@ public abstract class AbstractManagementPresenter
 	@Override
 	public void setMainEventBus(MainEventBus bus) {
 		this.bus = bus;
+	}
+
+	@Override
+	public MainEventBus getMainEventBus() {
+		return bus;
 	}
 
 	@Override

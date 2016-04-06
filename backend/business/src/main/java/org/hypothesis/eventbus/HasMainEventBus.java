@@ -2,9 +2,9 @@
  * Apache Licence Version 2.0
  * Please read the LICENCE file
  */
-package org.hypothesis.presenter;
+package org.hypothesis.eventbus;
 
-import org.hypothesis.eventbus.MainEventBus;
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -12,8 +12,9 @@ import org.hypothesis.eventbus.MainEventBus;
  *         Hypothesis
  *
  */
-public interface HasMainEventBus {
+public interface HasMainEventBus extends Serializable {
 
 	public void setMainEventBus(MainEventBus bus);
+	public MainEventBus getMainEventBus();
 
 }

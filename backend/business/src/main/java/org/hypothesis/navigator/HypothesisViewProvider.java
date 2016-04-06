@@ -4,10 +4,10 @@
  */
 package org.hypothesis.navigator;
 
+import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.interfaces.ViewPresenter;
-import org.hypothesis.presenter.HasMainEventBus;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
