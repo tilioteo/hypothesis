@@ -122,8 +122,8 @@ public class TestService implements Serializable {
 			return tests;
 
 		} catch (Throwable e) {
-			testDao.rollback();
 			log.error(e.getMessage());
+			testDao.rollback();
 		}
 
 		return null;

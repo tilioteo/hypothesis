@@ -120,7 +120,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 			viewportEventManager.setEnabled(true);
 			messageEventManager.setEnabled(true);
 
-			bus = ProcessEventBus.get(ui);
+			setProcessEventBus(ProcessEventBus.get(ui));
 
 			fireEvent(new ViewportEvent.Init(container));
 
@@ -130,7 +130,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 				addWindows(ui);
 				addTimers(this.ui);
 				addKeyActions(ui);
-				// addShortcutKeys(this.ui);
 
 				BroadcastService.register(this);
 			}
@@ -149,11 +148,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 			hui.addTimer(timer);
 		}
 	}
-
-	/*
-	 * private void addShortcutKeys(HypothesisUI hui) { for (ShortcutKey
-	 * shortcutKey : shortcuts) { hui.addShortcutKey(shortcutKey); } }
-	 */
 
 	private void addKeyActions(AbstractComponent component) {
 		for (KeyAction keyAction : keyActions) {
@@ -174,7 +168,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		if (ui instanceof HypothesisUI) {
 			HypothesisUI hui = (HypothesisUI) ui;
 			hui.removeAllTimers();
-			// hui.removeAllShortcutKeys();
 			removeKeyActions();
 			removeWindows();
 		}
@@ -213,7 +206,9 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	public void fireEvent(ProcessEvent event) {
-		bus.post(event);
+		if (bus != null) {
+			bus.post(event);
+		}
 	}
 
 	public void fireEvent(ViewportEvent event) {
@@ -273,7 +268,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	public void setWindow(String id, Window window) {
 		if (window != null) {
 			windows.put(id, window);
-			
+
 			if (ui != null) {
 				window.setFutureUI(ui);
 			}
@@ -327,12 +322,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	public void addViewportShowListener(ViewportEventListener listener) {
 		viewportEventManager.addListener(ViewportEvent.Show.class, listener);
 	}
-
-	/*
-	 * @Override public void addShortcutKey(Component shortcutKey) { if
-	 * (shortcutKey != null && shortcutKey instanceof ShortcutKey) {
-	 * shortcuts.add((ShortcutKey) shortcutKey); } }
-	 */
 
 	@Override
 	public void addKeyAction(Extension keyAction) {
@@ -465,6 +454,10 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 
 		return null;
+	}
+	
+	protected void setProcessEventBus(ProcessEventBus bus) {
+		this.bus = bus;
 	}
 
 }
