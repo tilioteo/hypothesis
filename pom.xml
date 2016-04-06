@@ -6,12 +6,11 @@
 	<groupId>org.hypothesis</groupId>
 	<artifactId>hypothesis</artifactId>
 	<packaging>pom</packaging>
-	<version>1.5.0-SNAPSHOT</version>
+	<version>1.5.1-SNAPSHOT</version>
 	<name>hypothesis-parent</name>
 
 	<properties>
-
-		<vaadin.version>7.6.1</vaadin.version>
+		<vaadin.version>7.6.4</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.source.version>1.7</project.source.version>
@@ -33,7 +32,10 @@
 		<jackrabbit.version>2.11.1</jackrabbit.version>
 		<confirmdialog.version>2.1.3</confirmdialog.version>
 		<animator.version>1.7.4</animator.version>
-		<commons.version>1.0.0</commons.version>
+		<aceeditor.version>0.8.14</aceeditor.version>
+		<fancylayouts.version>1.0.1</fancylayouts.version>
+		<toolbox.version>1.0.1</toolbox.version>
+		<commons.version>1.0.1</commons.version>
 		<expressions.version>1.0.0</expressions.version>
 		<jcabi.version>1.1</jcabi.version>
 		<slf4j.version>1.7.13</slf4j.version>

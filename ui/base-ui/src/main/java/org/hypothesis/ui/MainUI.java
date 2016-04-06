@@ -16,6 +16,6 @@ import com.vaadin.annotations.Title;
 @SuppressWarnings("serial")
 @Title("Hypothesis")
 @Theme("hypothesis")
-public class MainUI extends ControlledUI {
+public class MainUI extends HypothesisUI {
 
 }

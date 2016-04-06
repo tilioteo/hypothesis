@@ -60,6 +60,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>aceeditor</artifactId>
+			<version>${aceeditor.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>hypothesis-widgetset</artifactId>
 			<version>${project.version}</version>

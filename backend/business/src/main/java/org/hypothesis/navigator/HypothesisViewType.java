@@ -13,6 +13,7 @@ import org.hypothesis.interfaces.ViewPresenter;
 import org.hypothesis.presenter.ExportPresenterImpl;
 import org.hypothesis.presenter.GroupManagementPresenter;
 import org.hypothesis.presenter.PublicPacksPresenter;
+import org.hypothesis.presenter.SlideManagementPresenterImpl;
 import org.hypothesis.presenter.UserManagementPresenter;
 import org.hypothesis.presenter.UserPacksPresenter;
 
@@ -30,7 +31,8 @@ public enum HypothesisViewType {
 	PUBLIC("/public", "Caption.View.Public", PublicPacksPresenter.class, FontAwesome.EYE, true, new Role[] {null, RoleService.ROLE_USER, RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
 	USERS("/users", "Caption.View.Users", UserManagementPresenter.class, FontAwesome.USER, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
 	GROUPS("/groups", "Caption.View.Groups", GroupManagementPresenter.class, FontAwesome.GROUP, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	EXPORT("/export", "Caption.View.Export", ExportPresenterImpl.class, FontAwesome.TABLE, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER});
+	EXPORT("/export", "Caption.View.Export", ExportPresenterImpl.class, FontAwesome.TABLE, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
+	SLIDES("/slides", "Caption.View.Slides", SlideManagementPresenterImpl.class, FontAwesome.FILE_CODE_O, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER});
 
 	private final String viewName;
 	private final String caption;

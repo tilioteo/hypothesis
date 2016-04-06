@@ -60,6 +60,24 @@
 			<version>${animator.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>aceeditor</artifactId>
+			<version>${aceeditor.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vaadin.alump.fancylayouts</groupId>
+			<artifactId>fancylayouts-addon</artifactId>
+			<version>${fancylayouts.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>toolbox</artifactId>
+			<version>${toolbox.version}</version>
+		</dependency>
+
 		<!-- Optional plugin libraries -->
 	</dependencies>
 

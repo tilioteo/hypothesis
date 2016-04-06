@@ -120,8 +120,12 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return null;
 	}
 
+	protected SlideContainerPresenter createSlideContainerPresenter() {
+		return new SlideContainerPresenter();
+	}
+
 	private SlideContainer buildSlideContainer(Document document) {
-		SlideContainerPresenter presenter = new SlideContainerPresenter();
+		SlideContainerPresenter presenter = createSlideContainerPresenter();
 
 		Element rootElement = document.root();
 
@@ -221,11 +225,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void start(final Timer.StartEvent event) {
 							presenter.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStart, action,
 									new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setProperty("time", event.getTime());
-								}
-							});
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setProperty("time", event.getTime());
+										}
+									});
 						}
 					});
 				} else if (DocumentConstants.STOP.equals(name)) {
@@ -234,11 +238,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void stop(final Timer.StopEvent event) {
 							presenter.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStop, action,
 									new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setProperty("time", event.getTime());
-								}
-							});
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setProperty("time", event.getTime());
+										}
+									});
 						}
 					});
 				} else if (DocumentConstants.UPDATE.equals(name)) {
@@ -249,11 +253,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 							public void update(final Timer.UpdateEvent event) {
 								presenter.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerUpdate,
 										action, new ComponentEventCallback() {
-									@Override
-									public void initEvent(ComponentEvent componentEvent) {
-										componentEvent.setProperty("time", event.getTime());
-									}
-								});
+											@Override
+											public void initEvent(ComponentEvent componentEvent) {
+												componentEvent.setProperty("time", event.getTime());
+											}
+										});
 							}
 						});
 					}
@@ -405,13 +409,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 							public void keyPressed(final KeyActionEvent keyPressEvent) {
 								presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.ShortcutKey,
 										action, new ComponentEventCallback() {
-									@Override
-									public void initEvent(ComponentEvent componentEvent) {
-										componentEvent.setTimestamp(keyPressEvent.getServerDatetime());
-										componentEvent.setClientTimestamp(keyPressEvent.getClientDatetime());
-										componentEvent.setProperty("shortcutKey", shortcut, "shortcut@key");
-									}
-								});
+											@Override
+											public void initEvent(ComponentEvent componentEvent) {
+												componentEvent.setTimestamp(keyPressEvent.getServerDatetime());
+												componentEvent.setClientTimestamp(keyPressEvent.getClientDatetime());
+												componentEvent.setProperty("shortcutKey", shortcut, "shortcut@key");
+											}
+										});
 							}
 						});
 
@@ -447,13 +451,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 									presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.Message,
 											action, new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setProperty("message", messageEvent.getMessage(), "");
-											componentEvent.setProperty("messageUID", messageEvent.getMessage().getUid(),
-													"message@UID");
-										}
-									});
+												@Override
+												public void initEvent(ComponentEvent componentEvent) {
+													componentEvent.setProperty("message", messageEvent.getMessage(),
+															"");
+													componentEvent.setProperty("messageUID",
+															messageEvent.getMessage().getUid(), "message@UID");
+												}
+											});
 								}
 							}
 						});
@@ -513,7 +518,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				if (id != null) {
 					presenter.setComponent(id, component);
 				}
-				
+
 				return new ComponentWrapperImpl(component, alignmentWrapper.getAlignment());
 			} else {
 				return createPluginComponent(element, presenter);
@@ -673,15 +678,15 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void click(final MouseEvents.ClickEvent event) {
 							presenter.handleEvent(image, DocumentConstants.IMAGE, ProcessEventTypes.ImageClick, action,
 									new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setTimestamp(event.getServerDatetime());
-									componentEvent.setClientTimestamp(event.getClientDatetime());
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setTimestamp(event.getServerDatetime());
+											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-									componentEvent.setProperty("x", event.getRelativeX());
-									componentEvent.setProperty("y", event.getRelativeY());
-								}
-							});
+											componentEvent.setProperty("x", event.getRelativeX());
+											componentEvent.setProperty("y", event.getRelativeY());
+										}
+									});
 						}
 					});
 				} else if (DocumentConstants.LOAD.equals(name)) {
@@ -729,15 +734,15 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void click(final Video.ClickEvent event) {
 							presenter.handleEvent(video, DocumentConstants.VIDEO, ProcessEventTypes.VideoClick, action,
 									new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setTimestamp(event.getServerDatetime());
-									componentEvent.setClientTimestamp(event.getClientDatetime());
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setTimestamp(event.getServerDatetime());
+											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-									componentEvent.setProperty("x", event.getRelativeX());
-									componentEvent.setProperty("y", event.getRelativeY());
-								}
-							});
+											componentEvent.setProperty("x", event.getRelativeX());
+											componentEvent.setProperty("y", event.getRelativeY());
+										}
+									});
 						}
 					});
 				} else if (DocumentConstants.LOAD.equals(name)) {
@@ -755,11 +760,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void start(final Media.StartEvent event) {
 							presenter.handleEvent(video, DocumentConstants.VIDEO, ProcessEventTypes.VideoStart, action,
 									new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setProperty("time", event.getMediaTime());
-								}
-							});
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setProperty("time", event.getMediaTime());
+										}
+									});
 						}
 					});
 				} else if (DocumentConstants.STOP.equals(name)) {
@@ -768,14 +773,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void stop(final Media.StopEvent event) {
 							presenter.handleEvent(video, DocumentConstants.VIDEO, ProcessEventTypes.VideoStop, action,
 									new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setTimestamp(event.getServerDatetime());
-									componentEvent.setClientTimestamp(event.getClientDatetime());
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setTimestamp(event.getServerDatetime());
+											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-									componentEvent.setProperty("time", event.getMediaTime());
-								}
-							});
+											componentEvent.setProperty("time", event.getMediaTime());
+										}
+									});
 						}
 					});
 				}
@@ -814,14 +819,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void start(final Media.StartEvent event) {
 							presenter.handleEvent(audio, DocumentConstants.AUDIO, ProcessEventTypes.AudioStart, action,
 									new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setTimestamp(event.getServerDatetime());
-									componentEvent.setClientTimestamp(event.getClientDatetime());
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setTimestamp(event.getServerDatetime());
+											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-									componentEvent.setProperty("time", event.getMediaTime());
-								}
-							});
+											componentEvent.setProperty("time", event.getMediaTime());
+										}
+									});
 						}
 					});
 				} else if (DocumentConstants.STOP.equals(name)) {
@@ -830,14 +835,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void stop(final Media.StopEvent event) {
 							presenter.handleEvent(audio, DocumentConstants.AUDIO, ProcessEventTypes.AudioStop, action,
 									new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setTimestamp(event.getServerDatetime());
-									componentEvent.setClientTimestamp(event.getClientDatetime());
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setTimestamp(event.getServerDatetime());
+											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-									componentEvent.setProperty("time", event.getMediaTime());
-								}
-							});
+											componentEvent.setProperty("time", event.getMediaTime());
+										}
+									});
 						}
 					});
 				}
@@ -897,18 +902,18 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void buttonClick(final Button.ClickEvent event) {
 							presenter.handleEvent(buttonPanel, DocumentConstants.BUTTON_PANEL,
 									ProcessEventTypes.ButtonPanelClick, action, new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setTimestamp(event.getServerDatetime());
-									componentEvent.setClientTimestamp(event.getClientDatetime());
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setTimestamp(event.getServerDatetime());
+											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-									componentEvent.setProperty("button", event.getButton(), "");
-									componentEvent.setProperty("selectedCaption", event.getButton().getCaption(),
-											"selected");
-									componentEvent.setProperty("selectedIndex",
-											buttonPanel.getChildIndex(event.getButton()) + 1, "selected@index");
-								}
-							});
+											componentEvent.setProperty("button", event.getButton(), "");
+											componentEvent.setProperty("selectedCaption",
+													event.getButton().getCaption(), "selected");
+											componentEvent.setProperty("selectedIndex",
+													buttonPanel.getChildIndex(event.getButton()) + 1, "selected@index");
+										}
+									});
 						}
 					});
 				}
@@ -939,20 +944,23 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						public void buttonClick(final SelectButton.ClickEvent event) {
 							presenter.handleEvent(selectPanel, DocumentConstants.SELECT_PANEL,
 									ProcessEventTypes.SelectPanelClick, action, new ComponentEventCallback() {
-								@Override
-								public void initEvent(ComponentEvent componentEvent) {
-									componentEvent.setTimestamp(event.getServerDatetime());
-									componentEvent.setClientTimestamp(event.getClientDatetime());
+										@Override
+										public void initEvent(ComponentEvent componentEvent) {
+											componentEvent.setTimestamp(event.getServerDatetime());
+											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-									componentEvent.setProperty("button", SelectButton.class, event.getSelectButton(), "");
-									componentEvent.setProperty("selectedCaption", event.getSelectButton().getCaption(),
-											"selected");
-									componentEvent.setProperty("selectedIndex",
-											selectPanel.getChildIndex(event.getSelectButton()) + 1, "selected@index");
-									componentEvent.setProperty("selectedValue",
-											event.getSelectButton().getValue() ? "true" : "false", "selected@value");
-								}
-							});
+											componentEvent.setProperty("button", SelectButton.class,
+													event.getSelectButton(), "");
+											componentEvent.setProperty("selectedCaption",
+													event.getSelectButton().getCaption(), "selected");
+											componentEvent.setProperty("selectedIndex",
+													selectPanel.getChildIndex(event.getSelectButton()) + 1,
+													"selected@index");
+											componentEvent.setProperty("selectedValue",
+													event.getSelectButton().getValue() ? "true" : "false",
+													"selected@value");
+										}
+									});
 						}
 					});
 				}
@@ -966,16 +974,16 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				public void buttonClick(final SelectButton.ClickEvent event) {
 					presenter.handleEvent(component, DocumentConstants.SELECT_PANEL, ProcessEventTypes.SelectPanelClick,
 							null, new ComponentEventCallback() {
-						@Override
-						public void initEvent(ComponentEvent componentEvent) {
-							componentEvent.setTimestamp(event.getServerDatetime());
-							componentEvent.setClientTimestamp(event.getClientDatetime());
+								@Override
+								public void initEvent(ComponentEvent componentEvent) {
+									componentEvent.setTimestamp(event.getServerDatetime());
+									componentEvent.setClientTimestamp(event.getClientDatetime());
 
-							componentEvent.setProperty("button", event.getSource());
-							componentEvent.setProperty("selectedIndex",
-									component.getChildIndex(event.getSelectButton()) + 1, "selected@index");
-						}
-					});
+									componentEvent.setProperty("button", event.getSource());
+									componentEvent.setProperty("selectedIndex",
+											component.getChildIndex(event.getSelectButton()) + 1, "selected@index");
+								}
+							});
 				}
 			});
 		}
