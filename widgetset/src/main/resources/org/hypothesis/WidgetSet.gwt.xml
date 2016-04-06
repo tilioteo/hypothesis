@@ -2,14 +2,19 @@
 <module>
 	<inherits name="com.vaadin.DefaultWidgetSet" />
 
-    <inherits name="org.vaadin.jouni.animator.AnimatorWidgetset" />
+	<inherits name="org.vaadin.jouni.animator.AnimatorWidgetset" />
 
-    <inherits name="org.vaadin.special.SpecialWidgetset" />
+	<inherits name="org.vaadin.special.WidgetSet" />
 
-    <inherits name="org.hypothesis.slide.WidgetSet" />
+	<inherits name="org.hypothesis.slide.WidgetSet" />
 
-    <inherits name="org.vaadin.jre.JREWidgetset" />
+	<inherits name="org.vaadin.jre.JREWidgetset" />
 
-    <inherits name="org.vaadin.button.ButtonWidgetset" />
+	<inherits name="org.vaadin.button.ButtonWidgetset" />
 
+	<inherits name="org.vaadin.alump.fancylayouts.gwt.FancyLayoutsWidgetset" />
+
+	<inherits name="org.vaadin.aceeditor.AceEditorWidgetSet" />
+
+	<inherits name="org.vaadin.johan.Toolbox7Widgetset" />
 </module>
