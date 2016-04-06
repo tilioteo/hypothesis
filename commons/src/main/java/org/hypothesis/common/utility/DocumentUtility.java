@@ -170,6 +170,14 @@ public final class DocumentUtility {
 		return null;
 	}
 
+	public static final Element getLoopElement(Element element) {
+		if (element != null) {
+			return element.selectElement(DocumentConstants.LOOP);
+		}
+
+		return null;
+	}
+
 	public static final List<Element> getCaseElements(Element element) {
 		return element.selectElements(DocumentConstants.CASE);
 	}

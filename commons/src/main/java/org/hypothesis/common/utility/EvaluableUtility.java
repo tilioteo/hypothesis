@@ -14,6 +14,7 @@ import org.hypothesis.evaluation.Expression;
 import org.hypothesis.evaluation.IfStatement;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.evaluation.SwitchStatement;
+import org.hypothesis.evaluation.WhileStatement;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
@@ -100,6 +101,8 @@ public class EvaluableUtility {
 				return createExpression(element);
 			} else if (name.equals(DocumentConstants.IF)) {
 				return createIfStatement(element, evaluator);
+			} else if (name.equals(DocumentConstants.WHILE)) {
+				return createWhileStatement(element, evaluator);
 			} else if (name.equals(DocumentConstants.SWITCH)) {
 				return createSwitchStatement(element, evaluator);
 			} else if (name.equals(DocumentConstants.CALL)) {
@@ -140,6 +143,32 @@ public class EvaluableUtility {
 								else
 									statement.addFalseEvaluable(evaluable);
 							}
+						}
+					}
+				}
+
+				return statement;
+			}
+		}
+
+		return null;
+	}
+
+	private static WhileStatement createWhileStatement(Element element, Evaluator evaluator) {
+		if (element != null && element.getName().equals(DocumentConstants.WHILE)) {
+			Element expressionElement = DocumentUtility.getExpressionElement(element);
+			Element loopElement = DocumentUtility.getLoopElement(element);
+			Expression expression = createExpression(expressionElement);
+
+			if (expression != null) {
+				WhileStatement statement = new WhileStatement(evaluator, expression);
+
+				List<Element> elements = loopElement.children();
+				if (elements != null) {
+					for (Element evaluableElement : elements) {
+						Evaluable evaluable = createEvaluable(evaluableElement, evaluator);
+						if (evaluable != null) {
+							statement.addEvaluable(evaluable);
 						}
 					}
 				}
@@ -195,7 +224,7 @@ public class EvaluableUtility {
 	private static void createActionOutputValues(Action action, Element element) {
 		List<Element> outputElements = DocumentUtility.findElementsByNameStarting(element,
 				DocumentConstants.OUTPUT_VALUE);
-		
+
 		if (outputElements != null) {
 			for (Element outputElement : outputElements) {
 				IndexedExpression outputValue = createValueExpression(outputElement, DocumentConstants.OUTPUT_VALUE);

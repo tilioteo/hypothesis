@@ -65,9 +65,6 @@ public class IfStatement implements Evaluable {
 	@Override
 	public void updateVariables(Map<String, org.hypothesis.interfaces.Variable<?>> variables) {
 		// NOTE If statement cannot update variables after block evaluation
-		/*
-		 * if (expression != null) { expression.updateVariables(variables); }
-		 */
 	}
 
 	@Override

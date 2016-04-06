@@ -59,11 +59,13 @@ public interface DocumentConstants {
 	public static final String ITEM = "Item"; // used?
 	public static final String EXPRESSION = "Expression";
 	public static final String IF = "If";
+	public static final String WHILE = "While";
 	public static final String SWITCH = "Switch";
 	public static final String CASE = "Case";
 	public static final String CALL = "Call";
 	public static final String TRUE = "True";
 	public static final String FALSE = "False";
+	public static final String LOOP = "Loop";
 	public static final String BORDER = "Border";
 	public static final String WIDTH = "Width";
 	public static final String HEIGHT = "Height";
