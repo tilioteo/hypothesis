@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hypothesis-plugin-configuration>
+	<plugins>
+		<plugin>
+			<name>Map plugin</name>
+			<class>com.tilioteo.hypothesis.plugin.map.MapPlugin</class>
+		</plugin>
+
+		<plugin>
+			<name>Processing plugin</name>
+			<class>com.tilioteo.hypothesis.plugin.processing.ProcessingPlugin</class>
+		</plugin>
+	</plugins>
+</hypothesis-plugin-configuration>

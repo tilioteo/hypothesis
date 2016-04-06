@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+
+	<!-- WS Compiler: manually edited -->
+
+	<!-- Inherit DefaultWidgetSet -->
+	<inherits name="com.vaadin.DefaultWidgetSet" />
+	<inherits name="org.vaadin.special.WidgetSet" />
+
+	<source path="client" />
+	<source path="shared" />
+
+</module>

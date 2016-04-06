@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory>
+		<!-- Database connection settings for PostgreSQL -->
+		<property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+		<property name="hibernate.connection.url">jdbc:postgresql://${hibernate.url}</property>
+		<property name="hibernate.connection.username">${hibernate.username}</property>
+		<property name="hibernate.connection.password">${hibernate.password}</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+		<!-- In future use spatial dialect <property name="hibernate.dialect">org.hibernate.spatial.dialect.postgis.PostgisDialect</property> 
+			JDBC connection pool (use the built-in) -->
+		<property name="hibernate.connection.pool_size">1</property>
+		<!-- Enable Hibernate's automatic session context management thread is 
+			the short name for org.hibernate.context.ThreadLocalSessionContext and let 
+			Hibernate bind the session automatically to the thread -->
+		<property name="hibernate.current_session_context_class">thread</property>
+		<property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
+		<!-- Disable the second-level cache -->
+		<property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+		<!-- this will show us all sql statements -->
+		<property name="hibernate.show_sql">${hibernate.show_sql}</property>
+		<!-- Drop and re-create the database schema on startup <property name="hibernate.hbm2ddl.auto">create</property> 
+			Check the database schema on startup -->
+		<property name="hibernate.hbm2ddl.auto">validate</property>
+		<!--<property name="hibernate.hbm2ddl.auto">update</property>-->
+		<mapping class="org.hypothesis.data.model.SlideTemplate" />
+		<mapping class="org.hypothesis.data.model.Slide" />
+		<mapping class="org.hypothesis.data.model.SlideOrder" />
+		<mapping class="org.hypothesis.data.model.Task" />
+		<mapping class="org.hypothesis.data.model.Branch" />
+		<mapping class="org.hypothesis.data.model.BranchOutput" />
+		<mapping class="org.hypothesis.data.model.Pack" />
+		<mapping class="org.hypothesis.data.model.BranchTrek" />
+		<mapping class="org.hypothesis.data.model.Event" />
+		<mapping class="org.hypothesis.data.model.ExportEvent"/>
+		<mapping class="org.hypothesis.data.model.SimpleTest" />
+		<mapping class="org.hypothesis.data.model.Test" />
+		<mapping class="org.hypothesis.data.model.Token" />
+		<mapping class="org.hypothesis.data.model.User" />
+		<mapping class="org.hypothesis.data.model.Group" />
+		<mapping class="org.hypothesis.data.model.Role" />
+		<mapping class="org.hypothesis.data.model.UserPermission" />
+		<mapping class="org.hypothesis.data.model.GroupPermission" />
+		<mapping class="org.hypothesis.data.model.Message" />
+	</session-factory>
+</hibernate-configuration>
