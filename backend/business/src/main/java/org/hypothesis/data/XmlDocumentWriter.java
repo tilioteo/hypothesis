@@ -46,9 +46,8 @@ public class XmlDocumentWriter implements DocumentWriter {
 			org.dom4j.Element destXmlElement = xmlElement.addElement(sourceElement.getName());
 			if (!Strings.isNullOrEmpty(sourceElement.getText())) {
 				destXmlElement.addText(sourceElement.getText());
-
-				copyElement(sourceElement, destXmlElement);
 			}
+			copyElement(sourceElement, destXmlElement);
 		}
 	}
 
