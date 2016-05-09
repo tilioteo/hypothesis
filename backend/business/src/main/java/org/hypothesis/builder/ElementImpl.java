@@ -204,12 +204,22 @@ public class ElementImpl implements Element {
 
 	@Override
 	public Element firstChild() {
-		return children.getFirst();
+		try {
+			return children.getFirst();
+		} catch (Throwable e) {
+		}
+		
+		return null;
 	}
 
 	@Override
 	public Element lastChild() {
-		return children.getLast();
+		try {
+			return children.getLast();
+		} catch (Throwable e) {
+		}
+		
+		return null;
 	}
 
 	@Override
