@@ -10,6 +10,7 @@ import org.hypothesis.event.data.Message;
 import org.hypothesis.presenter.SlideContainerPresenter;
 
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Component.Focusable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -40,5 +41,16 @@ public class SlideDocument implements Serializable {
 
 	public Message createMessage(String uid) {
 		return (Message) presenter.createMessage(uid);
+	}
+	
+	public void focus() {
+		Component component = presenter.getSlideContainer();
+		while (component != null && !(component instanceof Focusable)) {
+			component = component.getParent();
+		}
+		
+		if (component != null && component instanceof Focusable) {
+			((Focusable)component).focus();
+		}
 	}
 }
