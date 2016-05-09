@@ -72,8 +72,8 @@ public class Expression implements Evaluable {
 		if (internalExpression != null && variables != null) {
 			for (String key : variables.keySet()) {
 				org.hypothesis.interfaces.Variable<?> variable = variables.get(key);
-				Object value = internalExpression.getVariableValue(key);
-				if (value != null) {
+				if (internalExpression.hasVariable(key)) {
+					Object value = internalExpression.getVariableValue(key);
 					variable.setRawValue(value);
 				}
 			}
