@@ -49,13 +49,14 @@ public class WhileStatement implements Evaluable {
 					evaluable.updateVariables(variables.getVariables());
 				}
 
-				if (++watchdog >= 1000) { // security issue to prevent infinite
-											// cycle
-					break;
-				}
-
+				expression.setVariables(variables.getVariables());
 				result = expression.getBoolean();
 				// expression.updateVariables(variables.getVariables());
+
+				if (++watchdog >= 1000) { // security issue to prevent infinite
+					// cycle
+					break;
+				}
 			}
 		}
 	}
