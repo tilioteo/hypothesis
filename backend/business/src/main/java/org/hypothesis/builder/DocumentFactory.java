@@ -46,17 +46,29 @@ public class DocumentFactory {
 				String name = bindContent.getName();
 				String id = bindContent.getAttribute(DocumentConstants.ID);
 
-				if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(id)) {
-					HashMap<String, String> attributes = new HashMap<>();
-					attributes.put(DocumentConstants.ID, id);
+				if (!Strings.isNullOrEmpty(name)) {
+					if (!Strings.isNullOrEmpty(id)) {
+						HashMap<String, String> attributes = new HashMap<>();
+						attributes.put(DocumentConstants.ID, id);
 
-					Element origElement = DocumentUtility.findElementByNameAndValue(root, name, attributes, true);
-					if (origElement != null) {
-						mergeElementAttributes(origElement, bindContent);
-						List<Element> bindNodes = bindContent.children();
+						Element origElement = DocumentUtility.findElementByNameAndValue(root, name, attributes, true);
+						if (origElement != null) {
+							mergeElementAttributes(origElement, bindContent);
+							List<Element> bindNodes = bindContent.children();
 
-						for (Element bindNode : bindNodes) {
-							mergeBindingNodes(origElement, bindNode);
+							for (Element bindNode : bindNodes) {
+								mergeBindingNodes(origElement, bindNode);
+							}
+						}
+					} else {
+						Element origElement = DocumentUtility.findElementByNameAndValue(root, name, null, false);
+						if (origElement != null) {
+							mergeElementAttributes(origElement, bindContent);
+							List<Element> bindNodes = bindContent.children();
+
+							for (Element bindNode : bindNodes) {
+								mergeBindingNodes(origElement, bindNode);
+							}
 						}
 					}
 				}
@@ -99,7 +111,7 @@ public class DocumentFactory {
 		destination.setText(source.getText());
 
 		List<Element> destSubElements = new ArrayList<Element>();
-		
+
 		boolean destSubEmpty = destSubElements.isEmpty();
 
 		List<Element> sourceSubElements = source.children();
@@ -108,12 +120,13 @@ public class DocumentFactory {
 			String id = sourceSubElement.getAttribute(DocumentConstants.ID);
 
 			Element destinationSubElement = null;
-			
+
 			if (!destSubEmpty) {
 				if (!Strings.isNullOrEmpty(id)) {
 					HashMap<String, String> attributes = new HashMap<>();
 					attributes.put(DocumentConstants.ID, id);
-					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes, false);
+					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes,
+							false);
 				} else {
 					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, null, false);
 					// if previously created element found then skip to avoid
