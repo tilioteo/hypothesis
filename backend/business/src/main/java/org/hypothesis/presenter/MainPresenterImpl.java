@@ -129,7 +129,7 @@ public class MainPresenterImpl implements MainPresenter {
 		layout.setSizeFull();
 		panel.setContent(layout);
 
-		Label label = new Label("Hypothesis&emsp;v." + VERSION + "&emsp;&emsp;&emsp;© 2013-2015 Tilioteo Ltd");
+		Label label = new Label("Hypothesis&emsp;v." + VERSION + "&emsp;&emsp;&emsp;© 2013-2016 Tilioteo Ltd");
 		label.setContentMode(ContentMode.HTML);
 		label.setWidthUndefined();
 		label.addStyleName(ValoTheme.LABEL_TINY);
