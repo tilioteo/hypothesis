@@ -40,7 +40,18 @@ public class ComponentUtility {
 		component.setVisible(stringMap.getBoolean(DocumentConstants.VISIBLE, true));
 		component.setEnabled(stringMap.getBoolean(DocumentConstants.ENABLED, true));
 
+		setStyle(component, stringMap);
+
 		setWrappedAlignment(stringMap, alignmentWrapper);
+	}
+
+	private static void setStyle(Component component, StringMap properties) {
+		if (component instanceof AbstractComponent) {
+			String style = properties.get(DocumentConstants.STYLE);
+			if (style != null) {
+				component.addStyleName(style);
+			}
+		}
 	}
 
 	private static void setCaption(Component component, StringMap properties) {
@@ -132,5 +143,4 @@ public class ComponentUtility {
 			}
 		};
 	}
-
 }

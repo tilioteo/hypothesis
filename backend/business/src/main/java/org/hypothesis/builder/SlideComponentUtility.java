@@ -110,7 +110,8 @@ public class SlideComponentUtility {
 		Orientation orientation = getOrientation(stringMap, Orientation.Horizontal);
 		component.setOrientation(orientation);
 
-		setChildsSize(component, stringMap);
+		setChildrenSize(component, stringMap);
+		setChildrenStyle(component, stringMap);
 	}
 
 	public static void setImageProperties(Image image, Element element, StringMap properties,
@@ -158,26 +159,35 @@ public class SlideComponentUtility {
 		}
 	}
 
-	private static void setChildsSize(MultipleComponentPanel<? extends AbstractComponent> component,
+	private static void setChildrenSize(MultipleComponentPanel<? extends AbstractComponent> component,
 			StringMap stringMap) {
-		setChildsWidth(component, stringMap.getDimension(DocumentConstants.CHILD_WIDTH));
-		setChildsHeight(component, stringMap.getDimension(DocumentConstants.CHILD_HEIGHT));
+		setChildrenWidth(component, stringMap.getDimension(DocumentConstants.CHILD_WIDTH));
+		setChildrenHeight(component, stringMap.getDimension(DocumentConstants.CHILD_HEIGHT));
 		if (component != null) {
 			component.updateContent();
 		}
 	}
 
-	private static void setChildsWidth(MultipleComponentPanel<? extends AbstractComponent> component,
-			String dimension) {
-		if (component != null) {
-			component.setChildsWidth(dimension);
+	private static void setChildrenStyle(MultipleComponentPanel<? extends AbstractComponent> component,
+			StringMap stringMap) {
+		String style = stringMap.get(DocumentConstants.CHILD_STYLE);
+		if (component != null && style != null) {
+			component.setChildrenStyle(style);
+			component.updateContent();
 		}
 	}
 
-	private static void setChildsHeight(MultipleComponentPanel<? extends AbstractComponent> component,
+	private static void setChildrenWidth(MultipleComponentPanel<? extends AbstractComponent> component,
 			String dimension) {
 		if (component != null) {
-			component.setChildsHeight(dimension);
+			component.setChildrenWidth(dimension);
+		}
+	}
+
+	private static void setChildrenHeight(MultipleComponentPanel<? extends AbstractComponent> component,
+			String dimension) {
+		if (component != null) {
+			component.setChildrenHeight(dimension);
 		}
 	}
 

@@ -71,6 +71,7 @@ public interface DocumentConstants {
 	public static final String HEIGHT = "Height";
 	public static final String CHILD_WIDTH = "ChildWidth";
 	public static final String CHILD_HEIGHT = "ChildHeight";
+	public static final String CHILD_STYLE = "ChildStyle";
 	public static final String ALIGNMENT = "Alignment";
 	public static final String SPACING = "Spacing";
 	public static final String URL = "Url";
@@ -80,6 +81,7 @@ public interface DocumentConstants {
 	public static final String LABEL_POSITION = "LabelPosition";
 	public static final String MULTI_SELECT = "MultiSelect";
 	public static final String READ_ONLY = "ReadOnly";
+	public static final String STYLE = "Style";
 	public static final String ENABLED = "Enabled";
 	public static final String VISIBLE = "Visible";
 	public static final String CLICK = "Click";
