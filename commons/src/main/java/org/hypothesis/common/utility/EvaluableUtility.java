@@ -321,7 +321,7 @@ public class EvaluableUtility {
 
 			else if (DocumentConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<Object>(id);
-				ArrayList<Integer> array = new ArrayList<Integer>();
+				ArrayList<Integer> array = new ArrayList<>();
 				Integer[] integers = Strings.toIntegerArray(values, DocumentConstants.STR_COMMA);
 				if (integers != null) {
 					for (Integer integer : integers) {
@@ -333,7 +333,7 @@ public class EvaluableUtility {
 				variable.setRawValue(array);
 			} else if (DocumentConstants.FLOAT_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<Object>(id);
-				ArrayList<Double> array = new ArrayList<Double>();
+				ArrayList<Double> array = new ArrayList<>();
 				Double[] doubles = Strings.toDoubleArray(values, DocumentConstants.STR_COMMA);
 				if (doubles != null) {
 					for (Double dbl : doubles) {
@@ -345,7 +345,7 @@ public class EvaluableUtility {
 				variable.setRawValue(array);
 			} else if (DocumentConstants.STRING_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<Object>(id);
-				ArrayList<String> array = new ArrayList<String>();
+				ArrayList<String> array = new ArrayList<>();
 				String[] strings = Strings.toStringArray(values, DocumentConstants.STR_COMMA,
 						DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN);
 				if (strings != null) {
@@ -355,6 +355,10 @@ public class EvaluableUtility {
 						}
 					}
 				}
+				variable.setRawValue(array);
+			} else if (DocumentConstants.OBJECT_ARRAY.equalsIgnoreCase(type)) {
+				variable = new org.hypothesis.evaluation.Variable<Object>(id);
+				ArrayList<Object> array = new ArrayList<>();
 				variable.setRawValue(array);
 			}
 
