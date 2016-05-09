@@ -6,6 +6,7 @@ package org.hypothesis.presenter;
 
 import org.hypothesis.event.model.EventQueue;
 import org.hypothesis.event.model.EventWrapper;
+import org.hypothesis.event.model.FinishSlideEvent;
 import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.ComponentEventCallback;
@@ -14,6 +15,8 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.UI;
+
+import net.engio.mbassy.listener.Handler;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -68,5 +71,18 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 		super.attach(component, parent, ui, session);
 
 		setProcessEventBus(bus);
+		bus.register(this);
+	}
+
+	@Override
+	public void detach(Component component, HasComponents parent, UI ui, VaadinSession session) {
+		bus.unregister(this);
+
+		super.detach(component, parent, ui, session);
+	}
+
+	@Handler
+	public void processFinishSlide(FinishSlideEvent event) {
+		viewDone();
 	}
 }

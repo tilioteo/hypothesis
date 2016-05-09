@@ -324,6 +324,11 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	@Override
+	public void addViewportFinishListener(ViewportEventListener listener) {
+		viewportEventManager.addListener(ViewportEvent.Finish.class, listener);
+	}
+
+	@Override
 	public void addKeyAction(Extension keyAction) {
 		if (keyAction != null && keyAction instanceof KeyAction) {
 			keyActions.add((KeyAction) keyAction);
@@ -340,6 +345,13 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	public SlideContainer getSlideContainer() {
 		return container;
+	}
+
+	private void addDocumentVariable() {
+		Variable<Object> variable = new org.hypothesis.evaluation.Variable<Object>(ObjectConstants.DOCUMENT,
+				new SlideDocument(this));
+	
+		variables.put(variable.getName(), variable);
 	}
 
 	public boolean isValidSlide() {
@@ -404,17 +416,12 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		variables.put(variable.getName(), variable);
 	}
 
-	private void addDocumentVariable() {
-		Variable<Object> variable = new org.hypothesis.evaluation.Variable<Object>(ObjectConstants.DOCUMENT,
-				new SlideDocument(this));
-
-		variables.put(variable.getName(), variable);
-	}
-
 	@Override
 	public void viewDone() {
 		stopTimers();
 		closeWindows();
+
+		fireEvent(new ViewportEvent.Finish(container));
 	}
 
 	@Override
@@ -455,7 +462,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 		return null;
 	}
-	
+
 	protected void setProcessEventBus(ProcessEventBus bus) {
 		this.bus = bus;
 	}

@@ -392,6 +392,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 									action, ComponentEventCallback.DEFAULT);
 						}
 					});
+				} else if (DocumentConstants.FINISH.equals(name)) {
+					presenter.addViewportFinishListener(new ViewportEventListener() {
+						@Override
+						public void handleEvent(EventObject event) {
+							presenter.handleEvent(container, DocumentConstants.SLIDE, null,
+									action, ComponentEventCallback.DEFAULT);
+						}
+					});
 				} else if (DocumentConstants.SHORTCUT.equals(name)) {
 					String key = DocumentUtility.getKey(handler);
 					ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);

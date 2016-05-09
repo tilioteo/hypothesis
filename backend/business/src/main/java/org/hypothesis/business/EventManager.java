@@ -15,6 +15,7 @@ import org.hypothesis.interfaces.ComponentEventCallback;
 import org.hypothesis.presenter.SlideContainerPresenter;
 import org.hypothesis.utility.ReflectionUtility;
 
+import com.tilioteo.common.Strings;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 
@@ -39,7 +40,10 @@ public class EventManager {
 
 		ComponentData data = createComponentData(event);
 		event.setData(data);
-		presenter.fireEvent(event);
+
+		if (!(Strings.isNullOrEmpty(typeName) || Strings.isNullOrEmpty(eventName))) {
+			presenter.fireEvent(event);
+		}
 
 		if (action != null) {
 			presenter.setComponentData(data);
@@ -101,6 +105,10 @@ public class EventManager {
 			field = ReflectionUtility.getDeclaredField(data, "eventName");
 			field.setAccessible(true);
 			field.set(data, event.getName());
+
+			field = ReflectionUtility.getDeclaredField(data, "typeName");
+			field.setAccessible(true);
+			field.set(data, event.getTypeName());
 
 			field = ReflectionUtility.getDeclaredField(data, "timestamp");
 			field.setAccessible(true);

@@ -45,6 +45,8 @@ public interface SlidePresenter extends Evaluator {
 
 	public void addViewportShowListener(ViewportEventListener viewportEventListener);
 
+	public void addViewportFinishListener(ViewportEventListener viewportEventListener);
+
 	//public void addShortcutKey(Component shortcutKey);
 	
 	public void addKeyAction(Extension keyAction);

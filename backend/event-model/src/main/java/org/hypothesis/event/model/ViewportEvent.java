@@ -38,4 +38,10 @@ public abstract class ViewportEvent extends EventObject {
 			super(source);
 		}
 	}
+	
+	public static class Finish extends ViewportEvent {
+		public Finish(Object source) {
+			super(source);
+		}
+	}
 }
