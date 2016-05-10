@@ -42,12 +42,10 @@ public class ComponentData implements Serializable {
 		return eventName;
 	}
 
-	// TODO make invisible for expression evaluation
 	public Date getTimestamp() {
 		return timestamp;
 	}
 
-	// TODO make invisible for expression evaluation
 	public Date getClientTimestamp() {
 		return clientTimestamp;
 	}
