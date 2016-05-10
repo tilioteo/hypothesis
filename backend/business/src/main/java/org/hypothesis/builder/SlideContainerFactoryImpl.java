@@ -1006,7 +1006,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String name = validatorElement.getName();
 					String message = DocumentUtility.getValidatorMessage(validatorElement, "");
 
-					callback.setComponentValidator((Validatable) component, element, name, message);
+					callback.setComponentValidator((Validatable) component, validatorElement, name, message);
 				}
 
 				if (!validators.isEmpty() && component instanceof AbstractComponent) {
