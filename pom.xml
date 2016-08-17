@@ -6,11 +6,11 @@
 	<groupId>org.hypothesis</groupId>
 	<artifactId>hypothesis</artifactId>
 	<packaging>pom</packaging>
-	<version>1.5.2</version>
+	<version>1.5.4</version>
 	<name>hypothesis-parent</name>
 
 	<properties>
-		<vaadin.version>7.6.5</vaadin.version>
+		<vaadin.version>7.6.8</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
 		<project.source.version>1.7</project.source.version>
@@ -56,7 +56,7 @@
 				<vaadin.production>false</vaadin.production>
 				<vaadin.compile.style>DETAILED</vaadin.compile.style>
 
-				<hibernate.url>localhost/hypothesis-dev</hibernate.url>
+				<hibernate.url>localhost/hypothesis</hibernate.url>
 				<hibernate.username>hypothesis</hibernate.username>
 				<hibernate.password>hypothesis</hibernate.password>
 				<hibernate.show_sql>true</hibernate.show_sql>
