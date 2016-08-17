@@ -22,7 +22,7 @@ import org.hypothesis.data.service.UserService;
 @SuppressWarnings("serial")
 public class UserPacksPresenter extends PublicPacksPresenter {
 
-	private UserService userService;
+	protected UserService userService;
 
 	public UserPacksPresenter() {
 		super();

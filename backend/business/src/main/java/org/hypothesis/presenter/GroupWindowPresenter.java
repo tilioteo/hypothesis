@@ -207,7 +207,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		buildNoteField();
 		addField(form, noteField);
 
-		buildUsersField(!loggedUser.hasRole(RoleService.ROLE_SUPERUSER));
+		buildUsersField(!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
 		addField(form, usersField);
 		// TODO: upozornit, ze uzivatel nema zadne uzivatele?
 
@@ -255,7 +255,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		if (!users.isEmpty()) {
-			buildUsersField(!loggedUser.hasRole(RoleService.ROLE_SUPERUSER));
+			buildUsersField(!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
 
 			for (User user : users) {
 				Table table = (Table) usersField;
