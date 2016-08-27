@@ -21,7 +21,6 @@ import org.hypothesis.interfaces.LoginPresenter;
 import org.hypothesis.interfaces.MainPresenter;
 import org.hypothesis.navigator.HypothesisNavigator;
 import org.hypothesis.navigator.HypothesisViewType;
-import org.hypothesis.server.LocaleManager;
 import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.MainUI;
@@ -67,16 +66,14 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	@Override
 	public void initialize(VaadinRequest request) {
+		super.initialize(request);
+
 		uid = UUID.randomUUID().toString().replaceAll("-", "");
 		SessionManager.setMainUID(uid);
 
 		userService = UserService.newInstance();
 
-		initializePlugins(request);
-
 		// pid = request.getParameter("pid");
-
-		LocaleManager.initializeLocale(request, ui.getLocale());
 
 		updateUIContent();
 	}
@@ -106,12 +103,12 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	 */
 	private void updateUIContent() {
 		User user = SessionManager.getLoggedUser();
-		
+
 		if (user != null) {
 			// Authenticated user
 			ui.setContent(getMainView());
 			ui.removeStyleName("loginview");
-			
+
 			String viewName = getViewName();
 
 			if (!Strings.isNullOrEmpty(viewName) && userCanAccessView(user, viewName)) {
@@ -128,7 +125,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 			ui.addStyleName("loginview");
 		}
 	}
-	
+
 	private boolean userCanAccessView(User user, String viewName) {
 		HypothesisViewType viewType = HypothesisViewType.getByViewName(viewName);
 		if (viewType != null) {
@@ -151,7 +148,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 				fragment = fragment.substring(0, l);
 			}
 		}
-		
+
 		return fragment;
 	}
 

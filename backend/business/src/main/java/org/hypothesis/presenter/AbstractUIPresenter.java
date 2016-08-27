@@ -5,12 +5,14 @@
 package org.hypothesis.presenter;
 
 import java.io.File;
+import java.util.Locale;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.hypothesis.extension.PluginManager;
 import org.hypothesis.interfaces.UIPresenter;
+import org.hypothesis.server.LocaleManager;
 
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.WrappedHttpSession;
@@ -25,7 +27,19 @@ import com.vaadin.server.WrappedSession;
 @SuppressWarnings("serial")
 public abstract class AbstractUIPresenter implements UIPresenter {
 
-	protected void initializePlugins(VaadinRequest request) {
+	@Override
+	public void initialize(VaadinRequest request) {
+		initializePlugins(request);
+
+		initializeLocales(request);
+	}
+
+	@Override
+	public Locale getCurrentLocale() {
+		return LocaleManager.getCurrentLocale();
+	}
+
+	private void initializePlugins(VaadinRequest request) {
 
 		WrappedSession session = request.getWrappedSession();
 		HttpSession httpSession = ((WrappedHttpSession) session).getHttpSession();
@@ -40,4 +54,7 @@ public abstract class AbstractUIPresenter implements UIPresenter {
 		}
 	}
 
+	private void initializeLocales(VaadinRequest request) {
+		LocaleManager.initializeLocale(request);
+	}
 }

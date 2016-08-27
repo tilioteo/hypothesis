@@ -61,6 +61,8 @@
 				<hibernate.password>hypothesis</hibernate.password>
 				<hibernate.show_sql>true</hibernate.show_sql>
 
+				<language.default>en</language.default>
+
 				<log.level>debug</log.level>
 				<log.hibernate.level>info</log.hibernate.level>
 			</properties>
@@ -81,6 +83,8 @@
 				<hibernate.username>hypothesis</hibernate.username>
 				<hibernate.password>hypothesis</hibernate.password>
 				<hibernate.show_sql>false</hibernate.show_sql>
+
+				<language.default>en</language.default>
 
 				<log.level>info</log.level>
 				<log.hibernate.level>info</log.hibernate.level>

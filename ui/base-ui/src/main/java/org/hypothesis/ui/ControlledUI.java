@@ -24,21 +24,11 @@ public abstract class ControlledUI extends UI implements HasUIPresenter {
 
 	private UIPresenter presenter;
 
-	/**
-	 * current language
-	 */
-	private String language = null;
-
 	@Override
 	protected void init(VaadinRequest request) {
-		language = request.getParameter("lang");
-		if (null == language) {
-			language = "cs"; // default
-		}
-
-		setLocale(new Locale(language));
-
 		presenter.initialize(request);
+
+		setLocale(presenter.getCurrentLocale());
 	}
 
 	@Override
@@ -84,10 +74,6 @@ public abstract class ControlledUI extends UI implements HasUIPresenter {
 		this.presenter = presenter;
 	}
 
-	public String getLanguage() {
-		return language;
-	}
-
 	public static ControlledUI getCurrent() {
 		UI current = UI.getCurrent();
 		if (current instanceof ControlledUI) {
@@ -100,9 +86,13 @@ public abstract class ControlledUI extends UI implements HasUIPresenter {
 	public static String getCurrentLanguage() {
 		ControlledUI ui = getCurrent();
 		if (ui != null) {
-			return ui.getLanguage();
+			Locale locale = ui.getPresenter().getCurrentLocale();
+			if (locale != null) {
+				return locale.getLanguage();
+			}
 		}
 
 		return null;
 	}
+
 }

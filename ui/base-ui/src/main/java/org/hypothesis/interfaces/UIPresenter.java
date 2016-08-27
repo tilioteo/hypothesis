@@ -4,6 +4,8 @@
  */
 package org.hypothesis.interfaces;
 
+import java.util.Locale;
+
 import com.vaadin.server.VaadinRequest;
 
 /**
@@ -19,5 +21,7 @@ public interface UIPresenter extends ComponentPresenter {
 	public void close();
 
 	public void refresh(VaadinRequest request);
+
+	public Locale getCurrentLocale();
 
 }

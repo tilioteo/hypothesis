@@ -84,10 +84,10 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	@Override
 	public void initialize(VaadinRequest request) {
 		log.debug("ProcessUIPresenter initialization");
+		
+		super.initialize(request);
 
 		processManager = new ProcessManager(bus);
-
-		initializePlugins(request);
 
 		// TODO try to set token by uri fragment and implement
 		// UriFragmentChangeListener
