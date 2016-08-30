@@ -79,6 +79,28 @@
 		</dependency>
 
 		<!-- Optional plugin libraries -->
+		<dependency>
+			<groupId>com.tilioteo.hypothesis.plugin</groupId>
+			<artifactId>h-maps</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>vmaps</artifactId>
+			<version>0.9.16</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.tilioteo.hypothesis.plugin</groupId>
+			<artifactId>h-processing</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>vprocjs</artifactId>
+			<version>0.2.1-mod</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
