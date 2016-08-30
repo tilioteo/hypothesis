@@ -5,18 +5,18 @@
 package org.hypothesis.presenter;
 
 import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.MainPresenter;
-import org.hypothesis.servlet.ServletUtil;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.menu.HypothesisMenu;
+import org.hypothesis.utility.ManifestUtility;
 
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
@@ -35,25 +35,23 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class MainPresenterImpl implements MainPresenter {
 
-	private static String VERSION;// = Manifests.read("Version");
-	private static String VERSION_SPECIFIC;// =
-											// Manifests.read("Version-Specific");
-	private static String VERSION_ADDITIONAL;// =
-												// Manifests.read("Version-Additional");*/
+	private static String VERSION;
+	private static String VERSION_ADDITIONAL;
 
 	private ComponentContainer content;
 
 	private HypothesisMenuPresenter menuPresenter;
+	private VersionInfoPresenter versionInfoPresenter;
 
 	public MainPresenterImpl(MainEventBus bus) {
 
 		menuPresenter = new HypothesisMenuPresenter(bus);
+		versionInfoPresenter = new VersionInfoPresenter(bus);
 
-		Manifest manifest = ServletUtil.getManifest(VaadinServlet.getCurrent().getServletContext());
-		Attributes attributes = manifest.getMainAttributes();
-		VERSION = attributes.getValue("Version");
-		VERSION_SPECIFIC = attributes.getValue("Version-Specific");
-		VERSION_ADDITIONAL = attributes.getValue("Version-Additional");
+		Attributes attributes = ManifestUtility.getManifestAttributes();
+
+		VERSION = attributes.getValue(ManifestUtility.VERSION);
+		VERSION_ADDITIONAL = attributes.getValue(ManifestUtility.VERSION_ADDITIONAL);
 	}
 
 	@Override
@@ -129,12 +127,27 @@ public class MainPresenterImpl implements MainPresenter {
 		layout.setSizeFull();
 		panel.setContent(layout);
 
-		Label label = new Label("Hypothesis&emsp;v." + VERSION + "&emsp;&emsp;&emsp;© 2013-2016 Tilioteo Ltd");
-		label.setContentMode(ContentMode.HTML);
-		label.setWidthUndefined();
-		label.addStyleName(ValoTheme.LABEL_TINY);
-		layout.addComponent(label);
-		layout.setComponentAlignment(label, Alignment.TOP_CENTER);
+		Button button = new Button("Hypothesis&emsp;v." + VERSION + "&emsp;&emsp;&emsp;© 2013-2016 Tilioteo Ltd");
+		button.setCaptionAsHtml(true);
+		button.setWidthUndefined();
+		button.addStyleName(ValoTheme.BUTTON_TINY);
+		button.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+
+		button.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				versionInfoPresenter.showWindow();
+			}
+		});
+
+		/*
+		 * Label label = new Label("Hypothesis&emsp;v." + VERSION +
+		 * "&emsp;&emsp;&emsp;© 2013-2016 Tilioteo Ltd");
+		 * label.setContentMode(ContentMode.HTML); label.setWidthUndefined();
+		 * label.addStyleName(ValoTheme.LABEL_TINY);
+		 */
+		layout.addComponent(button);
+		layout.setComponentAlignment(button, Alignment.TOP_CENTER);
 
 		return panel;
 	}

@@ -39,6 +39,9 @@
 		<expressions.version>1.0.1</expressions.version>
 		<jcabi.version>1.1</jcabi.version>
 		<slf4j.version>1.7.13</slf4j.version>
+		<c3p0.version>0.9.5.2</c3p0.version>
+		<min.pool.size>1</min.pool.size>
+		<max.pool.size>10</max.pool.size>
 	</properties>
 
 	<profiles>
@@ -61,35 +64,13 @@
 				<hibernate.password>hypothesis</hibernate.password>
 				<hibernate.show_sql>true</hibernate.show_sql>
 
-				<language.default>en</language.default>
+				<language.default>cs</language.default>
 
 				<log.level>debug</log.level>
 				<log.hibernate.level>info</log.hibernate.level>
 			</properties>
 		</profile>
 
-		<profile>
-			<id>production</id>
-			<properties>
-				<build.profile.id>production</build.profile.id>
-
-				<project.version.specific>Production</project.version.specific>
-				<project.version.additional></project.version.additional>
-
-				<vaadin.production>true</vaadin.production>
-				<vaadin.compile.style>OBF</vaadin.compile.style>
-
-				<hibernate.url>localhost/hypothesis</hibernate.url>
-				<hibernate.username>hypothesis</hibernate.username>
-				<hibernate.password>hypothesis</hibernate.password>
-				<hibernate.show_sql>false</hibernate.show_sql>
-
-				<language.default>en</language.default>
-
-				<log.level>info</log.level>
-				<log.hibernate.level>info</log.hibernate.level>
-			</properties>
-		</profile>
 	</profiles>
 
 	<build>
@@ -237,6 +218,17 @@
 			</dependency>
 
 			<dependency>
+				<groupId>com.mchange</groupId>
+				<artifactId>c3p0</artifactId>
+				<version>${c3p0.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-c3p0</artifactId>
+				<version>${hibernate.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
@@ -244,6 +236,17 @@
 			</dependency>
 
 			<!-- Optional plugin libraries -->
+			<dependency>
+				<groupId>com.tilioteo.hypothesis.plugin</groupId>
+				<artifactId>h-maps</artifactId>
+				<version>1.0.6</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.tilioteo.hypothesis.plugin</groupId>
+				<artifactId>h-processing</artifactId>
+				<version>1.0.1</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
