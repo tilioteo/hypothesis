@@ -57,7 +57,7 @@ public class TaskControllerFactoryImpl implements TaskControllerFactory {
 
 	private void createNodes(Element rootElement, TaskController controller) {
 		List<Element> nodes = DocumentUtility.getNodesElements(rootElement);
-		
+
 		if (nodes != null) {
 			for (Element nodeElement : nodes) {
 				Node node = createNode(nodeElement, controller);
@@ -69,24 +69,24 @@ public class TaskControllerFactoryImpl implements TaskControllerFactory {
 
 	private Node createNode(Element element, Evaluator evaluator) {
 		Long slideId = DocumentUtility.getSlideId(element);
-		if (slideId != null) {
-			Node node = new Node(evaluator, slideId);
-			Element evaluateElement = DocumentUtility.getEvaluateElement(element);
-
-			if (evaluateElement != null) {
-				List<Element> evaluables = evaluateElement.children();
-				
-				for (Element evaluableElement : evaluables) {
-					Evaluable evaluable = EvaluableUtility.createEvaluable(evaluableElement, evaluator);
-					if (evaluable != null) {
-						node.add(evaluable);
-					}
-				}
-			}
-			return node;
+		if (null == slideId) {
+			return null;
 		}
 
-		return null;
+		Node node = new Node(evaluator, slideId);
+		Element evaluateElement = DocumentUtility.getEvaluateElement(element);
+
+		if (evaluateElement != null) {
+			List<Element> evaluables = evaluateElement.children();
+
+			for (Element evaluableElement : evaluables) {
+				Evaluable evaluable = EvaluableUtility.createEvaluable(evaluableElement, evaluator);
+				if (evaluable != null) {
+					node.add(evaluable);
+				}
+			}
+		}
+		return node;
 	}
 
 }

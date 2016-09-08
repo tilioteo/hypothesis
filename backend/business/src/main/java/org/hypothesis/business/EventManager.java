@@ -27,12 +27,25 @@ import com.vaadin.ui.Component;
  */
 public class EventManager {
 
+	// TODO may be injected
 	private SlideContainerPresenter presenter;
 
+	/**
+	 * 
+	 * @param presenter the slide container presenter which the event manager is associated with
+	 */
 	public EventManager(SlideContainerPresenter presenter) {
 		this.presenter = presenter;
 	}
 
+	/**
+	 * Event handling method which prepares ComponentEvent object with generated ComponentData from provided parameters
+	 * @param component the component which is an originator and handles the event
+	 * @param typeName name of component type, ie. "Button"
+	 * @param eventName name of event, ie. "Click"
+	 * @param action the action to execute
+	 * @param callback used for user initialization of event
+	 */
 	public void handleEvent(Component component, String typeName, String eventName, Action action,
 			ComponentEventCallback callback) {
 		ComponentEvent event = new ComponentEvent(component, typeName, eventName);
@@ -119,7 +132,7 @@ public class EventManager {
 			field.set(data, event.getClientTimestamp());
 
 			return data;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

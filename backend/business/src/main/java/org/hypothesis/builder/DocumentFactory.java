@@ -25,6 +25,9 @@ import com.tilioteo.common.Strings;
  */
 public class DocumentFactory {
 
+	private DocumentFactory() {
+	}
+
 	public static Document mergeSlideDocument(Document template, Document content) {
 		DocumentImpl document = new DocumentImpl();
 		Element root = document.createRoot(DocumentConstants.SLIDE);

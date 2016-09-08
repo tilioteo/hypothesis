@@ -32,10 +32,6 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	private Branch current = null;
 	private BranchController controller = null;
 
-	public BranchManager() {
-		super();
-	}
-
 	@Override
 	public Branch current() {
 		Branch branch = super.current();
@@ -52,7 +48,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
 		return current;
 	}
-	
+
 	private void buildBranchController() {
 		log.debug("Building branch controller.");
 
@@ -83,18 +79,33 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 		return controller;
 	}
 
+	/**
+	 * Add set of slide output variables
+	 * 
+	 * @param slide
+	 *            the slide as origin of outputs
+	 * @param outputValues
+	 *            map of indexed output variables
+	 */
 	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
 		if (controller != null) {
 			controller.addSlideOutputs(slide, outputValues);
 		}
 	}
 
+	/**
+	 * Look into provided map of branches and return the next one according to
+	 * internal state
+	 * 
+	 * @param branchMap
+	 * @return the next branch or null if map is empty or nothing found.
+	 */
 	public Branch getNextBranch(BranchMap branchMap) {
 		if (branchMap != null && controller != null) {
 			String key = controller.getNextBranchKey();
-			
+
 			Branch branch = branchMap.get(key);
-			
+
 			if (branch != null) {
 				find(branch);
 				return current();

@@ -47,6 +47,9 @@ import com.vaadin.ui.AbstractMedia;
  */
 public class SlideComponentUtility {
 
+	private SlideComponentUtility() {
+	}
+
 	private static Orientation getOrientation(StringMap properties, Orientation defaultValue) {
 		String value = properties.get(DocumentConstants.ORIENTATION);
 

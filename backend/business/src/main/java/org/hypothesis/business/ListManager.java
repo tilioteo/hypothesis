@@ -16,6 +16,8 @@ import org.hypothesis.data.interfaces.HasList;
  * 
  *         Hypothesis
  *
+ * @param <T> type (of parental object) extending {@link HasList} of item type
+ * @param <E> item type
  */
 @SuppressWarnings("serial")
 public class ListManager<T extends HasList<E>, E> implements Serializable {
@@ -37,6 +39,9 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 		return element;
 	}
 
+	/**
+	 * @return parent list object
+	 */
 	public T getParent() {
 		return parent;
 	}
@@ -45,10 +50,19 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 		return list.size();
 	}
 
+	/**
+	 * Returns current item by internal state
+	 * @return element or null
+	 */
 	public E current() {
 		return getByInternalIndex();
 	}
 
+	/**
+	 * Get an item by index and set internal state
+	 * @param index index value
+	 * @return found item or null
+	 */
 	public E get(int index) {
 		if (index >= 0 && index < list.size()) {
 			this.index = index;
@@ -58,11 +72,20 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 		return getByInternalIndex();
 	}
 
+	/**
+	 * Look for an item and set internal state
+	 * @param item to look for
+	 * @return the same item or null if not found
+	 */
 	public E find(E item) {
 		index = list.indexOf(item);
 		return getByInternalIndex();
 	}
 
+	/**
+	 * Returns next item and change internal state
+	 * @return element or null
+	 */
 	public E next() {
 		if (index < list.size()) {
 			++index;
@@ -70,6 +93,10 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 		return getByInternalIndex();
 	}
 
+	/**
+	 * Returns prior item and change internal state
+	 * @return element or null
+	 */
 	public E prior() {
 		if (index >= 0) {
 			--index;
@@ -98,13 +125,17 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 				}
 			}
 
-			if (list.size() > 0) {
+			if (!list.isEmpty()) {
 				index = 0;
 				getByInternalIndex();
 			}
 		}
 	}
 
+	/**
+	 * Create list of random indexes. The count of indexes equals to count of items.
+	 * @return new list
+	 */
 	public List<Integer> createRandomOrder() {
 		LinkedList<Integer> order = new LinkedList<Integer>();
 
@@ -118,8 +149,12 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 		return order;
 	}
 
+	/**
+	 * Sets the internal item order by provided index list
+	 * @param order
+	 */
 	public void setOrder(List<Integer> order) {
-		if (order.size() > 0 && list.size() > 0) {
+		if (order != null && !order.isEmpty() && !list.isEmpty()) {
 			LinkedList<E> tempList = new LinkedList<>();
 
 			int size = Math.min(order.size(), list.size());

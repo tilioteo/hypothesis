@@ -19,7 +19,6 @@ import org.hypothesis.business.Structured;
 import org.hypothesis.data.DocumentWriter;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.model.ActionEvent;
-import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
@@ -84,14 +83,14 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 				try {
 					if (field.get(data) != null) {
 						String value = field.get(data).toString();
-						/*if (Double.class.isAssignableFrom(field.getType())
-								|| Float.class.isAssignableFrom(field.getType())) {
-							
-							try {
-								Double doubleValue = Double.valueOf(value);
-								value = String.format(Locale.ROOT, "%g", doubleValue);
-							} catch(NumberFormatException e) {}
-						}*/
+						/*
+						 * if (Double.class.isAssignableFrom(field.getType()) ||
+						 * Float.class.isAssignableFrom(field.getType())) {
+						 * 
+						 * try { Double doubleValue = Double.valueOf(value);
+						 * value = String.format(Locale.ROOT, "%g",
+						 * doubleValue); } catch(NumberFormatException e) {} }
+						 */
 
 						String name;
 						if (structured != null) {
@@ -138,7 +137,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 							baseElement.setAttribute(attributeName, value);
 						}
 					}
-				} catch (Throwable e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -146,8 +145,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 	}
 
 	private String formatXmlName(String name) {
-		name = name.substring(0, 1).toUpperCase() + name.substring(1);
-		return ISO9075.encode(name);
+		return ISO9075.encode(name.substring(0, 1).toUpperCase() + name.substring(1));
 	}
 
 	private Element ensureSubElement(Element baseElement, String name) {
@@ -179,21 +177,18 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 	}
 
 	private void addActionOutputs(Element root, ActionEvent event) {
-		if (event.getAction() instanceof Action) {
-			Action action = (Action) event.getAction();
-			Map<Integer, ExchangeVariable> outputs = action.getOutputs();
+		Map<Integer, ExchangeVariable> outputs = event.getAction().getOutputs();
 
-			if (!outputs.isEmpty()) {
-				Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
-				for (ExchangeVariable output : outputs.values()) {
-					String indexString = "" + output.getIndex();
-					Object value = output.getValue();
+		if (!outputs.isEmpty()) {
+			Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
+			for (ExchangeVariable output : outputs.values()) {
+				String indexString = Integer.toString(output.getIndex());
+				Object value = output.getValue();
 
-					if (value != null) {
-						Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
-						outputValueElement.setAttribute(DocumentConstants.INDEX, indexString);
-						writeOutputValue(outputValueElement, value);
-					}
+				if (value != null) {
+					Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
+					outputValueElement.setAttribute(DocumentConstants.INDEX, indexString);
+					writeOutputValue(outputValueElement, value);
 				}
 			}
 		}
@@ -354,7 +349,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 				typeName = DocumentConstants.OBJECT_ARRAY;
 
 				ArrayList<?> array = (ArrayList<?>) value;
-				if (array.size() > 0) {
+				if (!array.isEmpty()) {
 					Object testItem = null;
 					for (int i = 0; i < array.size(); ++i) {
 						testItem = array.get(i);
@@ -413,7 +408,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
 
 			for (ExchangeVariable output : outputs.values()) {
-				String indexString = "" + output.getIndex();
+				String indexString = Integer.toString(output.getIndex());
 				Object value = output.getValue();
 
 				if (value != null) {
@@ -455,7 +450,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			element.setText((String) value);
 		} else if (type == ArrayList.class) {
 			ArrayList<?> array = (ArrayList<?>) value;
-			if (array.size() > 0) {
+			if (!array.isEmpty()) {
 				Class<?> itemType = array.get(0).getClass();
 				String str = "";
 

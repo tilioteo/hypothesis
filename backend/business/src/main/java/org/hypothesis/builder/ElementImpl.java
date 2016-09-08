@@ -27,7 +27,7 @@ public class ElementImpl implements Element {
 	private String name;
 	private String namespace;
 	private String shortName;
-	
+
 	private String text = null;
 
 	private ElementImpl parent = null;
@@ -61,12 +61,12 @@ public class ElementImpl implements Element {
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public String getNamespace() {
 		return namespace;
 	}
-	
+
 	@Override
 	public String getShortName() {
 		return shortName;
@@ -75,10 +75,10 @@ public class ElementImpl implements Element {
 	@Override
 	public void setName(String name) {
 		this.name = name;
-		
+
 		if (name != null) {
 			int lastIndex = name.lastIndexOf(Document.NAMESPACE_SEPARATOR);
-			
+
 			this.namespace = lastIndex > 0 ? name.substring(0, lastIndex) : "";
 			this.shortName = lastIndex > 0 ? name.substring(lastIndex + 1) : name;
 		}
@@ -197,7 +197,7 @@ public class ElementImpl implements Element {
 		if (children.contains(element)) {
 			children.remove(element);
 			if (element instanceof ElementImpl) {
-				((ElementImpl)element).parent = null;
+				((ElementImpl) element).parent = null;
 			}
 		}
 	}
@@ -206,9 +206,9 @@ public class ElementImpl implements Element {
 	public Element firstChild() {
 		try {
 			return children.getFirst();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 		}
-		
+
 		return null;
 	}
 
@@ -216,9 +216,9 @@ public class ElementImpl implements Element {
 	public Element lastChild() {
 		try {
 			return children.getLast();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 		}
-		
+
 		return null;
 	}
 
@@ -298,12 +298,13 @@ public class ElementImpl implements Element {
 		return toString(detailed, 0);
 	}
 
+	@Override
 	public String toString(boolean detailed, int ident) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < ident ; ++i) {
+		for (int i = 0; i < ident; ++i) {
 			builder.append("\t");
 		}
-		
+
 		builder.append("<" + name + ":" + text + "(");
 
 		if (!attributes.isEmpty()) {
@@ -317,7 +318,7 @@ public class ElementImpl implements Element {
 
 		if (!children.isEmpty()) {
 			String str = "";
-			
+
 			if (!detailed) {
 				for (Element element : children) {
 					str += element.getName() + ",";
@@ -325,17 +326,17 @@ public class ElementImpl implements Element {
 				builder.append(str.substring(0, str.length() - 1));
 			} else {
 				builder.append("\n");
-				
+
 				for (Element element : children) {
 					builder.append(element.toString(detailed, ident + 1));
 					builder.append("\n");
 				}
 			}
-			
-			for (int i = 0; i < ident ; ++i) {
+
+			for (int i = 0; i < ident; ++i) {
 				builder.append("\t");
 			}
-			
+
 		}
 		builder.append("]>");
 
