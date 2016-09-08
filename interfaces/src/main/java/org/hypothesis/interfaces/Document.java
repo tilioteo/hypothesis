@@ -14,12 +14,12 @@ import java.io.Serializable;
  */
 public interface Document extends Serializable {
 
-	public static String NAMESPACE_SEPARATOR = ".";
+	String NAMESPACE_SEPARATOR = ".";
 
-	public Element root();
+	Element root();
 
-	public Element createRoot(String name);
+	Element createRoot(String name);
 
-	public Element createRoot(Element element);
+	Element createRoot(Element element);
 
 }

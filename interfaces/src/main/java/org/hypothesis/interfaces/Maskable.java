@@ -12,10 +12,10 @@ package org.hypothesis.interfaces;
  */
 public interface Maskable {
 
-	public void mask();
+	void mask();
 
-	public void mask(String color);
+	void mask(String color);
 
-	public void unmask();
+	void unmask();
 
 }

@@ -16,6 +16,6 @@ import org.hypothesis.data.model.Status;
  */
 public interface HasStatus extends Serializable {
 
-	public Status getStatus();
+	Status getStatus();
 
 }

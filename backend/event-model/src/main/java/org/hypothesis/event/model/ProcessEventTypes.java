@@ -17,7 +17,7 @@ public class ProcessEventTypes {
 
 	private static long nextId = 0;
 
-	private static final HashMap<String, ProcessEventType> events = new HashMap<String, ProcessEventType>();
+	private static final HashMap<String, ProcessEventType> events = new HashMap<>();
 
 	public static final String Null = null;// "";
 

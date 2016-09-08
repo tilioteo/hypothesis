@@ -27,7 +27,7 @@ import com.vaadin.ui.Component;
  */
 public class EventManager {
 
-	private SlideContainerPresenter presenter;
+	private final SlideContainerPresenter presenter;
 
 	public EventManager(SlideContainerPresenter presenter) {
 		this.presenter = presenter;

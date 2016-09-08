@@ -90,7 +90,7 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 	@Override
 	public void addValidator(Validator validator) {
 		if (validators == null) {
-			validators = new LinkedList<Validator>();
+			validators = new LinkedList<>();
 		}
 		validators.add(validator);
 		markAsDirty();
@@ -128,7 +128,7 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 
 	protected void validate(Collection<SelectButton> values) throws InvalidValueException {
 
-		List<InvalidValueException> validationExceptions = new ArrayList<InvalidValueException>();
+		List<InvalidValueException> validationExceptions = new ArrayList<>();
 		if (validators != null) {
 			// Gets all the validation errors
 			for (Validator v : validators) {

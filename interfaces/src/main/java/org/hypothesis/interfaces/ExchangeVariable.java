@@ -15,9 +15,9 @@ import java.util.Map;
  */
 public interface ExchangeVariable extends Serializable {
 
-	public int getIndex();
+	int getIndex();
 
-	public Object getValue();
+	Object getValue();
 
-	public void setVariables(Map<String, Variable<?>> variables);
+	void setVariables(Map<String, Variable<?>> variables);
 }

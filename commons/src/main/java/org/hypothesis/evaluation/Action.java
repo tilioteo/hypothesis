@@ -21,8 +21,8 @@ import org.hypothesis.interfaces.HasVariables;
 @SuppressWarnings("serial")
 public class Action extends AbstractBaseAction {
 
-	private HashMap<Integer, ExchangeVariable> outputValues = new HashMap<>();
-	private List<Evaluable> evaluables = new ArrayList<>();
+	private final HashMap<Integer, ExchangeVariable> outputValues = new HashMap<>();
+	private final List<Evaluable> evaluables = new ArrayList<>();
 
 	public Action(HasVariables variables, String id) {
 		super(variables, id);

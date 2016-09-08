@@ -24,7 +24,7 @@ import org.hypothesis.data.model.Task;
 @SuppressWarnings("serial")
 public class PersistenceService implements Serializable {
 
-	private static Logger log = Logger.getLogger(PersistenceService.class);
+	private static final Logger log = Logger.getLogger(PersistenceService.class);
 
 	public static PersistenceService newInstance() {
 		return new PersistenceService();

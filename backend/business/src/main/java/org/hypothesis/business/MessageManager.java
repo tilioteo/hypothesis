@@ -28,9 +28,9 @@ import com.tilioteo.common.Strings;
 @SuppressWarnings("serial")
 public class MessageManager implements Serializable {
 
-	private MessageService messageService;
+	private final MessageService messageService;
 
-	private DocumentReader reader = new XmlDocumentReader();
+	private final DocumentReader reader = new XmlDocumentReader();
 
 	public MessageManager() {
 		messageService = MessageService.newInstance();

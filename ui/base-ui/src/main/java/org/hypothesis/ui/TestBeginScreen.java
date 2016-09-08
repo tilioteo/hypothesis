@@ -31,8 +31,8 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class TestBeginScreen extends VerticalLayout implements ProcessView, ClickListener {
 
-	private boolean fullscreen;
-	private int countDown;
+	private final boolean fullscreen;
+	private final int countDown;
 	private boolean clicked = false;
 
 	private HorizontalLayout headingLayout;

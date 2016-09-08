@@ -14,6 +14,6 @@ import java.io.Serializable;
  */
 public interface HasProcessEventBus extends Serializable {
 
-	public ProcessEventBus getProcessEventBus();
+	ProcessEventBus getProcessEventBus();
 
 }

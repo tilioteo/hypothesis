@@ -14,8 +14,8 @@ import java.io.Serializable;
  */
 @SuppressWarnings("serial")
 public class ProcessEventType implements Serializable {
-	private long id;
-	private String name;
+	private final long id;
+	private final String name;
 
 	public ProcessEventType(long id, String name) {
 		this.id = id;

@@ -17,8 +17,8 @@ import com.vaadin.ui.Component;
  */
 public interface ComponentWrapper extends Serializable {
 
-	public Component getComponent();
+	Component getComponent();
 
-	public Alignment getAlignment();
+	Alignment getAlignment();
 
 }

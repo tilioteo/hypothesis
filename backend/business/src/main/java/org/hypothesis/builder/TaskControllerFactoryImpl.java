@@ -26,7 +26,7 @@ import org.hypothesis.interfaces.Evaluator;
 @SuppressWarnings("serial")
 public class TaskControllerFactoryImpl implements TaskControllerFactory {
 
-	private static Logger log = Logger.getLogger(TaskControllerFactoryImpl.class);
+	private static final Logger log = Logger.getLogger(TaskControllerFactoryImpl.class);
 
 	@Override
 	public TaskController buildTaskController(String data, DocumentReader reader) {

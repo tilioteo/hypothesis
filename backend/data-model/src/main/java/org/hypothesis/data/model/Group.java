@@ -47,7 +47,7 @@ public final class Group extends SerializableIdObject {
 	/**
 	 * set of users which belong to group
 	 */
-	private Set<User> users = new HashSet<User>();
+	private Set<User> users = new HashSet<>();
 
 	@Override
 	@Id

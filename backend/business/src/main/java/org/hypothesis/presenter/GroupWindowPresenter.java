@@ -62,9 +62,9 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class GroupWindowPresenter extends AbstractWindowPresenter {
 
-	private GroupService groupService;
-	private UserService userService;
-	private PermissionService permissionService;
+	private final GroupService groupService;
+	private final UserService userService;
+	private final PermissionService permissionService;
 
 	private TextField idField;
 	private TextField nameField;
@@ -229,7 +229,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void initFields() {
-		fields = new ArrayList<AbstractField<?>>();
+		fields = new ArrayList<>();
 
 		// ID
 		buildIdField();
@@ -258,7 +258,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			buildUsersField(!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
 
 			for (User user : users) {
-				Table table = (Table) usersField;
+				Table table = usersField;
 				table.addItem(user);
 				Item row = table.getItem(user);
 				row.getItemProperty(FieldConstants.USERNAME).setValue(user.getUsername());
@@ -282,7 +282,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		// TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
 
 		for (Pack pack : packs) {
-			Table table = (Table) packsField;
+			Table table = packsField;
 			table.addItem(pack);
 			Item row = table.getItem(pack);
 			row.getItemProperty(FieldConstants.NAME).setValue(pack.getName());
@@ -310,7 +310,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			if (state.equals(WindowState.UPDATE)) {
 				users = group.getUsers();
 			} else {
-				users = new HashSet<User>();
+				users = new HashSet<>();
 			}
 
 			for (Object itemId : usersField.getItemIds()) {
@@ -331,7 +331,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		if (state.equals(WindowState.UPDATE)) {
 			packs = permissionService.getGroupPacks(group);
 		} else {
-			packs = new HashSet<Pack>();
+			packs = new HashSet<>();
 		}
 
 		for (Object itemId : packsField.getItemIds()) {

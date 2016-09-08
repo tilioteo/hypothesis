@@ -19,9 +19,9 @@ import org.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class Pattern implements Formula {
 
-	private static Logger log = Logger.getLogger(Pattern.class);
+	private static final Logger log = Logger.getLogger(Pattern.class);
 
-	private HashMap<Long, Nick> nickMap = new HashMap<>();
+	private final HashMap<Long, Nick> nickMap = new HashMap<>();
 
 	public void addNick(int number, Nick nick) {
 		if (nick != null)

@@ -18,7 +18,7 @@ import java.util.Map;
 public enum Status implements Serializable {
 	CREATED(1), STARTED(2), FINISHED(3), BROKEN_BY_CLIENT(4), BROKEN_BY_ERROR(5);
 
-	private static final Map<Integer, Status> lookup = new HashMap<Integer, Status>();
+	private static final Map<Integer, Status> lookup = new HashMap<>();
 
 	static {
 		for (Status s : EnumSet.allOf(Status.class))
@@ -29,9 +29,9 @@ public enum Status implements Serializable {
 		return lookup.get(code);
 	}
 
-	private Integer code;
+	private final Integer code;
 
-	private Status(Integer code) {
+	Status(Integer code) {
 		this.code = code;
 	}
 

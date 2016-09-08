@@ -17,7 +17,7 @@ import com.vaadin.ui.CssLayout;
 @SuppressWarnings("serial")
 public class SlideContainer extends CssLayout {
 
-	private SlidePresenter presenter;
+	private final SlidePresenter presenter;
 
 	public SlideContainer(SlidePresenter presenter) {
 		super();

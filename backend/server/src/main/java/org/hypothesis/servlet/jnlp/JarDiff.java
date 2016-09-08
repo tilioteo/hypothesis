@@ -208,10 +208,10 @@ public class JarDiff implements JarDiffConstants {
 		private void index() throws IOException {
 			Enumeration<JarEntry> entries = _jar.entries();
 
-			_nameToEntryMap = new HashMap<String, JarEntry>();
-			_crcToEntryMap = new HashMap<Long, LinkedList<JarEntry>>();
+			_nameToEntryMap = new HashMap<>();
+			_crcToEntryMap = new HashMap<>();
 
-			_entries = new ArrayList<JarEntry>();
+			_entries = new ArrayList<>();
 			if (entries != null) {
 				while (entries.hasMoreElements()) {
 					JarEntry entry = entries.nextElement();
@@ -241,7 +241,7 @@ public class JarDiff implements JarDiffConstants {
 
 						// first create the linked list and put in the new
 						// entry
-						LinkedList<JarEntry> ll = new LinkedList<JarEntry>();
+						LinkedList<JarEntry> ll = new LinkedList<>();
 						ll.add(entry);
 
 						// create the new entry in the hashmap
@@ -254,7 +254,7 @@ public class JarDiff implements JarDiffConstants {
 	}
 
 	private static final int DEFAULT_READ_SIZE = 2048;
-	private static byte[] newBytes = new byte[DEFAULT_READ_SIZE];
+	private static final byte[] newBytes = new byte[DEFAULT_READ_SIZE];
 
 	/*
 	 * public static ResourceBundle getResources() { if (_resources == null) {
@@ -263,7 +263,7 @@ public class JarDiff implements JarDiffConstants {
 	 * }
 	 */
 
-	private static byte[] oldBytes = new byte[DEFAULT_READ_SIZE];
+	private static final byte[] oldBytes = new byte[DEFAULT_READ_SIZE];
 
 	// private static ResourceBundle _resources = null;
 
@@ -327,11 +327,11 @@ public class JarDiff implements JarDiffConstants {
 		try {
 			Iterator<JarEntry> jarEntries;
 			Iterator<String> nameEntries;
-			HashMap<String, String> moved = new HashMap<String, String>();
-			// HashSet<String> visited = new HashSet<String>();
-			HashSet<String> implicit = new HashSet<String>();
-			HashSet<String> moveSrc = new HashSet<String>();
-			HashSet<String> newEntries = new HashSet<String>();
+			HashMap<String, String> moved = new HashMap<>();
+			// HashSet<String> visited = new HashSet<>();
+			HashSet<String> implicit = new HashSet<>();
+			HashSet<String> moveSrc = new HashSet<>();
+			HashSet<String> newEntries = new HashSet<>();
 
 			// FIRST PASS
 			// Go through the entries in new jar and
@@ -393,7 +393,7 @@ public class JarDiff implements JarDiffConstants {
 
 			// SECOND PASS: <deleted files> = <oldjarnames> - <implicitmoves> -
 			// <source of move commands> - <new or modified entries>
-			ArrayList<String> deleted = new ArrayList<String>();
+			ArrayList<String> deleted = new ArrayList<>();
 			jarEntries = oldJar.getJarEntries();
 			if (jarEntries != null) {
 				while (jarEntries.hasNext()) {

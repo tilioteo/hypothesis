@@ -62,7 +62,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	/**
 	 * list of contained branches
 	 */
-	private List<Branch> branches = new LinkedList<Branch>();
+	private List<Branch> branches = new LinkedList<>();
 
 	@Override
 	@Id

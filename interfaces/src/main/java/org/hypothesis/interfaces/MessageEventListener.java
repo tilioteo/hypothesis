@@ -15,6 +15,6 @@ import java.util.EventObject;
  */
 public interface MessageEventListener extends EventListener {
 
-	public void handleEvent(EventObject event);
+	void handleEvent(EventObject event);
 
 }

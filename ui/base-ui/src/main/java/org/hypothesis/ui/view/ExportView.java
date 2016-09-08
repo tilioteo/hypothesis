@@ -20,7 +20,7 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings({ "serial" })
 public class ExportView extends VerticalLayout implements View {
 
-	private ExportPresenter presenter;
+	private final ExportPresenter presenter;
 
 	public ExportView(ExportPresenter presenter) {
 		this.presenter = presenter;

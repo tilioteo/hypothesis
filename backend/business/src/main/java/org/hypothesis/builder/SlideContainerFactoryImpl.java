@@ -88,7 +88,7 @@ import com.vaadin.ui.Layout;
 @SuppressWarnings("serial")
 public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
-	private static Logger log = Logger.getLogger(SlideContainerFactoryImpl.class);
+	private static final Logger log = Logger.getLogger(SlideContainerFactoryImpl.class);
 
 	@Override
 	public SlideContainer buildSlideContainer(String template, String content, DocumentReader reader) {

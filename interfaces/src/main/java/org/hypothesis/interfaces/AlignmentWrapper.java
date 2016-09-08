@@ -16,8 +16,8 @@ import com.vaadin.ui.Alignment;
  */
 public interface AlignmentWrapper extends Serializable {
 
-	public Alignment getAlignment();
+	Alignment getAlignment();
 
-	public void setAlignment(Alignment alignment);
+	void setAlignment(Alignment alignment);
 
 }

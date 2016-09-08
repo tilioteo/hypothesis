@@ -35,7 +35,7 @@ public class Message implements Serializable {
 	private JsonObject defs;
 	private JsonObject data;
 
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S", Locale.ENGLISH);
+	private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S", Locale.ENGLISH);
 
 	protected Message() {
 	}
@@ -156,8 +156,7 @@ public class Message implements Serializable {
 
 	public Long getReceiverId() {
 		try {
-			Long id = (long) json.getNumber(MESSAGE_RECEIVER);
-			return id;
+			return (Long) (long) json.getNumber(MESSAGE_RECEIVER);
 		} catch (Throwable e) {}
 
 		return null;
@@ -173,8 +172,7 @@ public class Message implements Serializable {
 
 	private Date stringToDate(String string) {
 		try {
-			Date date = dateFormat.parse(string);
-			return date;
+			return dateFormat.parse(string);
 		} catch (ParseException e) {}
 		
 		return null;

@@ -20,7 +20,7 @@ import java.util.Iterator;
  */
 public class PathRemapper {
 
-	HashMap<String, String> pathremap = new HashMap<String, String>();
+	final HashMap<String, String> pathremap = new HashMap<>();
 
 	public String get(String path) {
 		if (pathremap.size() > 0) {
@@ -30,7 +30,7 @@ public class PathRemapper {
 
 			// partial match
 			Iterator<String> names = pathremap.keySet().iterator();
-			ArrayList<String> potentialMatches = new ArrayList<String>();
+			ArrayList<String> potentialMatches = new ArrayList<>();
 			while (names.hasNext()) {
 				String match = names.next();
 				if (path.contains(match))

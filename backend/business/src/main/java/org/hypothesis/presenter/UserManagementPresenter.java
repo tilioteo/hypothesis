@@ -75,9 +75,9 @@ import net.engio.mbassy.listener.Handler;
 @SuppressWarnings("serial")
 public class UserManagementPresenter extends AbstractManagementPresenter {
 
-	private PermissionService permissionService;
-	private UserService userService;
-	private GroupService groupService;
+	private final PermissionService permissionService;
+	private final UserService userService;
+	private final GroupService groupService;
 
 	private UserWindowPresenter userWindowPresenter;
 
@@ -206,9 +206,8 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		};
 
 		String filename = Messages.getString("Caption.Export.UserFileName");
-		StreamResource resource = new StreamResource(source, filename);
 
-		return resource;
+		return new StreamResource(source, filename);
 	}
 
 	private InputStream getExportFile() {
@@ -331,7 +330,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 	@SuppressWarnings("unchecked")
 	private Collection<User> getSelectedUsers() {
-		Collection<User> users = new HashSet<User>();
+		Collection<User> users = new HashSet<>();
 		for (Long id : getSelectedUserIds()) {
 			users.add(((BeanItem<User>) table.getItem(id)).getBean());
 		}
@@ -414,7 +413,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			user = userService.merge(user);
 
 			Set<Role> roles = user.getRoles();
-			List<String> sortedRoles = new ArrayList<String>();
+			List<String> sortedRoles = new ArrayList<>();
 			for (Role role : roles) {
 				sortedRoles.add(role.getName());
 			}
@@ -442,7 +441,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			user = userService.merge(user);
 
 			Set<Group> groups = user.getGroups();
-			List<String> sortedGroups = new ArrayList<String>();
+			List<String> sortedGroups = new ArrayList<>();
 			for (Group group : groups) {
 				sortedGroups.add(group.getName());
 			}
@@ -498,8 +497,8 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
 
 			Set<Pack> packs = permissionService.findUserPacks2(user, false);
-			List<String> sortedPacks = new ArrayList<String>();
-			List<String> sortedPackDescs = new ArrayList<String>();
+			List<String> sortedPacks = new ArrayList<>();
+			List<String> sortedPackDescs = new ArrayList<>();
 			for (Pack pack : packs) {
 				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", pack.getName(), pack.getId()));
 				sortedPackDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),

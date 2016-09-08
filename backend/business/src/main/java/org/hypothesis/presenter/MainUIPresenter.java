@@ -41,17 +41,17 @@ import net.engio.mbassy.listener.Handler;
 @SuppressWarnings("serial")
 public class MainUIPresenter extends AbstractUIPresenter implements HasMainEventBus {
 
-	private MainUI ui;
+	private final MainUI ui;
 	private MainScreen mainScreen = null;
 	private LoginScreen loginScreen = null;
 
-	private MainEventBus bus;
+	private final MainEventBus bus;
 
 	private String uid;
 	// private String pid = null;
 
-	private LoginPresenter loginPresenter;
-	private MainPresenter mainPresenter;
+	private final LoginPresenter loginPresenter;
+	private final MainPresenter mainPresenter;
 
 	private UserService userService;
 

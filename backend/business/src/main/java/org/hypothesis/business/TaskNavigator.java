@@ -17,7 +17,7 @@ import org.hypothesis.evaluation.Node;
 @SuppressWarnings("serial")
 public class TaskNavigator implements Serializable {
 
-	private Node node;
+	private final Node node;
 
 	public TaskNavigator(Node node) {
 		this.node = node;

@@ -20,7 +20,7 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings({ "serial" })
 public class ManagementView extends VerticalLayout implements View {
 
-	private ManagementPresenter presenter;
+	private final ManagementPresenter presenter;
 
 	public ManagementView(ManagementPresenter presenter) {
 		this.presenter = presenter;

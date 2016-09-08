@@ -55,7 +55,7 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	/**
 	 * list of tasks
 	 */
-	private List<Task> tasks = new LinkedList<Task>();
+	private List<Task> tasks = new LinkedList<>();
 
 	@Override
 	@Id
@@ -154,11 +154,8 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 			return false;
 		}
 
-		if (!getTasks().equals(other.getTasks())) {
-			return false;
-		}
+		return getTasks().equals(other.getTasks());
 
-		return true;
 	}
 
 	@Override

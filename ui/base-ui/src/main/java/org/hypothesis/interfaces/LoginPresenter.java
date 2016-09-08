@@ -16,10 +16,10 @@ import com.vaadin.ui.Component;
  */
 public interface LoginPresenter extends ComponentPresenter {
 
-	public Component buildLoginForm();
+	Component buildLoginForm();
 
-	public void refreshLoginForm();
+	void refreshLoginForm();
 
-	public LoginScreen createScreen();
+	LoginScreen createScreen();
 
 }

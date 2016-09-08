@@ -68,9 +68,9 @@ import org.w3c.dom.NodeList;
 public class JnlpFileHandler {
 	private static class JnlpFileEntry {
 		// Response
-		DownloadResponse _response;
+		final DownloadResponse _response;
 		// Keeps track of cache is out of date
-		private long _lastModified;
+		private final long _lastModified;
 
 		// Constructor
 		JnlpFileEntry(DownloadResponse response, long lastmodfied) {
@@ -89,14 +89,14 @@ public class JnlpFileHandler {
 
 	private static final String JNLP_MIME_TYPE = "application/x-java-jnlp-file";
 	// private static final String HEADER_LASTMOD = "Last-Modified";
-	private ServletContext _servletContext;
+	private final ServletContext _servletContext;
 
 	private HashMap<String, JnlpFileEntry> _jnlpFiles = null;
 
 	/** Initialize JnlpFileHandler for the specific ServletContext */
 	public JnlpFileHandler(ServletContext servletContext) {
 		_servletContext = servletContext;
-		_jnlpFiles = new HashMap<String, JnlpFileHandler.JnlpFileEntry>();
+		_jnlpFiles = new HashMap<>();
 	}
 
 	private int getIntValue(String key, int start, int end) {

@@ -233,7 +233,7 @@ abstract public class DownloadResponse {
 			response.setContentType(JNLP_ERROR_MIMETYPE);
 			PrintWriter pw = response.getWriter();
 			pw.println(_message);
-		};
+		}
 
 		@Override
 		public String toString() {

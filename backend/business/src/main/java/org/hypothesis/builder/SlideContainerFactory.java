@@ -17,6 +17,6 @@ import org.hypothesis.ui.SlideContainer;
  */
 public interface SlideContainerFactory extends Serializable {
 
-	public SlideContainer buildSlideContainer(String template, String content, DocumentReader reader);
+	SlideContainer buildSlideContainer(String template, String content, DocumentReader reader);
 
 }

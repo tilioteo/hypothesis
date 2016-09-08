@@ -26,9 +26,8 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class SlideManagementView extends HorizontalLayout implements View {
 
-	private SlideManagementPresenter presenter;
+	private final SlideManagementPresenter presenter;
 
-	private VerticalLayout mainLayout;
 	private AceEditor editor1;
 	private AceEditor editor2;
 
@@ -65,7 +64,7 @@ public class SlideManagementView extends HorizontalLayout implements View {
 		Panel panel = new Panel();
 		panel.setSizeFull();
 
-		mainLayout = new VerticalLayout();
+		VerticalLayout mainLayout = new VerticalLayout();
 		mainLayout.setSizeFull();
 		panel.setContent(mainLayout);
 

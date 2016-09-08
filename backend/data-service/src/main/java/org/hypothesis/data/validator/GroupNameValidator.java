@@ -18,8 +18,8 @@ import com.vaadin.data.Validator;
 @SuppressWarnings("serial")
 public class GroupNameValidator implements Validator {
 
-	private GroupService groupService;
-	private Long id;
+	private final GroupService groupService;
+	private final Long id;
 
 	public GroupNameValidator(Long id) {
 		groupService = GroupService.newInstance();

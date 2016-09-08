@@ -21,9 +21,9 @@ import org.hypothesis.interfaces.Variable;
 @SuppressWarnings("serial")
 public class WhileStatement implements Evaluable {
 
-	private HasVariables variables;
-	private Expression expression;
-	private List<Evaluable> evaluables = new ArrayList<>();
+	private final HasVariables variables;
+	private final Expression expression;
+	private final List<Evaluable> evaluables = new ArrayList<>();
 
 	public WhileStatement(HasVariables variables, Expression expression) {
 		this.variables = variables;

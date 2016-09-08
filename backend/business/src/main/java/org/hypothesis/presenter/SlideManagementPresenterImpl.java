@@ -46,17 +46,16 @@ import net.engio.mbassy.listener.Handler;
 @SuppressWarnings("serial")
 public class SlideManagementPresenterImpl implements SlideManagementPresenter, HasProcessEventBus {
 
-	private SlideManagementView view;
-	private DocumentReader reader = new XmlDocumentReader();
+	private final DocumentReader reader = new XmlDocumentReader();
 
 	private SlideContainer container;
 	//private SliderPanel sliderPanel;
 
-	private ProcessEventBus bus = ProcessEventBus.createInstance(this);
-	private SlideContainerFactoryDeferred factory = new SlideContainerFactoryDeferred(bus);
+	private final ProcessEventBus bus = ProcessEventBus.createInstance(this);
+	private final SlideContainerFactoryDeferred factory = new SlideContainerFactoryDeferred(bus);
 
 	private Mask mask;
-	private FancyNotifications notifications = new FancyNotifications();
+	private final FancyNotifications notifications = new FancyNotifications();
 
 	@Override
 	public void attach() {
@@ -75,9 +74,8 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 
 	@Override
 	public View createView() {
-		view = new SlideManagementView(this);
 
-		return view;
+		return new SlideManagementView(this);
 	}
 
 	@Override

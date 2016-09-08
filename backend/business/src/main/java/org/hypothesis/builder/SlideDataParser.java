@@ -25,7 +25,7 @@ import org.hypothesis.utility.XmlUtility;
 public class SlideDataParser {
 	
 	public static List<String> parseOutputValues(String xmlString) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		Document doc = XmlUtility.readString(xmlString);
 		if (doc != null) {
 			@SuppressWarnings("unchecked")
@@ -81,7 +81,7 @@ public class SlideDataParser {
 							Map<String, String> valueCaptionMap = wrapper.fieldValueCaptionMap.get(id);
 							
 							if (null == valueCaptionMap) {
-								valueCaptionMap = new HashMap<String, String>();
+								valueCaptionMap = new HashMap<>();
 								wrapper.fieldValueCaptionMap.put(id, valueCaptionMap);
 							}
 							valueCaptionMap.put(valueId, value);
@@ -97,9 +97,9 @@ public class SlideDataParser {
 	
 	@SuppressWarnings("serial")
 	public static final class FieldWrapper implements Serializable {
-		private HashMap<String, String> fieldCaptionMap = new HashMap<String, String>();
-		private HashMap<String, String> fieldValueMap = new HashMap<String, String>();
-		private HashMap<String, Map<String, String>> fieldValueCaptionMap = new HashMap<String, Map<String, String>>();
+		private final HashMap<String, String> fieldCaptionMap = new HashMap<>();
+		private final HashMap<String, String> fieldValueMap = new HashMap<>();
+		private final HashMap<String, Map<String, String>> fieldValueCaptionMap = new HashMap<>();
 		
 		protected FieldWrapper() {
 		}

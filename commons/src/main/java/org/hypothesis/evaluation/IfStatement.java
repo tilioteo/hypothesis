@@ -20,10 +20,10 @@ import org.hypothesis.interfaces.HasVariables;
 @SuppressWarnings("serial")
 public class IfStatement implements Evaluable {
 
-	private HasVariables variables;
-	private Expression expression;
-	private List<Evaluable> trueBlock = new ArrayList<>();
-	private List<Evaluable> falseBlock = new ArrayList<>();
+	private final HasVariables variables;
+	private final Expression expression;
+	private final List<Evaluable> trueBlock = new ArrayList<>();
+	private final List<Evaluable> falseBlock = new ArrayList<>();
 
 	public IfStatement(HasVariables variables, Expression expression) {
 		this.variables = variables;

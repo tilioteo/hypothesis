@@ -16,10 +16,10 @@ import com.vaadin.ui.Component;
  */
 public interface MenuPresenter extends Serializable {
 
-	public void attach();
+	void attach();
 
-	public void detach();
+	void detach();
 
-	public Component buildContent();
+	Component buildContent();
 
 }

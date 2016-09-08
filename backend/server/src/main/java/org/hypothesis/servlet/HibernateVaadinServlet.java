@@ -27,7 +27,7 @@ import com.vaadin.server.VaadinServlet;
 @SuppressWarnings("serial")
 public class HibernateVaadinServlet extends VaadinServlet implements SessionInitListener, SessionDestroyListener {
 
-	private static Logger log = Logger.getLogger(HibernateVaadinServlet.class);
+	private static final Logger log = Logger.getLogger(HibernateVaadinServlet.class);
 
 	@Override
 	public void init(ServletConfig servletConfig) throws ServletException {

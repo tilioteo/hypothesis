@@ -16,6 +16,6 @@ import org.hypothesis.interfaces.Document;
  */
 public interface DocumentWriter extends Serializable {
 
-	public String writeString(Document document);
+	String writeString(Document document);
 
 }

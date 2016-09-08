@@ -53,7 +53,7 @@ public class ServletUtil {
 	public static Manifest getManifest(ServletContext context) {
 		InputStream inputStream = context.getResourceAsStream("/META-INF/MANIFEST.MF");
 		Manifest manifest = null;
-		;
+
 		try {
 			manifest = new Manifest(inputStream);
 		} catch (IOException e) {

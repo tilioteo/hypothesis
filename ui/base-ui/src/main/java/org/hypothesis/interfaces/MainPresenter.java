@@ -17,14 +17,14 @@ import com.vaadin.ui.ComponentContainer;
  */
 public interface MainPresenter extends ComponentPresenter {
 
-	public Component buildTopPanel();
+	Component buildTopPanel();
 
-	public Component buildMainPane();
+	Component buildMainPane();
 
-	public Component buildBottomPanel();
+	Component buildBottomPanel();
 
-	public ComponentContainer getContent();
+	ComponentContainer getContent();
 
-	public MainScreen createScreen();
+	MainScreen createScreen();
 
 }

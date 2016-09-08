@@ -17,8 +17,8 @@ import org.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class IndexedExpression implements ExchangeVariable {
 
-	private int index;
-	private Expression expression;
+	private final int index;
+	private final Expression expression;
 
 	public IndexedExpression(int index, Expression expression) {
 		this.index = index;

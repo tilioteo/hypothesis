@@ -45,19 +45,19 @@ import com.vaadin.ui.Component;
 @SuppressWarnings("serial")
 public class PublicPacksPresenter implements PacksPresenter {
 
-	protected PermissionService permissionService;
-	private TokenService tokenService;
+	protected final PermissionService permissionService;
+	private final TokenService tokenService;
 
 	private PacksView view;
 
-	private HashMap<PackPanel, BeanItem<Pack>> panelBeans = new HashMap<>();
+	private final HashMap<PackPanel, BeanItem<Pack>> panelBeans = new HashMap<>();
 
 	private User user = null;
 
 	private boolean testStarted = false;
 	private Date featuredStart;
 
-	private ClickListener featuredButtonClickListener = new ClickListener() {
+	private final ClickListener featuredButtonClickListener = new ClickListener() {
 		@Override
 		public void buttonClick(ClickEvent event) {
 			if (!testStarted) {
@@ -84,7 +84,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 		}
 	};
 
-	private ClickListener legacyButtonClickListener = new ClickListener() {
+	private final ClickListener legacyButtonClickListener = new ClickListener() {
 		@Override
 		public void buttonClick(ClickEvent event) {
 			if (!testStarted) {
@@ -107,7 +107,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 		}
 	};
 
-	private WindowClosedListener legacyButtonWindowClosedListener = new WindowClosedListener() {
+	private final WindowClosedListener legacyButtonWindowClosedListener = new WindowClosedListener() {
 		@Override
 		public void windowClosed(WindowClosedEvent event) {
 			testStarted = false;

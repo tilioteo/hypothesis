@@ -34,7 +34,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class PacksView extends HorizontalLayout implements View {
 
-	private PacksPresenter presenter;
+	private final PacksPresenter presenter;
 
 	private VerticalLayout mainLayout;
 	private JavaInfoPanel javaInfoPanel;
@@ -53,7 +53,7 @@ public class PacksView extends HorizontalLayout implements View {
 	private String javaNotInstalledCaption = "javaNotInstalledCaption";
 	private String javaInstallLinkCaption = "javaInstallLinkCaption";
 
-	private JavaCheckedListener javaCheckedListener = new JavaCheckedListener() {
+	private final JavaCheckedListener javaCheckedListener = new JavaCheckedListener() {
 		@Override
 		public void javaChecked(JavaCheckedEvent event) {
 			updateJavaInstalled(event.getResult());

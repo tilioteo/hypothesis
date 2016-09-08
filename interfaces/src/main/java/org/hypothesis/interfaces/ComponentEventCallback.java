@@ -12,9 +12,9 @@ package org.hypothesis.interfaces;
  */
 public interface ComponentEventCallback {
 
-	public void initEvent(ComponentEvent componentEvent);
+	void initEvent(ComponentEvent componentEvent);
 
-	public static final ComponentEventCallback DEFAULT = new ComponentEventCallback() {
+	ComponentEventCallback DEFAULT = new ComponentEventCallback() {
 		@Override
 		public void initEvent(ComponentEvent componentEvent) {
 		}

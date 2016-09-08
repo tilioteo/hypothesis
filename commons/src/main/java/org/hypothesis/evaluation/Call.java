@@ -18,8 +18,8 @@ import org.hypothesis.interfaces.HasActions;
 @SuppressWarnings("serial")
 public class Call implements Evaluable {
 
-	private HasActions actions;
-	private String actionId;
+	private final HasActions actions;
+	private final String actionId;
 
 	public Call(HasActions actions, String actionId) {
 		this.actions = actions;

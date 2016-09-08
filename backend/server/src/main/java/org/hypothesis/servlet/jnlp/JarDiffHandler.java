@@ -53,7 +53,7 @@ import javax.servlet.ServletContext;
  */
 public class JarDiffHandler {
 	static private class JarDiffEntry {
-		private File _jardiffFile; // Location of JARDiff file
+		private final File _jardiffFile; // Location of JARDiff file
 
 		public JarDiffEntry(File jarDiffFile) {
 			_jardiffFile = jarDiffFile;
@@ -66,10 +66,10 @@ public class JarDiffHandler {
 
 	/* Contains information about a particular JARDiff entry */
 	private static class JarDiffKey implements Comparable<JarDiffKey> {
-		private String _name; // Name of file
-		private String _fromVersionId; // From version
-		private String _toVersionId; // To version
-		private boolean _minimal; // True if this is a minimal jardiff
+		private final String _name; // Name of file
+		private final String _fromVersionId; // From version
+		private final String _toVersionId; // To version
+		private final boolean _minimal; // True if this is a minimal jardiff
 
 		/** Constructor used to generate a query object */
 		public JarDiffKey(String name, String fromVersionId, String toVersionId, boolean minimal) {
@@ -187,7 +187,7 @@ public class JarDiffHandler {
 
 	/** Initialize JarDiff handler */
 	public JarDiffHandler(ServletContext servletContext) {
-		_jarDiffEntries = new HashMap<JarDiffKey, JarDiffEntry>();
+		_jarDiffEntries = new HashMap<>();
 		_servletContext = servletContext;
 
 		_jarDiffMimeType = _servletContext.getMimeType("xyz.jardiff");
@@ -376,8 +376,7 @@ public class JarDiffHandler {
 		if (fileURL != null) {
 			File newFile = File.createTempFile("temp", ".jar", tempDir);
 			if (download(fileURL, newFile)) {
-				String filePath = newFile.getPath();
-				return filePath;
+				return newFile.getPath();
 			}
 		}
 		return null;

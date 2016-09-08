@@ -71,20 +71,20 @@ import net.engio.mbassy.listener.Handler;
 @SuppressWarnings("serial")
 public class ProcessManager implements Serializable {
 
-	private static Logger log = Logger.getLogger(ProcessManager.class);
+	private static final Logger log = Logger.getLogger(ProcessManager.class);
 
-	private BranchManager branchManager;
-	private TaskManager taskManager;
+	private final BranchManager branchManager;
+	private final TaskManager taskManager;
 
-	private SlideManager slideManager;
+	private final SlideManager slideManager;
 
-	private PersistenceService persistenceService;
-	private TestService testService;
-	private BranchService branchService;
-	private PermissionService permissionService;
-	private OutputService outputService;
+	private final PersistenceService persistenceService;
+	private final TestService testService;
+	private final BranchService branchService;
+	private final PermissionService permissionService;
+	private final OutputService outputService;
 
-	private AsynchronousService asynchronousService;
+	private final AsynchronousService asynchronousService;
 
 	private boolean testProcessing = false;
 	private boolean slideProcessing = false;
@@ -96,7 +96,7 @@ public class ProcessManager implements Serializable {
 	private Task currentTask = null;
 	private Slide currentSlide = null;
 
-	private ProcessEventBus bus;
+	private final ProcessEventBus bus;
 
 	public ProcessManager(ProcessEventBus bus) {
 		this.bus = bus;

@@ -19,7 +19,7 @@ public class LogUtil {
 
 	public static final String CONTEXT_PARAM_LOG4J_CONFIG_LOCATION = "log4jConfigLocation";
 
-	private static Logger log = Logger.getLogger(LogUtil.class);
+	private static final Logger log = Logger.getLogger(LogUtil.class);
 
 	private static boolean initialized = false;
 

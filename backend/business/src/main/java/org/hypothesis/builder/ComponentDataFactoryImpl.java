@@ -443,13 +443,13 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		} else if (type == byte.class || type == int.class || type == short.class
 				|| type.isAssignableFrom(Integer.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER);
-			element.setText(((Integer) value).toString());
+			element.setText(value.toString());
 		} else if (type == long.class || type.isAssignableFrom(Long.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER);
-			element.setText(((Long) value).toString());
+			element.setText(value.toString());
 		} else if (type == boolean.class || type.isAssignableFrom(Boolean.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.BOOLEAN);
-			element.setText(((Boolean) value).toString());
+			element.setText(value.toString());
 		} else if (type.isAssignableFrom(String.class) || value instanceof String) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.STRING);
 			element.setText((String) value);

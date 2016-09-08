@@ -24,9 +24,9 @@ import org.hypothesis.data.model.User;
 @SuppressWarnings("serial")
 public class GroupService implements Serializable {
 
-	private static Logger log = Logger.getLogger(GroupService.class);
+	private static final Logger log = Logger.getLogger(GroupService.class);
 
-	private HibernateDao<Group, Long> groupDao;
+	private final HibernateDao<Group, Long> groupDao;
 
 	public static GroupService newInstance() {
 		return new GroupService(new HibernateDao<Group, Long>(Group.class));

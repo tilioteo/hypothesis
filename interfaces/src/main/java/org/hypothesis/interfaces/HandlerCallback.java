@@ -16,7 +16,6 @@ import com.vaadin.ui.Component;
  */
 public interface HandlerCallback extends Serializable {
 
-	public void setComponentHandler(Component component, Element element, Element handlerElement, String name, String actionId, Action action,
-			SlidePresenter presenter);
+	void setComponentHandler(Component component, Element element, Element handlerElement, String name, String actionId, Action action, SlidePresenter presenter);
 
 }

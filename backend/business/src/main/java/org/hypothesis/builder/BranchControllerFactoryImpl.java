@@ -31,7 +31,7 @@ import org.hypothesis.interfaces.Element;
 @SuppressWarnings("serial")
 public class BranchControllerFactoryImpl implements BranchControllerFactory {
 
-	private static Logger log = Logger.getLogger(BranchControllerFactoryImpl.class);
+	private static final Logger log = Logger.getLogger(BranchControllerFactoryImpl.class);
 
 	@Override
 	public BranchController buildBranchController(String data, DocumentReader reader) {

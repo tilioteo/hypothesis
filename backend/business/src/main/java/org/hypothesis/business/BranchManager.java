@@ -25,9 +25,9 @@ import org.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
-	private static Logger log = Logger.getLogger(BranchManager.class);
+	private static final Logger log = Logger.getLogger(BranchManager.class);
 
-	private DocumentReader reader = new XmlDocumentReader();
+	private final DocumentReader reader = new XmlDocumentReader();
 
 	private Branch current = null;
 	private BranchController controller = null;

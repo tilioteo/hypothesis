@@ -52,7 +52,7 @@ public class VersionString {
 		return (new VersionString(vs)).contains(vi);
 	}
 
-	private ArrayList<VersionID> _versionIds;
+	private final ArrayList<VersionID> _versionIds;
 
 	/** Constructs a VersionString object from string */
 	public VersionString(String vs) {

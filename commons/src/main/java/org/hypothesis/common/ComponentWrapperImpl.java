@@ -18,8 +18,8 @@ import com.vaadin.ui.Component;
 @SuppressWarnings("serial")
 public final class ComponentWrapperImpl implements ComponentWrapper {
 
-	private Component component;
-	private Alignment alignment;
+	private final Component component;
+	private final Alignment alignment;
 
 	public ComponentWrapperImpl(Component component, Alignment alignment) {
 		this.component = component;

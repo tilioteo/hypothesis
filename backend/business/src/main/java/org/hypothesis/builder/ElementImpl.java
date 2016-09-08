@@ -31,9 +31,9 @@ public class ElementImpl implements Element {
 	private String text = null;
 
 	private ElementImpl parent = null;
-	private LinkedList<Element> children = new LinkedList<>();
+	private final LinkedList<Element> children = new LinkedList<>();
 
-	private HashMap<String, String> attributes = new HashMap<>();
+	private final HashMap<String, String> attributes = new HashMap<>();
 
 	protected ElementImpl(String name, String text) {
 		setName(name);

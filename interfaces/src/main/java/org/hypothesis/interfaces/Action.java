@@ -15,10 +15,10 @@ import java.util.Map;
  */
 public interface Action extends Serializable {
 
-	public void execute();
+	void execute();
 
-	public String getId();
+	String getId();
 
-	public Map<Integer, ExchangeVariable> getOutputs();
+	Map<Integer, ExchangeVariable> getOutputs();
 
 }

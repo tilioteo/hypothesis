@@ -34,7 +34,7 @@ public class ErrorDialog extends Window {
 	private static final double MIN_HEIGHT = 1d;
 	private static final double MAX_HEIGHT = 30d;
 
-	private Button button;
+	private final Button button;
 
 	public ErrorDialog(String caption, String message) {
 		super(caption);
@@ -118,9 +118,8 @@ public class ErrorDialog extends Window {
 		double vmargin = 5d;
 		double hmargin = 1d;
 
-		double[] res = new double[] { width + hmargin, height + btnHeight + vmargin };
 		// System.out.println(res[0] + "," + res[1]);
-		return res;
+		return new double[] { width + hmargin, height + btnHeight + vmargin };
 	}
 
 	/**

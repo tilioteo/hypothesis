@@ -15,10 +15,10 @@ import com.vaadin.ui.Table;
  */
 public interface ManagementPresenter extends ViewPresenter {
 
-	public Component buildHeader();
+	Component buildHeader();
 
-	public Table buildTable();
+	Table buildTable();
 	
-	public void init();
+	void init();
 
 }

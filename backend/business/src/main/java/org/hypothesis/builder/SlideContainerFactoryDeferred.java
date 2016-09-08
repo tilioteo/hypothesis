@@ -18,8 +18,8 @@ import org.hypothesis.presenter.SlideContainerPresenterDeferred;
 @SuppressWarnings("serial")
 public class SlideContainerFactoryDeferred extends SlideContainerFactoryImpl {
 
-	private EventQueue queue = new EventQueue();
-	private ProcessEventBus bus;
+	private final EventQueue queue = new EventQueue();
+	private final ProcessEventBus bus;
 
 	public SlideContainerFactoryDeferred(ProcessEventBus bus) {
 		this.bus = bus;
@@ -27,9 +27,8 @@ public class SlideContainerFactoryDeferred extends SlideContainerFactoryImpl {
 
 	@Override
 	protected SlideContainerPresenter createSlideContainerPresenter() {
-		SlideContainerPresenterDeferred presenter = new SlideContainerPresenterDeferred(queue, bus);
 
-		return presenter;
+		return new SlideContainerPresenterDeferred(queue, bus);
 	}
 
 	public EventQueue getEventQueue() {
