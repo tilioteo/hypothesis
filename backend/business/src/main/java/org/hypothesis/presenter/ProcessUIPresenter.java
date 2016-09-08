@@ -55,20 +55,20 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 
 	public static final String CLOSE_URL = "/resource/close.html";
 
-	private static Logger log = Logger.getLogger(ProcessUIPresenter.class);
+	private static final Logger log = Logger.getLogger(ProcessUIPresenter.class);
 
-	private ProcessUI ui;
+	private final ProcessUI ui;
 
-	private ProcessEventBus bus;
+	private final ProcessEventBus bus;
 
 	private boolean requestFullscreen = false;
 	private boolean requestBack = false;
-	private boolean animate = true;
+	private final boolean animate = true;
 
 	private String token = null;
 	private String lastToken = null;
 
-	private TokenService tokenService;
+	private final TokenService tokenService;
 	private ProcessManager processManager;
 
 	private SimpleTest preparedTest = null;
@@ -161,11 +161,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		}
 
 		String canBack = request.getParameter(BACK_PARAMETER);
-		if (null == canBack || !canBack.equalsIgnoreCase("true")) {
-			requestBack = false;
-		} else {
-			requestBack = true;
-		}
+		requestBack = !(null == canBack || !canBack.equalsIgnoreCase("true"));
 	}
 
 	private void followToken(String tokenUid) {

@@ -24,9 +24,9 @@ import org.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class TaskManager extends ListManager<Branch, Task> {
 
-	private static Logger log = Logger.getLogger(TaskManager.class);
+	private static final Logger log = Logger.getLogger(TaskManager.class);
 
-	private DocumentReader reader = new XmlDocumentReader();
+	private final DocumentReader reader = new XmlDocumentReader();
 
 	private Task current = null;
 	private TaskController controller = null;

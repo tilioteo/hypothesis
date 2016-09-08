@@ -16,7 +16,7 @@ import java.util.EventObject;
 @SuppressWarnings("serial")
 public abstract class ViewportEvent extends EventObject {
 
-	private Date timestamp;
+	private final Date timestamp;
 
 	protected ViewportEvent(Object source) {
 		super(source);

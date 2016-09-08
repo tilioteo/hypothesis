@@ -25,12 +25,12 @@ import org.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class BranchController implements Serializable {
 
-	private List<Path> paths = new ArrayList<Path>();
+	private final List<Path> paths = new ArrayList<>();
 	private DefaultPath defaultPath = null;
 
 	private String nextKey = null;
 
-	private HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
+	private final HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
 
 	public void addPath(AbstractBasePath path) {
 		if (path instanceof Path) {

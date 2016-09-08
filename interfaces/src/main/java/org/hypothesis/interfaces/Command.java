@@ -14,9 +14,9 @@ import java.io.Serializable;
  */
 public interface Command extends Serializable {
 
-	public final class Executor {
+	final class Executor {
 
-		public static final void execute(Command command) {
+		public static void execute(Command command) {
 			if (command != null) {
 				command.execute();
 			}

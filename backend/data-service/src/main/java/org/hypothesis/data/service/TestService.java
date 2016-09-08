@@ -35,11 +35,11 @@ import org.hypothesis.data.model.User;
 @SuppressWarnings("serial")
 public class TestService implements Serializable {
 
-	private static Logger log = Logger.getLogger(TestService.class);
+	private static final Logger log = Logger.getLogger(TestService.class);
 
-	private HibernateDao<SimpleTest, Long> testDao;
-	private HibernateDao<Event, Long> eventDao;
-	private HibernateDao<SlideOrder, Long> slideOrderDao;
+	private final HibernateDao<SimpleTest, Long> testDao;
+	private final HibernateDao<Event, Long> eventDao;
+	private final HibernateDao<SlideOrder, Long> slideOrderDao;
 
 	public static TestService newInstance() {
 		return new TestService(new HibernateDao<SimpleTest, Long>(SimpleTest.class),
@@ -146,10 +146,10 @@ public class TestService implements Serializable {
 				// Restrictions.eq(FieldConstants.USER, user),
 				// Restrictions.ne(FieldConstants.STATUS, Status.FINISHED))));
 				// TODO remove this line after uncommenting code block above
-				tests = new ArrayList<SimpleTest>();
+				tests = new ArrayList<>();
 			} else {
 				log.debug("test of annonymous user");
-				tests = new ArrayList<SimpleTest>();
+				tests = new ArrayList<>();
 			}
 
 			SimpleTest outputTest = null;
@@ -253,8 +253,7 @@ public class TestService implements Serializable {
 			if (slideOrders.isEmpty() || slideOrders.size() > 1) {
 				return null;
 			} else {
-				SlideOrder slideOrder = slideOrders.get(0);
-				return slideOrder;
+				return slideOrders.get(0);
 			}
 
 		} catch (Throwable e) {

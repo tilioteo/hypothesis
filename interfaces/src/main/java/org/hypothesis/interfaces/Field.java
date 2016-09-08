@@ -14,6 +14,6 @@ import java.io.Serializable;
  */
 public interface Field extends Serializable {
 
-	public boolean isValid();
+	boolean isValid();
 
 }

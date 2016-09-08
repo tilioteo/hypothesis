@@ -27,8 +27,8 @@ public class ShortcutUtility {
 			this.modifiers = modifiers;
 		}
 
-		private int keyCode;
-		private int[] modifiers;
+		private final int keyCode;
+		private final int[] modifiers;
 
 		public int getKeyCode() {
 			return keyCode;
@@ -43,7 +43,7 @@ public class ShortcutUtility {
 		if (!Strings.isNullOrEmpty(shortcutKey)) {
 			String[] parts = shortcutKey.split("\\+");
 
-			ArrayList<String> modifiers = new ArrayList<String>();
+			ArrayList<String> modifiers = new ArrayList<>();
 			String key = null;
 
 			for (String part : parts) {

@@ -21,9 +21,9 @@ import org.hypothesis.interfaces.HasVariables;
 @SuppressWarnings("serial")
 public class Node extends AbstractVariableContainer implements Serializable {
 
-	private long slideId;
+	private final long slideId;
 
-	private List<Evaluable> evaluables = new ArrayList<Evaluable>();
+	private final List<Evaluable> evaluables = new ArrayList<>();
 
 	private int nextIndex = -1;
 	private boolean breakExecution = false;

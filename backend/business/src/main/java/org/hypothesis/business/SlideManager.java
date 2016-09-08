@@ -34,15 +34,15 @@ import com.vaadin.ui.Component;
 @SuppressWarnings("serial")
 public class SlideManager extends ListManager<Task, Slide> {
 
-	private static Logger log = Logger.getLogger(SlideManager.class);
+	private static final Logger log = Logger.getLogger(SlideManager.class);
 
-	private DocumentReader reader = new XmlDocumentReader();
-	private DocumentWriter writer = new XmlDocumentWriter();
+	private final DocumentReader reader = new XmlDocumentReader();
+	private final DocumentWriter writer = new XmlDocumentWriter();
 
 	private Slide current = null;
 	private SlideContainer container = null;
 
-	private HashMap<Integer, Object> nextInputValues = new HashMap<>();
+	private final HashMap<Integer, Object> nextInputValues = new HashMap<>();
 
 	private Long userId = null;
 

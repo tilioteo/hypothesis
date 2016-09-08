@@ -17,7 +17,7 @@ import org.hypothesis.data.interfaces.GenericDao;
 @SuppressWarnings("serial")
 public abstract class AbstractDao<T, ID extends Serializable> implements GenericDao<T, ID> {
 
-	protected Class<T> persistentClass;
+	protected final Class<T> persistentClass;
 
 	/**
 	 * Class constructor

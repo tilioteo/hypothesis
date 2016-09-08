@@ -19,7 +19,7 @@ import org.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class Nick implements Serializable {
 
-	private Long slideId;
+	private final Long slideId;
 	private Expression expression;
 
 	public Nick(Long slideId) {

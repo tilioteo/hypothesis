@@ -17,9 +17,9 @@ public class FinishSlideEvent extends AbstractRunningEvent {
 
 	public enum Direction {
 		NEXT, PRIOR
-	};
+	}
 
-	private Direction direction;
+	private final Direction direction;
 
 	public FinishSlideEvent(Direction direction) {
 		this(direction, null);

@@ -21,7 +21,7 @@ import com.vaadin.ui.Component.Focusable;
 @SuppressWarnings("serial")
 public class SlideDocument implements Serializable {
 
-	private SlideContainerPresenter presenter;
+	private final SlideContainerPresenter presenter;
 
 	public SlideDocument(SlideContainerPresenter presenter) {
 		this.presenter = presenter;
@@ -40,7 +40,7 @@ public class SlideDocument implements Serializable {
 	}
 
 	public Message createMessage(String uid) {
-		return (Message) presenter.createMessage(uid);
+		return presenter.createMessage(uid);
 	}
 	
 	public void focus() {

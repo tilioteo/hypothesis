@@ -18,6 +18,6 @@ import com.vaadin.data.Validatable;
  */
 public interface ValidatorCallback extends Serializable {
 
-	public void setComponentValidator(Validatable component, Element element, String name, String message);
+	void setComponentValidator(Validatable component, Element element, String name, String message);
 
 }

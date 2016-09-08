@@ -45,7 +45,7 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 
 	protected WindowState state;
 
-	protected MainEventBus bus;
+	protected final MainEventBus bus;
 
 	protected ArrayList<AbstractField<?>> fields;
 

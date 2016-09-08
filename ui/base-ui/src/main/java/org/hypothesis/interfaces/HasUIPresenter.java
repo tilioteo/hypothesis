@@ -12,8 +12,8 @@ package org.hypothesis.interfaces;
  */
 public interface HasUIPresenter {
 
-	public UIPresenter getPresenter();
+	UIPresenter getPresenter();
 
-	public void setPresenter(UIPresenter presenter);
+	void setPresenter(UIPresenter presenter);
 
 }

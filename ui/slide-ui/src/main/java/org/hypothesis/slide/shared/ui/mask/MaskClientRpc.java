@@ -14,8 +14,8 @@ import com.vaadin.shared.communication.ClientRpc;
  */
 public interface MaskClientRpc extends ClientRpc {
 
-	public void show();
+	void show();
 
-	public void hide();
+	void hide();
 
 }

@@ -17,13 +17,13 @@ import java.util.concurrent.Executors;
  */
 @SuppressWarnings("serial")
 public class BroadcastService implements Serializable {
-	static ExecutorService executorService = Executors.newSingleThreadExecutor();
+	static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
 	public interface BroadcastListener {
 		void receiveBroadcast(final String message);
 	}
 
-	private static LinkedList<BroadcastListener> listeners = new LinkedList<BroadcastListener>();
+	private static final LinkedList<BroadcastListener> listeners = new LinkedList<>();
 
 	public static synchronized void register(BroadcastListener listener) {
 		listeners.add(listener);

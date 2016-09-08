@@ -14,16 +14,16 @@ import java.util.Date;
  */
 public interface ComponentEvent {
 
-	public void setProperty(String name, Object value);
+	void setProperty(String name, Object value);
 
-	public void setProperty(String name, Class<?> clazz, Object value);
+	void setProperty(String name, Class<?> clazz, Object value);
 
-	public void setProperty(String name, Object value, String pattern);
+	void setProperty(String name, Object value, String pattern);
 
-	public void setProperty(String name,  Class<?> clazz, Object value, String pattern);
+	void setProperty(String name, Class<?> clazz, Object value, String pattern);
 
-	public void setClientTimestamp(Date clientTimestamp);
+	void setClientTimestamp(Date clientTimestamp);
 
-	public void setTimestamp(Date timestamp);
+	void setTimestamp(Date timestamp);
 
 }

@@ -35,7 +35,7 @@ import com.tilioteo.common.Strings;
 @SuppressWarnings("serial")
 public class PluginManager implements Serializable {
 
-	private static Logger log = Logger.getLogger(PluginManager.class);
+	private static final Logger log = Logger.getLogger(PluginManager.class);
 
 	public static final String PLUGIN_CONFIG_LOCATION = "pluginConfigLocation";
 
@@ -49,10 +49,10 @@ public class PluginManager implements Serializable {
 		return instance;
 	}
 
-	private HashSet<SlideComponentPlugin> componentPlugins = new HashSet<>();
-	private HashMap<String, SlideComponentPlugin> namespacePluginMap = new HashMap<>();
-	private HashMap<String, Set<String>> namespaceElementMap = new HashMap<>();
-	private HashSet<Class<? extends Plugin>> registeredClasses = new HashSet<>();
+	private final HashSet<SlideComponentPlugin> componentPlugins = new HashSet<>();
+	private final HashMap<String, SlideComponentPlugin> namespacePluginMap = new HashMap<>();
+	private final HashMap<String, Set<String>> namespaceElementMap = new HashMap<>();
+	private final HashSet<Class<? extends Plugin>> registeredClasses = new HashSet<>();
 
 	protected PluginManager() {
 
@@ -86,9 +86,8 @@ public class PluginManager implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	private List<Element> getPluginElements(Element root) {
-		List<Element> plugins = root.selectNodes(String.format("%s//%s", "plugins", "plugin"));
 
-		return plugins;
+		return root.selectNodes(String.format("%s//%s", "plugins", "plugin"));
 	}
 
 	private void registerPluginFromElement(Element element) {

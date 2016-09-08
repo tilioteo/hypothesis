@@ -25,12 +25,12 @@ import org.hypothesis.interfaces.Variable;
 @SuppressWarnings("serial")
 public class TaskController implements Serializable, Evaluator {
 
-	private HashMap<Long, Node> nodes = new HashMap<>();
+	private final HashMap<Long, Node> nodes = new HashMap<>();
 
-	private HashMap<String, Variable<?>> variables = new HashMap<>();
-	private HashMap<String, Action> actions = new HashMap<>();
+	private final HashMap<String, Variable<?>> variables = new HashMap<>();
+	private final HashMap<String, Action> actions = new HashMap<>();
 
-	private HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
+	private final HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
 
 	public TaskController() {
 

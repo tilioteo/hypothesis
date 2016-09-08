@@ -17,6 +17,6 @@ import org.hypothesis.data.DocumentReader;
  */
 public interface BranchControllerFactory extends Serializable {
 
-	public BranchController buildBranchController(String data, DocumentReader reader);
+	BranchController buildBranchController(String data, DocumentReader reader);
 
 }

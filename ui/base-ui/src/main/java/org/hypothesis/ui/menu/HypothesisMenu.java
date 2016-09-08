@@ -19,7 +19,7 @@ public final class HypothesisMenu extends CustomComponent {
 
 	private static final String ID = "hypothesis-menu";
 
-	private MenuPresenter presenter;
+	private final MenuPresenter presenter;
 
 	public HypothesisMenu(MenuPresenter presenter) {
 		this.presenter = presenter;

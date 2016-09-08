@@ -17,6 +17,6 @@ import org.hypothesis.data.DocumentReader;
  */
 public interface TaskControllerFactory extends Serializable {
 
-	public TaskController buildTaskController(String data, DocumentReader reader);
+	TaskController buildTaskController(String data, DocumentReader reader);
 
 }

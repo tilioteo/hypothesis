@@ -110,7 +110,7 @@ public class DocumentFactory {
 
 		destination.setText(source.getText());
 
-		List<Element> destSubElements = new ArrayList<Element>();
+		List<Element> destSubElements = new ArrayList<>();
 
 		boolean destSubEmpty = destSubElements.isEmpty();
 

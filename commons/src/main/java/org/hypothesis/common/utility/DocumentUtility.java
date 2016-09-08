@@ -31,7 +31,7 @@ import com.vaadin.ui.Component;
  */
 public final class DocumentUtility {
 
-	public static final Element findElementByNameAndValue(Element element, String name, Map<String, String> attributes,
+	public static Element findElementByNameAndValue(Element element, String name, Map<String, String> attributes,
 			boolean descendant) {
 		if (element != null) {
 			List<Element> elements = element.children();
@@ -69,7 +69,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final List<Element> findElementsByNameStarting(Element parent, String startName) {
+	public static List<Element> findElementsByNameStarting(Element parent, String startName) {
 		if (parent != null && startName.length() > 0) {
 			List<Element> result = new ArrayList<>();
 			List<Element> elements = parent.children();
@@ -85,7 +85,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final String getTrimmedText(Element element) {
+	public static String getTrimmedText(Element element) {
 		if (element != null && element.getText() != null) {
 			return element.getText().trim();
 		}
@@ -93,7 +93,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final List<Element> getSubElementChildren(Element element, String subNodeName,
+	public static List<Element> getSubElementChildren(Element element, String subNodeName,
 			StringSet validElementNames) {
 		if (element != null && !Strings.isNullOrEmpty(subNodeName)) {
 			Element subElement = element.selectElement(subNodeName);
@@ -118,19 +118,19 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final boolean isValidSlideDocument(Document doc) {
+	public static boolean isValidSlideDocument(Document doc) {
 		return (doc != null && doc.root() != null && doc.root().getName().equals(DocumentConstants.SLIDE));
 	}
 
-	public static final String getId(Element element) {
+	public static String getId(Element element) {
 		return element.getAttribute(DocumentConstants.ID);
 	}
 
-	public static final String getCaption(Element element) {
+	public static String getCaption(Element element) {
 		return element.getAttribute(DocumentConstants.CAPTION);
 	}
 
-	public static final List<Element> getActionsElements(Element documentRoot) {
+	public static List<Element> getActionsElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
 				return null;
@@ -146,7 +146,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getExpressionElement(Element element) {
+	public static Element getExpressionElement(Element element) {
 		if (element != null) {
 			return element.selectElement(DocumentConstants.EXPRESSION);
 		}
@@ -154,7 +154,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getTrueElement(Element element) {
+	public static Element getTrueElement(Element element) {
 		if (element != null) {
 			return element.selectElement(DocumentConstants.TRUE);
 		}
@@ -162,7 +162,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getFalseElement(Element element) {
+	public static Element getFalseElement(Element element) {
 		if (element != null) {
 			return element.selectElement(DocumentConstants.FALSE);
 		}
@@ -170,7 +170,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getLoopElement(Element element) {
+	public static Element getLoopElement(Element element) {
 		if (element != null) {
 			return element.selectElement(DocumentConstants.LOOP);
 		}
@@ -178,7 +178,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final List<Element> getCaseElements(Element element) {
+	public static List<Element> getCaseElements(Element element) {
 		return element.selectElements(DocumentConstants.CASE);
 	}
 
@@ -186,31 +186,31 @@ public final class DocumentUtility {
 		return element.getAttribute(DocumentConstants.VALUE);
 	}
 
-	public static final String getAction(Element element) {
+	public static String getAction(Element element) {
 		return element.getAttribute(DocumentConstants.ACTION);
 	}
 
-	public static final String getType(Element element) {
+	public static String getType(Element element) {
 		return element.getAttribute(DocumentConstants.TYPE);
 	}
 
-	public static final String getKey(Element element) {
+	public static String getKey(Element element) {
 		return element.getAttribute(DocumentConstants.KEY);
 	}
 
-	public static final String getValues(Element element) {
+	public static String getValues(Element element) {
 		return element.getAttribute(DocumentConstants.VALUES);
 	}
 
-	public static final String getName(Element element) {
+	public static String getName(Element element) {
 		return element.getAttribute(DocumentConstants.NAME);
 	}
 
-	public static final String getUid(Element element) {
+	public static String getUid(Element element) {
 		return element.getAttribute(DocumentConstants.UID);
 	}
 
-	public static final List<Element> getVariablesElements(Element documentRoot) {
+	public static List<Element> getVariablesElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
 				return null;
@@ -226,7 +226,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getReferenceSubElement(Element element) {
+	public static Element getReferenceSubElement(Element element) {
 		if (element != null) {
 			Element reference = element.selectElement(DocumentConstants.REFERENCE);
 			if (reference != null) {
@@ -237,7 +237,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getInstanceSubElement(Element element) {
+	public static Element getInstanceSubElement(Element element) {
 		if (element != null) {
 			Element instance = element.selectElement(DocumentConstants.INSTANCE);
 			if (instance != null) {
@@ -248,7 +248,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final List<Element> getInputValueElements(Element documentRoot) {
+	public static List<Element> getInputValueElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
 				return null;
@@ -261,7 +261,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final List<Element> getOutputValueElements(Element documentRoot) {
+	public static List<Element> getOutputValueElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
 				return null;
@@ -274,7 +274,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final List<Element> getTimersElements(Element documentRoot) {
+	public static List<Element> getTimersElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
 				return null;
@@ -290,7 +290,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final StringMap getPropertyValueMap(Element component) {
+	public static StringMap getPropertyValueMap(Element component) {
 		StringMap map = new StringMap();
 		List<Element> elements = getComponentProperties(component);
 
@@ -303,27 +303,27 @@ public final class DocumentUtility {
 		return map;
 	}
 
-	public static final List<Element> getComponentValidators(Element field) {
+	public static List<Element> getComponentValidators(Element field) {
 		return getSubElementChildren(field, DocumentConstants.VALIDATORS, null);
 	}
 
-	public static final List<Element> getComponentProperties(Element component) {
+	public static List<Element> getComponentProperties(Element component) {
 		return getSubElementChildren(component, DocumentConstants.PROPERTIES, null);
 	}
 
-	public static final List<Element> getContainerComponents(Element container, StringSet valids) {
+	public static List<Element> getContainerComponents(Element container, StringSet valids) {
 		return getSubElementChildren(container, DocumentConstants.COMPONENTS, valids);
 	}
 
-	public static final List<Element> getComponentHandlers(Element component) {
+	public static List<Element> getComponentHandlers(Element component) {
 		return getSubElementChildren(component, DocumentConstants.HANDLERS, null);
 	}
 
-	public static final List<Element> getComponentItems(Element component) {
+	public static List<Element> getComponentItems(Element component) {
 		return getSubElementChildren(component, DocumentConstants.ITEMS, null);
 	}
 
-	public static final List<Element> getComponentSources(Element component) {
+	public static List<Element> getComponentSources(Element component) {
 		if (component != null) {
 			Element element = component.selectElement(DocumentConstants.SOURCES);
 
@@ -335,7 +335,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final List<Element> getWindowsElements(Element documentRoot) {
+	public static List<Element> getWindowsElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
 				return null;
@@ -351,7 +351,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getViewportOrWindowRootElement(Element element) {
+	public static Element getViewportOrWindowRootElement(Element element) {
 		if (element != null) {
 			if (element.getName().equals(DocumentConstants.VIEWPORT)
 					|| element.getName().equals(DocumentConstants.WINDOW)) {
@@ -375,7 +375,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getViewportInnerComponent(Element documentRoot) {
+	public static Element getViewportInnerComponent(Element documentRoot) {
 		Element viewportRootElement = getVieportRootElement(documentRoot);
 
 		if (viewportRootElement != null) {
@@ -390,11 +390,11 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getVieportRootElement(Element documentRoot) {
+	public static Element getVieportRootElement(Element documentRoot) {
 		return getViewportOrWindowRootElement(getViewportElement(documentRoot));
 	}
 
-	private static final Element getViewportElement(Element documentRoot) {
+	private static Element getViewportElement(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
 				return null;
@@ -412,7 +412,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final String getValidatorMessage(Element element, String defaultMessage) {
+	public static String getValidatorMessage(Element element, String defaultMessage) {
 		Element messageElement = getMessageElement(element);
 
 		if (messageElement != null) {
@@ -428,7 +428,7 @@ public final class DocumentUtility {
 		return defaultMessage;
 	}
 
-	public static final Element getMessageElement(Element element) {
+	public static Element getMessageElement(Element element) {
 		if (element != null) {
 			return element.selectElement(DocumentConstants.MESSAGE);
 		}
@@ -436,7 +436,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Double getNumberValidatorMinValue(Element element) {
+	public static Double getNumberValidatorMinValue(Element element) {
 		Element subElement = getMinElement(element);
 
 		if (subElement != null) {
@@ -446,7 +446,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Double getNumberValidatorMaxValue(Element element) {
+	public static Double getNumberValidatorMaxValue(Element element) {
 		Element subElement = getMaxElement(element);
 
 		if (subElement != null) {
@@ -456,7 +456,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getMinElement(Element element) {
+	public static Element getMinElement(Element element) {
 		if (element != null) {
 			return element.selectElement(DocumentConstants.MIN);
 		}
@@ -464,7 +464,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getMaxElement(Element element) {
+	public static Element getMaxElement(Element element) {
 		if (element != null) {
 			return element.selectElement(DocumentConstants.MAX);
 		}
@@ -487,7 +487,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Date getDateValidatorMaxValue(Element element, String defaultFormat) {
+	public static Date getDateValidatorMaxValue(Element element, String defaultFormat) {
 		Element subElement = getMaxElement(element);
 		if (subElement != null) {
 			String format = subElement.getAttribute(DocumentConstants.FORMAT);
@@ -502,75 +502,69 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final boolean isValidBranchDocument(Document document) {
+	public static boolean isValidBranchDocument(Document document) {
 		return (document != null && document.root() != null
 				&& document.root().getName().equals(DocumentConstants.BRANCH));
 	}
 
-	public static final List<Element> getPathElements(Element documentRoot) {
+	public static List<Element> getPathElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!DocumentConstants.BRANCH.equals(documentRoot.getName())) {
 				return null;
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
-			List<Element> paths = documentRoot.selectElements(DocumentConstants.PATH);
-			return paths;
+			return documentRoot.selectElements(DocumentConstants.PATH);
 		}
 
 		return null;
 	}
 
-	public static final Element getDefaultPathElement(Element documentRoot) {
+	public static Element getDefaultPathElement(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!DocumentConstants.BRANCH.equals(documentRoot.getName())) {
 				return null;
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
-			Element element = DocumentUtility.findElementByNameAndValue(documentRoot, DocumentConstants.DEFAULT_PATH,
+			return DocumentUtility.findElementByNameAndValue(documentRoot, DocumentConstants.DEFAULT_PATH,
 					null, true);
-			return element;
 		}
 
 		return null;
 	}
 
-	public static final Element getBranchKeyElement(Element element) {
+	public static Element getBranchKeyElement(Element element) {
 		if (element != null) {
-			Element result = DocumentUtility.findElementByNameAndValue(element, DocumentConstants.BRANCH_KEY, null,
+			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.BRANCH_KEY, null,
 					true);
-			return result;
 		}
 
 		return null;
 	}
 
-	public static final Element getPatternElement(Element element) {
+	public static Element getPatternElement(Element element) {
 		if (element != null) {
-			Element result = DocumentUtility.findElementByNameAndValue(element, DocumentConstants.PATTERN, null, true);
-			return result;
+			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.PATTERN, null, true);
 		}
 
 		return null;
 	}
 
-	public static final List<Element> getNickElements(Element patternElement) {
+	public static List<Element> getNickElements(Element patternElement) {
 		if (patternElement != null) {
-			List<Element> nicks = patternElement.selectElements(DocumentConstants.NICK);
-			return nicks;
+			return patternElement.selectElements(DocumentConstants.NICK);
 		}
 
 		return null;
 	}
 
-	public static final Long getSlideId(Element element) {
+	public static Long getSlideId(Element element) {
 		if (element != null) {
 			String idString = element.getAttribute(DocumentConstants.SLIDE_ID);
 			if (!Strings.isNullOrEmpty(idString)) {
 				try {
-					Long id = Long.parseLong(idString);
-					return id;
+					return Long.parseLong(idString);
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
 				}
@@ -580,12 +574,12 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final boolean isValidTaskDocument(Document document) {
+	public static boolean isValidTaskDocument(Document document) {
 		return (document != null && document.root() != null
 				&& document.root().getName().equals(DocumentConstants.TASK));
 	}
 
-	public static final List<Element> getNodesElements(Element element) {
+	public static List<Element> getNodesElements(Element element) {
 		if (element != null) {
 			Element variable = element.selectElement(DocumentConstants.NODES);
 
@@ -597,7 +591,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final Element getEvaluateElement(Element element) {
+	public static Element getEvaluateElement(Element element) {
 		if (element != null) {
 			return element.selectElement(DocumentConstants.EVALUATE);
 		}
@@ -605,12 +599,12 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final boolean isValidMessageDocument(Document document) {
+	public static boolean isValidMessageDocument(Document document) {
 		return (document != null && document.root() != null
 				&& document.root().getName().equals(DocumentConstants.MESSAGE));
 	}
 
-	public static final List<Element> getPropertyElements(Element documentRoot) {
+	public static List<Element> getPropertyElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!DocumentConstants.MESSAGE.equals(documentRoot.getName())) {
 				return null;
@@ -626,7 +620,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final void iterateHandlers(Component component, Element element, SlidePresenter presenter,
+	public static void iterateHandlers(Component component, Element element, SlidePresenter presenter,
 			HandlerCallback callback) {
 		List<Element> handlers = DocumentUtility.getComponentHandlers(element);
 

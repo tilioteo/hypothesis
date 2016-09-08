@@ -57,7 +57,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	/**
 	 * list of slides
 	 */
-	private List<Slide> slides = new LinkedList<Slide>();
+	private List<Slide> slides = new LinkedList<>();
 
 	@Override
 	@Id
@@ -178,11 +178,8 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 			return false;
 		}
 
-		if (randomized != randomized2) {
-			return false;
-		}
+		return randomized == randomized2;
 
-		return true;
 	}
 
 	@Override

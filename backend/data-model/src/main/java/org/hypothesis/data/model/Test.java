@@ -100,7 +100,7 @@ public class Test extends SerializableIdObject {
 	/**
 	 * list of events in running test
 	 */
-	private List<Event> events = new LinkedList<Event>();
+	private List<Event> events = new LinkedList<>();
 
 	protected Test() {
 		super();

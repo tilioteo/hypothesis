@@ -15,7 +15,7 @@ import org.hypothesis.interfaces.ProcessView;
 @SuppressWarnings("serial")
 public interface ProcessViewEvent extends ProcessEvent {
 
-	public static final class ProcessViewEndEvent implements ProcessViewEvent {
+	final class ProcessViewEndEvent implements ProcessViewEvent {
 		private final ProcessView view;
 
 		public ProcessViewEndEvent(final ProcessView view) {

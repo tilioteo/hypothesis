@@ -15,6 +15,6 @@ import java.util.List;
  */
 public interface HasList<E> extends Serializable {
 
-	public List<E> getList();
+	List<E> getList();
 
 }

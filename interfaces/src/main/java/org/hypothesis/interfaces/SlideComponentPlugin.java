@@ -15,9 +15,9 @@ import java.util.Set;
  */
 public interface SlideComponentPlugin extends Plugin {
 
-	public enum ValidParentGroup {
+	enum ValidParentGroup {
 		VIEWPORT, PANEL, CONTAINER
-	};
+	}
 
 	/**
 	 * XML namespace of plugin elements Plugins must have a namespace, the
@@ -25,18 +25,18 @@ public interface SlideComponentPlugin extends Plugin {
 	 * 
 	 * @return Namespace name.
 	 */
-	public String getNamespace();
+	String getNamespace();
 
 	/**
 	 * XML root elements of components provided by plugin.
 	 * 
 	 * @return Set of element names
 	 */
-	public Set<String> getElements();
+	Set<String> getElements();
 
-	public Set<String> getEventTypes();
+	Set<String> getEventTypes();
 
-	public Map<String, Set<ValidParentGroup>> getElementParentGroups();
+	Map<String, Set<ValidParentGroup>> getElementParentGroups();
 
-	public ComponentWrapper createComponentFromElement(Element element, SlidePresenter presenter);
+	ComponentWrapper createComponentFromElement(Element element, SlidePresenter presenter);
 }

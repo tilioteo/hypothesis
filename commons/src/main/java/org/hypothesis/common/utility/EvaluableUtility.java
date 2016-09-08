@@ -298,8 +298,8 @@ public class EvaluableUtility {
 							if (!Strings.isNullOrEmpty(className)) {
 								try {
 									Class<?> clazz = Class.forName(className);
-									Constructor<?> ctor = clazz.getConstructor(new Class[] {});
-									Object object = ctor.newInstance(new Object[] {});
+									Constructor<?> ctor = clazz.getConstructor();
+									Object object = ctor.newInstance();
 									if (object != null) {
 										variable.setRawValue(object);
 									}

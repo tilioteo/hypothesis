@@ -20,7 +20,7 @@ import org.hypothesis.interfaces.MessageEventListener;
 @SuppressWarnings("serial")
 public class MessageEventManager implements Serializable {
 
-	private HashMap<String, EventListenerList> listenersMap = new HashMap<String, EventListenerList>();
+	private final HashMap<String, EventListenerList> listenersMap = new HashMap<>();
 	private boolean enabled = false;
 
 	public final void addListener(String uid, MessageEventListener eventListener) {

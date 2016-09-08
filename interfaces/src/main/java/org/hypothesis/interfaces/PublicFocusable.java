@@ -17,6 +17,6 @@ import org.hypothesis.annotations.PublicType;
 public interface PublicFocusable extends PublicComponent {
 
 	@Public
-	public void focus();
+	void focus();
 
 }

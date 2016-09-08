@@ -90,18 +90,18 @@ import net.engio.mbassy.listener.Handler;
 @SuppressWarnings({ "serial" })
 public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
-	private static Logger log = Logger.getLogger(ExportPresenterImpl.class);
+	private static final Logger log = Logger.getLogger(ExportPresenterImpl.class);
 
-	private PermissionService permissionService;
-	private TestService testService;
-	private UserService userService;
+	private final PermissionService permissionService;
+	private final TestService testService;
+	private final UserService userService;
 
 	private User loggedUser;
 
 	private MainEventBus bus;
 
-	private List<String> sortedPacks = new ArrayList<String>();
-	private HashMap<String, Pack> packMap = new HashMap<String, Pack>();
+	private final List<String> sortedPacks = new ArrayList<>();
+	private final HashMap<String, Pack> packMap = new HashMap<>();
 
 	private VerticalLayout content;
 	private VerticalLayout testSelection;
@@ -571,7 +571,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		final AtomicBoolean cancelPending = new AtomicBoolean(false);
 		final Collection<Long> testIds;
 
-		private MainEventBus bus;
+		private final MainEventBus bus;
 
 		public ExportThread(MainEventBus bus, final Collection<Long> testIds) {
 			this.bus = bus;
@@ -643,8 +643,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 						File tempFile = File.createTempFile("htsm", null);
 
 						// maps hold informations for legend creation
-						HashMap<String, String> fieldCaptionMap = new HashMap<String, String>();
-						HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<String, HashMap<String, String>>();
+						HashMap<String, String> fieldCaptionMap = new HashMap<>();
+						HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<>();
 
 						SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
 						Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.TestSheetName"));
@@ -708,9 +708,9 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 						long lastEventTime = 0;
 						long diffTime = 0;
 
-						HashMap<String, Integer> fieldColumnMap = new HashMap<String, Integer>();
-						HashMap<Long, Integer> branchCountMap = new HashMap<Long, Integer>();
-						HashMap<Long, Integer> slideCountMap = new HashMap<Long, Integer>();
+						HashMap<String, Integer> fieldColumnMap = new HashMap<>();
+						HashMap<Long, Integer> branchCountMap = new HashMap<>();
+						HashMap<Long, Integer> slideCountMap = new HashMap<>();
 
 						int outputValueCol = 23;
 						int fieldCol = outputValueCol + 10;
@@ -969,7 +969,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 												HashMap<String, String> valueCaptionMap = fieldValueCaptionMap
 														.get(fieldName);
 												if (null == valueCaptionMap) {
-													valueCaptionMap = new HashMap<String, String>();
+													valueCaptionMap = new HashMap<>();
 													fieldValueCaptionMap.put(fieldName, valueCaptionMap);
 												}
 												if (!valueCaptionMap.containsKey(fieldValue)) {

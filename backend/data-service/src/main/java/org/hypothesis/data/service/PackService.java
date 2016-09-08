@@ -18,9 +18,9 @@ import org.hypothesis.data.model.Pack;
 @SuppressWarnings("serial")
 public class PackService implements Serializable {
 
-	private static Logger log = Logger.getLogger(PackService.class);
+	private static final Logger log = Logger.getLogger(PackService.class);
 
-	private HibernateDao<Pack, Long> packDao;
+	private final HibernateDao<Pack, Long> packDao;
 
 	public PackService(HibernateDao<Pack, Long> packDao) {
 		this.packDao = packDao;

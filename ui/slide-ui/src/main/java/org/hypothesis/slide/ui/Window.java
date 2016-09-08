@@ -24,7 +24,7 @@ public class Window extends com.vaadin.ui.Window {
 	private boolean initialized = false;
 	private boolean opened = false;
 
-	private ArrayList<CloseListener> closeListeners = new ArrayList<CloseListener>();
+	private final ArrayList<CloseListener> closeListeners = new ArrayList<>();
 
 	private UI futureUI = null;
 
@@ -135,7 +135,7 @@ public class Window extends com.vaadin.ui.Window {
 
 	static {
 		try {
-			WINDOW_INIT_METHOD = InitListener.class.getDeclaredMethod("initWindow", new Class[] { InitEvent.class });
+			WINDOW_INIT_METHOD = InitListener.class.getDeclaredMethod("initWindow", InitEvent.class);
 		} catch (final java.lang.NoSuchMethodException e) {
 			// This should never happen
 			throw new java.lang.RuntimeException("Internal error, window init method not found");
@@ -182,14 +182,14 @@ public class Window extends com.vaadin.ui.Window {
 		 * @param event
 		 *            An event containing information about the window.
 		 */
-		public void initWindow(InitEvent event);
+		void initWindow(InitEvent event);
 	}
 
 	private static final Method WINDOW_OPEN_METHOD;
 
 	static {
 		try {
-			WINDOW_OPEN_METHOD = OpenListener.class.getDeclaredMethod("openWindow", new Class[] { OpenEvent.class });
+			WINDOW_OPEN_METHOD = OpenListener.class.getDeclaredMethod("openWindow", OpenEvent.class);
 		} catch (final java.lang.NoSuchMethodException e) {
 			// This should never happen
 			throw new java.lang.RuntimeException("Internal error, window open method not found");
@@ -235,7 +235,7 @@ public class Window extends com.vaadin.ui.Window {
 		 * @param event
 		 *            An event containing information about the window.
 		 */
-		public void openWindow(OpenEvent event);
+		void openWindow(OpenEvent event);
 	}
 
 }

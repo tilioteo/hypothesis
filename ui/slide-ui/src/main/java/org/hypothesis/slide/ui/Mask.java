@@ -19,7 +19,7 @@ import com.vaadin.ui.AbstractComponent;
 @SuppressWarnings("serial")
 public class Mask extends AbstractExtension {
 
-	private MaskClientRpc clientRpc;
+	private final MaskClientRpc clientRpc;
 
 	protected Mask(AbstractComponent target) {
 		super.extend(target);

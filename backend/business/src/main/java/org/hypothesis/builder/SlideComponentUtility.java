@@ -143,7 +143,7 @@ public class SlideComponentUtility {
 	public static void setMediaSources(AbstractMedia media, Element component) {
 		List<Element> elements = DocumentUtility.getComponentSources(component);
 
-		List<Resource> resources = new ArrayList<Resource>();
+		List<Resource> resources = new ArrayList<>();
 
 		if (elements != null) {
 			for (Element element : elements) {

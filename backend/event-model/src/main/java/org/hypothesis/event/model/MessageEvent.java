@@ -18,7 +18,7 @@ import org.hypothesis.event.data.Message;
 @SuppressWarnings("serial")
 public class MessageEvent extends EventObject {
 
-	private Date timestamp;
+	private final Date timestamp;
 
 	public MessageEvent(Message message) {
 		super(message);

@@ -24,9 +24,8 @@ public class BranchBuilder implements Serializable {
 		BranchControllerFactory factory = new BranchControllerFactoryImpl();
 
 		if (entity != null && reader != null) {
-			BranchController controller = factory.buildBranchController(entity.getData(), reader);
 
-			return controller;
+			return factory.buildBranchController(entity.getData(), reader);
 		}
 
 		return null;

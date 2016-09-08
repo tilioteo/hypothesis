@@ -19,10 +19,10 @@ import org.hypothesis.interfaces.SlidePresenter;
  */
 public interface ComponentDataFactory extends Serializable {
 
-	public String buildComponentData(ComponentData data, DocumentWriter writer);
+	String buildComponentData(ComponentData data, DocumentWriter writer);
 
-	public String buildActionData(ActionEvent event, DocumentWriter writer);
+	String buildActionData(ActionEvent event, DocumentWriter writer);
 
-	public String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer);
+	String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer);
 
 }

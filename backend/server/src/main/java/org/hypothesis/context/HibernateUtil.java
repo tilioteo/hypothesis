@@ -30,10 +30,9 @@ public class HibernateUtil {
 
 	public static final String CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION = "hibernateConfigLocation";
 
-	private static Logger log = Logger.getLogger(HibernateUtil.class);
+	private static final Logger log = Logger.getLogger(HibernateUtil.class);
 
 	private static SessionFactory sessionFactory = null;
-	private static ServiceRegistry serviceRegistry = null;
 	private static ServletContext servletContext = null;
 
 	/**
@@ -89,8 +88,7 @@ public class HibernateUtil {
 					configuration = new Configuration().configure(configFile);
 				}
 
-				serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties())
-						.build();
+				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 			} catch (Throwable ex) {
 				// Make sure you log the exception, as it might be swallowed

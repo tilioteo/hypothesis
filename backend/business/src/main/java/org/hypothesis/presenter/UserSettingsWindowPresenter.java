@@ -44,10 +44,10 @@ public class UserSettingsWindowPresenter implements Serializable {
 
 	private Window window;
 
-	private UserService userService;
+	private final UserService userService;
 	private User user;
 
-	private MainEventBus bus;
+	private final MainEventBus bus;
 
 	private BeanFieldGroup<User> fieldGroup;
 

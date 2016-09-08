@@ -15,8 +15,8 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
  */
 public interface ViewPresenter extends ComponentPresenter {
 
-	public void enter(ViewChangeEvent event);
+	void enter(ViewChangeEvent event);
 
-	public View createView();
+	View createView();
 
 }

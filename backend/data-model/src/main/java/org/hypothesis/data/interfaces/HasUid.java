@@ -14,6 +14,6 @@ import java.io.Serializable;
  */
 public interface HasUid<T> extends Serializable {
 
-	public T getUid();
+	T getUid();
 
 }

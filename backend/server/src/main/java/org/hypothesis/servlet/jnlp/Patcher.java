@@ -47,14 +47,14 @@ public interface Patcher {
 	/**
 	 * Callback used when patching a file.
 	 */
-	public interface PatchDelegate {
-		public void patching(int percentDone);
+	interface PatchDelegate {
+		void patching(int percentDone);
 	}
 
 	/**
 	 * Applies a patch previously created with <code>createPatch</code>. Pass in
 	 * a delegate to be notified of the status of the patch.
 	 */
-	public void applyPatch(PatchDelegate delegate, String oldJarPath, String deltaPath, OutputStream result)
+	void applyPatch(PatchDelegate delegate, String oldJarPath, String deltaPath, OutputStream result)
 			throws IOException;
 }

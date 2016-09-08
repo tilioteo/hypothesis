@@ -81,14 +81,14 @@ public class JnlpResource {
 	}
 
 	/* Pattern matching arguments */
-	private String _name; // Name of resource with path (this is the same as
+	private final String _name; // Name of resource with path (this is the same as
 							// path for non-version based)
-	private String _versionId; // Version-id for resource, or null if none
-	private String[] _osList; // List of OSes for which resource should be
+	private final String _versionId; // Version-id for resource, or null if none
+	private final String[] _osList; // List of OSes for which resource should be
 								// returned
-	private String[] _archList; // List of architectures for which the resource
+	private final String[] _archList; // List of architectures for which the resource
 								// should be returned
-	private String[] _localeList; // List of locales for which the resource
+	private final String[] _localeList; // List of locales for which the resource
 									// should be returned
 	/* Information used for reply */
 	private String _path; // Path to resource in WAR file (unique)
@@ -96,7 +96,7 @@ public class JnlpResource {
 							// above really)
 	private long _lastModified; // Last modified in WAR file
 	private String _mimeType; // Mime-type for resource
-	private String _returnVersionId; // Version Id to return
+	private final String _returnVersionId; // Version Id to return
 
 	// private String _encoding; // Accept encoding
 
@@ -153,7 +153,7 @@ public class JnlpResource {
 				}
 
 				// gzip compression
-				if (found == false && encoding != null
+				if (!found && encoding != null
 						&& encoding.toLowerCase().indexOf(DownloadResponse.GZIP_ENCODING) > -1) {
 					search_path = orig_path + ".gz";
 					_resource = context.getResource(search_path);
@@ -169,7 +169,7 @@ public class JnlpResource {
 					}
 				}
 
-				if (found == false) {
+				if (!found) {
 					// no compression
 					search_path = orig_path;
 

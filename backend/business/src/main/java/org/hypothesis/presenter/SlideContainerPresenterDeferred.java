@@ -27,9 +27,9 @@ import net.engio.mbassy.listener.Handler;
 @SuppressWarnings("serial")
 public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 
-	private EventQueue eventQueue;
+	private final EventQueue eventQueue;
 	private boolean disableDeferred = false;
-	private ProcessEventBus bus;
+	private final ProcessEventBus bus;
 
 	public SlideContainerPresenterDeferred(EventQueue eventQueue, ProcessEventBus bus) {
 		super();

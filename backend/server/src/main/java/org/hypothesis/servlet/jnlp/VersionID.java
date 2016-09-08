@@ -81,7 +81,7 @@ public class VersionID implements Comparable<VersionID> {
 				str = str.substring(0, str.length() - 1);
 			}
 
-			ArrayList<String> list = new ArrayList<String>();
+			ArrayList<String> list = new ArrayList<>();
 			int start = 0;
 			for (int i = 0; i < str.length(); i++) {
 				// Split at each separator character

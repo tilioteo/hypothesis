@@ -23,9 +23,9 @@ import org.hypothesis.data.model.User;
 @SuppressWarnings("serial")
 public class UserService implements Serializable {
 
-	private static Logger log = Logger.getLogger(UserService.class);
+	private static final Logger log = Logger.getLogger(UserService.class);
 
-	private HibernateDao<User, Long> userDao;
+	private final HibernateDao<User, Long> userDao;
 
 	public static UserService newInstance() {
 		return new UserService(new HibernateDao<User, Long>(User.class));
@@ -177,8 +177,7 @@ public class UserService implements Serializable {
 			if (users.isEmpty() || users.size() > 1) {
 				return null;
 			} else {
-				User user = users.get(0);
-				return user;
+				return users.get(0);
 			}
 		} catch (Throwable e) {
 			log.error(e.getMessage());

@@ -81,7 +81,7 @@ public class XmlUtility implements Serializable {
 			String uri, String attributeName, String attributeValue) {
 		Element result = null;
 		if (element != null) {
-			HashMap<String, String> namespaces = new HashMap<String, String>();
+			HashMap<String, String> namespaces = new HashMap<>();
 			if (!Strings.isNullOrEmpty(prefix) && !Strings.isNullOrEmpty(uri)) {
 				name = String.format("%s:%s", prefix, name);
 				namespaces.put(prefix, uri);
@@ -143,8 +143,7 @@ public class XmlUtility implements Serializable {
 		if (file.exists()) {
 			try {
 				SAXReader reader = new SAXReader();
-				Document doc = reader.read(file);
-				return doc;
+				return reader.read(file);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -160,8 +159,7 @@ public class XmlUtility implements Serializable {
 				SAXReader reader = new SAXReader();
 				// reader.setFeature("http://xml.org/sax/features/namespaces",
 				// false);
-				Document doc = reader.read(stringReader);
-				return doc;
+				return reader.read(stringReader);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}

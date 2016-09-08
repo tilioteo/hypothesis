@@ -18,8 +18,8 @@ import com.vaadin.data.Validator;
 @SuppressWarnings("serial")
 public class UsernameValidator implements Validator {
 
-	private UserService userService;
-	private Long id;
+	private final UserService userService;
+	private final Long id;
 
 	public UsernameValidator(Long id) {
 		this.id = id;

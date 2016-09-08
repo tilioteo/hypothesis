@@ -50,7 +50,7 @@ public class LoginPresenterImpl implements LoginPresenter {
 	private TextField username;
 	private PasswordField password;
 
-	private MainEventBus bus;
+	private final MainEventBus bus;
 
 	public LoginPresenterImpl(MainEventBus bus) {
 		this.bus = bus;

@@ -50,7 +50,7 @@ public class PackPanel extends Panel {
 	private String featuredButtonCaption = "featuredButtonCaption";
 	private ClickListener featuredButtonClickListener = null;
 
-	private OpenPopupButton legacyButton = null;
+	private final OpenPopupButton legacyButton = null;
 	private String legacyButtonCaption = "legacyButtonCaption";
 	private ClickListener legacyButtonClickListener = null;
 	private WindowClosedListener legacyButtonWindowClosedListener = null;

@@ -14,8 +14,8 @@ import java.io.Serializable;
  */
 public interface ComponentPresenter extends Serializable {
 
-	public void attach();
+	void attach();
 
-	public void detach();
+	void detach();
 
 }
