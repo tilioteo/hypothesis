@@ -19,16 +19,29 @@ import com.tilioteo.common.Strings;
  */
 public class ShortcutUtility {
 
+	private ShortcutUtility() {
+	}
+
+	/**
+	 * 
+	 * Wrapper class for shortcut key
+	 */
 	@SuppressWarnings("serial")
 	public static class ShortcutKeys implements Serializable {
 
+		private int keyCode;
+		private int[] modifiers;
+
+		/**
+		 * 
+		 * @param keyCode
+		 * @param modifiers
+		 *            set of modifier codes (Ctrl, Alt...)
+		 */
 		public ShortcutKeys(int keyCode, int... modifiers) {
 			this.keyCode = keyCode;
 			this.modifiers = modifiers;
 		}
-
-		private int keyCode;
-		private int[] modifiers;
 
 		public int getKeyCode() {
 			return keyCode;
@@ -39,6 +52,13 @@ public class ShortcutUtility {
 		}
 	}
 
+	/**
+	 * Parse string representation of shortcut key
+	 * 
+	 * @param shortcutKey
+	 *            input string
+	 * @return wrapper object or null if not recognized
+	 */
 	public static ShortcutKeys parseShortcut(String shortcutKey) {
 		if (!Strings.isNullOrEmpty(shortcutKey)) {
 			String[] parts = shortcutKey.split("\\+");

@@ -19,6 +19,7 @@ import org.hypothesis.utility.XmlUtility;
  * 
  *         Hypothesis
  *
+ *         Reader implementation for XML structured data
  */
 @SuppressWarnings("serial")
 public class XmlDocumentReader implements DocumentReader {
@@ -38,7 +39,7 @@ public class XmlDocumentReader implements DocumentReader {
 
 				return document;
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -47,32 +48,39 @@ public class XmlDocumentReader implements DocumentReader {
 
 	private String composeName(org.dom4j.Element element) {
 		String namespace = element.getNamespaceURI();
-		
+
 		if (!namespace.isEmpty()) {
 			try {
 				URL url = new URL(namespace);
-				
+
 				String[] parts = url.getHost().split("\\.");
-				namespace = "";
-				
-				for (int i = parts.length-1; i >= 0; --i) {
-					namespace += parts[i] + Document.NAMESPACE_SEPARATOR;
+
+				StringBuilder namespaceBuilder = new StringBuilder();
+
+				for (int i = parts.length - 1; i >= 0; --i) {
+					namespaceBuilder.append(parts[i]);
+					namespaceBuilder.append(Document.NAMESPACE_SEPARATOR);
 				}
-				
+
 				parts = url.getPath().split("/");
 				for (int i = 0; i < parts.length; ++i) {
 					if (!parts[i].isEmpty()) {
-						namespace += parts[i] + Document.NAMESPACE_SEPARATOR;
+						namespaceBuilder.append(parts[i]);
+						namespaceBuilder.append(Document.NAMESPACE_SEPARATOR);
 					}
 				}
-				
+
+				namespaceBuilder.append(element.getName());
+
+				return namespaceBuilder.toString();
+
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
-				
+
 			}
 		}
-		
-		return namespace.isEmpty() ? element.getName() : namespace + element.getName();
+
+		return element.getName();
 	}
 
 	@SuppressWarnings("unchecked")

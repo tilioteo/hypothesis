@@ -6,6 +6,7 @@ package org.hypothesis.business;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.hypothesis.builder.ComponentDataBuilder;
@@ -45,10 +46,6 @@ public class SlideManager extends ListManager<Task, Slide> {
 	private HashMap<Integer, Object> nextInputValues = new HashMap<>();
 
 	private Long userId = null;
-
-	public SlideManager() {
-		super();
-	}
 
 	@Override
 	public Slide current() {
@@ -110,11 +107,11 @@ public class SlideManager extends ListManager<Task, Slide> {
 		nextInputValues.clear();
 
 		Map<Integer, ExchangeVariable> map = container.getPresenter().getOutputs();
-		for (Integer index : map.keySet()) {
-			ExchangeVariable outputValueExpression = map.get(index);
+		for (Entry<Integer, ExchangeVariable> entry : map.entrySet()) {
+			ExchangeVariable outputValueExpression = entry.getValue();
 			Object value = outputValueExpression.getValue();
 			if (value != null) {
-				nextInputValues.put(index, value);
+				nextInputValues.put(entry.getKey(), value);
 			}
 		}
 	}
@@ -144,6 +141,9 @@ public class SlideManager extends ListManager<Task, Slide> {
 		}
 	}
 
+	/**
+	 * Do some work on finish slide
+	 */
 	public void finishSlide() {
 		if (container != null) {
 			container.getPresenter().viewDone();
@@ -174,10 +174,23 @@ public class SlideManager extends ListManager<Task, Slide> {
 		return null;
 	}
 
+	/**
+	 * Create serialized action data
+	 * 
+	 * @param event
+	 * @return
+	 */
 	public String getActionData(ActionEvent event) {
 		return ComponentDataBuilder.buildActionData(event, writer);
 	}
 
+	/**
+	 * Create serialized component data
+	 * 
+	 * @param componentEvent
+	 *            event
+	 * @return
+	 */
 	public String getComponentData(ComponentEvent componentEvent) {
 		return ComponentDataBuilder.buildComponentData(componentEvent.getData(), writer);
 	}
