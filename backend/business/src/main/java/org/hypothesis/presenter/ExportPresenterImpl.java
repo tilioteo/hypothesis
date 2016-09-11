@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -100,8 +101,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	private MainEventBus bus;
 
-	private final List<String> sortedPacks = new ArrayList<>();
-	private final HashMap<String, Pack> packMap = new HashMap<>();
+	private List<String> sortedPacks = new ArrayList<>();
+	private HashMap<String, Pack> packMap = new HashMap<>();
 
 	private VerticalLayout content;
 	private VerticalLayout testSelection;
@@ -154,6 +155,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		// nop
 	}
 
 	@Override
@@ -252,6 +254,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		exportSelectionType.select(Messages.getString("Caption.Item.Selected"));
 
 		exportSelectionType.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
 			public void valueChange(ValueChangeEvent event) {
 				allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
 				bus.post(new MainUIEvent.PackSelectionChangedEvent());
@@ -274,7 +277,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	private void startExport() {
 		setExportProgressIndeterminate();
 
-		Collection<Long> testIds = null;
+		Collection<Long> testIds;
 		if (allTestsSelected) {
 			testIds = (Collection<Long>) table.getItemIds();
 		} else {
@@ -364,8 +367,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 					dateFieldTo.validate();
 
 					Pack pack = packMap.get(packsSelect.getValue());
-					Date dateFrom = (Date) dateFieldFrom.getValue();
-					Date dateTo = (Date) dateFieldTo.getValue();
+					Date dateFrom = dateFieldFrom.getValue();
+					Date dateTo = dateFieldTo.getValue();
 
 					showTests(pack, dateFrom, dateTo);
 
@@ -413,7 +416,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		List<SimpleTest> tests = testService.findTestsBy(pack, users, dateFrom, dateTo);
 
-		if (tests.size() == 0) {
+		if (tests.isEmpty()) {
 			Label label = new Label(Messages.getString("Caption.Label.NoTestsFound"));
 			label.setSizeUndefined();
 			testSelection.addComponent(label);
@@ -436,7 +439,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		table.setSortContainerPropertyId(FieldConstants.ID);
 
-		final BeanContainer<Long, SimpleTest> dataSource = new BeanContainer<Long, SimpleTest>(SimpleTest.class);
+		final BeanContainer<Long, SimpleTest> dataSource = new BeanContainer<>(SimpleTest.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_USERNAME);
@@ -511,11 +514,15 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void setExportEnabled(final MainUIEvent.PackSelectionChangedEvent event) {
-		boolean itemsSelected = ((Set<Object>) table.getValue()).size() > 0;
+		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
 		boolean exportEnabled = allTestsSelected || itemsSelected;
 		exportButton.setEnabled(exportEnabled);
 	}
 
+	/**
+	 * Update progress of export
+	 * @param event
+	 */
 	@Handler
 	public void updateExportProgress(final MainUIEvent.ExportProgressEvent event) {
 		if (exportProgressBar.isIndeterminate() && event.getProgress() >= 0) {
@@ -524,17 +531,29 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		exportProgressBar.setValue(event.getProgress());
 	}
 
+	/**
+	 * Do when export finished
+	 * @param event
+	 */
 	@Handler
 	public void exportFinished(final MainUIEvent.ExportFinishedEvent event) {
 		afterExportFinnished(event.isCanceled());
 	}
 
+	/**
+	 * Show error occured during export
+	 * @param event
+	 */
 	@Handler
 	public void exportError(final MainUIEvent.ExportErrorEvent event) {
 		afterExportFinnished(false);
 		Notification.show("Export failed", null, Type.WARNING_MESSAGE);
 	}
 
+	/**
+	 * Update ui on user pack change
+	 * @param event
+	 */
 	@Handler
 	public void changeUserPacks(final MainUIEvent.UserPacksChangedEvent event) {
 		initPacksSources();
@@ -606,6 +625,9 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		}
 
+		/**
+		 * Request cancel of export
+		 */
 		public void cancel() {
 			cancelPending.set(true);
 		}
@@ -639,6 +661,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 				List<ExportEvent> events = exportService.findExportEventsByTestId(testIds);
 
 				if (events != null) {
+					SXSSFWorkbook workbook = null;
+					
 					try {
 						File tempFile = File.createTempFile("htsm", null);
 
@@ -646,7 +670,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 						HashMap<String, String> fieldCaptionMap = new HashMap<>();
 						HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<>();
 
-						SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
+						workbook = new SXSSFWorkbook(-1);
 						Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.TestSheetName"));
 
 						// create cell style for date cell
@@ -704,9 +728,9 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 						Long lastSlideId = null;
 
 						long startTestTime = 0;
-						long relativeTime = 0;
+						long relativeTime;
 						long lastEventTime = 0;
-						long diffTime = 0;
+						long diffTime;
 
 						HashMap<String, Integer> fieldColumnMap = new HashMap<>();
 						HashMap<Long, Integer> branchCountMap = new HashMap<>();
@@ -948,7 +972,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 									Map<String, Map<String, String>> fieldValueCaptions = wrapper
 											.getFieldValueCaptionMap();
 
-									for (String fieldName : fieldCaptions.keySet()) {
+									for (Entry<String, String> entry : fieldCaptions.entrySet()) {
+										String fieldName = entry.getKey();
 										if (fieldColumnMap.containsKey(fieldName)) {
 											colNr = fieldColumnMap.get(fieldName);
 										} else {
@@ -1018,10 +1043,10 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 								row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
 								row.createCell(1).setCellValue(Messages.getString("Caption.Export.ColumnDescription"));
 
-								for (String fieldName : fieldCaptionMap.keySet()) {
+								for (Entry<String, String> entry : fieldCaptionMap.entrySet()) {
 									row = sheet.createRow(rowNr++);
-									row.createCell(0).setCellValue(fieldName);
-									row.createCell(1).setCellValue(fieldCaptionMap.get(fieldName));
+									row.createCell(0).setCellValue(entry.getKey());
+									row.createCell(1).setCellValue(fieldCaptionMap.get(entry.getKey()));
 								}
 								++rowNr;
 							}
@@ -1030,21 +1055,21 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 								row = sheet.createRow(rowNr++);
 								row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumnValues"));
 
-								for (String fieldName : fieldValueCaptionMap.keySet()) {
+								for (Entry<String, HashMap<String, String>> fieldEntry : fieldValueCaptionMap.entrySet()) {
 									row = sheet.createRow(rowNr++);
 									row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
-									row.createCell(1).setCellValue(fieldName);
+									row.createCell(1).setCellValue(fieldEntry.getKey());
 
 									row = sheet.createRow(rowNr++);
 									row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserValue"));
 									row.createCell(1)
 											.setCellValue(Messages.getString("Caption.Export.UserValueDescription"));
 
-									HashMap<String, String> valueCaptions = fieldValueCaptionMap.get(fieldName);
-									for (String value : valueCaptions.keySet()) {
+									HashMap<String, String> valueCaptions = fieldValueCaptionMap.get(fieldEntry.getKey());
+									for (Entry<String, String> entry : valueCaptions.entrySet()) {
 										row = sheet.createRow(rowNr++);
-										row.createCell(0).setCellValue(value);
-										row.createCell(1).setCellValue(valueCaptions.get(value));
+										row.createCell(0).setCellValue(entry.getValue());
+										row.createCell(1).setCellValue(valueCaptions.get(entry.getValue()));
 									}
 									++rowNr;
 								}
@@ -1063,11 +1088,14 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 						return new FileInputStream(tempFile);
 
 					} catch (IOException e) {
+						if (workbook != null) {
+							workbook.close();
+						}
 						log.error(e.getMessage());
 					}
 				}
 
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
 

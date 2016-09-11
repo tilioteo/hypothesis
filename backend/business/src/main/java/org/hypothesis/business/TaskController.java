@@ -7,6 +7,7 @@ package org.hypothesis.business;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.Task;
@@ -25,34 +26,56 @@ import org.hypothesis.interfaces.Variable;
 @SuppressWarnings("serial")
 public class TaskController implements Serializable, Evaluator {
 
-	private final HashMap<Long, Node> nodes = new HashMap<>();
+	private HashMap<Long, Node> nodes = new HashMap<>();
 
-	private final HashMap<String, Variable<?>> variables = new HashMap<>();
-	private final HashMap<String, Action> actions = new HashMap<>();
+	private HashMap<String, Variable<?>> variables = new HashMap<>();
+	private HashMap<String, Action> actions = new HashMap<>();
 
-	private final HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
+	private HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
 
-	public TaskController() {
-
-	}
-
+	/**
+	 * Add controller node previously created from its definition
+	 * 
+	 * @param slideId
+	 * @param node
+	 */
 	public void addNode(Long slideId, Node node) {
 		nodes.put(slideId, node);
 	}
 
+	/**
+	 * Add set of slide output variables
+	 * 
+	 * @param slide
+	 *            the slide as origin of outputs
+	 * @param outputValues
+	 *            map of indexed output variables
+	 */
 	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
 		if (!nodes.isEmpty() && slide != null && slide.getId() != null && !outputValues.isEmpty()) {
 			// copy map of variables because it will be erased at the slide
 			// finish
 			HashMap<Integer, ExchangeVariable> map = new HashMap<>();
-			for (Integer index : outputValues.keySet()) {
-				map.put(index, outputValues.get(index));
+			for (Entry<Integer, ExchangeVariable> entry : outputValues.entrySet()) {
+				map.put(entry.getKey(), entry.getValue());
 			}
 
 			slideOutputs.put(slide.getId(), map);
 		}
 	}
 
+	/**
+	 * Look for node associated with slide in task and evaluate conditions to
+	 * get next slide index.
+	 * 
+	 * @param task
+	 *            processed task
+	 * @param slide
+	 *            processed slide which is a child of the task
+	 * @return index of next slide - value >= 1 means direct index of slide in
+	 *         task, 0 means next slide after currently processed, -1 means go
+	 *         to next task
+	 */
 	public int getNextSlideIndex(Task task, Slide slide) {
 		if (task != null && !task.isRandomized() && slide != null) {
 			Node node = nodes.get(slide.getId());

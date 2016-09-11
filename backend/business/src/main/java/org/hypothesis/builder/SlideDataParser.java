@@ -20,57 +20,64 @@ import org.hypothesis.utility.XmlUtility;
  * 
  *         Hypothesis
  *
+ * @deprecated
  */
 @Deprecated
 public class SlideDataParser {
-	
+
+	private SlideDataParser() {
+	}
+
 	public static List<String> parseOutputValues(String xmlString) {
 		List<String> list = new ArrayList<>();
 		Document doc = XmlUtility.readString(xmlString);
 		if (doc != null) {
 			@SuppressWarnings("unchecked")
-			List<Element> elements = doc.getRootElement().selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.OUTPUT_VALUE));
+			List<Element> elements = doc.getRootElement()
+					.selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.OUTPUT_VALUE));
 
-			if (elements.size() > 0) {
+			if (!elements.isEmpty()) {
 				for (int i = 0; i < 10; ++i) {
 					list.add(null);
 				}
 			}
-			
+
 			for (Element element : elements) {
 				String index = element.attributeValue(DocumentConstants.INDEX);
 
 				try {
 					int i = Integer.parseInt(index);
-					String value = element.getTextTrim(); 
-					if (!value.isEmpty() && i >=1 && i <= list.size()) {
-						list.set(i-1, value);
+					String value = element.getTextTrim();
+					if (!value.isEmpty() && i >= 1 && i <= list.size()) {
+						list.set(i - 1, value);
 					}
-				} catch (NumberFormatException e) {}
+				} catch (NumberFormatException e) {
+				}
 			}
 		}
 		return list;
 	}
-	
+
 	public static FieldWrapper parseFields(String xmlString) {
 		FieldWrapper wrapper = new FieldWrapper();
 
 		Document doc = XmlUtility.readString(xmlString);
 		if (doc != null) {
 			@SuppressWarnings("unchecked")
-			List<Element> elements = doc.getRootElement().selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.FIELD));
+			List<Element> elements = doc.getRootElement()
+					.selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.FIELD));
 			for (Element element : elements) {
 				String id = element.attributeValue(DocumentConstants.ID);
-				
+
 				String caption = null;
 				Element captionElement = (Element) element.selectSingleNode(DocumentConstants.CAPTION);
 				if (captionElement != null) {
 					caption = captionElement.getTextTrim();
 				}
-				
-				wrapper.fieldCaptionMap.put(id, caption.isEmpty() ? null : caption);
 
-				String valueId = null;
+				wrapper.fieldCaptionMap.put(id, null == caption || caption.isEmpty() ? null : caption);
+
+				String valueId;
 				Element valueElement = (Element) element.selectSingleNode(DocumentConstants.VALUE);
 				if (valueElement != null) {
 					valueId = valueElement.attributeValue(DocumentConstants.ID);
@@ -79,7 +86,7 @@ public class SlideDataParser {
 						wrapper.fieldValueMap.put(id, valueId);
 						if (!valueId.equals(value) && !value.isEmpty()) {
 							Map<String, String> valueCaptionMap = wrapper.fieldValueCaptionMap.get(id);
-							
+
 							if (null == valueCaptionMap) {
 								valueCaptionMap = new HashMap<>();
 								wrapper.fieldValueCaptionMap.put(id, valueCaptionMap);
@@ -94,16 +101,20 @@ public class SlideDataParser {
 		}
 		return wrapper;
 	}
-	
+
 	@SuppressWarnings("serial")
+	/**
+	 * Helper class used to hold field names, captions and values associations
+	 *
+	 */
 	public static final class FieldWrapper implements Serializable {
-		private final HashMap<String, String> fieldCaptionMap = new HashMap<>();
-		private final HashMap<String, String> fieldValueMap = new HashMap<>();
-		private final HashMap<String, Map<String, String>> fieldValueCaptionMap = new HashMap<>();
-		
+		private HashMap<String, String> fieldCaptionMap = new HashMap<>();
+		private HashMap<String, String> fieldValueMap = new HashMap<>();
+		private HashMap<String, Map<String, String>> fieldValueCaptionMap = new HashMap<>();
+
 		protected FieldWrapper() {
 		}
-		
+
 		public Map<String, String> getFieldCaptionMap() {
 			return fieldCaptionMap;
 		}

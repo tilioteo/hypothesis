@@ -81,6 +81,9 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 	private UserWindowPresenter userWindowPresenter;
 
+	/**
+	 * Construct
+	 */
 	public UserManagementPresenter() {
 		permissionService = PermissionService.newInstance();
 		userService = UserService.newInstance();
@@ -97,7 +100,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		if (this.bus != null) {
 			this.bus.unregister(this);
 		}
-		
+
 		super.setMainEventBus(bus);
 		if (this.bus != null) {
 			this.bus.register(this);
@@ -127,7 +130,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)
-						&& groupService.findOwnerGroups(loggedUser).size() == 0) {
+						&& groupService.findOwnerGroups(loggedUser).isEmpty()) {
 					Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
 				} else {
 					userWindowPresenter.showWindow();
@@ -149,6 +152,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		selectionType.select(Messages.getString("Caption.Item.Selected"));
 
 		selectionType.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
 			public void valueChange(ValueChangeEvent event) {
 				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
 				bus.post(new MainUIEvent.UserSelectionChangedEvent());
@@ -206,7 +210,6 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		};
 
 		String filename = Messages.getString("Caption.Export.UserFileName");
-
 		return new StreamResource(source, filename);
 	}
 
@@ -347,7 +350,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		table.setColumnCollapsingAllowed(true);
 		table.setSortContainerPropertyId(FieldConstants.USERNAME);
 
-		BeanContainer<Long, User> dataSource = new BeanContainer<Long, User>(User.class);
+		BeanContainer<Long, User> dataSource = new BeanContainer<>(User.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
 		List<User> users;
@@ -538,16 +541,14 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 	@Override
 	public void onClose(ConfirmDialog dialog) {
-		if (dialog.isConfirmed()) {
-			if (dialog.equals(deletionConfirmDialog)) {
-				try {
-					deleteUsers();
-					Notification.show(Messages.getString("Message.Info.UsersDeleted"));
+		if (dialog.isConfirmed() && dialog.equals(deletionConfirmDialog)) {
+			try {
+				deleteUsers();
+				Notification.show(Messages.getString("Message.Info.UsersDeleted"));
 
-				} catch (Exception e) {
-					Notification.show(Messages.getString("Message.Error.UsersDeletion"), e.getMessage(),
-							Notification.Type.ERROR_MESSAGE);
-				}
+			} catch (Exception e) {
+				Notification.show(Messages.getString("Message.Error.UsersDeletion"), e.getMessage(),
+						Notification.Type.ERROR_MESSAGE);
 			}
 		}
 	}
@@ -577,7 +578,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void setToolsEnabled(final MainUIEvent.UserSelectionChangedEvent event) {
-		boolean itemsSelected = ((Set<Object>) table.getValue()).size() > 0;
+		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
 		boolean toolsEnabled = allSelected || itemsSelected;
 		buttonGroup.setEnabled(toolsEnabled);
 	}

@@ -18,5 +18,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = { ElementType.FIELD })
 public @interface Structured {
-	String value();
+
+	/**
+	 * String pattern for property structure
+	 * 
+	 * @return
+	 */
+	public String value();
 }

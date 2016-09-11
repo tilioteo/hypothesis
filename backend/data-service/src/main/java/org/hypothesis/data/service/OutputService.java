@@ -36,7 +36,7 @@ public class OutputService implements Serializable {
 			branchOutputDao.beginTransaction();
 			branchOutputDao.makePersistent(branchOutput);
 			branchOutputDao.commit();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			branchOutputDao.rollback();
 			// throw e;

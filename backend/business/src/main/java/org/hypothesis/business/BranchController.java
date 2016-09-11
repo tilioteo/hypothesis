@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.evaluation.AbstractBasePath;
@@ -25,13 +26,18 @@ import org.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class BranchController implements Serializable {
 
-	private final List<Path> paths = new ArrayList<>();
+	private List<Path> paths = new ArrayList<>();
 	private DefaultPath defaultPath = null;
 
 	private String nextKey = null;
 
-	private final HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
+	private HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
 
+	/**
+	 * Add branch path previously created from it's definition
+	 * 
+	 * @param path
+	 */
 	public void addPath(AbstractBasePath path) {
 		if (path instanceof Path) {
 			this.paths.add((Path) path);
@@ -40,13 +46,20 @@ public class BranchController implements Serializable {
 		}
 	}
 
+	/**
+	 * Add set of slide output variables
+	 * 
+	 * @param slide
+	 *            the slide as origin of outputs
+	 * @param outputValues
+	 *            map of indexed output variables
+	 */
 	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
 		if (slide != null && slide.getId() != null && !outputValues.isEmpty()) {
-			// copy map of variables because it will be erased at the slide
-			// finish
+			// copy map of variables because it will be erased on slide finish
 			HashMap<Integer, ExchangeVariable> map = new HashMap<>();
-			for (Integer index : outputValues.keySet()) {
-				map.put(index, outputValues.get(index));
+			for (Entry<Integer, ExchangeVariable> entry : outputValues.entrySet()) {
+				map.put(entry.getKey(), entry.getValue());
 			}
 
 			slideOutputs.put(slide.getId(), map);

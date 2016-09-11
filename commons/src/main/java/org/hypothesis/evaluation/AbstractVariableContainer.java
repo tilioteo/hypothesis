@@ -23,6 +23,7 @@ public abstract class AbstractVariableContainer implements HasVariables {
 		this.variables = variables;
 	}
 
+	@Override
 	public Map<String, org.hypothesis.interfaces.Variable<?>> getVariables() {
 		return variables != null ? variables.getVariables() : null;
 	}

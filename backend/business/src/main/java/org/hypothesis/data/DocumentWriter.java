@@ -16,6 +16,13 @@ import org.hypothesis.interfaces.Document;
  */
 public interface DocumentWriter extends Serializable {
 
-	String writeString(Document document);
+	/**
+	 * Write string definition from document object tree
+	 * 
+	 * @param document
+	 *            document object tree
+	 * @return string definition or null if document parameter is null
+	 */
+	public String writeString(Document document);
 
 }

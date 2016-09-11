@@ -21,6 +21,12 @@ public final class ComponentWrapperImpl implements ComponentWrapper {
 	private final Component component;
 	private final Alignment alignment;
 
+	/**
+	 * Construct
+	 * 
+	 * @param component
+	 * @param alignment
+	 */
 	public ComponentWrapperImpl(Component component, Alignment alignment) {
 		this.component = component;
 		this.alignment = alignment;

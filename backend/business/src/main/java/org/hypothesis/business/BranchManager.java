@@ -25,16 +25,12 @@ import org.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
-	private static final Logger log = Logger.getLogger(BranchManager.class);
+	private static Logger log = Logger.getLogger(BranchManager.class);
 
-	private final DocumentReader reader = new XmlDocumentReader();
+	private DocumentReader reader = new XmlDocumentReader();
 
 	private Branch current = null;
 	private BranchController controller = null;
-
-	public BranchManager() {
-		super();
-	}
 
 	@Override
 	public Branch current() {
@@ -52,49 +48,44 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
 		return current;
 	}
-	
+
 	private void buildBranchController() {
 		log.debug("Building branch controller.");
 
 		controller = BranchBuilder.buildBranchController(current, reader);
 	}
 
-	/*
-	 * @Override public Branch find(Branch item) { if (item != current) {
-	 * super.find(item); } return current(); }
-	 */
-
-	/*
-	 * @Override public Branch get(Long key) { clearBranchRelatives();
-	 * super.get(key); return current(); }
-	 */
-
-	/*
-	 * public String getSerializedData() { return nextKey; }
-	 */
-
-	/*
-	 * @Override public void setCurrent(Branch item) { if (item !=
-	 * super.current()) { clearBranchRelatives(); super.setCurrent(item);
-	 * buildBranch(); } }
-	 */
-
 	public BranchController getController() {
 		return controller;
 	}
 
+	/**
+	 * Add set of slide output variables
+	 * 
+	 * @param slide
+	 *            the slide as origin of outputs
+	 * @param outputValues
+	 *            map of indexed output variables
+	 */
 	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
 		if (controller != null) {
 			controller.addSlideOutputs(slide, outputValues);
 		}
 	}
 
+	/**
+	 * Look into provided map of branches and return the next one according to
+	 * internal state
+	 * 
+	 * @param branchMap
+	 * @return the next branch or null if map is empty or nothing found.
+	 */
 	public Branch getNextBranch(BranchMap branchMap) {
 		if (branchMap != null && controller != null) {
 			String key = controller.getNextBranchKey();
-			
+
 			Branch branch = branchMap.get(key);
-			
+
 			if (branch != null) {
 				find(branch);
 				return current();

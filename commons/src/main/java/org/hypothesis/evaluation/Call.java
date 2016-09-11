@@ -21,6 +21,11 @@ public class Call implements Evaluable {
 	private final HasActions actions;
 	private final String actionId;
 
+	/**
+	 * Construct
+	 * @param actions
+	 * @param actionId
+	 */
 	public Call(HasActions actions, String actionId) {
 		this.actions = actions;
 		this.actionId = actionId;

@@ -16,8 +16,9 @@ import org.hypothesis.data.model.User;
 @SuppressWarnings("serial")
 public interface MainUIEvent extends HypothesisEvent {
 
-	final class UserLoginRequestedEvent implements MainUIEvent {
-		private final String userName, password;
+	public static final class UserLoginRequestedEvent implements MainUIEvent {
+		private final String userName;
+		private final String password;
 
 		public UserLoginRequestedEvent(final String userName, final String password) {
 			this.userName = userName;

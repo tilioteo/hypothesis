@@ -25,6 +25,9 @@ import com.tilioteo.common.Strings;
  */
 public class DocumentFactory {
 
+	private DocumentFactory() {
+	}
+
 	public static Document mergeSlideDocument(Document template, Document content) {
 		DocumentImpl document = new DocumentImpl();
 		Element root = document.createRoot(DocumentConstants.SLIDE);
@@ -89,7 +92,7 @@ public class DocumentFactory {
 		String name = sourceSubElement.getName();
 		String id = sourceSubElement.getAttribute(DocumentConstants.ID);
 
-		Element destinationSubElement = null;
+		Element destinationSubElement;
 		if (!Strings.isNullOrEmpty(id)) {
 			HashMap<String, String> attributes = new HashMap<>();
 			attributes.put(DocumentConstants.ID, id);

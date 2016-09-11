@@ -64,7 +64,7 @@ public class TokenService implements Serializable {
 				tokenDao.makeTransient(invalidToken);
 			}
 			tokenDao.commit();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error("purge of invalid tokens failed");
 			log.error(e.getMessage());
 			tokenDao.rollback();
@@ -82,7 +82,7 @@ public class TokenService implements Serializable {
 			tokenDao.commit();
 
 			return token;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			tokenDao.rollback();
 			return null;
@@ -97,7 +97,7 @@ public class TokenService implements Serializable {
 			tokenDao.commit();
 
 			return true;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			tokenDao.rollback();
 			return false;

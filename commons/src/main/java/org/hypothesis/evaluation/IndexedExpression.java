@@ -20,6 +20,12 @@ public class IndexedExpression implements ExchangeVariable {
 	private final int index;
 	private final Expression expression;
 
+	/**
+	 * Construct
+	 * 
+	 * @param index
+	 * @param expression
+	 */
 	public IndexedExpression(int index, Expression expression) {
 		this.index = index;
 		this.expression = expression;

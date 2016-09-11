@@ -28,14 +28,20 @@ import com.tilioteo.common.Strings;
 @SuppressWarnings("serial")
 public class MessageManager implements Serializable {
 
-	private final MessageService messageService;
+	private MessageService messageService;
 
-	private final DocumentReader reader = new XmlDocumentReader();
+	private DocumentReader reader = new XmlDocumentReader();
 
 	public MessageManager() {
 		messageService = MessageService.newInstance();
 	}
 
+	/**
+	 * Create new message object by provided uid
+	 * @param uid message identifier to look for definition
+	 * @param userId user identifier passed into message
+	 * @return new message object or null when message definition not found
+	 */
 	public Message createMessage(String uid, Long userId) {
 		org.hypothesis.data.model.Message entity = messageService.findMessageByUid(uid);
 
@@ -51,7 +57,7 @@ public class MessageManager implements Serializable {
 					try {
 						method = message.getClass().getDeclaredMethod("setPropertyDefinition", String.class,
 								Class.class);
-					} catch (Throwable e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
@@ -83,7 +89,7 @@ public class MessageManager implements Serializable {
 								// invoking message.setPropertyDefinition(name,
 								// clazz);
 								method.invoke(message, name, clazz);
-							} catch (Throwable e) {
+							} catch (Exception e) {
 								e.printStackTrace();
 							}
 						}

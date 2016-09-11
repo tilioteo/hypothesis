@@ -31,6 +31,12 @@ public class HypothesisViewProvider implements ViewProvider {
 
 	private ViewPresenter presenter = null;
 
+	/**
+	 * Create instance and associate it with bus and view type
+	 * 
+	 * @param bus
+	 * @param viewType
+	 */
 	public HypothesisViewProvider(MainEventBus bus, HypothesisViewType viewType) {
 		this.bus = bus;
 		this.viewType = viewType;
@@ -78,16 +84,19 @@ public class HypothesisViewProvider implements ViewProvider {
 				if (presenter instanceof HasMainEventBus) {
 					((HasMainEventBus) presenter).setMainEventBus(bus);
 				}
-				
+
 				if (presenter instanceof ManagementPresenter) {
 					((ManagementPresenter) presenter).init();
 				}
+
+				return presenter.createView();
+
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 		}
 
-		return presenter.createView();
+		return null;
 	}
 
 }

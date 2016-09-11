@@ -52,6 +52,11 @@ public class LoginPresenterImpl implements LoginPresenter {
 
 	private final MainEventBus bus;
 
+	/**
+	 * Construct with bus
+	 * 
+	 * @param bus
+	 */
 	public LoginPresenterImpl(MainEventBus bus) {
 		this.bus = bus;
 	}
@@ -197,12 +202,22 @@ public class LoginPresenterImpl implements LoginPresenter {
 		notification.show(Page.getCurrent());
 	}
 
+	/**
+	 * Do on invalid login
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void invalidLogin(InvalidLoginEvent event) {
 		clearFields();
 		showError(Messages.getString("Message.Error.InvalidLogin"));
 	}
 
+	/**
+	 * Do on invalid permission
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void invalidUserPermission(InvalidUserPermissionEvent event) {
 		clearFields();
@@ -214,6 +229,7 @@ public class LoginPresenterImpl implements LoginPresenter {
 		password.clear();
 	}
 
+	@Override
 	public LoginScreen createScreen() {
 		return new LoginScreen(this);
 	}

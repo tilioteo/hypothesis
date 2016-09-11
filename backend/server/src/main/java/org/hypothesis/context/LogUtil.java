@@ -34,7 +34,7 @@ public class LogUtil {
 					DOMConfigurator.configure(configFileName);
 					log.info(String.format("Log4j config file: %s", configFileName));
 					initialized = true;
-				} catch (Throwable e) {
+				} catch (Exception e) {
 					System.err.println("ERROR: Loading log4j config file: " + configFileName + ".");
 					System.err.println(e.getMessage());
 				}

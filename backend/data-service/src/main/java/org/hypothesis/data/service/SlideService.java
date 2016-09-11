@@ -19,12 +19,12 @@ public class SlideService {
 
 	private final HibernateDao<Slide, Long> slideDao;
 
-	public static SlideService newInstance() {
-		return new SlideService(new HibernateDao<Slide, Long>(Slide.class));
-	}
-
 	protected SlideService(HibernateDao<Slide, Long> taskDao) {
 		this.slideDao = taskDao;
+	}
+
+	public static SlideService newInstance() {
+		return new SlideService(new HibernateDao<Slide, Long>(Slide.class));
 	}
 
 	public Slide findById(Long id) {
@@ -35,7 +35,7 @@ public class SlideService {
 			Slide task = slideDao.findById(id, false);
 			slideDao.commit();
 			return task;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			slideDao.rollback();
 		}

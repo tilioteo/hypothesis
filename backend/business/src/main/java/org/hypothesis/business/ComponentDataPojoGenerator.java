@@ -28,16 +28,29 @@ import javassist.bytecode.annotation.StringMemberValue;
  */
 public class ComponentDataPojoGenerator {
 
+	private ComponentDataPojoGenerator() {
+	}
+
+	/**
+	 * Generate new POJO class dynamically
+	 * @param className name of generated class
+	 * @param superClass super class to inherit from
+	 * @param properties properties to be defined in POJO, getters and setters are generated as well
+	 * @param structures optional {@link Structured} annotation passed to properties
+	 * @return new Class object or null when an error occurs
+	 * @throws NotFoundException
+	 * @throws CannotCompileException
+	 */
 	public static Class<?> generate(String className, Class<?> superClass, Map<String, Class<?>> properties,
 			Map<String, String> structures) throws NotFoundException, CannotCompileException {
-
+		// TODO replace structures map by specific annotation instances for general use
 		ClassPool pool = ClassPool.getDefault();
 
 		CtClass cc = null;
 
 		try {
 			cc = pool.get(className);
-		} catch (Throwable e) {
+		} catch (NotFoundException e) {
 			e.getMessage();
 		}
 
@@ -98,7 +111,7 @@ public class ComponentDataPojoGenerator {
 
 		String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("public ").append(fieldClass.getName()).append(" ").append(getterName).append("(){")
 				.append("return this.").append(fieldName).append(";").append("}");
 		return CtMethod.make(sb.toString(), declaringClass);

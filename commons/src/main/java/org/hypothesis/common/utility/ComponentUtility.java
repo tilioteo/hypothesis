@@ -27,6 +27,17 @@ import com.vaadin.ui.Component;
  */
 public class ComponentUtility {
 
+	private ComponentUtility() {
+	}
+
+	/**
+	 * Set common component properties
+	 * 
+	 * @param component
+	 * @param element
+	 * @param stringMap
+	 * @param alignmentWrapper
+	 */
 	public static void setCommonProperties(Component component, Element element, StringMap stringMap,
 			AlignmentWrapper alignmentWrapper) {
 		// store component id
@@ -63,12 +74,24 @@ public class ComponentUtility {
 		}
 	}
 
+	/**
+	 * Set component width
+	 * 
+	 * @param component
+	 * @param dimension
+	 */
 	public static void setWidth(Component component, String dimension) {
 		if (component != null) {
 			component.setWidth(dimension);
 		}
 	}
 
+	/**
+	 * Set component height
+	 * 
+	 * @param component
+	 * @param dimension
+	 */
 	public static void setHeight(Component component, String dimension) {
 		if (component != null) {
 			component.setHeight(dimension);
@@ -86,23 +109,23 @@ public class ComponentUtility {
 	private static Alignment stringToAlignment(String align) {
 		if (align != null) {
 			align = align.trim().toLowerCase();
-			if (align.equals("tl") || align.equals("lt"))
+			if ("tl".equalsIgnoreCase(align) || "lt".equalsIgnoreCase(align))
 				return Alignment.TOP_LEFT;
-			else if (align.equals("tc") || align.equals("ct"))
+			else if ("tc".equalsIgnoreCase(align) || "ct".equalsIgnoreCase(align))
 				return Alignment.TOP_CENTER;
-			else if (align.equals("tr") || align.equals("rt"))
+			else if ("tr".equalsIgnoreCase(align) || "rt".equalsIgnoreCase(align))
 				return Alignment.TOP_RIGHT;
-			else if (align.equals("ml") || align.equals("lm"))
+			else if ("ml".equalsIgnoreCase(align) || "lm".equalsIgnoreCase(align))
 				return Alignment.MIDDLE_LEFT;
-			else if (align.equals("mc") || align.equals("cm"))
+			else if ("mc".equalsIgnoreCase(align) || "cm".equalsIgnoreCase(align))
 				return Alignment.MIDDLE_CENTER;
-			else if (align.equals("mr") || align.equals("rm"))
+			else if ("mr".equalsIgnoreCase(align) || "rm".equalsIgnoreCase(align))
 				return Alignment.MIDDLE_RIGHT;
-			else if (align.equals("bl") || align.equals("lb"))
+			else if ("bl".equalsIgnoreCase(align) || "lb".equalsIgnoreCase(align))
 				return Alignment.BOTTOM_LEFT;
-			else if (align.equals("bc") || align.equals("cb"))
+			else if ("bc".equalsIgnoreCase(align) || "cb".equalsIgnoreCase(align))
 				return Alignment.BOTTOM_CENTER;
-			else if (align.equals("br") || align.equals("rb"))
+			else if ("br".equalsIgnoreCase(align) || "rb".equalsIgnoreCase(align))
 				return Alignment.BOTTOM_RIGHT;
 		}
 
@@ -110,6 +133,14 @@ public class ComponentUtility {
 		return Alignment.MIDDLE_CENTER;
 	}
 
+	/**
+	 * Set common fields properties
+	 * 
+	 * @param component
+	 * @param element
+	 * @param stringMap
+	 * @param alignmentWrapper
+	 */
 	@SuppressWarnings("rawtypes")
 	public static void setCommonFieldProperties(AbstractField component, Element element, StringMap stringMap,
 			AlignmentWrapper alignmentWrapper) {
@@ -119,6 +150,14 @@ public class ComponentUtility {
 		component.setReadOnly(stringMap.getBoolean(DocumentConstants.READ_ONLY, false));
 	}
 
+	/**
+	 * Set common layout properties
+	 * 
+	 * @param component
+	 * @param element
+	 * @param stringMap
+	 * @param alignmentWrapper
+	 */
 	public static void setCommonLayoutProperties(AbstractOrderedLayout component, Element element, StringMap stringMap,
 			AlignmentWrapper alignmentWrapper) {
 		setCommonProperties(component, element, stringMap, alignmentWrapper);
@@ -133,12 +172,20 @@ public class ComponentUtility {
 		component.setSpacing(value);
 	}
 
+	/**
+	 * Create default event callback which sets server and client time of event
+	 * only
+	 * 
+	 * @param serverTimestamp
+	 * @param clientTimestamp
+	 * @return
+	 */
 	public static ComponentEventCallback createDefaultEventCallback(final Date serverTimestamp,
 			final Date clientTimestamp) {
 		return new ComponentEventCallback() {
 			@Override
 			public void initEvent(ComponentEvent componentEvent) {
-				componentEvent.setTimestamp(new Date());
+				componentEvent.setTimestamp(serverTimestamp);
 				componentEvent.setClientTimestamp(clientTimestamp);
 			}
 		};

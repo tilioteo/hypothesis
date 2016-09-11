@@ -31,7 +31,7 @@ import org.hypothesis.interfaces.Element;
 @SuppressWarnings("serial")
 public class BranchControllerFactoryImpl implements BranchControllerFactory {
 
-	private static final Logger log = Logger.getLogger(BranchControllerFactoryImpl.class);
+	private static Logger log = Logger.getLogger(BranchControllerFactoryImpl.class);
 
 	@Override
 	public BranchController buildBranchController(String data, DocumentReader reader) {
@@ -60,7 +60,7 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 
 	private void createPaths(Element rootElement, BranchController controller) {
 		List<Element> paths = DocumentUtility.getPathElements(rootElement);
-		AbstractBasePath path = null;
+		AbstractBasePath path;
 
 		if (paths != null) {
 			for (Element pathElement : paths) {

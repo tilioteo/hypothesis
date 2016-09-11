@@ -20,6 +20,15 @@ import org.hypothesis.interfaces.SlidePresenter;
 @SuppressWarnings("serial")
 public class ComponentDataBuilder implements Serializable {
 
+	/**
+	 * Serialize component data by provided writer implementation and default
+	 * component data factory implementation
+	 * 
+	 * @param data
+	 * @param writer
+	 * @return string representation of component data or null when some
+	 *         parameter is null.
+	 */
 	public static String buildComponentData(ComponentData data, DocumentWriter writer) {
 		ComponentDataFactory factory = new ComponentDataFactoryImpl();
 
@@ -30,6 +39,15 @@ public class ComponentDataBuilder implements Serializable {
 		return null;
 	}
 
+	/**
+	 * Serialize action data from event by provided writer implementation and
+	 * default component data factory implementation
+	 * 
+	 * @param event
+	 * @param writer
+	 * @return string representation of event data or null when some parameter
+	 *         is null.
+	 */
 	public static String buildActionData(ActionEvent event, DocumentWriter writer) {
 		ComponentDataFactory factory = new ComponentDataFactoryImpl();
 
@@ -40,6 +58,15 @@ public class ComponentDataBuilder implements Serializable {
 		return null;
 	}
 
+	/**
+	 * Serialize slide data from presenter by provided writer implementation and
+	 * default component data factory implementation
+	 * 
+	 * @param presenter
+	 * @param writer
+	 * @return string representation of slide data or null when some parameter
+	 *         is null.
+	 */
 	public static String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer) {
 		ComponentDataFactory factory = new ComponentDataFactoryImpl();
 
