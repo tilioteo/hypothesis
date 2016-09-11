@@ -242,7 +242,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		Variable<?> variable = variables.get(COMPONENT_DATA);
 		if (data != null) {
 			if (null == variable) {
-				variable = new org.hypothesis.evaluation.Variable<Object>(COMPONENT_DATA);
+				variable = new org.hypothesis.evaluation.Variable<>(COMPONENT_DATA);
 				variables.put(COMPONENT_DATA, variable);
 			}
 			variable.setRawValue(data);

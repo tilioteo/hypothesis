@@ -63,7 +63,7 @@ public class ShortcutUtility {
 		if (!Strings.isNullOrEmpty(shortcutKey)) {
 			String[] parts = shortcutKey.split("\\+");
 
-			ArrayList<String> modifiers = new ArrayList<String>();
+			ArrayList<String> modifiers = new ArrayList<>();
 			String key = null;
 
 			for (String part : parts) {

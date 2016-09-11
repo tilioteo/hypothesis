@@ -225,7 +225,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		ui.clearContent(animate, new Command() {
 			@Override
 			public void execute() {
-				bus.post((Direction.NEXT.equals(event.getDirection())) ? new NextSlideEvent() : new PriorSlideEvent());
+				bus.post(Direction.NEXT.equals(event.getDirection()) ? new NextSlideEvent() : new PriorSlideEvent());
 			}
 		});
 	}

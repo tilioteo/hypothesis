@@ -395,7 +395,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			if (state == WindowState.UPDATE) {
 				groups = user.getGroups();
 			} else {
-				groups = new HashSet<Group>();
+				groups = new HashSet<>();
 			}
 
 			for (Object itemId : groupsField.getItemIds()) {
@@ -418,8 +418,8 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			enabledPacks = permissionService.getUserPacks(user, true, null);
 			disabledPacks = permissionService.getUserPacks(user, false, null);
 		} else {
-			enabledPacks = new HashSet<Pack>();
-			disabledPacks = new HashSet<Pack>();
+			enabledPacks = new HashSet<>();
+			disabledPacks = new HashSet<>();
 		}
 
 		for (Object itemId : packsField.getItemIds()) {
@@ -766,7 +766,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		if (rolesField.isVisible()) {
-			Set<Role> roles = new HashSet<Role>();
+			Set<Role> roles = new HashSet<>();
 			for (Role role : user.getRoles()) {
 				roles.add(role);
 			}

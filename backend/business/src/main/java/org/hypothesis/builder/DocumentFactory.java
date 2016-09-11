@@ -92,7 +92,7 @@ public class DocumentFactory {
 		String name = sourceSubElement.getName();
 		String id = sourceSubElement.getAttribute(DocumentConstants.ID);
 
-		Element destinationSubElement = null;
+		Element destinationSubElement;
 		if (!Strings.isNullOrEmpty(id)) {
 			HashMap<String, String> attributes = new HashMap<>();
 			attributes.put(DocumentConstants.ID, id);
@@ -113,7 +113,7 @@ public class DocumentFactory {
 
 		destination.setText(source.getText());
 
-		List<Element> destSubElements = new ArrayList<Element>();
+		List<Element> destSubElements = new ArrayList<>();
 
 		boolean destSubEmpty = destSubElements.isEmpty();
 

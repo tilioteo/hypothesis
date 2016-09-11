@@ -311,7 +311,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			if (state == WindowState.UPDATE) {
 				users = group.getUsers();
 			} else {
-				users = new HashSet<User>();
+				users = new HashSet<>();
 			}
 
 			for (Object itemId : usersField.getItemIds()) {
@@ -332,7 +332,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		if (state == WindowState.UPDATE) {
 			packs = permissionService.getGroupPacks(group);
 		} else {
-			packs = new HashSet<Pack>();
+			packs = new HashSet<>();
 		}
 
 		for (Object itemId : packsField.getItemIds()) {

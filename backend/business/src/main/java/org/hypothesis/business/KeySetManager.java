@@ -25,7 +25,7 @@ import org.hypothesis.data.interfaces.HasList;
 @SuppressWarnings("serial")
 public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implements Serializable {
 
-	private LinkedHashMap<K, E> keyset = new LinkedHashMap<K, E>();
+	private LinkedHashMap<K, E> keyset = new LinkedHashMap<>();
 
 	private K key = null;
 	private E element = null;
@@ -96,7 +96,7 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 				}
 			}
 			if (keyset.size() > 0) {
-				List<E> list = new ArrayList<E>(keyset.values());
+				List<E> list = new ArrayList<>(keyset.values());
 				find(list.get(0));
 			} else {
 				element = null;

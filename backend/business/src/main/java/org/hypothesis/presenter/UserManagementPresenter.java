@@ -333,7 +333,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 	@SuppressWarnings("unchecked")
 	private Collection<User> getSelectedUsers() {
-		Collection<User> users = new HashSet<User>();
+		Collection<User> users = new HashSet<>();
 		for (Long id : getSelectedUserIds()) {
 			users.add(((BeanItem<User>) table.getItem(id)).getBean());
 		}
@@ -350,7 +350,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		table.setColumnCollapsingAllowed(true);
 		table.setSortContainerPropertyId(FieldConstants.USERNAME);
 
-		BeanContainer<Long, User> dataSource = new BeanContainer<Long, User>(User.class);
+		BeanContainer<Long, User> dataSource = new BeanContainer<>(User.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
 		List<User> users;
@@ -416,7 +416,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			user = userService.merge(user);
 
 			Set<Role> roles = user.getRoles();
-			List<String> sortedRoles = new ArrayList<String>();
+			List<String> sortedRoles = new ArrayList<>();
 			for (Role role : roles) {
 				sortedRoles.add(role.getName());
 			}
@@ -444,7 +444,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			user = userService.merge(user);
 
 			Set<Group> groups = user.getGroups();
-			List<String> sortedGroups = new ArrayList<String>();
+			List<String> sortedGroups = new ArrayList<>();
 			for (Group group : groups) {
 				sortedGroups.add(group.getName());
 			}
@@ -500,8 +500,8 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
 
 			Set<Pack> packs = permissionService.findUserPacks2(user, false);
-			List<String> sortedPacks = new ArrayList<String>();
-			List<String> sortedPackDescs = new ArrayList<String>();
+			List<String> sortedPacks = new ArrayList<>();
+			List<String> sortedPackDescs = new ArrayList<>();
 			for (Pack pack : packs) {
 				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", pack.getName(), pack.getId()));
 				sortedPackDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),

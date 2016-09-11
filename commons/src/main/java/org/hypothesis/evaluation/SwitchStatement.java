@@ -37,7 +37,7 @@ public class SwitchStatement implements Evaluable {
 	public void addCaseEvaluable(String caseValue, Evaluable evaluable) {
 		List<Evaluable> evaluables = caseMap.get(caseValue);
 		if (evaluables == null) {
-			evaluables = new ArrayList<Evaluable>();
+			evaluables = new ArrayList<>();
 			caseMap.put(caseValue, evaluables);
 		}
 

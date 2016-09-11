@@ -23,7 +23,7 @@ public class Node extends AbstractVariableContainer implements Serializable {
 
 	private long slideId;
 
-	private List<Evaluable> evaluables = new ArrayList<Evaluable>();
+	private List<Evaluable> evaluables = new ArrayList<>();
 
 	private int nextIndex = -1;
 	private boolean breakExecution = false;

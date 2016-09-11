@@ -210,7 +210,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 	}
 
 	private PackPanel createPackPanel(Pack pack) {
-		BeanItem<Pack> beanItem = new BeanItem<Pack>(pack);
+		BeanItem<Pack> beanItem = new BeanItem<>(pack);
 		PackPanel panel = new PackPanel();
 
 		panel.setCaption(pack.getName());

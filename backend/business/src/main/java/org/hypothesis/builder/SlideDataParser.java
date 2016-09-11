@@ -29,7 +29,7 @@ public class SlideDataParser {
 	}
 
 	public static List<String> parseOutputValues(String xmlString) {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<>();
 		Document doc = XmlUtility.readString(xmlString);
 		if (doc != null) {
 			@SuppressWarnings("unchecked")

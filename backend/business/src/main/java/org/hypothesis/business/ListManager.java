@@ -22,7 +22,7 @@ import org.hypothesis.data.interfaces.HasList;
 @SuppressWarnings("serial")
 public class ListManager<T extends HasList<E>, E> implements Serializable {
 
-	private LinkedList<E> list = new LinkedList<E>();
+	private LinkedList<E> list = new LinkedList<>();
 	private int index = -1;
 
 	private T parent = null;
@@ -137,7 +137,7 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 	 * @return new list
 	 */
 	public List<Integer> createRandomOrder() {
-		LinkedList<Integer> order = new LinkedList<Integer>();
+		LinkedList<Integer> order = new LinkedList<>();
 
 		while (order.size() < list.size()) {
 			Integer random = randomGenerator.nextInt(list.size());

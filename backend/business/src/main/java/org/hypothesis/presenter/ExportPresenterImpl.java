@@ -101,8 +101,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	private MainEventBus bus;
 
-	private List<String> sortedPacks = new ArrayList<String>();
-	private HashMap<String, Pack> packMap = new HashMap<String, Pack>();
+	private List<String> sortedPacks = new ArrayList<>();
+	private HashMap<String, Pack> packMap = new HashMap<>();
 
 	private VerticalLayout content;
 	private VerticalLayout testSelection;
@@ -367,8 +367,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 					dateFieldTo.validate();
 
 					Pack pack = packMap.get(packsSelect.getValue());
-					Date dateFrom = (Date) dateFieldFrom.getValue();
-					Date dateTo = (Date) dateFieldTo.getValue();
+					Date dateFrom = dateFieldFrom.getValue();
+					Date dateTo = dateFieldTo.getValue();
 
 					showTests(pack, dateFrom, dateTo);
 
@@ -439,7 +439,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		table.setSortContainerPropertyId(FieldConstants.ID);
 
-		final BeanContainer<Long, SimpleTest> dataSource = new BeanContainer<Long, SimpleTest>(SimpleTest.class);
+		final BeanContainer<Long, SimpleTest> dataSource = new BeanContainer<>(SimpleTest.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_USERNAME);
@@ -667,8 +667,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 						File tempFile = File.createTempFile("htsm", null);
 
 						// maps hold informations for legend creation
-						HashMap<String, String> fieldCaptionMap = new HashMap<String, String>();
-						HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<String, HashMap<String, String>>();
+						HashMap<String, String> fieldCaptionMap = new HashMap<>();
+						HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<>();
 
 						workbook = new SXSSFWorkbook(-1);
 						Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.TestSheetName"));
@@ -732,9 +732,9 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 						long lastEventTime = 0;
 						long diffTime;
 
-						HashMap<String, Integer> fieldColumnMap = new HashMap<String, Integer>();
-						HashMap<Long, Integer> branchCountMap = new HashMap<Long, Integer>();
-						HashMap<Long, Integer> slideCountMap = new HashMap<Long, Integer>();
+						HashMap<String, Integer> fieldColumnMap = new HashMap<>();
+						HashMap<Long, Integer> branchCountMap = new HashMap<>();
+						HashMap<Long, Integer> slideCountMap = new HashMap<>();
 
 						int outputValueCol = 23;
 						int fieldCol = outputValueCol + 10;
@@ -994,7 +994,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 												HashMap<String, String> valueCaptionMap = fieldValueCaptionMap
 														.get(fieldName);
 												if (null == valueCaptionMap) {
-													valueCaptionMap = new HashMap<String, String>();
+													valueCaptionMap = new HashMap<>();
 													fieldValueCaptionMap.put(fieldName, valueCaptionMap);
 												}
 												if (!valueCaptionMap.containsKey(fieldValue)) {

@@ -98,7 +98,7 @@ public class XmlUtility implements Serializable {
 			String uri, String attributeName, String attributeValue) {
 		Element result = null;
 		if (element != null) {
-			HashMap<String, String> namespaces = new HashMap<String, String>();
+			HashMap<String, String> namespaces = new HashMap<>();
 			if (!Strings.isNullOrEmpty(prefix) && !Strings.isNullOrEmpty(uri)) {
 				name = String.format("%s:%s", prefix, name);
 				namespaces.put(prefix, uri);

@@ -26,7 +26,7 @@ import org.hypothesis.interfaces.ExchangeVariable;
 @SuppressWarnings("serial")
 public class BranchController implements Serializable {
 
-	private List<Path> paths = new ArrayList<Path>();
+	private List<Path> paths = new ArrayList<>();
 	private DefaultPath defaultPath = null;
 
 	private String nextKey = null;
