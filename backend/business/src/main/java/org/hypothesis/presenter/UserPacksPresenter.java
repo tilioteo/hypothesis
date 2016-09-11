@@ -24,6 +24,9 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 
 	protected UserService userService;
 
+	/**
+	 * Construct
+	 */
 	public UserPacksPresenter() {
 		super();
 
@@ -45,7 +48,7 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 
 					return list;
 				}
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

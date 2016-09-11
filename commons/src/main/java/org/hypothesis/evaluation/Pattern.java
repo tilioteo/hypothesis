@@ -71,8 +71,7 @@ public class Pattern implements Formula {
 		final int prime2 = 773;
 
 		Long result = (long) slideNumber;
-		result = (prime1 * result + (slideId != null ? prime2 * slideId.longValue() : 0));
-		return result;
+		return prime1 * result + (slideId != null ? prime2 * slideId.longValue() : 0);
 	}
 
 }

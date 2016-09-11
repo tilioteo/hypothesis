@@ -50,6 +50,11 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 	private MainEventBus bus;
 	private UserSettingsWindowPresenter userSettingsWindowPresenter;
 
+	/**
+	 * Construct with bus
+	 * 
+	 * @param bus
+	 */
 	public HypothesisMenuPresenter(MainEventBus bus) {
 		this.bus = bus;
 
@@ -153,30 +158,28 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 		for (final HypothesisViewType view : HypothesisViewType.values()) {
 			User user = getCurrentUser();
 
-			if (user != null) {
-				if (view.isAllowed(user.getRoles())) {
-					Component menuItemComponent = new ValoMenuItemButton(Messages.getString(view.getCaption()),
-							view.getViewName(), view.getIcon());
+			if (user != null && view.isAllowed(user.getRoles())) {
+				Component menuItemComponent = new ValoMenuItemButton(Messages.getString(view.getCaption()),
+						view.getViewName(), view.getIcon());
 
-					menuItemComponent.addAttachListener(new AttachListener() {
-						@Override
-						public void attach(AttachEvent event) {
-							bus.register(event.getSource());
-						}
-					});
-					menuItemComponent.addDetachListener(new DetachListener() {
-						@Override
-						public void detach(DetachEvent event) {
-							bus.unregister(event.getSource());
-						}
-					});
+				menuItemComponent.addAttachListener(new AttachListener() {
+					@Override
+					public void attach(AttachEvent event) {
+						bus.register(event.getSource());
+					}
+				});
+				menuItemComponent.addDetachListener(new DetachListener() {
+					@Override
+					public void detach(DetachEvent event) {
+						bus.unregister(event.getSource());
+					}
+				});
 
-					menuItemsLayout.addComponent(menuItemComponent);
-				}
+				menuItemsLayout.addComponent(menuItemComponent);
 			}
 		}
-		return menuItemsLayout;
 
+		return menuItemsLayout;
 	}
 
 	private void updateUserName() {
@@ -184,6 +187,11 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 		settingsItem.setText(user.getUsername());
 	}
 
+	/**
+	 * Update user name on change
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void updateUserName(final ProfileUpdatedEvent event) {
 		updateUserName();

@@ -23,6 +23,15 @@ public class MainEventBus extends HypothesisEventBus<MainUIEvent> {
 
 	private static HashMap<HasMainEventBus, MainEventBus> map = new HashMap<>();
 
+	protected MainEventBus() {
+	}
+
+	/**
+	 * create new event bus instance and register bus owner
+	 * 
+	 * @param hasMainEventBus
+	 * @return
+	 */
 	public static final MainEventBus createInstance(HasMainEventBus hasMainEventBus) {
 		MainEventBus eventBus = new MainEventBus();
 		map.put(hasMainEventBus, eventBus);
@@ -30,6 +39,11 @@ public class MainEventBus extends HypothesisEventBus<MainUIEvent> {
 		return eventBus;
 	}
 
+	/**
+	 * unregister owner
+	 * 
+	 * @param hasMainEventBus
+	 */
 	public static final void destroyInstance(HasMainEventBus hasMainEventBus) {
 		map.remove(hasMainEventBus);
 	}
@@ -39,6 +53,12 @@ public class MainEventBus extends HypothesisEventBus<MainUIEvent> {
 		return get(ui);
 	}
 
+	/**
+	 * get event bus by ui
+	 * 
+	 * @param ui
+	 * @return
+	 */
 	public static final MainEventBus get(UI ui) {
 		if (ui instanceof HasUIPresenter) {
 			UIPresenter presenter = ((HasUIPresenter) ui).getPresenter();
@@ -49,9 +69,6 @@ public class MainEventBus extends HypothesisEventBus<MainUIEvent> {
 		}
 
 		return null;
-	}
-
-	protected MainEventBus() {
 	}
 
 }

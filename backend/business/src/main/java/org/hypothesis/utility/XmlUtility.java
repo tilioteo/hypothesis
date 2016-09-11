@@ -35,6 +35,11 @@ public class XmlUtility implements Serializable {
 	private static final String ENCODING_UTF8 = "utf-8";
 	public static final String DESCENDANT_FMT = "descendant::%s";
 
+	/**
+	 * Remove all children
+	 * 
+	 * @param parent
+	 */
 	@SuppressWarnings("unchecked")
 	public static void clearAllChilds(Node parent) {
 		if (parent != null) {
@@ -58,6 +63,11 @@ public class XmlUtility implements Serializable {
 	 * return false; }
 	 */
 
+	/**
+	 * Create new document with UTF8 encoding
+	 * 
+	 * @return
+	 */
 	public static Document createDocument() {
 		Document doc = DocumentFactory.getInstance().createDocument();
 		doc.setXMLEncoding(ENCODING_UTF8);
@@ -65,6 +75,13 @@ public class XmlUtility implements Serializable {
 		return doc;
 	}
 
+	/**
+	 * Find attribude by name
+	 * 
+	 * @param node
+	 * @param name
+	 * @return
+	 */
 	public static Attribute findAttributeByName(Node node, String name) {
 		if (node != null && name.length() > 0) {
 			if (node instanceof Element) {
@@ -145,7 +162,7 @@ public class XmlUtility implements Serializable {
 				SAXReader reader = new SAXReader();
 				Document doc = reader.read(file);
 				return doc;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -162,7 +179,7 @@ public class XmlUtility implements Serializable {
 				// false);
 				Document doc = reader.read(stringReader);
 				return doc;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -179,7 +196,7 @@ public class XmlUtility implements Serializable {
 				writer.write(doc);
 				writer.close();
 				string = stringWriter.toString();
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

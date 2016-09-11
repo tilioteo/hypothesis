@@ -34,7 +34,7 @@ public class PackService implements Serializable {
 			packDao.commit();
 
 			return pack;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			packDao.rollback();
 			return null;

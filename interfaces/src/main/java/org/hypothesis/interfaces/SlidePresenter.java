@@ -32,8 +32,6 @@ public interface SlidePresenter extends Evaluator {
 
 	public Map<Integer, ExchangeVariable> getOutputs();
 
-	public Map<String, Variable<?>> getVariables();
-
 	public Map<String, Field> getFields();
 
 	public void setUserId(Long userId);
@@ -47,8 +45,6 @@ public interface SlidePresenter extends Evaluator {
 
 	public void addViewportFinishListener(ViewportEventListener viewportEventListener);
 
-	//public void addShortcutKey(Component shortcutKey);
-	
 	public void addKeyAction(Extension keyAction);
 
 	public void addMessageListener(String uid, MessageEventListener messageEventListener);

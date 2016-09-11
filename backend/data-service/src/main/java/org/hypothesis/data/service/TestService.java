@@ -41,16 +41,16 @@ public class TestService implements Serializable {
 	private HibernateDao<Event, Long> eventDao;
 	private HibernateDao<SlideOrder, Long> slideOrderDao;
 
-	public static TestService newInstance() {
-		return new TestService(new HibernateDao<SimpleTest, Long>(SimpleTest.class),
-				new HibernateDao<Event, Long>(Event.class), new HibernateDao<SlideOrder, Long>(SlideOrder.class));
-	}
-
 	protected TestService(HibernateDao<SimpleTest, Long> testDao, HibernateDao<Event, Long> eventDao,
 			HibernateDao<SlideOrder, Long> slideOrderDao) {
 		this.testDao = testDao;
 		this.eventDao = eventDao;
 		this.slideOrderDao = slideOrderDao;
+	}
+
+	public static TestService newInstance() {
+		return new TestService(new HibernateDao<SimpleTest, Long>(SimpleTest.class),
+				new HibernateDao<Event, Long>(Event.class), new HibernateDao<SlideOrder, Long>(SlideOrder.class));
 	}
 
 	public SimpleTest findById(Long id) {
@@ -61,7 +61,7 @@ public class TestService implements Serializable {
 			SimpleTest test = testDao.findById(id, false);
 			testDao.commit();
 			return test;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			testDao.rollback();
 		}
@@ -85,7 +85,7 @@ public class TestService implements Serializable {
 									Restrictions.in(FieldConstants.STATUS, stats))));
 			testDao.commit();
 			return tests;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			testDao.rollback();
 		}
@@ -121,7 +121,7 @@ public class TestService implements Serializable {
 
 			return tests;
 
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			testDao.rollback();
 		}
@@ -153,7 +153,7 @@ public class TestService implements Serializable {
 			}
 
 			SimpleTest outputTest = null;
-			if (tests.size() > 0) {
+			if (!tests.isEmpty()) {
 				log.debug("getting broken test");
 				outputTest = tests.get(0);
 			} else {
@@ -167,7 +167,7 @@ public class TestService implements Serializable {
 			testDao.commit();
 			return outputTest;
 
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			testDao.rollback();
 		}
@@ -184,7 +184,7 @@ public class TestService implements Serializable {
 				testDao.makePersistent(test);
 				testDao.commit();
 				log.debug("test update finished");
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 				testDao.rollback();
 			}
@@ -206,7 +206,7 @@ public class TestService implements Serializable {
 
 				eventDao.commit();
 				log.debug("event save finished");
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 				eventDao.rollback();
 			}
@@ -223,7 +223,7 @@ public class TestService implements Serializable {
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		List results = query.list();
 
-		if (results.size() > 0) {
+		if (!results.isEmpty()) {
 			return (Integer) ((HashMap<?, ?>) results.get(0)).get("max");
 		}
 
@@ -257,7 +257,7 @@ public class TestService implements Serializable {
 				return slideOrder;
 			}
 
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			slideOrderDao.rollback();
 		}
@@ -271,7 +271,7 @@ public class TestService implements Serializable {
 				slideOrderDao.beginTransaction();
 				slideOrderDao.makePersistent(slideOrder);
 				slideOrderDao.commit();
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 				slideOrderDao.rollback();
 			}

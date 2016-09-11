@@ -26,11 +26,11 @@ public class PersistenceService implements Serializable {
 
 	private static Logger log = Logger.getLogger(PersistenceService.class);
 
-	public static PersistenceService newInstance() {
-		return new PersistenceService();
+	protected PersistenceService() {
 	}
 
-	protected PersistenceService() {
+	public static PersistenceService newInstance() {
+		return new PersistenceService();
 	}
 
 	public Pack merge(Pack entity) {
@@ -43,7 +43,7 @@ public class PersistenceService implements Serializable {
 				HibernateUtil.commitTransaction();
 
 				return pack;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 				HibernateUtil.rollbackTransaction();
 			}
@@ -61,7 +61,7 @@ public class PersistenceService implements Serializable {
 				HibernateUtil.commitTransaction();
 
 				return branch;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 				HibernateUtil.rollbackTransaction();
 			}
@@ -79,7 +79,7 @@ public class PersistenceService implements Serializable {
 				HibernateUtil.commitTransaction();
 
 				return task;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 				HibernateUtil.rollbackTransaction();
 			}
@@ -96,7 +96,7 @@ public class PersistenceService implements Serializable {
 				HibernateUtil.commitTransaction();
 
 				return slide;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 				HibernateUtil.rollbackTransaction();
 			}
@@ -113,7 +113,7 @@ public class PersistenceService implements Serializable {
 				HibernateUtil.commitTransaction();
 
 				return test;
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 				HibernateUtil.rollbackTransaction();
 			}

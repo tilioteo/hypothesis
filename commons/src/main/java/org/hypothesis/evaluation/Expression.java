@@ -5,8 +5,10 @@
 package org.hypothesis.evaluation;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.hypothesis.interfaces.Evaluable;
+import org.hypothesis.interfaces.Variable;
 
 import com.tilioteo.expressions.UnaryExpression;
 
@@ -21,6 +23,10 @@ public class Expression implements Evaluable {
 
 	private com.tilioteo.expressions.Expression internalExpression;
 
+	/**
+	 * 
+	 * @param expression
+	 */
 	public Expression(com.tilioteo.expressions.Expression expression) {
 		this.internalExpression = expression;
 	}
@@ -60,9 +66,9 @@ public class Expression implements Evaluable {
 	@Override
 	public void setVariables(Map<String, org.hypothesis.interfaces.Variable<?>> variables) {
 		if (internalExpression != null && variables != null) {
-			for (String key : variables.keySet()) {
-				org.hypothesis.interfaces.Variable<?> variable = variables.get(key);
-				internalExpression.setVariableValue(key, variable.getValue());
+			for (Entry<String, Variable<?>> entry : variables.entrySet()) {
+				org.hypothesis.interfaces.Variable<?> variable = entry.getValue();
+				internalExpression.setVariableValue(entry.getKey(), variable.getValue());
 			}
 		}
 	}
@@ -70,10 +76,10 @@ public class Expression implements Evaluable {
 	@Override
 	public void updateVariables(Map<String, org.hypothesis.interfaces.Variable<?>> variables) {
 		if (internalExpression != null && variables != null) {
-			for (String key : variables.keySet()) {
-				org.hypothesis.interfaces.Variable<?> variable = variables.get(key);
-				if (internalExpression.hasVariable(key)) {
-					Object value = internalExpression.getVariableValue(key);
+			for (Entry<String, Variable<?>> entry : variables.entrySet()) {
+				org.hypothesis.interfaces.Variable<?> variable = entry.getValue();
+				if (internalExpression.hasVariable(entry.getKey())) {
+					Object value = internalExpression.getVariableValue(entry.getKey());
 					variable.setRawValue(value);
 				}
 			}

@@ -28,12 +28,12 @@ public class GroupService implements Serializable {
 
 	private HibernateDao<Group, Long> groupDao;
 
-	public static GroupService newInstance() {
-		return new GroupService(new HibernateDao<Group, Long>(Group.class));
-	}
-
 	protected GroupService(HibernateDao<Group, Long> groupDao) {
 		this.groupDao = groupDao;
+	}
+
+	public static GroupService newInstance() {
+		return new GroupService(new HibernateDao<Group, Long>(Group.class));
 	}
 
 	public Group merge(Group group) {
@@ -42,7 +42,7 @@ public class GroupService implements Serializable {
 			group = mergeInit(group);
 			groupDao.commit();
 			return group;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 		}
@@ -66,7 +66,7 @@ public class GroupService implements Serializable {
 			group = groupDao.makePersistent(group);
 			groupDao.commit();
 			return group;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 			// throw e;
@@ -81,7 +81,7 @@ public class GroupService implements Serializable {
 			for (Group group : allGroups) {
 				this.delete(group);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
 	}
@@ -94,7 +94,7 @@ public class GroupService implements Serializable {
 			// groupDao.clear();
 			groupDao.makeTransient(group);
 			groupDao.commit();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 		}
@@ -107,7 +107,7 @@ public class GroupService implements Serializable {
 			List<Group> allGroups = groupDao.findAll();
 			groupDao.commit();
 			return allGroups;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 		}
@@ -121,7 +121,7 @@ public class GroupService implements Serializable {
 			Group grp = groupDao.findById(Long.valueOf(id), true);
 			groupDao.commit();
 			return grp;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 		}
@@ -136,7 +136,7 @@ public class GroupService implements Serializable {
 					.findByCriteria(Restrictions.eq(FieldConstants.PROPERTY_OWNER_ID, owner.getId()));
 			groupDao.commit();
 			return allGroups;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 			// throw e;
@@ -154,7 +154,7 @@ public class GroupService implements Serializable {
 			List<Group> groups = groupDao.findByCriteria(crit);
 			groupDao.commit();
 			return !groups.isEmpty();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupDao.rollback();
 			// throw e;

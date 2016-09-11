@@ -31,6 +31,12 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 	private boolean disableDeferred = false;
 	private ProcessEventBus bus;
 
+	/**
+	 * Construct
+	 * 
+	 * @param eventQueue
+	 * @param bus
+	 */
 	public SlideContainerPresenterDeferred(EventQueue eventQueue, ProcessEventBus bus) {
 		super();
 
@@ -51,6 +57,9 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 		}
 	}
 
+	/**
+	 * Fire all deferred events
+	 */
 	public void fireDeferred() {
 		if (!disableDeferred) {
 			if (eventQueue != null) {
@@ -81,6 +90,11 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 		super.detach(component, parent, ui, session);
 	}
 
+	/**
+	 * Do on finish slide
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void processFinishSlide(FinishSlideEvent event) {
 		viewDone();

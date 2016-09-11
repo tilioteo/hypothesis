@@ -508,7 +508,7 @@ public class ProcessManager implements Serializable {
 					if (currentSlide != null) {
 						slideProcessing = true;
 
-						if (test.getStatus().equals(Status.CREATED)) {
+						if (test.getStatus() == Status.CREATED) {
 							log.debug("Test was newly created.");
 							bus.post(new StartTestEvent(test));
 						} else {

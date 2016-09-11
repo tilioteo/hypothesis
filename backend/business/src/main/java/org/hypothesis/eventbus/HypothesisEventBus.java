@@ -20,6 +20,9 @@ import net.engio.mbassy.bus.error.PublicationError;
  *
  *         A simple wrapper for MBassador event bus. Defines methods for
  *         relevant actions.
+ *
+ * @param <T>
+ *            type of message
  */
 @SuppressWarnings("serial")
 public abstract class HypothesisEventBus<T> implements Serializable, IPublicationErrorHandler {
@@ -29,14 +32,29 @@ public abstract class HypothesisEventBus<T> implements Serializable, IPublicatio
 			.addFeature(Feature.AsynchronousMessageDispatch.Default())
 			.setProperty(Properties.Handler.PublicationError, this));
 
+	/**
+	 * post message object to bus
+	 * 
+	 * @param event
+	 */
 	public synchronized void post(final T event) {
 		eventBus.publish(event);
 	}
 
+	/**
+	 * register object to receive messages
+	 * 
+	 * @param object
+	 */
 	public synchronized void register(final Object object) {
 		eventBus.subscribe(object);
 	}
 
+	/**
+	 * unregister object to stop receiving messages
+	 * 
+	 * @param object
+	 */
 	public synchronized void unregister(final Object object) {
 		eventBus.unsubscribe(object);
 	}

@@ -65,14 +65,19 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	private boolean requestBack = false;
 	private boolean animate = true;
 
-	private String token = null;
-	private String lastToken = null;
+	private String tokenString = null;
+	private String lastTokenString = null;
 
 	private TokenService tokenService;
 	private ProcessManager processManager;
 
 	private SimpleTest preparedTest = null;
 
+	/**
+	 * Construct with bus
+	 * 
+	 * @param ui
+	 */
 	public ProcessUIPresenter(ProcessUI ui) {
 		this.ui = ui;
 
@@ -84,7 +89,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	@Override
 	public void initialize(VaadinRequest request) {
 		log.debug("ProcessUIPresenter initialization");
-		
+
 		super.initialize(request);
 
 		processManager = new ProcessManager(bus);
@@ -93,16 +98,16 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		// UriFragmentChangeListener
 		initParameters(request);
 
-		if (token != null) {
-			log.debug(TOKEN_PARAMETER + "=" + token);
-			lastToken = token;
+		if (tokenString != null) {
+			log.debug(TOKEN_PARAMETER + "=" + tokenString);
+			lastTokenString = tokenString;
 
-			followToken(token);
+			followToken(tokenString);
 
 			ui.setLoadingIndicatorVisible(false);
 		} else {
 			log.debug(TOKEN_PARAMETER + "=(null)");
-			lastToken = null;
+			lastTokenString = null;
 			fireError(Messages.getString("Message.Error.InvalidAccess"));
 		}
 	}
@@ -111,19 +116,19 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	public void refresh(VaadinRequest request) {
 		initParameters(request);
 
-		if (token != null) {
-			if (!token.equalsIgnoreCase(lastToken)) {
-				lastToken = token;
+		if (tokenString != null) {
+			if (!tokenString.equalsIgnoreCase(lastTokenString)) {
+				lastTokenString = tokenString;
 
 				processManager.requestBreakTest();
 
-				followToken(token);
+				followToken(tokenString);
 			} else {
 				log.debug("ProcessUI refreshed");
 			}
 		} else {
 			log.debug(TOKEN_PARAMETER + "=(null)");
-			lastToken = null;
+			lastTokenString = null;
 			fireError(Messages.getString("Message.Error.InvalidAccess"));
 		}
 	}
@@ -153,15 +158,15 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	}
 
 	private void initParameters(VaadinRequest request) {
-		token = request.getParameter(TOKEN_PARAMETER);
+		tokenString = request.getParameter(TOKEN_PARAMETER);
 
 		String fullScreen = request.getParameter(FULLSCREEN_PARAMETER);
-		if (fullScreen != null && !fullScreen.equalsIgnoreCase("false")) {
+		if (fullScreen != null && !"false".equalsIgnoreCase(fullScreen)) {
 			requestFullscreen = true;
 		}
 
 		String canBack = request.getParameter(BACK_PARAMETER);
-		if (null == canBack || !canBack.equalsIgnoreCase("true")) {
+		if (null == canBack || !"true".equalsIgnoreCase(canBack)) {
 			requestBack = false;
 		} else {
 			requestBack = true;
@@ -210,12 +215,11 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		ui.showErrorDialog(errorDialog);
 	}
 
-	/*
-	 * public boolean isFullscreen() { return requestFullscreen; }
+	/**
+	 * Do after finish slide
 	 * 
-	 * public boolean isAnimated() { return animate; }
+	 * @param event
 	 */
-
 	@Handler
 	public void doAfterFinishSlide(final AfterFinishSlideEvent event) {
 		ui.clearContent(animate, new Command() {
@@ -226,6 +230,11 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		});
 	}
 
+	/**
+	 * Do on render
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void renderContent(RenderContentEvent event) {
 		log.debug("renderContent::");
@@ -240,6 +249,11 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		}
 	}
 
+	/**
+	 * Do after test prepared
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void showPreparedContent(final AfterPrepareTestEvent event) {
 		log.debug(String.format("showPreparedContent: test id = %s",
@@ -266,11 +280,21 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		ui.setContent(screen);
 	}
 
+	/**
+	 * Clear view
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void processViewEnd(ProcessViewEndEvent event) {
 		ui.clearContent(animate, null);
 	}
 
+	/**
+	 * Show finish info
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void showFinishContent(FinishTestEvent event) {
 		ui.clearContent(false, null);
@@ -288,6 +312,11 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		ui.setContent(screen);
 	}
 
+	/**
+	 * Show general notification
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void showNotification(AbstractNotificationEvent event) {
 		if (event instanceof ErrorNotificationEvent) {
@@ -299,6 +328,11 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		}
 	}
 
+	/**
+	 * Do on test closing
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void requestClose(final CloseTestEvent event) {
 		log.debug("close requested");

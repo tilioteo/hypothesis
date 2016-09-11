@@ -31,6 +31,18 @@ import com.vaadin.ui.Component;
  */
 public final class DocumentUtility {
 
+	private DocumentUtility() {
+	}
+
+	/**
+	 * Find element by its name and attribute values
+	 * 
+	 * @param element
+	 * @param name
+	 * @param attributes
+	 * @param descendant
+	 * @return
+	 */
 	public static final Element findElementByNameAndValue(Element element, String name, Map<String, String> attributes,
 			boolean descendant) {
 		if (element != null) {
@@ -46,7 +58,7 @@ public final class DocumentUtility {
 							String value = entry.getValue();
 							String selectedValue = selectedAttributes.get(key);
 							if (!selectedAttributes.containsKey(key) || (selectedValue == null && value != null)
-									|| (!selectedValue.equals(value))) {
+									|| (selectedValue != null && !selectedValue.equals(value))) {
 								passed = false;
 								break;
 							}
@@ -105,8 +117,7 @@ public final class DocumentUtility {
 				for (Element child : elements) {
 					String childName = child.getName();
 
-					if (validElementNames == null
-							|| (validElementNames != null && validElementNames.contains(childName))) {
+					if (null == validElementNames || validElementNames.contains(childName)) {
 						result.add(child);
 					}
 				}
@@ -119,7 +130,7 @@ public final class DocumentUtility {
 	}
 
 	public static final boolean isValidSlideDocument(Document doc) {
-		return (doc != null && doc.root() != null && doc.root().getName().equals(DocumentConstants.SLIDE));
+		return doc != null && doc.root() != null && doc.root().getName().equals(DocumentConstants.SLIDE);
 	}
 
 	public static final String getId(Element element) {
@@ -528,9 +539,7 @@ public final class DocumentUtility {
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
-			Element element = DocumentUtility.findElementByNameAndValue(documentRoot, DocumentConstants.DEFAULT_PATH,
-					null, true);
-			return element;
+			return DocumentUtility.findElementByNameAndValue(documentRoot, DocumentConstants.DEFAULT_PATH, null, true);
 		}
 
 		return null;
@@ -538,9 +547,7 @@ public final class DocumentUtility {
 
 	public static final Element getBranchKeyElement(Element element) {
 		if (element != null) {
-			Element result = DocumentUtility.findElementByNameAndValue(element, DocumentConstants.BRANCH_KEY, null,
-					true);
-			return result;
+			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.BRANCH_KEY, null, true);
 		}
 
 		return null;
@@ -548,8 +555,7 @@ public final class DocumentUtility {
 
 	public static final Element getPatternElement(Element element) {
 		if (element != null) {
-			Element result = DocumentUtility.findElementByNameAndValue(element, DocumentConstants.PATTERN, null, true);
-			return result;
+			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.PATTERN, null, true);
 		}
 
 		return null;
@@ -557,8 +563,7 @@ public final class DocumentUtility {
 
 	public static final List<Element> getNickElements(Element patternElement) {
 		if (patternElement != null) {
-			List<Element> nicks = patternElement.selectElements(DocumentConstants.NICK);
-			return nicks;
+			return patternElement.selectElements(DocumentConstants.NICK);
 		}
 
 		return null;
@@ -606,8 +611,8 @@ public final class DocumentUtility {
 	}
 
 	public static final boolean isValidMessageDocument(Document document) {
-		return (document != null && document.root() != null
-				&& document.root().getName().equals(DocumentConstants.MESSAGE));
+		return document != null && document.root() != null
+				&& document.root().getName().equals(DocumentConstants.MESSAGE);
 	}
 
 	public static final List<Element> getPropertyElements(Element documentRoot) {
@@ -642,7 +647,8 @@ public final class DocumentUtility {
 				}
 
 				if (!Strings.isNullOrEmpty(actionId) && !Strings.isNullOrEmpty(name)) {
-					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction, presenter);
+					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction,
+							presenter);
 				}
 			}
 		}

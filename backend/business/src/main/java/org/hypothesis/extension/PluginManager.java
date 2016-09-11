@@ -41,6 +41,19 @@ public class PluginManager implements Serializable {
 
 	private static PluginManager instance = null;
 
+	private HashSet<SlideComponentPlugin> componentPlugins = new HashSet<>();
+	private HashMap<String, SlideComponentPlugin> namespacePluginMap = new HashMap<>();
+	private HashMap<String, Set<String>> namespaceElementMap = new HashMap<>();
+	private HashSet<Class<? extends Plugin>> registeredClasses = new HashSet<>();
+
+	protected PluginManager() {
+	}
+
+	/**
+	 * Get singleton instance
+	 * 
+	 * @return
+	 */
 	public static PluginManager get() {
 		if (null == instance) {
 			instance = new PluginManager();
@@ -49,15 +62,10 @@ public class PluginManager implements Serializable {
 		return instance;
 	}
 
-	private HashSet<SlideComponentPlugin> componentPlugins = new HashSet<>();
-	private HashMap<String, SlideComponentPlugin> namespacePluginMap = new HashMap<>();
-	private HashMap<String, Set<String>> namespaceElementMap = new HashMap<>();
-	private HashSet<Class<? extends Plugin>> registeredClasses = new HashSet<>();
-
-	protected PluginManager() {
-
-	}
-
+	/**
+	 * Read xml configuration and initialize plugins
+	 * @param file
+	 */
 	public void initializeFromFile(File file) {
 		if (file != null) {
 			Document document = XmlUtility.readFile(file);
@@ -73,7 +81,7 @@ public class PluginManager implements Serializable {
 
 	private void initializeFromDocument(Document document) {
 		Element root = document.getRootElement();
-		if (root.getName().equals("hypothesis-plugin-configuration")) {
+		if ("hypothesis-plugin-configuration".equals(root.getName())) {
 			List<Element> plugins = getPluginElements(root);
 
 			for (Element plugin : plugins) {
@@ -86,9 +94,7 @@ public class PluginManager implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	private List<Element> getPluginElements(Element root) {
-		List<Element> plugins = root.selectNodes(String.format("%s//%s", "plugins", "plugin"));
-
-		return plugins;
+		return root.selectNodes(String.format("%s//%s", "plugins", "plugin"));
 	}
 
 	private void registerPluginFromElement(Element element) {
@@ -115,7 +121,7 @@ public class PluginManager implements Serializable {
 			if (isPluginClass(clazz) && !isRegisteredClass(clazz)) {
 				registerPluginClass(clazz);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error("Plugin class " + className + " cannot be found.");
 		}
 	}
@@ -166,10 +172,11 @@ public class PluginManager implements Serializable {
 				} else {
 					namespaceElementMap.put(namespace, plugin.getElements());
 				}
-				
+
 				Map<String, Set<ValidParentGroup>> elementParentGroups = plugin.getElementParentGroups();
 				for (String elementName : elementParentGroups.keySet()) {
-					String fullElementName = namespace + org.hypothesis.interfaces.Document.NAMESPACE_SEPARATOR + elementName;
+					String fullElementName = namespace + org.hypothesis.interfaces.Document.NAMESPACE_SEPARATOR
+							+ elementName;
 					Set<ValidParentGroup> parentGroups = elementParentGroups.get(elementName);
 
 					for (ValidParentGroup parentGroup : parentGroups) {

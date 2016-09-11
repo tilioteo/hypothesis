@@ -50,7 +50,6 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 	private DocumentReader reader = new XmlDocumentReader();
 
 	private SlideContainer container;
-	//private SliderPanel sliderPanel;
 
 	private ProcessEventBus bus = ProcessEventBus.createInstance(this);
 	private SlideContainerFactoryDeferred factory = new SlideContainerFactoryDeferred(bus);
@@ -70,7 +69,7 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
+		// nop
 	}
 
 	@Override
@@ -105,7 +104,7 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 			Toolbox toolbox = new Toolbox();
 			toolbox.setOrientation(ORIENTATION.TOP_CENTER);
 			toolbox.setOverflowSize(5);
-			
+
 			HorizontalLayout hl = new HorizontalLayout();
 			hl.setSpacing(true);
 			Button startButton = new Button("Start slide", new ClickListener() {
@@ -116,11 +115,11 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 				}
 			});
 			hl.addComponent(startButton);
-			
-			CssLayout tlLayout = new CssLayout(toolbox); 
+
+			CssLayout tlLayout = new CssLayout(toolbox);
 			tlLayout.setHeight("0px");
 			topLayout.addComponent(tlLayout);
-			//layout.setExpandRatio(tlLayout, 0f);
+			// layout.setExpandRatio(tlLayout, 0f);
 
 			toolbox.setContent(hl);
 
@@ -153,7 +152,7 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 
 	private void startClicked() {
 		mask.hide();
-		//sliderPanel.collapse();
+		// sliderPanel.collapse();
 
 		if (container != null && container.getPresenter() instanceof SlideContainerPresenterDeferred) {
 			SlideContainerPresenterDeferred containerPresenter = (SlideContainerPresenterDeferred) container
@@ -168,6 +167,11 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 		return bus;
 	}
 
+	/**
+	 * Do on action event
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void processActionEvent(ActionEvent event) {
 		String title = event.getName() + " Id=" + event.getAction().getId();
@@ -175,11 +179,21 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 		notifications.showNotification(null, title, detail);
 	}
 
+	/**
+	 * Do after render
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void processAfterRender(AfterRenderContentEvent event) {
 		notifications.showNotification(null, event.getName());
 	}
 
+	/**
+	 * Do on component event
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void processComponentEvent(ComponentEvent event) {
 		String title = event.getTypeName() + " Id=" + event.getData().getId();
@@ -187,6 +201,11 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 		notifications.showNotification(null, title, detail);
 	}
 
+	/**
+	 * Do on finish slide
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void processFinishSlide(FinishSlideEvent event) {
 		mask.setColor("rgba(127,127,255,0.2)");

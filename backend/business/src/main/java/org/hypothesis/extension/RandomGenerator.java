@@ -23,6 +23,11 @@ public class RandomGenerator implements Extension {
 		return random.nextInt();
 	}
 
+	/**
+	 * Get random integer from range
+	 * @param range
+	 * @return
+	 */
 	public int getInteger(int range) {
 		return random.nextInt(range);
 	}

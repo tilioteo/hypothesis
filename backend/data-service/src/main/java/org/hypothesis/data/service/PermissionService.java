@@ -39,14 +39,14 @@ public class PermissionService implements Serializable {
 
 	private UserService userService;
 
-	public static PermissionService newInstance() {
-		return new PermissionService(new HibernateDao<UserPermission, Long>(UserPermission.class),
-				new HibernateDao<GroupPermission, Long>(GroupPermission.class));
-	}
-
 	protected PermissionService(HibernateDao<UserPermission, Long> userPermitionDao,
 			HibernateDao<GroupPermission, Long> groupPermitionDao) {
 		this(userPermitionDao, groupPermitionDao, TestService.newInstance());
+	}
+
+	public static PermissionService newInstance() {
+		return new PermissionService(new HibernateDao<UserPermission, Long>(UserPermission.class),
+				new HibernateDao<GroupPermission, Long>(GroupPermission.class));
 	}
 
 	protected PermissionService(HibernateDao<UserPermission, Long> userPermitionDao,
@@ -71,7 +71,7 @@ public class PermissionService implements Serializable {
 			groupPermission = groupPermissionDao.makePersistent(groupPermission);
 			groupPermissionDao.commit();
 			return groupPermission;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 			// throw e;
@@ -87,7 +87,7 @@ public class PermissionService implements Serializable {
 			userPermission = userPermissionDao.makePersistent(userPermission);
 			userPermissionDao.commit();
 			return userPermission;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 			// throw e;
@@ -104,7 +104,7 @@ public class PermissionService implements Serializable {
 				groupPermissionDao.makeTransient(groupPermission);
 			}
 			groupPermissionDao.commit();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 			// throw e;
@@ -120,7 +120,7 @@ public class PermissionService implements Serializable {
 				userPermissionDao.makeTransient(userPermission);
 			}
 			userPermissionDao.commit();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 			// throw e;
@@ -138,7 +138,7 @@ public class PermissionService implements Serializable {
 				}
 			}
 			userPermissionDao.commit();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 			// throw e;
@@ -152,7 +152,7 @@ public class PermissionService implements Serializable {
 			List<GroupPermission> groupPermissions = groupPermissionDao.findAll();
 			groupPermissionDao.commit();
 			return groupPermissions;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 			return null;
@@ -166,7 +166,7 @@ public class PermissionService implements Serializable {
 			List<Pack> allPacks = packDao.findAll();
 			packDao.commit();
 			return allPacks;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			packDao.rollback();
 		}
@@ -191,7 +191,7 @@ public class PermissionService implements Serializable {
 			List<UserPermission> userPermissions = userPermissionDao.findAll();
 			userPermissionDao.commit();
 			return userPermissions;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 			return null;
@@ -218,7 +218,7 @@ public class PermissionService implements Serializable {
 						packs.add(/* persistenceService.merge */(groupPack));
 					}
 				}
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				log.error(e.getMessage());
 				groupPermissionDao.rollback();
 				return null;
@@ -269,7 +269,7 @@ public class PermissionService implements Serializable {
 			}
 
 			return new HashSet<Pack>(packs.values());
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			// throw e;
 			return null;
@@ -285,7 +285,7 @@ public class PermissionService implements Serializable {
 				packs.add(groupPermission.getPack());
 			}
 			return packs;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			return null;
 		}
@@ -300,7 +300,7 @@ public class PermissionService implements Serializable {
 					.findByCriteria(Restrictions.eq(EntityConstants.GROUP, group));
 			groupPermissionDao.commit();
 			groupPermissions.addAll(grpPerms);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 		}
@@ -318,7 +318,7 @@ public class PermissionService implements Serializable {
 			groupsPermissions.addAll(grpsPerms);
 
 			return groupsPermissions;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 			// throw e;
@@ -337,7 +337,7 @@ public class PermissionService implements Serializable {
 			groupPermissions.addAll(grpPerms);
 
 			return groupPermissions;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
 		}
@@ -355,7 +355,7 @@ public class PermissionService implements Serializable {
 			userPermissions.addAll(usrPerms);
 
 			return userPermissions;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 		}
@@ -383,7 +383,7 @@ public class PermissionService implements Serializable {
 				}
 			}
 			return packs;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			return null;
 		}
@@ -398,7 +398,7 @@ public class PermissionService implements Serializable {
 					.findByCriteria(Restrictions.eq(EntityConstants.USER, user));
 			userPermissionDao.commit();
 			userPermissions.addAll(usrPerms);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 		}
@@ -416,7 +416,7 @@ public class PermissionService implements Serializable {
 			usersPermissions.addAll(usrsPerms);
 
 			return usersPermissions;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
 		}
@@ -434,7 +434,7 @@ public class PermissionService implements Serializable {
 			List<Pack> packs = criteria.list();
 			packDao.commit();
 			return packs;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			packDao.rollback();
 		}
@@ -452,7 +452,7 @@ public class PermissionService implements Serializable {
 			List<Pack> packs = criteria.list();
 			packDao.commit();
 			return packs;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			packDao.rollback();
 		}

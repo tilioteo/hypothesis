@@ -30,12 +30,12 @@ public class RoleService implements Serializable {
 	public static final Role ROLE_MANAGER = initRoleByName("MANAGER");
 	public static final Role ROLE_USER = initRoleByName("USER");
 
-	public static RoleService newInstance() {
-		return new RoleService(new HibernateDao<Role, Long>(Role.class));
-	}
-
 	protected RoleService(HibernateDao<Role, Long> roleDao) {
 		this.roleDao = new HibernateDao<Role, Long>(Role.class);
+	}
+
+	public static RoleService newInstance() {
+		return new RoleService(new HibernateDao<Role, Long>(Role.class));
 	}
 
 	private static Role initRoleByName(String name) {
@@ -44,16 +44,16 @@ public class RoleService implements Serializable {
 		try {
 			roleDao.beginTransaction();
 			List<Role> roles = roleDao.findByCriteria(Restrictions.eq(FieldConstants.NAME, name).ignoreCase());
-			Role role;
-			if (roles.size() > 0) {
+			Role role = null;
+			if (!roles.isEmpty()) {
 				role = roles.get(0);
-			} else {
+			} else if (name != null) {
 				role = new Role(name.toUpperCase());
 				roleDao.makePersistent(role);
 			}
 			roleDao.commit();
 			return role;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			roleDao.rollback();
 		}
@@ -68,7 +68,7 @@ public class RoleService implements Serializable {
 			role = roleDao.makePersistent(role);
 			roleDao.commit();
 			return role;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			roleDao.rollback();
 			// throw e;
@@ -82,7 +82,7 @@ public class RoleService implements Serializable {
 			roleDao.beginTransaction();
 			roleDao.makeTransient(role);
 			roleDao.commit();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			roleDao.rollback();
 		}
@@ -95,7 +95,7 @@ public class RoleService implements Serializable {
 			for (Role roles : allRoles) {
 				this.delete(roles);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
 	}
@@ -107,7 +107,7 @@ public class RoleService implements Serializable {
 			List<Role> allRoles = roleDao.findAll();
 			roleDao.commit();
 			return allRoles;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			roleDao.rollback();
 		}
@@ -123,7 +123,7 @@ public class RoleService implements Serializable {
 				roleNames.add(role.getName());
 			}
 			return roleNames;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
 		return null;
@@ -136,7 +136,7 @@ public class RoleService implements Serializable {
 			List<Role> roles = roleDao.findByCriteria(Restrictions.eq(FieldConstants.NAME, roleName));
 			roleDao.commit();
 			return (roles.isEmpty() || roles.size() > 1) ? null : roles.get(0);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			roleDao.rollback();
 		}

@@ -19,12 +19,12 @@ public class TaskService {
 
 	private HibernateDao<Task, Long> taskDao;
 
-	public static TaskService newInstance() {
-		return new TaskService(new HibernateDao<Task, Long>(Task.class));
-	}
-
 	protected TaskService(HibernateDao<Task, Long> taskDao) {
 		this.taskDao = taskDao;
+	}
+
+	public static TaskService newInstance() {
+		return new TaskService(new HibernateDao<Task, Long>(Task.class));
 	}
 
 	public Task findById(Long id) {
@@ -35,7 +35,7 @@ public class TaskService {
 			Task task = taskDao.findById(id, false);
 			taskDao.commit();
 			return task;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			taskDao.rollback();
 		}

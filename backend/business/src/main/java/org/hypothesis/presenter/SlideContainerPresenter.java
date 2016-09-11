@@ -77,7 +77,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	private HashMap<String, Variable<?>> variables = new HashMap<>();
 	private HashMap<String, Action> actions = new HashMap<>();
 
-	// private HashSet<ShortcutKey> shortcuts = new HashSet<>();
 	private HashSet<KeyAction> keyActions = new HashSet<>();
 
 	private HashMap<Integer, ExchangeVariable> inputExpressions = new HashMap<>();
@@ -88,11 +87,17 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	private Long userId = null;
 
+	/**
+	 * Constructor
+	 */
 	public SlideContainerPresenter() {
 		eventManager = new EventManager(this);
 		messageManager = new MessageManager();
 	}
 
+	/**
+	 * Clear state
+	 */
 	public void clear() {
 		container = null;
 
@@ -107,7 +112,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		variables.clear();
 		actions.clear();
 
-		// shortcuts.clear();
 		keyActions.clear();
 
 		inputExpressions.clear();
@@ -205,16 +209,31 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		return variables;
 	}
 
+	/**
+	 * Post event to bus
+	 * 
+	 * @param event
+	 */
 	public void fireEvent(ProcessEvent event) {
 		if (bus != null) {
 			bus.post(event);
 		}
 	}
 
+	/**
+	 * Post event to bus
+	 * 
+	 * @param event
+	 */
 	public void fireEvent(ViewportEvent event) {
 		viewportEventManager.fireEvent(event);
 	}
 
+	/**
+	 * Post event to bus
+	 * 
+	 * @param event
+	 */
 	public synchronized void fireEvent(MessageEvent event) {
 		messageEventManager.fireEvent(event);
 	}
@@ -259,12 +278,24 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		return actions.get(id);
 	}
 
+	/**
+	 * Register timer
+	 * 
+	 * @param id
+	 * @param timer
+	 */
 	public void setTimer(String id, Timer timer) {
 		if (timer != null) {
 			timers.put(id, timer);
 		}
 	}
 
+	/**
+	 * Register window
+	 * 
+	 * @param id
+	 * @param window
+	 */
 	public void setWindow(String id, Window window) {
 		if (window != null) {
 			windows.put(id, window);
@@ -275,6 +306,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 	}
 
+	@Override
 	public void setComponent(String id, Component component) {
 		if (component != null) {
 			components.put(id, component);
@@ -285,26 +317,53 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 	}
 
+	/**
+	 * Set input
+	 * 
+	 * @param id
+	 * @param expression
+	 */
 	public void setInputExpression(int id, IndexedExpression expression) {
 		if (expression != null) {
 			inputExpressions.put(id, expression);
 		}
 	}
 
+	/**
+	 * Set output
+	 * 
+	 * @param id
+	 * @param expression
+	 */
 	public void setOutputExpression(int id, IndexedExpression expression) {
 		if (expression != null) {
 			outputExpressions.put(id, expression);
 		}
 	}
 
+	/**
+	 * Get component by id
+	 */
 	public Component getComponent(String id) {
 		return components.get(id);
 	}
 
+	/**
+	 * Get timer by id
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public Component getTimer(String id) {
 		return timers.get(id);
 	}
 
+	/**
+	 * Get window by id
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public Component getWindow(String id) {
 		return windows.get(id);
 	}
@@ -335,6 +394,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 	}
 
+	@Override
 	public synchronized void addMessageListener(String uid, MessageEventListener listener) {
 		messageEventManager.addListener(uid, listener);
 	}
@@ -350,7 +410,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	private void addDocumentVariable() {
 		Variable<Object> variable = new org.hypothesis.evaluation.Variable<Object>(ObjectConstants.DOCUMENT,
 				new SlideDocument(this));
-	
+
 		variables.put(variable.getName(), variable);
 	}
 
@@ -365,10 +425,21 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		return valid;
 	}
 
+	/**
+	 * Create new message by uid
+	 * 
+	 * @param uid
+	 * @return
+	 */
 	public Message createMessage(String uid) {
 		return messageManager.createMessage(uid, userId);
 	}
 
+	/**
+	 * Broadcast message
+	 * 
+	 * @param message
+	 */
 	public void postMessage(String message) {
 		BroadcastService.broadcastExcept(this, message);
 	}
@@ -389,10 +460,10 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 						@Override
 						public void run() {
 							fireEvent(new MessageEvent(message));
-							if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+							if (PushMode.MANUAL == ui.getPushConfiguration().getPushMode()) {
 								try {
 									ui.push();
-								} catch (Throwable e) {
+								} catch (Exception e) {
 									e.printStackTrace();
 								}
 							}
@@ -450,7 +521,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	@Override
-	public HashMap<String, Field> getFields() {
+	public Map<String, Field> getFields() {
 		return fields;
 	}
 

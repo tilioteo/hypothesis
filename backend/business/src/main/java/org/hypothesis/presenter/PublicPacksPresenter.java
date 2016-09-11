@@ -82,6 +82,22 @@ public class PublicPacksPresenter implements PacksPresenter {
 				}
 			}
 		}
+
+		private String constructStartJnlp(String uid) {
+			StringBuilder builder = new StringBuilder();
+			String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
+			builder.append(contextUrl);
+			builder.append("/resource/browserapplication.jnlp?");
+			builder.append("jnlp.app_url=");
+			builder.append(contextUrl);
+			builder.append("/process/");
+			builder.append("&jnlp.close_key=");
+			builder.append("close.html");
+			builder.append("&jnlp.token=");
+			builder.append(uid);
+
+			return builder.toString();
+		}
 	};
 
 	private ClickListener legacyButtonClickListener = new ClickListener() {
@@ -105,6 +121,31 @@ public class PublicPacksPresenter implements PacksPresenter {
 				}
 			}
 		}
+
+		private String constructStartUrl(String uid, boolean returnBack) {
+			StringBuilder builder = new StringBuilder();
+			String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
+			builder.append(contextUrl);
+			builder.append("/process/?");
+
+			// client debug
+			// builder.append("gwt.codesvr=127.0.0.1:9997&");
+
+			builder.append("token=");
+			builder.append(uid);
+			builder.append("&fs");
+			if (returnBack) {
+				builder.append("&bk=true");
+			}
+
+			String lang = ControlledUI.getCurrentLanguage();
+			if (lang != null) {
+				builder.append("&lang=");
+				builder.append(lang);
+			}
+
+			return builder.toString();
+		}
 	};
 
 	private WindowClosedListener legacyButtonWindowClosedListener = new WindowClosedListener() {
@@ -115,6 +156,9 @@ public class PublicPacksPresenter implements PacksPresenter {
 		}
 	};
 
+	/**
+	 * `Constructor
+	 */
 	public PublicPacksPresenter() {
 		permissionService = PermissionService.newInstance();
 		tokenService = TokenService.newInstance();
@@ -122,14 +166,12 @@ public class PublicPacksPresenter implements PacksPresenter {
 
 	@Override
 	public void attach() {
-		// TODO Auto-generated method stub
-
+		// nop
 	}
 
 	@Override
 	public void detach() {
-		// TODO Auto-generated method stub
-
+		// nop
 	}
 
 	@Override
@@ -144,47 +186,6 @@ public class PublicPacksPresenter implements PacksPresenter {
 	private Token createToken(Pack pack) {
 		String viewUid = SessionManager.getMainUID();
 		return tokenService.createToken(user, pack, viewUid, true);
-	}
-
-	private String constructStartJnlp(String uid) {
-		StringBuilder builder = new StringBuilder();
-		String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
-		builder.append(contextUrl);
-		builder.append("/resource/browserapplication.jnlp?");
-		builder.append("jnlp.app_url=");
-		builder.append(contextUrl);
-		builder.append("/process/");
-		builder.append("&jnlp.close_key=");
-		builder.append("close.html");
-		builder.append("&jnlp.token=");
-		builder.append(uid);
-
-		return builder.toString();
-	}
-
-	private String constructStartUrl(String uid, boolean returnBack) {
-		StringBuilder builder = new StringBuilder();
-		String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
-		builder.append(contextUrl);
-		builder.append("/process/?");
-
-		// client debug
-		// builder.append("gwt.codesvr=127.0.0.1:9997&");
-
-		builder.append("token=");
-		builder.append(uid);
-		builder.append("&fs");
-		if (returnBack) {
-			builder.append("&bk=true");
-		}
-
-		String lang = ControlledUI.getCurrentLanguage();
-		if (lang != null) {
-			builder.append("&lang=");
-			builder.append(lang);
-		}
-
-		return builder.toString();
 	}
 
 	protected List<Pack> getPacks() {
@@ -234,11 +235,12 @@ public class PublicPacksPresenter implements PacksPresenter {
 	}
 
 	private PackPanel getParentPanel(Component component) {
-		while (component != null && !(component instanceof PackPanel)) {
-			component = component.getParent();
+		Component searchComponent = component;
+		while (searchComponent != null && !(searchComponent instanceof PackPanel)) {
+			searchComponent = searchComponent.getParent();
 		}
 
-		return (PackPanel) component;
+		return (PackPanel) searchComponent;
 	}
 
 	private Pack getPanelBean(PackPanel panel) {
@@ -267,8 +269,6 @@ public class PublicPacksPresenter implements PacksPresenter {
 		view.setJavaInstalledCaption(Messages.getString("Message.Info.JavaInstalled"));
 		view.setJavaNotInstalledCaption(Messages.getString("Message.Info.JavaNotInstalled"));
 		view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"));
-
-		// afterCreate();
 
 		return view;
 	}

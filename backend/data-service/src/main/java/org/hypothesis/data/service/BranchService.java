@@ -28,14 +28,14 @@ public class BranchService implements Serializable {
 	private HibernateDao<Branch, Long> branchDao;
 	private HibernateDao<BranchTrek, Long> branchTrekDao;
 
-	public static BranchService newInstance() {
-		return new BranchService(new HibernateDao<Branch, Long>(Branch.class),
-				new HibernateDao<BranchTrek, Long>(BranchTrek.class));
-	}
-
 	protected BranchService(HibernateDao<Branch, Long> branchDao, HibernateDao<BranchTrek, Long> branchTrekDao) {
 		this.branchDao = branchDao;
 		this.branchTrekDao = branchTrekDao;
+	}
+
+	public static BranchService newInstance() {
+		return new BranchService(new HibernateDao<Branch, Long>(Branch.class),
+				new HibernateDao<BranchTrek, Long>(BranchTrek.class));
 	}
 
 	public Branch findById(Long id) {
@@ -46,7 +46,7 @@ public class BranchService implements Serializable {
 			Branch branch = branchDao.findById(id, false);
 			branchDao.commit();
 			return branch;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			branchDao.rollback();
 		}
@@ -66,7 +66,7 @@ public class BranchService implements Serializable {
 			}
 			branchTrekDao.commit();
 			return branchMap;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			branchTrekDao.rollback();
 		}

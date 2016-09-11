@@ -14,6 +14,9 @@ import java.lang.reflect.Field;
  */
 public class ReflectionUtility {
 
+	private ReflectionUtility() {
+	}
+
 	/**
 	 * Get field object from class instance including inherited fields
 	 * 
@@ -32,7 +35,7 @@ public class ReflectionUtility {
 			while (clazz != null && null == field) {
 				try {
 					field = clazz.getDeclaredField(name);
-				} catch (Throwable e) {
+				} catch (Exception e) {
 				}
 
 				clazz = clazz.getSuperclass();
@@ -44,10 +47,4 @@ public class ReflectionUtility {
 		return null;
 	}
 
-	/*
-	 * public static Field[] getDeclaredFields(Object obj) { if (obj != null) {
-	 * Field[] fields = obj.getClass().getd }
-	 * 
-	 * return null; }
-	 */
 }

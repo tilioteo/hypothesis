@@ -29,6 +29,12 @@ public class HypothesisNavigator extends Navigator {
 	private ViewProvider errorViewProvider;
 	private MainEventBus bus;
 
+	/**
+	 * Create instance and associate it with bus and container
+	 * 
+	 * @param bus
+	 * @param container
+	 */
 	public HypothesisNavigator(MainEventBus bus, final ComponentContainer container) {
 		super(UI.getCurrent(), container);
 
@@ -56,8 +62,6 @@ public class HypothesisNavigator extends Navigator {
 			public void afterViewChange(final ViewChangeEvent event) {
 				// Appropriate events get fired after the view is changed.
 				bus.post(new PostViewChangeEvent(event.getViewName()));
-				// MainEventBus.get().post(new BrowserResizeEvent());
-				// MainEventBus.get().post(new CloseOpenWindowsEvent());
 			}
 		});
 	}

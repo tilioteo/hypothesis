@@ -57,6 +57,11 @@ public class UserSettingsWindowPresenter implements Serializable {
 	@PropertyId("password")
 	private TextField passwordField;
 
+	/**
+	 * Construct with bus
+	 * 
+	 * @param bus
+	 */
 	public UserSettingsWindowPresenter(MainEventBus bus) {
 		super();
 
@@ -102,8 +107,7 @@ public class UserSettingsWindowPresenter implements Serializable {
 			public void buttonClick(ClickEvent event) {
 				try {
 					fieldGroup.commit();
-					User user = fieldGroup.getItemDataSource().getBean();
-					userService.add(user);
+					userService.add(fieldGroup.getItemDataSource().getBean());
 
 					Notification success = new Notification(Messages.getString("Message.Info.ProfileUpdated"));
 					success.setDelayMsec(2000);
@@ -137,17 +141,19 @@ public class UserSettingsWindowPresenter implements Serializable {
 
 	private void createWindow() {
 		window = new Window();
-		// window.addCloseListener(this);
 		window.addCloseShortcut(KeyCode.ESCAPE, null);
 		window.setResizable(false);
 		window.setClosable(false);
-		// window.setWidth(50, Unit.PERCENTAGE);
-		// window.setHeight(80.0f, Unit.PERCENTAGE);
 		window.setModal(true);
 
 		buildContent();
 	}
 
+	/**
+	 * Show window with user settings
+	 * 
+	 * @param user
+	 */
 	public void showWindow(User user) {
 		this.user = user;
 

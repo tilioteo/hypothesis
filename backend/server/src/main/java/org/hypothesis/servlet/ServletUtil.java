@@ -31,7 +31,7 @@ public class ServletUtil {
 		 */
 
 		// Reconstruct original requesting URL
-		StringBuffer url = new StringBuffer();
+		StringBuilder url = new StringBuilder();
 		url.append(scheme).append("://").append(serverName);
 
 		if ((serverPort != 80) && (serverPort != 443)) {
@@ -53,7 +53,7 @@ public class ServletUtil {
 	public static Manifest getManifest(ServletContext context) {
 		InputStream inputStream = context.getResourceAsStream("/META-INF/MANIFEST.MF");
 		Manifest manifest = null;
-		;
+
 		try {
 			manifest = new Manifest(inputStream);
 		} catch (IOException e) {

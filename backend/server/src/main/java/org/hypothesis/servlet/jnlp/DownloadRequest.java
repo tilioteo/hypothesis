@@ -61,13 +61,13 @@ public class DownloadRequest {
 	private static final String TEST_JRE = "TestJRE";
 
 	/** Converts a space delimitered string to a list of strings */
-	static private String[] getStringList(String str) {
+	private static String[] getStringList(String str) {
 		if (str == null)
 			return null;
 		ArrayList<String> list = new ArrayList<String>();
 		int i = 0;
 		int length = str.length();
-		StringBuffer sb = null;
+		StringBuilder sb = null;
 		while (i < length) {
 			char ch = str.charAt(i);
 			if (ch == ' ') {
@@ -81,12 +81,12 @@ public class DownloadRequest {
 				if (i + 1 < length) {
 					ch = str.charAt(++i);
 					if (sb == null)
-						sb = new StringBuffer();
+						sb = new StringBuilder();
 					sb.append(ch);
 				}
 			} else {
 				if (sb == null)
-					sb = new StringBuffer();
+					sb = new StringBuilder();
 				sb.append(ch);
 			}
 			i++; // Next character
@@ -95,7 +95,7 @@ public class DownloadRequest {
 		if (sb != null) {
 			list.add(sb.toString());
 		}
-		if (list.size() == 0)
+		if (!list.isEmpty())
 			return null;
 		String[] results = new String[list.size()];
 		return list.toArray(results);

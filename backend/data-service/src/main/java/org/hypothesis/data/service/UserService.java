@@ -27,12 +27,12 @@ public class UserService implements Serializable {
 
 	private HibernateDao<User, Long> userDao;
 
-	public static UserService newInstance() {
-		return new UserService(new HibernateDao<User, Long>(User.class));
-	}
-
 	protected UserService(HibernateDao<User, Long> userDao) {
 		this.userDao = userDao;
+	}
+
+	public static UserService newInstance() {
+		return new UserService(new HibernateDao<User, Long>(User.class));
 	}
 
 	public User merge(User user) {
@@ -41,7 +41,7 @@ public class UserService implements Serializable {
 			user = mergeInit(user);
 			userDao.commit();
 			return user;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -65,7 +65,7 @@ public class UserService implements Serializable {
 			user = userDao.makePersistent(user);
 			userDao.commit();
 			return user;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -90,7 +90,7 @@ public class UserService implements Serializable {
 			for (User user : allUsers) {
 				this.delete(user);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
 	}
@@ -102,7 +102,7 @@ public class UserService implements Serializable {
 			user = mergeInit(user);
 			userDao.makeTransient(user);
 			userDao.commit();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -115,7 +115,7 @@ public class UserService implements Serializable {
 			List<User> allUsers = userDao.findAll();
 			userDao.commit();
 			return allUsers;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -130,7 +130,7 @@ public class UserService implements Serializable {
 					.findByCriteria(Restrictions.eq(FieldConstants.PROPERTY_OWNER_ID, owner.getId()));
 			userDao.commit();
 			return allUsers;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -144,7 +144,7 @@ public class UserService implements Serializable {
 			User usr = userDao.findById(Long.valueOf(id), true);
 			userDao.commit();
 			return usr;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -158,7 +158,7 @@ public class UserService implements Serializable {
 			List<User> users = userDao.findByCriteria(Restrictions.eq(FieldConstants.USERNAME, username));
 			userDao.commit();
 			return users.get(0);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -177,10 +177,9 @@ public class UserService implements Serializable {
 			if (users.isEmpty() || users.size() > 1) {
 				return null;
 			} else {
-				User user = users.get(0);
-				return user;
+				return users.get(0);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}
@@ -197,7 +196,7 @@ public class UserService implements Serializable {
 			List<User> users = userDao.findByCriteria(crit);
 			userDao.commit();
 			return !users.isEmpty();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			userDao.rollback();
 		}

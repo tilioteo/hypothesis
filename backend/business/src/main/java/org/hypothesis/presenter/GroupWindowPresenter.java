@@ -72,6 +72,11 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 	private TextField noteField;
 	private Table packsField;
 
+	/**
+	 * Construct with bus
+	 * 
+	 * @param bus
+	 */
 	public GroupWindowPresenter(MainEventBus bus) {
 		super(bus);
 
@@ -185,7 +190,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 	private Component buildGroupDetailsForm() {
 		VerticalLayout layout = new VerticalLayout();
 
-		if (state.equals(WindowState.MULTIUPDATE)) {
+		if (state == WindowState.MULTIUPDATE) {
 			addInformationLabel(layout);
 		}
 
@@ -194,12 +199,12 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		form.setMargin(true);
 		form.setSpacing(true);
 
-		if (state.equals(WindowState.UPDATE)) {
+		if (state == WindowState.UPDATE) {
 			buildIdField();
 			addField(form, idField);
 		}
 
-		if (!(state.equals(WindowState.MULTIUPDATE))) {
+		if (state != WindowState.MULTIUPDATE) {
 			buildNameField();
 			addField(form, nameField);
 		}
@@ -207,7 +212,8 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		buildNoteField();
 		addField(form, noteField);
 
-		buildUsersField(!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
+		buildUsersField(
+				!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
 		addField(form, usersField);
 		// TODO: upozornit, ze uzivatel nema zadne uzivatele?
 
@@ -236,9 +242,9 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 
 		// name
 		buildNameField();
-		if (state.equals(WindowState.CREATE)) {
+		if (state == WindowState.CREATE) {
 			nameField.addValidator(new GroupNameValidator(null));
-		} else if (state.equals(WindowState.UPDATE)) {
+		} else if (state == WindowState.UPDATE) {
 			nameField.addValidator(new GroupNameValidator(((Group) source).getId()));
 		}
 
@@ -255,18 +261,16 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		if (!users.isEmpty()) {
-			buildUsersField(!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
+			buildUsersField(
+					!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
 
 			for (User user : users) {
-				Table table = (Table) usersField;
-				table.addItem(user);
-				Item row = table.getItem(user);
+				Item row = usersField.addItem(user);
 				row.getItemProperty(FieldConstants.USERNAME).setValue(user.getUsername());
 			}
 
-			((IndexedContainer) ((Table) usersField).getContainerDataSource())
-					.setItemSorter(new CaseInsensitiveItemSorter());
-			((Table) usersField).sort(new Object[] { FieldConstants.USERNAME }, new boolean[] { true });
+			((IndexedContainer) usersField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
+			usersField.sort(new Object[] { FieldConstants.USERNAME }, new boolean[] { true });
 		}
 
 		// enabled packs
@@ -282,15 +286,12 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		// TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
 
 		for (Pack pack : packs) {
-			Table table = (Table) packsField;
-			table.addItem(pack);
-			Item row = table.getItem(pack);
+			Item row = packsField.addItem(pack);
 			row.getItemProperty(FieldConstants.NAME).setValue(pack.getName());
 		}
 
-		((IndexedContainer) ((Table) packsField).getContainerDataSource())
-				.setItemSorter(new CaseInsensitiveItemSorter());
-		((Table) packsField).sort(new Object[] { FieldConstants.NAME }, new boolean[] { true });
+		((IndexedContainer) packsField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
+		packsField.sort(new Object[] { FieldConstants.NAME }, new boolean[] { true });
 	}
 
 	@SuppressWarnings("unchecked")
@@ -307,7 +308,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		if (usersField != null) {
 			Set<User> users;
 
-			if (state.equals(WindowState.UPDATE)) {
+			if (state == WindowState.UPDATE) {
 				users = group.getUsers();
 			} else {
 				users = new HashSet<User>();
@@ -328,7 +329,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		// packs
 		Set<Pack> packs;
 
-		if (state.equals(WindowState.UPDATE)) {
+		if (state == WindowState.UPDATE) {
 			packs = permissionService.getGroupPacks(group);
 		} else {
 			packs = new HashSet<Pack>();
@@ -418,7 +419,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 	private Component buildGroupPacksForm() {
 		VerticalLayout layout = new VerticalLayout();
 
-		if (state.equals(WindowState.MULTIUPDATE)) {
+		if (state == WindowState.MULTIUPDATE) {
 			addInformationLabel(layout);
 		}
 
@@ -448,10 +449,10 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 				try {
 					commitForm();
 
-					Notification success = null;
-					if (state.equals(WindowState.CREATE)) {
+					Notification success;
+					if (state == WindowState.CREATE) {
 						success = new Notification(Messages.getString("Message.Info.GroupAdded"));
-					} else if (state.equals(WindowState.UPDATE)) {
+					} else if (state == WindowState.UPDATE) {
 						success = new Notification(Messages.getString("Message.Info.GroupUpdated"));
 					} else {
 						success = new Notification(Messages.getString("Message.Info.GroupsUpdated"));
@@ -498,7 +499,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			}
 		}
 
-		if (state.equals(WindowState.MULTIUPDATE)) {
+		if (state == WindowState.MULTIUPDATE) {
 			for (Group group : (Collection<Group>) source) {
 				group = saveGroup(group);
 				if (group != null) {
@@ -508,7 +509,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 
 		} else {
 			Group group;
-			if (state.equals(WindowState.CREATE)) {
+			if (state == WindowState.CREATE) {
 				group = new Group();
 			} else {
 				group = (Group) source;
@@ -523,11 +524,11 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 	private Group saveGroup(Group group) {
 		User updatedLoggedUser = null;
 
-		if (state.equals(WindowState.CREATE)) {
+		if (state == WindowState.CREATE) {
 			group.setOwnerId(loggedUser.getId());
 		}
 
-		if (!(state.equals(WindowState.MULTIUPDATE))) {
+		if (state != WindowState.MULTIUPDATE) {
 			group.setName(nameField.getValue());
 		}
 
@@ -542,8 +543,8 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 				User user = userService.merge((User) itemId);
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
-				if (selected == null) {
-					if (state.equals(WindowState.MULTIUPDATE)) {
+				if (null == selected) {
+					if (state == WindowState.MULTIUPDATE) {
 						group.removeUser(user);
 					}
 				} else if (selected.equals(true)) {
@@ -586,10 +587,20 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		return group;
 	}
 
+	/**
+	 * Show the window for editing group
+	 * 
+	 * @param group
+	 */
 	public void showWindow(Group group) {
 		showWindow(WindowState.UPDATE, group);
 	}
 
+	/**
+	 * Show the window for editing more groups
+	 * 
+	 * @param groups
+	 */
 	public void showWindow(Collection<Group> groups) {
 		showWindow(WindowState.MULTIUPDATE, groups);
 	}

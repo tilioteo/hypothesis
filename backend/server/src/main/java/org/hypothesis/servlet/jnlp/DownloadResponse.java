@@ -53,8 +53,8 @@ import javax.servlet.http.HttpServletResponse;
  * A class used to encapsulate a file response, and factory methods to create
  * some common types.
  */
-abstract public class DownloadResponse {
-	static private class ByteArrayFileDownloadResponse extends FileDownloadResponse {
+public abstract class DownloadResponse {
+	private static class ByteArrayFileDownloadResponse extends FileDownloadResponse {
 		private byte[] _content;
 
 		ByteArrayFileDownloadResponse(byte[] content, String mimeType, String versionId, long lastModified) {
@@ -78,7 +78,7 @@ abstract public class DownloadResponse {
 		}
 	}
 
-	static private class DiskFileDownloadResponse extends FileDownloadResponse {
+	private static class DiskFileDownloadResponse extends FileDownloadResponse {
 		private File _file;
 
 		DiskFileDownloadResponse(File file, String mimeType, String versionId, long lastModified) {
@@ -102,7 +102,7 @@ abstract public class DownloadResponse {
 		}
 	}
 
-	static private abstract class FileDownloadResponse extends DownloadResponse {
+	private static abstract class FileDownloadResponse extends DownloadResponse {
 		private String _mimeType;
 		private String _versionId;
 		private long _lastModified;
@@ -186,7 +186,7 @@ abstract public class DownloadResponse {
 		}
 	}
 
-	static private class HeadRequestResponse extends DownloadResponse {
+	private static class HeadRequestResponse extends DownloadResponse {
 		private String _mimeType;
 		private String _versionId;
 		private long _lastModified;
@@ -215,7 +215,7 @@ abstract public class DownloadResponse {
 		}
 	}
 
-	static public class JnlpErrorResponse extends DownloadResponse {
+	public static class JnlpErrorResponse extends DownloadResponse {
 		private String _message;
 
 		public JnlpErrorResponse(int jnlpErrorCode) {
@@ -233,7 +233,7 @@ abstract public class DownloadResponse {
 			response.setContentType(JNLP_ERROR_MIMETYPE);
 			PrintWriter pw = response.getWriter();
 			pw.println(_message);
-		};
+		}
 
 		@Override
 		public String toString() {
@@ -242,28 +242,28 @@ abstract public class DownloadResponse {
 	}
 
 	@SuppressWarnings("unused")
-	static private class NoContentResponse extends DownloadResponse {
+	private static class NoContentResponse extends DownloadResponse {
 		@Override
 		public void sendRespond(HttpServletResponse response) throws IOException {
 			response.sendError(HttpServletResponse.SC_NO_CONTENT);
 		}
 	}
 
-	static private class NotFoundResponse extends DownloadResponse {
+	private static class NotFoundResponse extends DownloadResponse {
 		@Override
 		public void sendRespond(HttpServletResponse response) throws IOException {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}
 
-	static private class NotModifiedResponse extends DownloadResponse {
+	private static class NotModifiedResponse extends DownloadResponse {
 		@Override
 		public void sendRespond(HttpServletResponse response) throws IOException {
 			response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
 		}
 	}
 
-	static private class ResourceFileDownloadResponse extends FileDownloadResponse {
+	private static class ResourceFileDownloadResponse extends FileDownloadResponse {
 		URL _url;
 
 		ResourceFileDownloadResponse(URL url, String mimeType, String versionId, long lastModified) {

@@ -47,7 +47,6 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.Position;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -97,6 +96,11 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 
 	private Boolean generateNames = false;
 
+	/**
+	 * Construct with bus
+	 * 
+	 * @param bus
+	 */
 	public UserWindowPresenter(MainEventBus bus) {
 		super(bus);
 
@@ -288,9 +292,9 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 
 		// username
 		buildUsernameField();
-		if (state.equals(WindowState.CREATE)) {
+		if (state == WindowState.CREATE) {
 			usernameField.addValidator(new UsernameValidator(null));
-		} else if (state.equals(WindowState.UPDATE)) {
+		} else if (state == WindowState.UPDATE) {
 			usernameField.addValidator(new UsernameValidator(((User) source).getId()));
 		}
 
@@ -304,15 +308,14 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		// roles
 		buildRolesField();
 
-		BeanItemContainer<Role> rolesSource = (BeanItemContainer<Role>) ((AbstractSelect) rolesField)
-				.getContainerDataSource();
+		BeanItemContainer<Role> rolesSource = (BeanItemContainer<Role>) rolesField.getContainerDataSource();
 		rolesSource.addAll(roleService.findAll());
 		rolesSource.sort(new Object[] { FieldConstants.ID }, new boolean[] { true });
 
 		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
 			rolesField.select(RoleService.ROLE_USER);
 			rolesField.setEnabled(false);
-		} else if (!state.equals(WindowState.CREATE)) {
+		} else if (state != WindowState.CREATE) {
 			rolesField.setRequired(true);
 			rolesField.setRequiredError(Messages.getString("Message.Error.RoleRequired"));
 			rolesField.addValidator(new RoleValidator(source, loggedUser));
@@ -389,7 +392,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		if (groupsField != null) {
 			Set<Group> groups;
 
-			if (state.equals(WindowState.UPDATE)) {
+			if (state == WindowState.UPDATE) {
 				groups = user.getGroups();
 			} else {
 				groups = new HashSet<Group>();
@@ -411,7 +414,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		Set<Pack> enabledPacks;
 		Set<Pack> disabledPacks;
 
-		if (state.equals(WindowState.UPDATE)) {
+		if (state == WindowState.UPDATE) {
 			enabledPacks = permissionService.getUserPacks(user, true, null);
 			disabledPacks = permissionService.getUserPacks(user, false, null);
 		} else {
@@ -483,7 +486,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 
 		Panel panel = new Panel();
 		panel.setSizeFull();
-		panel.addStyleName("borderless");
+		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
 		panel.setContent(buildUserDetailsForm());
 		tab.addComponent(panel);
 
@@ -495,7 +498,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	private Component buildUserDetailsForm() {
 		VerticalLayout layout = new VerticalLayout();
 
-		if (state.equals(WindowState.MULTIUPDATE)) {
+		if (state == WindowState.MULTIUPDATE) {
 			addInformationLabel(layout);
 		}
 
@@ -505,12 +508,12 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		form.setSpacing(true);
 
 		// ID
-		if (state.equals(WindowState.UPDATE)) {
+		if (state == WindowState.UPDATE) {
 			addField(form, idField);
 		}
 
 		// username
-		if (state.equals(WindowState.CREATE)) {
+		if (state == WindowState.CREATE) {
 			final VerticalLayout nameLayout = new VerticalLayout();
 			nameLayout.setCaption(usernameField.getCaption());
 			nameLayout.setSpacing(true);
@@ -553,11 +556,11 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			fields.add(usernameField);
 			usernameField.setCaption(null);
 
-		} else if (state.equals(WindowState.UPDATE)) {
+		} else if (state == WindowState.UPDATE) {
 			addField(form, usernameField);
 		}
 
-		if (!(state.equals(WindowState.MULTIUPDATE))) {
+		if (state != WindowState.MULTIUPDATE) {
 			addField(form, passwordField);
 		}
 
@@ -591,7 +594,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		VerticalLayout layout = new VerticalLayout();
 
 		if (groupsField != null) {
-			if (state.equals(WindowState.MULTIUPDATE)) {
+			if (state == WindowState.MULTIUPDATE) {
 				addInformationLabel(layout);
 			}
 
@@ -634,7 +637,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	private Component buildUserTestsForm() {
 		VerticalLayout layout = new VerticalLayout();
 
-		if (state.equals(WindowState.MULTIUPDATE)) {
+		if (state == WindowState.MULTIUPDATE) {
 			addInformationLabel(layout);
 		}
 
@@ -663,10 +666,10 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 				try {
 					commitForm();
 
-					Notification success = null;
-					if (state.equals(WindowState.CREATE)) {
+					Notification success;
+					if (state == WindowState.CREATE) {
 						success = new Notification(Messages.getString("Message.Info.UserAdded"));
-					} else if (state.equals(WindowState.UPDATE)) {
+					} else if (state == WindowState.UPDATE) {
 						success = new Notification(Messages.getString("Message.Info.UserUpdated"));
 					} else {
 						success = new Notification(Messages.getString("Message.Info.UsersUpdated"));
@@ -713,7 +716,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			}
 		}
 
-		if (state.equals(WindowState.MULTIUPDATE)) {
+		if (state == WindowState.MULTIUPDATE) {
 			for (User user : (Collection<User>) source) {
 				user = saveUser(user, true);
 				if (user != null) {
@@ -723,19 +726,19 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 
 		} else if (generateNames) {
 			String usernameGroup = generatedGroupField.getValue();
-			int count = Integer.valueOf(generatedCountField.getValue());
+			int count = Integer.parseInt(generatedCountField.getValue());
 
 			for (int i = 1; i <= count; i++) {
 				User user = new User();
 				user.setUsername(
 						String.format("%s-%03d-%s", usernameGroup, i, generateString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 4)));
 				user.setPassword(generateString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 8));
-				user = saveUser(user, false);
+				saveUser(user, false);
 			}
 
 		} else {
 			User user;
-			if (state.equals(WindowState.CREATE)) {
+			if (state == WindowState.CREATE) {
 				user = new User();
 			} else {
 				user = (User) source;
@@ -751,12 +754,12 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	private User saveUser(User user, boolean includeGenerableFields) {
 		boolean savingLoggedUser = user.equals(loggedUser);
 
-		if (state.equals(WindowState.CREATE)) {
+		if (state == WindowState.CREATE) {
 			user.setOwnerId(loggedUser.getId());
 		}
 
 		if (includeGenerableFields) {
-			if (!(state.equals(WindowState.MULTIUPDATE))) {
+			if (state != WindowState.MULTIUPDATE) {
 				user.setUsername(usernameField.getValue());
 				user.setPassword(passwordField.getValue());
 			}
@@ -795,7 +798,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (selected == null) {
-					if (state.equals(WindowState.MULTIUPDATE)) {
+					if (state == WindowState.MULTIUPDATE) {
 						user.removeGroup(group);
 					}
 				} else if (selected.equals(true)) {
@@ -876,10 +879,20 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		return new String(text);
 	}
 
+	/**
+	 * Show window for edit user
+	 * 
+	 * @param user
+	 */
 	public void showWindow(User user) {
 		showWindow(WindowState.UPDATE, user);
 	}
 
+	/**
+	 * Show window for edit more users
+	 * 
+	 * @param users
+	 */
 	public void showWindow(Collection<User> users) {
 		showWindow(WindowState.MULTIUPDATE, users);
 	}

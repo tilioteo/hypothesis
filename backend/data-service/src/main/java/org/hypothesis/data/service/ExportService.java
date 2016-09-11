@@ -72,7 +72,7 @@ public class ExportService implements Serializable {
 			exportEventDao.commit();
 			return events;
 
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			exportEventDao.rollback();
 		}
@@ -96,7 +96,7 @@ public class ExportService implements Serializable {
 			exportEventDao.commit();
 			return events;
 
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			exportEventDao.rollback();
 		}
