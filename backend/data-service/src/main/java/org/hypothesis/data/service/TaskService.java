@@ -15,9 +15,9 @@ import org.hypothesis.data.model.Task;
  */
 public class TaskService {
 
-	private static Logger log = Logger.getLogger(TaskService.class);
+	private static final Logger log = Logger.getLogger(TaskService.class);
 
-	private HibernateDao<Task, Long> taskDao;
+	private final HibernateDao<Task, Long> taskDao;
 
 	protected TaskService(HibernateDao<Task, Long> taskDao) {
 		this.taskDao = taskDao;

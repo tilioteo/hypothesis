@@ -16,6 +16,6 @@ import java.util.EventObject;
  */
 public interface ViewportEventListener extends EventListener, Serializable {
 
-	public void handleEvent(EventObject event);
+	void handleEvent(EventObject event);
 
 }

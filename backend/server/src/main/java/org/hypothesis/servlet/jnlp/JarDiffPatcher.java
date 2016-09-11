@@ -66,7 +66,7 @@ import java.util.zip.ZipEntry;
  */
 public class JarDiffPatcher implements JarDiffConstants, Patcher {
 	private static final int DEFAULT_READ_SIZE = 2048;
-	private static byte[] newBytes = new byte[DEFAULT_READ_SIZE];
+	private static final byte[] newBytes = new byte[DEFAULT_READ_SIZE];
 
 	// private static byte[] oldBytes = new byte[DEFAULT_READ_SIZE];
 	// private static ResourceBundle _resources = JarDiff.getResources();
@@ -83,8 +83,8 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 		JarOutputStream jos = new JarOutputStream(result);
 		JarFile oldJar = new JarFile(oldFile);
 		JarFile jarDiff = new JarFile(diffFile);
-		Set<String> ignoreSet = new HashSet<String>();
-		Map<String, String> renameMap = new HashMap<String, String>();
+		Set<String> ignoreSet = new HashSet<>();
+		Map<String, String> renameMap = new HashMap<>();
 
 		determineNameMapping(jarDiff, ignoreSet, renameMap);
 
@@ -92,7 +92,7 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 		String[] keys = renameMap.keySet().toArray(new String[] {});
 
 		// Files to implicit move
-		Set<String> oldjarNames = new HashSet<String>();
+		Set<String> oldjarNames = new HashSet<>();
 
 		Enumeration<JarEntry> oldEntries = oldJar.entries();
 		if (oldEntries != null) {
@@ -249,15 +249,14 @@ public class JarDiffPatcher implements JarDiffConstants, Patcher {
 	private List<String> getSubpaths(String path) {
 		int index = 0;
 		int length = path.length();
-		ArrayList<String> sub = new ArrayList<String>();
+		ArrayList<String> sub = new ArrayList<>();
 
 		while (index < length) {
 			while (index < length && Character.isWhitespace(path.charAt(index))) {
 				index++;
 			}
 			if (index < length) {
-				int start = index;
-				int last = start;
+				int last = index;
 				String subString = null;
 
 				while (index < length) {

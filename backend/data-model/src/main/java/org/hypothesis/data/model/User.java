@@ -62,12 +62,12 @@ public final class User extends SerializableIdObject {
 	/**
 	 * user has roles
 	 */
-	private Set<Role> roles = new HashSet<Role>();
+	private Set<Role> roles = new HashSet<>();
 
 	/**
 	 * user belongs to groups
 	 */
-	private Set<Group> groups = new HashSet<Group>();
+	private Set<Group> groups = new HashSet<>();
 
 	/**
 	 * user can have another user (id of user) as owner

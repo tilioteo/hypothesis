@@ -23,10 +23,10 @@ import org.hypothesis.data.model.Pack;
 @SuppressWarnings("serial")
 public class BranchService implements Serializable {
 
-	private static Logger log = Logger.getLogger(BranchService.class);
+	private static final Logger log = Logger.getLogger(BranchService.class);
 
-	private HibernateDao<Branch, Long> branchDao;
-	private HibernateDao<BranchTrek, Long> branchTrekDao;
+	private final HibernateDao<Branch, Long> branchDao;
+	private final HibernateDao<BranchTrek, Long> branchTrekDao;
 
 	protected BranchService(HibernateDao<Branch, Long> branchDao, HibernateDao<BranchTrek, Long> branchTrekDao) {
 		this.branchDao = branchDao;

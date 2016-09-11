@@ -15,8 +15,8 @@ import org.hypothesis.data.model.Token;
 @SuppressWarnings("serial")
 public class PrepareTestEvent extends AbstractProcessEvent {
 
-	private Token token;
-	private boolean startAllowed;
+	private final Token token;
+	private final boolean startAllowed;
 
 	public PrepareTestEvent(Token token, boolean startAllowed) {
 		super(null);

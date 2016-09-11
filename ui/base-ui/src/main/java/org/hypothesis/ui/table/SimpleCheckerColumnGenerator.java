@@ -22,7 +22,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings({ "serial", "unchecked" })
 public class SimpleCheckerColumnGenerator implements ColumnGenerator {
 
-	private String stateField;
+	private final String stateField;
 
 	private String buttonCaption = "buttonCaption";
 

@@ -14,8 +14,8 @@ import com.vaadin.ui.Component;
  */
 public interface ExportPresenter extends ViewPresenter {
 
-	public Component buildHeader();
+	Component buildHeader();
 
-	public Component buildContent();
+	Component buildContent();
 
 }

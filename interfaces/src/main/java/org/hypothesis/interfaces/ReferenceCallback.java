@@ -14,6 +14,6 @@ import java.io.Serializable;
  */
 public interface ReferenceCallback extends Serializable {
 
-	public Object getReference(String name, String id, Evaluator evaluator);
+	Object getReference(String name, String id, Evaluator evaluator);
 
 }

@@ -25,12 +25,12 @@ public abstract class HypothesisUI extends ControlledUI {
 	/**
 	 * List of timers in this UI.
 	 */
-	private final LinkedHashSet<Timer> timers = new LinkedHashSet<Timer>();
+	private final LinkedHashSet<Timer> timers = new LinkedHashSet<>();
 
 	/**
 	 * List of timers in this UI.
 	 */
-	private final LinkedHashSet<ShortcutKey> shortcuts = new LinkedHashSet<ShortcutKey>();
+	private final LinkedHashSet<ShortcutKey> shortcuts = new LinkedHashSet<>();
 
 	@Override
 	public void setContent(Component content) {

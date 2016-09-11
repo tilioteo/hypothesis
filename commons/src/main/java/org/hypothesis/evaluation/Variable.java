@@ -15,7 +15,7 @@ import java.util.Locale;
 @SuppressWarnings("serial")
 public class Variable<T> implements org.hypothesis.interfaces.Variable<T> {
 
-	private String name;
+	private final String name;
 	private T value;
 
 	public Variable(String name) {
@@ -82,11 +82,11 @@ public class Variable<T> implements org.hypothesis.interfaces.Variable<T> {
 		if (value != null) {
 			Class<?> type = getType();
 			if (type.equals(Integer.class)) {
-				return ((Integer) value).toString();
+				return value.toString();
 			} else if (type.equals(Double.class)) {
 				return String.format(Locale.ROOT, "%g", ((Double) value).doubleValue());
 			} else if (type.equals(Boolean.class)) {
-				return ((Boolean) value).toString();
+				return value.toString();
 			} else if (type.equals(String.class)) {
 				return (String) value;
 			} else {

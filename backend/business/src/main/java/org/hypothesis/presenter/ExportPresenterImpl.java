@@ -91,11 +91,11 @@ import net.engio.mbassy.listener.Handler;
 @SuppressWarnings({ "serial" })
 public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
-	private static Logger log = Logger.getLogger(ExportPresenterImpl.class);
+	private static final Logger log = Logger.getLogger(ExportPresenterImpl.class);
 
-	private PermissionService permissionService;
-	private TestService testService;
-	private UserService userService;
+	private final PermissionService permissionService;
+	private final TestService testService;
+	private final UserService userService;
 
 	private User loggedUser;
 
@@ -590,7 +590,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		final AtomicBoolean cancelPending = new AtomicBoolean(false);
 		final Collection<Long> testIds;
 
-		private MainEventBus bus;
+		private final MainEventBus bus;
 
 		public ExportThread(MainEventBus bus, final Collection<Long> testIds) {
 			this.bus = bus;

@@ -100,7 +100,7 @@ public final class SlideOrder extends SerializableIdObject {
 
 	@Transient
 	public final List<Integer> getOrder() {
-		LinkedList<Integer> list = new LinkedList<Integer>();
+		LinkedList<Integer> list = new LinkedList<>();
 
 		if (data != null) {
 			String[] strings = data.split(",");

@@ -14,6 +14,6 @@ import java.io.Serializable;
  */
 public interface Formula extends Serializable {
 
-	public boolean evaluate(Object input);
+	boolean evaluate(Object input);
 
 }

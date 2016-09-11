@@ -27,7 +27,7 @@ public class HypothesisNavigator extends Navigator {
 
 	private static final HypothesisViewType ERROR_VIEW = HypothesisViewType.PACKS;
 	private ViewProvider errorViewProvider;
-	private MainEventBus bus;
+	private final MainEventBus bus;
 
 	/**
 	 * Create instance and associate it with bus and container

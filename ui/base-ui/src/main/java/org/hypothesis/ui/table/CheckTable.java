@@ -32,7 +32,7 @@ public class CheckTable extends Table {
 
 	@Override
 	public Set<Object> getValue() {
-		Set<Object> value = new HashSet<Object>();
+		Set<Object> value = new HashSet<>();
 
 		for (Object itemId : getItemIds()) {
 			Item item = getItem(itemId);

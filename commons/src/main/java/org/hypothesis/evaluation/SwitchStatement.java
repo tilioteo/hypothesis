@@ -24,10 +24,10 @@ import com.tilioteo.expressions.ExpressionFactory;
 @SuppressWarnings("serial")
 public class SwitchStatement implements Evaluable {
 
-	private HasVariables variables;
-	private Expression expression;
+	private final HasVariables variables;
+	private final Expression expression;
 
-	private HashMap<String, List<Evaluable>> caseMap = new HashMap<>();
+	private final HashMap<String, List<Evaluable>> caseMap = new HashMap<>();
 
 	public SwitchStatement(HasVariables variables, Expression expression) {
 		this.variables = variables;

@@ -22,16 +22,15 @@ public class AsynchronousCommandExecutor extends ArrayBlockingQueue<Command> imp
 	 */
 	private static final long serialVersionUID = -1913670527503390523L;
 
-	private static Logger log = Logger.getLogger(AsynchronousCommandExecutor.class);
+	private static final Logger log = Logger.getLogger(AsynchronousCommandExecutor.class);
 
-	private Thread thread;
 	boolean suspended = false;
 	boolean stopped = false;
 
 	public AsynchronousCommandExecutor() {
 		super(1024);
 
-		thread = new Thread(this);
+		Thread thread = new Thread(this);
 		thread.start();
 	}
 

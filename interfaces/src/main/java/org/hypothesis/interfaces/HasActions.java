@@ -14,8 +14,8 @@ import java.io.Serializable;
  */
 public interface HasActions extends Serializable {
 
-	public void setAction(String id, Action action);
+	void setAction(String id, Action action);
 
-	public Action getAction(String id);
+	Action getAction(String id);
 
 }

@@ -35,7 +35,7 @@ import com.tilioteo.common.Strings;
 @SuppressWarnings("serial")
 public class PluginManager implements Serializable {
 
-	private static Logger log = Logger.getLogger(PluginManager.class);
+	private static final Logger log = Logger.getLogger(PluginManager.class);
 
 	public static final String PLUGIN_CONFIG_LOCATION = "pluginConfigLocation";
 

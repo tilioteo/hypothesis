@@ -15,9 +15,9 @@ import java.util.Map;
  */
 public interface Evaluable extends Serializable {
 
-	public void evaluate();
+	void evaluate();
 
-	public void setVariables(Map<String, Variable<?>> variables);
+	void setVariables(Map<String, Variable<?>> variables);
 
-	public void updateVariables(Map<String, Variable<?>> variables);
+	void updateVariables(Map<String, Variable<?>> variables);
 }

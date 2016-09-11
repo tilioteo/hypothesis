@@ -24,11 +24,11 @@ import org.hypothesis.data.model.User;
 @SuppressWarnings("serial")
 public class TokenService implements Serializable {
 
-	private static Logger log = Logger.getLogger(TokenService.class);
+	private static final Logger log = Logger.getLogger(TokenService.class);
 
 	private static final int TOKEN_VALID_TIME = 120 * 1000; // 2 minutes
 
-	private HibernateDao<Token, String> tokenDao;
+	private final HibernateDao<Token, String> tokenDao;
 
 	public static TokenService newInstance() {
 		return new TokenService(new HibernateDao<Token, String>(Token.class));

@@ -17,7 +17,7 @@ import org.hypothesis.interfaces.Extension;
 @SuppressWarnings("serial")
 public class RandomGenerator implements Extension {
 
-	private Random random = new Random();
+	private final Random random = new Random();
 
 	public int getInteger() {
 		return random.nextInt();

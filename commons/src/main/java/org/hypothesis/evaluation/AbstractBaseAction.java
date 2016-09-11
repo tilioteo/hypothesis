@@ -16,7 +16,7 @@ import org.hypothesis.interfaces.HasVariables;
 @SuppressWarnings("serial")
 public abstract class AbstractBaseAction extends AbstractVariableContainer implements org.hypothesis.interfaces.Action {
 
-	private String id;
+	private final String id;
 	private Command executeCommand = null;
 
 	protected AbstractBaseAction(HasVariables variables, String id) {

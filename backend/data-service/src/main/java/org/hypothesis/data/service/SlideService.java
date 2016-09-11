@@ -15,9 +15,9 @@ import org.hypothesis.data.model.Slide;
  */
 public class SlideService {
 
-	private static Logger log = Logger.getLogger(SlideService.class);
+	private static final Logger log = Logger.getLogger(SlideService.class);
 
-	private HibernateDao<Slide, Long> slideDao;
+	private final HibernateDao<Slide, Long> slideDao;
 
 	protected SlideService(HibernateDao<Slide, Long> taskDao) {
 		this.slideDao = taskDao;

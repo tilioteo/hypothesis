@@ -30,14 +30,14 @@ import org.hypothesis.data.model.UserPermission;
 @SuppressWarnings("serial")
 public class PermissionService implements Serializable {
 
-	private static Logger log = Logger.getLogger(PermissionService.class);
+	private static final Logger log = Logger.getLogger(PermissionService.class);
 
-	private HibernateDao<UserPermission, Long> userPermissionDao;
-	private HibernateDao<GroupPermission, Long> groupPermissionDao;
-	private HibernateDao<Pack, Long> packDao;
-	private TestService testService;
+	private final HibernateDao<UserPermission, Long> userPermissionDao;
+	private final HibernateDao<GroupPermission, Long> groupPermissionDao;
+	private final HibernateDao<Pack, Long> packDao;
+	private final TestService testService;
 
-	private UserService userService;
+	private final UserService userService;
 
 	protected PermissionService(HibernateDao<UserPermission, Long> userPermitionDao,
 			HibernateDao<GroupPermission, Long> groupPermitionDao) {
@@ -230,7 +230,7 @@ public class PermissionService implements Serializable {
 	/*
 	 * @SuppressWarnings("unchecked") public Set<Pack> findUserPacks(Long
 	 * userId, boolean excludeFinished) { try { Set<Pack> packs = new
-	 * HashSet<Pack>(); Session session = Util.getSession();
+	 * HashSet<>(); Session session = Util.getSession();
 	 * session.beginTransaction(); Query query = session.createSQLQuery(
 	 * "select * from tbl_pack where tbl_pack.id in " +
 	 * "(select pack_id from tbl_user_permition where user_id = :id and enabled = true) or ("
@@ -248,7 +248,7 @@ public class PermissionService implements Serializable {
 	public Set<Pack> findUserPacks2(User user, boolean excludeFinished) {
 		log.debug("findUserPacks2");
 		try {
-			Hashtable<Long, Pack> packs = new Hashtable<Long, Pack>();
+			Hashtable<Long, Pack> packs = new Hashtable<>();
 			user = userService.merge(user);
 
 			if (!user.getGroups().isEmpty()) {
@@ -280,7 +280,7 @@ public class PermissionService implements Serializable {
 		log.debug("getGroupPacks");
 		try {
 			Set<GroupPermission> groupPermissions = getGroupPermissions(group);
-			Set<Pack> packs = new HashSet<Pack>();
+			Set<Pack> packs = new HashSet<>();
 			for (GroupPermission groupPermission : groupPermissions) {
 				packs.add(groupPermission.getPack());
 			}
@@ -293,7 +293,7 @@ public class PermissionService implements Serializable {
 
 	public Set<GroupPermission> getGroupPermissions(Group group) {
 		log.debug("getGroupPermissions");
-		Set<GroupPermission> groupPermissions = new HashSet<GroupPermission>();
+		Set<GroupPermission> groupPermissions = new HashSet<>();
 		try {
 			groupPermissionDao.beginTransaction();
 			List<GroupPermission> grpPerms = groupPermissionDao
@@ -310,7 +310,7 @@ public class PermissionService implements Serializable {
 	public Set<GroupPermission> getGroupsPermissions(Set<Group> groups) {
 		log.debug("getGroupsPermissions");
 		try {
-			Set<GroupPermission> groupsPermissions = new HashSet<GroupPermission>();
+			Set<GroupPermission> groupsPermissions = new HashSet<>();
 			groupPermissionDao.beginTransaction();
 			List<GroupPermission> grpsPerms = groupPermissionDao
 					.findByCriteria(Restrictions.in(EntityConstants.GROUP, groups));
@@ -329,7 +329,7 @@ public class PermissionService implements Serializable {
 	public Set<GroupPermission> getPackGroupPermissions(Pack pack) {
 		log.debug("getPackGroupPermissions");
 		try {
-			Set<GroupPermission> groupPermissions = new HashSet<GroupPermission>();
+			Set<GroupPermission> groupPermissions = new HashSet<>();
 			groupPermissionDao.beginTransaction();
 			List<GroupPermission> grpPerms = groupPermissionDao
 					.findByCriteria(Restrictions.eq(EntityConstants.PACK, pack));
@@ -347,7 +347,7 @@ public class PermissionService implements Serializable {
 	public Set<UserPermission> getPackUserPermissions(Pack pack, boolean enabled) {
 		log.debug("getPackUserPermissions");
 		try {
-			Set<UserPermission> userPermissions = new HashSet<UserPermission>();
+			Set<UserPermission> userPermissions = new HashSet<>();
 			userPermissionDao.beginTransaction();
 			List<UserPermission> usrPerms = userPermissionDao.findByCriteria(Restrictions.and(
 					Restrictions.eq(EntityConstants.PACK, pack), Restrictions.eq(FieldConstants.ENABLED, enabled)));
@@ -366,7 +366,7 @@ public class PermissionService implements Serializable {
 		log.debug("getUserPacks");
 		try {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
-			Set<Pack> packs = new HashSet<Pack>();
+			Set<Pack> packs = new HashSet<>();
 			for (UserPermission userPermission : userPermissions) {
 				if (enabled == null || userPermission.getEnabled().equals(enabled)) {
 					Pack pack = userPermission.getPack();
@@ -391,7 +391,7 @@ public class PermissionService implements Serializable {
 
 	public Set<UserPermission> getUserPermissions(User user) {
 		log.debug("getUserPermissions");
-		Set<UserPermission> userPermissions = new HashSet<UserPermission>();
+		Set<UserPermission> userPermissions = new HashSet<>();
 		try {
 			userPermissionDao.beginTransaction();
 			List<UserPermission> usrPerms = userPermissionDao
@@ -408,7 +408,7 @@ public class PermissionService implements Serializable {
 	public Set<UserPermission> getUsersPermissions(Set<User> users, boolean enabled) {
 		log.debug("getUsersPermissions");
 		try {
-			Set<UserPermission> usersPermissions = new HashSet<UserPermission>();
+			Set<UserPermission> usersPermissions = new HashSet<>();
 			userPermissionDao.beginTransaction();
 			List<UserPermission> usrsPerms = userPermissionDao.findByCriteria(Restrictions.and(
 					Restrictions.in(EntityConstants.USER, users), Restrictions.eq(FieldConstants.ENABLED, enabled)));

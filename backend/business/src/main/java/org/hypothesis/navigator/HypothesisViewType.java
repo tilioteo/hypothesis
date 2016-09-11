@@ -41,15 +41,13 @@ public enum HypothesisViewType {
 	private final boolean stateful;
 	private final Set<Role> roles;
 
-	private HypothesisViewType(final String viewName, final String caption,
-			final Class<? extends ViewPresenter> presenterClass, final Resource icon, final boolean stateful,
-			final Role[] roles) {
+	HypothesisViewType(final String viewName, final String caption, final Class<? extends ViewPresenter> presenterClass, final Resource icon, final boolean stateful, final Role[] roles) {
 		this.viewName = viewName;
 		this.caption = caption;
 		this.presenterClass = presenterClass;
 		this.icon = icon;
 		this.stateful = stateful;
-		this.roles = new HashSet<Role>();
+		this.roles = new HashSet<>();
 
 		initRoles(roles);
 	}

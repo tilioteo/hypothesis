@@ -14,14 +14,14 @@ import java.io.Serializable;
  */
 public interface Variable<T> extends Serializable {
 
-	public String getName();
+	String getName();
 
-	public Class<?> getType();
+	Class<?> getType();
 
-	public Object getValue();
+	Object getValue();
 
-	public String getStringValue();
+	String getStringValue();
 
-	public void setRawValue(Object value);
+	void setRawValue(Object value);
 
 }

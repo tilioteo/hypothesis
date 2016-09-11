@@ -66,23 +66,23 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	private ProcessEventBus bus = null;
 	private HypothesisUI ui = null;
 
-	private ViewportEventManager viewportEventManager = new ViewportEventManager();
-	private MessageEventManager messageEventManager = new MessageEventManager();
+	private final ViewportEventManager viewportEventManager = new ViewportEventManager();
+	private final MessageEventManager messageEventManager = new MessageEventManager();
 
-	private HashMap<String, Component> components = new HashMap<>();
-	private HashMap<String, Field> fields = new HashMap<>();
-	private HashMap<String, Window> windows = new HashMap<>();
-	private HashMap<String, Timer> timers = new HashMap<>();
+	private final HashMap<String, Component> components = new HashMap<>();
+	private final HashMap<String, Field> fields = new HashMap<>();
+	private final HashMap<String, Window> windows = new HashMap<>();
+	private final HashMap<String, Timer> timers = new HashMap<>();
 
-	private HashMap<String, Variable<?>> variables = new HashMap<>();
-	private HashMap<String, Action> actions = new HashMap<>();
+	private final HashMap<String, Variable<?>> variables = new HashMap<>();
+	private final HashMap<String, Action> actions = new HashMap<>();
 
 	private HashSet<KeyAction> keyActions = new HashSet<>();
 
-	private HashMap<Integer, ExchangeVariable> inputExpressions = new HashMap<>();
-	private HashMap<Integer, ExchangeVariable> outputExpressions = new HashMap<>();
+	private final HashMap<Integer, ExchangeVariable> inputExpressions = new HashMap<>();
+	private final HashMap<Integer, ExchangeVariable> outputExpressions = new HashMap<>();
 
-	private EventManager eventManager;
+	private final EventManager eventManager;
 	private MessageManager messageManager = null;
 
 	private Long userId = null;

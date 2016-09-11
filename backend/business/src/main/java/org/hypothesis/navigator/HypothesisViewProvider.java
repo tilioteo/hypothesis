@@ -21,9 +21,9 @@ import com.vaadin.navigator.ViewProvider;
 @SuppressWarnings("serial")
 public class HypothesisViewProvider implements ViewProvider {
 
-	private MainEventBus bus;
+	private final MainEventBus bus;
 
-	private HypothesisViewType viewType;
+	private final HypothesisViewType viewType;
 
 	// This field caches an already initialized view instance if the
 	// view should be cached (stateful views).

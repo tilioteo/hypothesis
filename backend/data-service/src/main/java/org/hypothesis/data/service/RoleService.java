@@ -22,9 +22,9 @@ import org.hypothesis.data.model.Role;
 @SuppressWarnings("serial")
 public class RoleService implements Serializable {
 
-	private static Logger log = Logger.getLogger(RoleService.class);
+	private static final Logger log = Logger.getLogger(RoleService.class);
 
-	private HibernateDao<Role, Long> roleDao;
+	private final HibernateDao<Role, Long> roleDao;
 
 	public static final Role ROLE_SUPERUSER = initRoleByName("SUPERUSER");
 	public static final Role ROLE_MANAGER = initRoleByName("MANAGER");
@@ -118,7 +118,7 @@ public class RoleService implements Serializable {
 		log.debug("findAllRoleNames");
 		try {
 			List<Role> allRoles = findAll();
-			List<String> roleNames = new ArrayList<String>();
+			List<String> roleNames = new ArrayList<>();
 			for (Role role : allRoles) {
 				roleNames.add(role.getName());
 			}

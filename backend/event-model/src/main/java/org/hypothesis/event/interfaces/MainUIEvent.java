@@ -34,19 +34,19 @@ public interface MainUIEvent extends HypothesisEvent {
 		}
 	}
 
-	public static class GuestAccessRequestedEvent implements MainUIEvent {
+	class GuestAccessRequestedEvent implements MainUIEvent {
 	}
 
-	public static class InvalidLoginEvent implements MainUIEvent {
+	class InvalidLoginEvent implements MainUIEvent {
 	}
 
-	public static class InvalidUserPermissionEvent implements MainUIEvent {
+	class InvalidUserPermissionEvent implements MainUIEvent {
 	}
 
-	public static class UserLoggedOutEvent implements MainUIEvent {
+	class UserLoggedOutEvent implements MainUIEvent {
 	}
 
-	public static final class PostViewChangeEvent implements MainUIEvent {
+	final class PostViewChangeEvent implements MainUIEvent {
 		private final String viewName;
 
 		public PostViewChangeEvent(final String viewName) {
@@ -64,13 +64,13 @@ public interface MainUIEvent extends HypothesisEvent {
 	 * public static class LegacyWindowClosedEvent implements MainUIEvent { }
 	 */
 
-	public static final class CloseOpenWindowsEvent implements MainUIEvent {
+	final class CloseOpenWindowsEvent implements MainUIEvent {
 	}
 
-	public static final class ProfileUpdatedEvent implements MainUIEvent {
+	final class ProfileUpdatedEvent implements MainUIEvent {
 	}
 
-	public static final class UserAddedEvent implements MainUIEvent {
+	final class UserAddedEvent implements MainUIEvent {
 		private final User user;
 
 		public UserAddedEvent(final User user) {
@@ -82,10 +82,10 @@ public interface MainUIEvent extends HypothesisEvent {
 		}
 	}
 
-	public static final class UserSelectionChangedEvent implements MainUIEvent {
+	final class UserSelectionChangedEvent implements MainUIEvent {
 	}
 
-	public static final class GroupUsersChangedEvent implements MainUIEvent {
+	final class GroupUsersChangedEvent implements MainUIEvent {
 		private final Group group;
 
 		public GroupUsersChangedEvent(final Group group) {
@@ -97,7 +97,7 @@ public interface MainUIEvent extends HypothesisEvent {
 		}
 	}
 
-	public static final class GroupAddedEvent implements MainUIEvent {
+	final class GroupAddedEvent implements MainUIEvent {
 		private final Group group;
 
 		public GroupAddedEvent(final Group group) {
@@ -109,10 +109,10 @@ public interface MainUIEvent extends HypothesisEvent {
 		}
 	}
 
-	public static final class GroupSelectionChangedEvent implements MainUIEvent {
+	final class GroupSelectionChangedEvent implements MainUIEvent {
 	}
 
-	public static final class UserGroupsChangedEvent implements MainUIEvent {
+	final class UserGroupsChangedEvent implements MainUIEvent {
 		private final User user;
 
 		public UserGroupsChangedEvent(final User user) {
@@ -124,7 +124,7 @@ public interface MainUIEvent extends HypothesisEvent {
 		}
 	}
 
-	public static final class UserPacksChangedEvent implements MainUIEvent {
+	final class UserPacksChangedEvent implements MainUIEvent {
 		private final User user;
 
 		public UserPacksChangedEvent(final User user) {
@@ -136,10 +136,10 @@ public interface MainUIEvent extends HypothesisEvent {
 		}
 	}
 
-	public static final class PackSelectionChangedEvent implements MainUIEvent {
+	final class PackSelectionChangedEvent implements MainUIEvent {
 	}
 
-	public static final class ExportFinishedEvent implements MainUIEvent {
+	final class ExportFinishedEvent implements MainUIEvent {
 		private final boolean canceled;
 
 		public ExportFinishedEvent(final boolean canceled) {
@@ -151,10 +151,10 @@ public interface MainUIEvent extends HypothesisEvent {
 		}
 	}
 
-	public static final class ExportErrorEvent implements MainUIEvent {
+	final class ExportErrorEvent implements MainUIEvent {
 	}
 
-	public static final class ExportProgressEvent implements MainUIEvent {
+	final class ExportProgressEvent implements MainUIEvent {
 		private final float progress;
 
 		public ExportProgressEvent(final float progress) {

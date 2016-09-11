@@ -47,8 +47,8 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 	private Component content;
 	private MenuItem settingsItem;
 
-	private MainEventBus bus;
-	private UserSettingsWindowPresenter userSettingsWindowPresenter;
+	private final MainEventBus bus;
+	private final UserSettingsWindowPresenter userSettingsWindowPresenter;
 
 	/**
 	 * Construct with bus

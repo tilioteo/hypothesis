@@ -21,7 +21,7 @@ import com.tilioteo.expressions.UnaryExpression;
 @SuppressWarnings("serial")
 public class Expression implements Evaluable {
 
-	private com.tilioteo.expressions.Expression internalExpression;
+	private final com.tilioteo.expressions.Expression internalExpression;
 
 	/**
 	 * 

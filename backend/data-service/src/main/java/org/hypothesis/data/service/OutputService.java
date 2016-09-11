@@ -18,9 +18,9 @@ import org.hypothesis.data.model.BranchOutput;
 @SuppressWarnings("serial")
 public class OutputService implements Serializable {
 
-	private static Logger log = Logger.getLogger(OutputService.class);
+	private static final Logger log = Logger.getLogger(OutputService.class);
 
-	private HibernateDao<BranchOutput, Long> branchOutputDao;
+	private final HibernateDao<BranchOutput, Long> branchOutputDao;
 
 	public static OutputService newInstance() {
 		return new OutputService(new HibernateDao<BranchOutput, Long>(BranchOutput.class));

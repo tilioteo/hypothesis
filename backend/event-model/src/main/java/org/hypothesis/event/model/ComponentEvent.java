@@ -20,13 +20,13 @@ import com.vaadin.ui.Component;
 @SuppressWarnings("serial")
 public class ComponentEvent extends AbstractUserEvent implements org.hypothesis.interfaces.ComponentEvent {
 
-	private Component component;
+	private final Component component;
 	private ComponentData data;
-	private String typeName;
+	private final String typeName;
 
-	private HashMap<String, Object> properties = new HashMap<>();
-	private HashMap<String, Class<?>> classes = new HashMap<>();
-	private HashMap<String, String> patterns = new HashMap<>();
+	private final HashMap<String, Object> properties = new HashMap<>();
+	private final HashMap<String, Class<?>> classes = new HashMap<>();
+	private final HashMap<String, String> patterns = new HashMap<>();
 
 	public ComponentEvent(Component component, String typeName, String eventName) {
 		super(null/* errorHandler */);

@@ -48,7 +48,7 @@ import org.apache.log4j.Logger;
  * address query string
  */
 public class DownloadRequest {
-	private static Logger log = Logger.getLogger(DownloadRequest.class);
+	private static final Logger log = Logger.getLogger(DownloadRequest.class);
 
 	// Arguments
 	private static final String ARG_ARCH = "arch";
@@ -64,7 +64,7 @@ public class DownloadRequest {
 	private static String[] getStringList(String str) {
 		if (str == null)
 			return null;
-		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<String> list = new ArrayList<>();
 		int i = 0;
 		int length = str.length();
 		StringBuilder sb = null;
@@ -144,7 +144,7 @@ public class DownloadRequest {
 
 	// Contruct Request object based on HTTP request
 	public DownloadRequest(HttpServletRequest request, PathRemapper pathRemapper) {
-		this((ServletContext) null, pathRemapper, request);
+		this(null, pathRemapper, request);
 	}
 
 	public DownloadRequest(ServletContext context, PathRemapper pathRemapper, HttpServletRequest request) {

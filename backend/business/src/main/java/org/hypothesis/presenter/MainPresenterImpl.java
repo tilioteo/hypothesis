@@ -43,7 +43,7 @@ public class MainPresenterImpl implements MainPresenter {
 
 	private ComponentContainer content;
 
-	private HypothesisMenuPresenter menuPresenter;
+	private final HypothesisMenuPresenter menuPresenter;
 
 	/**
 	 * Construct with bus

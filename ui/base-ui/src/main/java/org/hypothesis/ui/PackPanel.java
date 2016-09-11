@@ -205,8 +205,10 @@ public class PackPanel extends Panel {
 
 		CssLayout layout = new CssLayout();
 		layout.addStyleName("v-component-group");
-		layout.addComponent(buildFeaturedButton(javaInstalled));
-		layout.addComponent(buildLegacyButton());
+		featuredButton = buildFeaturedButton(javaInstalled);
+		layout.addComponent(featuredButton);
+		legacyButton = buildLegacyButton();
+		layout.addComponent(legacyButton);
 		controlLayout.addComponent(layout);
 		controlLayout.setComponentAlignment(layout, Alignment.MIDDLE_CENTER);
 
@@ -219,7 +221,7 @@ public class PackPanel extends Panel {
 		isSingle = false;
 	}
 
-	private Button buildLegacyButton() {
+	private OpenPopupButton buildLegacyButton() {
 		final OpenPopupButton button = new OpenPopupButton(legacyButtonCaption);
 		button.addAttachListener(new AttachListener() {
 			@Override

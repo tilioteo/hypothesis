@@ -55,26 +55,6 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 		controller = BranchBuilder.buildBranchController(current, reader);
 	}
 
-	/*
-	 * @Override public Branch find(Branch item) { if (item != current) {
-	 * super.find(item); } return current(); }
-	 */
-
-	/*
-	 * @Override public Branch get(Long key) { clearBranchRelatives();
-	 * super.get(key); return current(); }
-	 */
-
-	/*
-	 * public String getSerializedData() { return nextKey; }
-	 */
-
-	/*
-	 * @Override public void setCurrent(Branch item) { if (item !=
-	 * super.current()) { clearBranchRelatives(); super.setCurrent(item);
-	 * buildBranch(); } }
-	 */
-
 	public BranchController getController() {
 		return controller;
 	}

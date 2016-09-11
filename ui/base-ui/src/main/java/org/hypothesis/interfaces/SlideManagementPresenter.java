@@ -12,6 +12,6 @@ package org.hypothesis.interfaces;
  */
 public interface SlideManagementPresenter extends ViewPresenter {
 
-	public void showSlide(String template, String content);
+	void showSlide(String template, String content);
 
 }

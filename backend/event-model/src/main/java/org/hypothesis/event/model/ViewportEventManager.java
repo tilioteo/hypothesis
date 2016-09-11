@@ -21,7 +21,7 @@ import org.hypothesis.interfaces.ViewportEventListener;
 @SuppressWarnings("serial")
 public class ViewportEventManager implements Serializable {
 
-	private HashMap<Class<? extends ViewportEvent>, EventListenerList> listenersMap = new HashMap<Class<? extends ViewportEvent>, EventListenerList>();
+	private final HashMap<Class<? extends ViewportEvent>, EventListenerList> listenersMap = new HashMap<>();
 	private boolean enabled = false;
 
 	public final void addListener(Class<? extends ViewportEvent> eventClass, ViewportEventListener eventListener) {

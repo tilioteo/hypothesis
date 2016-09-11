@@ -33,7 +33,7 @@ import org.hypothesis.context.LogUtil;
  */
 public class HibernateSessionInterceptor implements Filter {
 
-	private static Logger log = Logger.getLogger(HibernateSessionInterceptor.class);
+	private static final Logger log = Logger.getLogger(HibernateSessionInterceptor.class);
 
 	@Override
 	public void destroy() {

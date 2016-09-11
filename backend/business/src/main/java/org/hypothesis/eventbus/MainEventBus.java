@@ -21,7 +21,7 @@ import com.vaadin.ui.UI;
 @SuppressWarnings("serial")
 public class MainEventBus extends HypothesisEventBus<MainUIEvent> {
 
-	private static HashMap<HasMainEventBus, MainEventBus> map = new HashMap<>();
+	private static final HashMap<HasMainEventBus, MainEventBus> map = new HashMap<>();
 
 	protected MainEventBus() {
 	}

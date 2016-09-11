@@ -12,8 +12,8 @@ package org.hypothesis.business;
  */
 public interface ObjectConstants {
 
-	public static final String COMPONENT_DATA = "ComponentData";
-	public static final String NAVIGATOR = "Navigator";
-	public static final String DOCUMENT = "Document";
+	String COMPONENT_DATA = "ComponentData";
+	String NAVIGATOR = "Navigator";
+	String DOCUMENT = "Document";
 
 }

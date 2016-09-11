@@ -25,9 +25,9 @@ import org.hypothesis.data.model.FieldConstants;
 @SuppressWarnings("serial")
 public class ExportService implements Serializable {
 
-	private static Logger log = Logger.getLogger(ExportService.class);
+	private static final Logger log = Logger.getLogger(ExportService.class);
 
-	private HibernateDao<ExportEvent, Long> exportEventDao;
+	private final HibernateDao<ExportEvent, Long> exportEventDao;
 
 	public static ExportService newInstance() {
 		return new ExportService(new HibernateDao<ExportEvent, Long>(ExportEvent.class));

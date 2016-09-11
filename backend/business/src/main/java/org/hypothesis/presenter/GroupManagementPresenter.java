@@ -68,8 +68,8 @@ import net.engio.mbassy.listener.Handler;
 @SuppressWarnings("serial")
 public class GroupManagementPresenter extends AbstractManagementPresenter {
 
-	private PermissionService permissionService;
-	private GroupService groupService;
+	private final PermissionService permissionService;
+	private final GroupService groupService;
 
 	private GroupWindowPresenter groupWindowPresenter;
 

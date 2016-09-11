@@ -62,9 +62,9 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class GroupWindowPresenter extends AbstractWindowPresenter {
 
-	private GroupService groupService;
-	private UserService userService;
-	private PermissionService permissionService;
+	private final GroupService groupService;
+	private final UserService userService;
+	private final PermissionService permissionService;
 
 	private TextField idField;
 	private TextField nameField;
@@ -235,7 +235,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void initFields() {
-		fields = new ArrayList<AbstractField<?>>();
+		fields = new ArrayList<>();
 
 		// ID
 		buildIdField();

@@ -16,60 +16,60 @@ import java.util.Map;
  */
 public interface Element extends Serializable, Iterable<Element> {
 
-	public String getName();
+	String getName();
 	
-	public String getNamespace();
+	String getNamespace();
 	
-	public String getShortName();
+	String getShortName();
 
-	public void setName(String name);
+	void setName(String name);
 
-	public String getText();
+	String getText();
 
-	public void setText(String text);
+	void setText(String text);
 
-	public Element parent();
+	Element parent();
 
-	public Map<String, String> attributes();
+	Map<String, String> attributes();
 
-	public void setAttribute(String name, String value);
+	void setAttribute(String name, String value);
 
-	public String getAttribute(String name);
+	String getAttribute(String name);
 
-	public void removeAttribute(String name);
+	void removeAttribute(String name);
 
-	public boolean hasAttribute(String name);
+	boolean hasAttribute(String name);
 
-	public List<Element> children();
+	List<Element> children();
 
-	public Element createChild(String name, String text);
+	Element createChild(String name, String text);
 
-	public Element createChild(String name);
+	Element createChild(String name);
 
-	public Element createChild(Element element);
+	Element createChild(Element element);
 
-	public Element createChildBefore(Element sibling, String name, String text);
+	Element createChildBefore(Element sibling, String name, String text);
 
-	public Element createChildBefore(Element sibling, String name);
+	Element createChildBefore(Element sibling, String name);
 
-	public Element createChildAfter(Element sibling, String name, String text);
+	Element createChildAfter(Element sibling, String name, String text);
 
-	public Element createChildAfter(Element sibling, String name);
+	Element createChildAfter(Element sibling, String name);
 
-	public void removeChild(Element element);
+	void removeChild(Element element);
 
-	public Element firstChild();
+	Element firstChild();
 
-	public Element lastChild();
+	Element lastChild();
 
-	public Element previousSibling();
+	Element previousSibling();
 
-	public Element nextSibling();
+	Element nextSibling();
 
-	public Element selectElement(String name);
+	Element selectElement(String name);
 
-	public List<Element> selectElements(String name);
+	List<Element> selectElements(String name);
 	
-	public String toString(boolean detailed, int ident);
+	String toString(boolean detailed, int ident);
 
 }

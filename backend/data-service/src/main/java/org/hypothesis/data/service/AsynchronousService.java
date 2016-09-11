@@ -23,13 +23,13 @@ import org.hypothesis.interfaces.Command;
  */
 public class AsynchronousService {
 
-	private TestService testService;
-	private BranchService branchService;
-	private TaskService taskService;
-	private SlideService slideService;
-	private OutputService outputService;
+	private final TestService testService;
+	private final BranchService branchService;
+	private final TaskService taskService;
+	private final SlideService slideService;
+	private final OutputService outputService;
 
-	private AsynchronousCommandExecutor commandExecutor = new AsynchronousCommandExecutor();
+	private final AsynchronousCommandExecutor commandExecutor = new AsynchronousCommandExecutor();
 
 	public AsynchronousService(TestService testService, OutputService outputService,
 			PersistenceService persistenceService, BranchService branchService, TaskService taskService,

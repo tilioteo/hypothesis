@@ -31,7 +31,7 @@ public class ProcessUI extends HypothesisUI {
 
 	private boolean requestClose = false;
 
-	private CssLayout clearLayout = new CssLayout();
+	private final CssLayout clearLayout = new CssLayout();
 
 	public void showErrorDialog(ErrorDialog dialog) {
 		dialog.show(this);

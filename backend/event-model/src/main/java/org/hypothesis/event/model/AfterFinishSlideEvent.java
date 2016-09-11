@@ -17,7 +17,7 @@ import com.vaadin.server.ErrorHandler;
 @SuppressWarnings("serial")
 public class AfterFinishSlideEvent extends AbstractRunningEvent {
 
-	private Direction direction;
+	private final Direction direction;
 
 	public AfterFinishSlideEvent(Direction direction) {
 		this(direction, null);

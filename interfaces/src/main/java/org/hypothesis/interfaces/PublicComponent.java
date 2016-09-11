@@ -17,44 +17,44 @@ import org.hypothesis.annotations.PublicType;
 public interface PublicComponent {
 
 	@Public
-	public boolean isEnabled();
+	boolean isEnabled();
 
 	@Public
-	public void setEnabled(boolean enabled);
+	void setEnabled(boolean enabled);
 
 	@Public
-	public boolean isVisible();
+	boolean isVisible();
 
 	@Public
-	public void setVisible(boolean visible);
+	void setVisible(boolean visible);
 
 	@Public
-	public boolean isReadOnly();
+	boolean isReadOnly();
 
 	@Public
-	public void setReadOnly(boolean readOnly);
+	void setReadOnly(boolean readOnly);
 
 	@Public
-	public String getCaption();
+	String getCaption();
 
 	@Public
-	public void setCaption(String caption);
+	void setCaption(String caption);
 
 	@Public
-	public String getDescription();
+	String getDescription();
 
 	@Public
-	public void setDescription(String description);
+	void setDescription(String description);
 
 	@Public
-	public float getWidth();
+	float getWidth();
 
 	@Public
-	public void setWidth(String width);
+	void setWidth(String width);
 
 	@Public
-	public float getHeight();
+	float getHeight();
 
 	@Public
-	public void setHeight(String height);
+	void setHeight(String height);
 }

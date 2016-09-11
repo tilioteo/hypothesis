@@ -16,7 +16,7 @@ import com.vaadin.ui.Component;
 @SuppressWarnings("serial")
 public abstract class AbstractContentEvent extends AbstractRunningEvent {
 
-	private Component component;
+	private final Component component;
 
 	protected AbstractContentEvent(Component component, ErrorHandler errorHandler) {
 		super(errorHandler);

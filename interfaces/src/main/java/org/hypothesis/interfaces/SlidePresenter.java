@@ -20,39 +20,38 @@ import com.vaadin.ui.UI;
  */
 public interface SlidePresenter extends Evaluator {
 
-	public void attach(Component slideContainer, HasComponents parent, UI ui, VaadinSession session);
+	void attach(Component slideContainer, HasComponents parent, UI ui, VaadinSession session);
 
-	public void detach(Component slideContainer, HasComponents parent, UI ui, VaadinSession session);
+	void detach(Component slideContainer, HasComponents parent, UI ui, VaadinSession session);
 
-	public void buildDone();
+	void buildDone();
 
-	public void viewDone();
+	void viewDone();
 
-	public Map<Integer, ExchangeVariable> getInputs();
+	Map<Integer, ExchangeVariable> getInputs();
 
-	public Map<Integer, ExchangeVariable> getOutputs();
+	Map<Integer, ExchangeVariable> getOutputs();
 
-	public Map<String, Field> getFields();
+	Map<String, Field> getFields();
 
-	public void setUserId(Long userId);
+	void setUserId(Long userId);
 
-	public void handleEvent(Component component, String typeName, String eventName, Action action,
-			ComponentEventCallback callback);
+	void handleEvent(Component component, String typeName, String eventName, Action action, ComponentEventCallback callback);
 
-	public void addViewportInitListener(ViewportEventListener viewportEventListener);
+	void addViewportInitListener(ViewportEventListener viewportEventListener);
 
-	public void addViewportShowListener(ViewportEventListener viewportEventListener);
+	void addViewportShowListener(ViewportEventListener viewportEventListener);
 
-	public void addViewportFinishListener(ViewportEventListener viewportEventListener);
+	void addViewportFinishListener(ViewportEventListener viewportEventListener);
 
-	public void addKeyAction(Extension keyAction);
+	void addKeyAction(Extension keyAction);
 
-	public void addMessageListener(String uid, MessageEventListener messageEventListener);
+	void addMessageListener(String uid, MessageEventListener messageEventListener);
 
-	public Component getComponent(String id);
+	Component getComponent(String id);
 
-	public void setComponent(String id, Component component);
+	void setComponent(String id, Component component);
 
-	public String getSlideId();
+	String getSlideId();
 
 }

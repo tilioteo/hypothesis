@@ -16,12 +16,12 @@ import com.vaadin.server.VaadinRequest;
  */
 public interface UIPresenter extends ComponentPresenter {
 
-	public void initialize(VaadinRequest request);
+	void initialize(VaadinRequest request);
 
-	public void close();
+	void close();
 
-	public void refresh(VaadinRequest request);
+	void refresh(VaadinRequest request);
 
-	public Locale getCurrentLocale();
+	Locale getCurrentLocale();
 
 }

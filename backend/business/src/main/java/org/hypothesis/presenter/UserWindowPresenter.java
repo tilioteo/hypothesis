@@ -77,10 +77,10 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class UserWindowPresenter extends AbstractWindowPresenter {
 
-	private GroupService groupService;
-	private UserService userService;
-	private RoleService roleService;
-	private PermissionService permissionService;
+	private final GroupService groupService;
+	private final UserService userService;
+	private final RoleService roleService;
+	private final PermissionService permissionService;
 
 	private TextField idField;
 	private TextField usernameField;
@@ -285,7 +285,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void initFields() {
-		fields = new ArrayList<AbstractField<?>>();
+		fields = new ArrayList<>();
 
 		// ID
 		buildIdField();

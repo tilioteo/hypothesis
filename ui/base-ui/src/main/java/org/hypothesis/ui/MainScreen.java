@@ -19,7 +19,7 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class MainScreen extends VerticalLayout {
 
-	private MainPresenter presenter;
+	private final MainPresenter presenter;
 
 	public MainScreen(MainPresenter presenter) {
 		this.presenter = presenter;

@@ -17,8 +17,8 @@ import com.vaadin.ui.Notification;
 @SuppressWarnings("serial")
 public abstract class AbstractNotificationEvent implements ProcessViewEvent {
 
-	protected String caption;
-	protected String description;
+	protected final String caption;
+	protected final String description;
 
 	protected AbstractNotificationEvent(String caption) {
 		this(caption, null);

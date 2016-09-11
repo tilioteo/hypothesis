@@ -75,7 +75,7 @@ import org.hypothesis.servlet.jnlp.PathRemapper;
 @WebServlet(value = "/resource/*", asyncSupported = true)
 public class JnlpDownloadServlet extends HttpServlet {
 
-	private static Logger log = Logger.getLogger(JnlpDownloadServlet.class);
+	private static final Logger log = Logger.getLogger(JnlpDownloadServlet.class);
 
 	// Servlet configuration
 	private static final String PARAM_JNLP_EXTENSION = "jnlp-extension";

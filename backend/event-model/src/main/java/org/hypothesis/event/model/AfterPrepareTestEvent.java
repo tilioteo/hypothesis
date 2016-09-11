@@ -16,7 +16,7 @@ import com.vaadin.server.ErrorHandler;
 @SuppressWarnings("serial")
 public class AfterPrepareTestEvent extends AbstractProcessEvent {
 
-	private SimpleTest test;
+	private final SimpleTest test;
 
 	public AfterPrepareTestEvent(SimpleTest source) {
 		this(source, null);

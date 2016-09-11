@@ -17,7 +17,7 @@ import com.vaadin.server.ErrorHandler;
 @SuppressWarnings("serial")
 public class ContinueTestEvent extends AbstractTestEvent {
 
-	private SimpleTest test;
+	private final SimpleTest test;
 
 	public ContinueTestEvent(SimpleTest test) {
 		this(test, null);

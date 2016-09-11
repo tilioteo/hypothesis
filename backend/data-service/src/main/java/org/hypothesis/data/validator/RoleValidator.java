@@ -23,9 +23,9 @@ import com.vaadin.data.Validator;
 @SuppressWarnings({ "serial", "unchecked" })
 public class RoleValidator implements Validator {
 
-	private Object source;
-	private User loggedUser;
-	private UserService userService;
+	private final Object source;
+	private final User loggedUser;
+	private final UserService userService;
 
 	public RoleValidator(Object source, User loggedUser) {
 		this.source = source;
