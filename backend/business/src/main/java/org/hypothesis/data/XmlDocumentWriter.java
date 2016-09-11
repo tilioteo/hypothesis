@@ -19,7 +19,8 @@ import com.tilioteo.common.Strings;
  * 
  *         Hypothesis
  *
- */
+ *         Writer implementation for XML structured data
+*/
 @SuppressWarnings("serial")
 public class XmlDocumentWriter implements DocumentWriter {
 

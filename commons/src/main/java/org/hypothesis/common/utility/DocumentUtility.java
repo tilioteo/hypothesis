@@ -31,7 +31,19 @@ import com.vaadin.ui.Component;
  */
 public final class DocumentUtility {
 
-	public static Element findElementByNameAndValue(Element element, String name, Map<String, String> attributes,
+	private DocumentUtility() {
+	}
+
+	/**
+	 * Find element by its name and attribute values
+	 * 
+	 * @param element
+	 * @param name
+	 * @param attributes
+	 * @param descendant
+	 * @return
+	 */
+	public static final Element findElementByNameAndValue(Element element, String name, Map<String, String> attributes,
 			boolean descendant) {
 		if (element != null) {
 			List<Element> elements = element.children();
@@ -46,7 +58,7 @@ public final class DocumentUtility {
 							String value = entry.getValue();
 							String selectedValue = selectedAttributes.get(key);
 							if (!selectedAttributes.containsKey(key) || (selectedValue == null && value != null)
-									|| (!selectedValue.equals(value))) {
+									|| (selectedValue != null && !selectedValue.equals(value))) {
 								passed = false;
 								break;
 							}
@@ -105,8 +117,7 @@ public final class DocumentUtility {
 				for (Element child : elements) {
 					String childName = child.getName();
 
-					if (validElementNames == null
-							|| (validElementNames != null && validElementNames.contains(childName))) {
+					if (null == validElementNames || validElementNames.contains(childName)) {
 						result.add(child);
 					}
 				}
@@ -118,8 +129,8 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static boolean isValidSlideDocument(Document doc) {
-		return (doc != null && doc.root() != null && doc.root().getName().equals(DocumentConstants.SLIDE));
+	public static final boolean isValidSlideDocument(Document doc) {
+		return doc != null && doc.root() != null && doc.root().getName().equals(DocumentConstants.SLIDE);
 	}
 
 	public static String getId(Element element) {
@@ -527,8 +538,7 @@ public final class DocumentUtility {
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
-			return DocumentUtility.findElementByNameAndValue(documentRoot, DocumentConstants.DEFAULT_PATH,
-					null, true);
+			return DocumentUtility.findElementByNameAndValue(documentRoot, DocumentConstants.DEFAULT_PATH, null, true);
 		}
 
 		return null;
@@ -536,8 +546,7 @@ public final class DocumentUtility {
 
 	public static Element getBranchKeyElement(Element element) {
 		if (element != null) {
-			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.BRANCH_KEY, null,
-					true);
+			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.BRANCH_KEY, null, true);
 		}
 
 		return null;
@@ -599,9 +608,9 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static boolean isValidMessageDocument(Document document) {
-		return (document != null && document.root() != null
-				&& document.root().getName().equals(DocumentConstants.MESSAGE));
+	public static final boolean isValidMessageDocument(Document document) {
+		return document != null && document.root() != null
+				&& document.root().getName().equals(DocumentConstants.MESSAGE);
 	}
 
 	public static List<Element> getPropertyElements(Element documentRoot) {
@@ -636,7 +645,8 @@ public final class DocumentUtility {
 				}
 
 				if (!Strings.isNullOrEmpty(actionId) && !Strings.isNullOrEmpty(name)) {
-					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction, presenter);
+					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction,
+							presenter);
 				}
 			}
 		}

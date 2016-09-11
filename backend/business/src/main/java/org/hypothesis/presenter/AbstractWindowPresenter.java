@@ -54,6 +54,10 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 	protected TabSheet tabSheet;
 	protected VerticalLayout detailsTab;
 
+	protected AbstractWindowPresenter(MainEventBus bus) {
+		this.bus = bus;
+	}
+
 	protected abstract void initFields();
 
 	protected abstract void fillFields();
@@ -61,10 +65,6 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 	protected abstract void clearFields();
 
 	protected abstract void buildContent();
-
-	protected AbstractWindowPresenter(MainEventBus bus) {
-		this.bus = bus;
-	}
 
 	protected void createWindow() {
 		window = new Window();
@@ -78,7 +78,7 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 
 		initFields();
 
-		if (state.equals(WindowState.UPDATE)) {
+		if (state == WindowState.UPDATE) {
 			fillFields();
 		}
 
@@ -93,9 +93,10 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 	}
 
 	protected void addField(GridLayout form, final Component field) {
-		if (state.equals(WindowState.MULTIUPDATE)) {
+		if (state == WindowState.MULTIUPDATE) {
 			final CheckBox enabler = new CheckBox(field.getCaption());
 			enabler.addValueChangeListener(new ValueChangeListener() {
+				@Override
 				public void valueChange(Property.ValueChangeEvent event) {
 					field.setVisible(enabler.getValue());
 
@@ -140,6 +141,9 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 		window.focus();
 	}
 
+	/**
+	 * Show the window handled by this presenter
+	 */
 	public void showWindow() {
 		showWindow(WindowState.CREATE, null);
 	}

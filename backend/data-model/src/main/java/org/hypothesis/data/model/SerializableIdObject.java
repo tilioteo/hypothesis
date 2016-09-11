@@ -21,6 +21,7 @@ public class SerializableIdObject implements Serializable, HasId<Long> {
 
 	protected Long id;
 
+	@Override
 	public Long getId() {
 		return id;
 	}

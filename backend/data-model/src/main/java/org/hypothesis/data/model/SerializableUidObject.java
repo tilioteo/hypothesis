@@ -21,6 +21,7 @@ public class SerializableUidObject implements Serializable, HasUid<String> {
 
 	protected String uid;
 
+	@Override
 	public String getUid() {
 		return uid;
 	}

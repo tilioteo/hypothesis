@@ -16,6 +16,13 @@ import org.hypothesis.interfaces.Document;
  */
 public interface DocumentReader extends Serializable {
 
-	Document readString(String string);
+	/**
+	 * Read string definition and create document object tree
+	 * 
+	 * @param string
+	 *            string definition to read
+	 * @return new document object or null if not valid string definition
+	 */
+	public Document readString(String string);
 
 }

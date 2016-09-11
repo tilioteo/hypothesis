@@ -67,16 +67,16 @@ public class HibernateSessionInterceptor implements Filter {
 			// design.
 			try {
 				HibernateUtil.rollbackTransaction();
-			} catch (Throwable rbEx) {
+			} catch (Exception rbEx) {
 				log.error("Could not rollback transaction after exception!", rbEx);
 			}
 			throw e;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			// Rollback only
 			e.printStackTrace();
 			try {
 				HibernateUtil.rollbackTransaction();
-			} catch (Throwable rbEx) {
+			} catch (Exception rbEx) {
 				log.error("Could not rollback transaction after exception!", rbEx);
 			}
 

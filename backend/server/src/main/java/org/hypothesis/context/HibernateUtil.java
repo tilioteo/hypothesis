@@ -76,7 +76,7 @@ public class HibernateUtil {
 			try {
 				String configFileName = servletContext.getInitParameter(CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION);
 
-				Configuration configuration = null;
+				Configuration configuration;
 				if (null == configFileName || configFileName.length() == 0) {
 					log.debug("Creating new Hibernate SessionFactory using default configuration file location.");
 					configuration = new Configuration().configure();
@@ -90,7 +90,7 @@ public class HibernateUtil {
 
 				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-			} catch (Throwable ex) {
+			} catch (Exception ex) {
 				// Make sure you log the exception, as it might be swallowed
 				log.error("Initial SessionFactory creation failed.");
 				System.err.println("Initial SessionFactory creation failed." + ex);
@@ -133,7 +133,7 @@ public class HibernateUtil {
 			} else {
 				log.trace("Session has no active database transaction to rollback.");
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 		}
 	}
 
@@ -179,7 +179,7 @@ public class HibernateUtil {
 				sessions.clear();
 			}
 			VaadinSession.getCurrent().setAttribute(SessionMap.class, null);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

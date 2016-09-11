@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.hypothesis.data.interfaces.HasId;
 import org.hypothesis.data.interfaces.HasList;
@@ -17,11 +18,14 @@ import org.hypothesis.data.interfaces.HasList;
  * 
  *         Hypothesis
  *
+ * @param <T> type (of parental object) extending {@link HasList} of item type
+ * @param <E> item type
+ * @param <K> key type
  */
 @SuppressWarnings("serial")
 public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implements Serializable {
 
-	private final LinkedHashMap<K, E> keyset = new LinkedHashMap<>();
+	private LinkedHashMap<K, E> keyset = new LinkedHashMap<>();
 
 	private K key = null;
 	private E element = null;
@@ -35,18 +39,27 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 		return element;
 	}
 
+	/**
+	 * Returns current item by internal state
+	 * @return element or null
+	 */
 	public E current() {
 		return getByInternalKey();
 	}
 
+	/**
+	 * Look for an item and set internal state
+	 * @param item to look for
+	 * @return the same item or null if not found
+	 */
 	public E find(E item) {
 		key = null;
 		element = null;
 
-		for (K k : keyset.keySet()) {
-			E e = keyset.get(k);
+		for (Entry<K, E> entry : keyset.entrySet()) {
+			E e = entry.getValue();
 			if (e == item) {
-				key = k;
+				key = entry.getKey();
 				element = e;
 				break;
 			}
@@ -54,6 +67,11 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 		return element;
 	}
 
+	/**
+	 * Get an item by key value and set internal state
+	 * @param key key value
+	 * @return found item or null
+	 */
 	public E get(K key) {
 		this.key = key;
 		return getByInternalKey();
@@ -78,7 +96,7 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 				}
 			}
 			if (keyset.size() > 0) {
-				List<E> list = new ArrayList<E>(keyset.values());
+				List<E> list = new ArrayList<>(keyset.values());
 				find(list.get(0));
 			} else {
 				element = null;

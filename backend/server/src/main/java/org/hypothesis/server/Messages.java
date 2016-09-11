@@ -44,7 +44,7 @@ public class Messages {
 		if (messageSource != null) {
 			try {
 				return messageSource.getMessage(key, arguments, locale);
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				return key;
 			}
 		}

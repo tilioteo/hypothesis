@@ -55,6 +55,11 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	private UserService userService;
 
+	/**
+	 * Construct with ui
+	 * 
+	 * @param ui
+	 */
 	public MainUIPresenter(MainUI ui) {
 		this.ui = ui;
 
@@ -139,11 +144,11 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		String fragment = Page.getCurrent().getUriFragment();
 		if (!Strings.isNullOrEmpty(fragment) && fragment.startsWith("!")) {
 			fragment = fragment.substring(1);
-			int l = fragment.lastIndexOf("/");
+			int l = fragment.lastIndexOf('/');
 			if (l > 0) {
 				fragment = fragment.substring(0, l);
 			}
-			l = fragment.indexOf("?");
+			l = fragment.indexOf('?');
 			if (l >= 0) {
 				fragment = fragment.substring(0, l);
 			}
@@ -157,19 +162,22 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	}
 
 	private boolean userCanLogin(User user) {
-		if (user != null) {
-			if (user.getEnabled() != null && user.getEnabled().booleanValue()) {
-				Date expired = user.getExpireDate();
-				Date now = new Date();
-				if (null == expired || expired.after(now)) {
-					return true;
-				}
+		if (user != null && user.getEnabled() != null && user.getEnabled().booleanValue()) {
+			Date expired = user.getExpireDate();
+			Date now = new Date();
+			if (null == expired || expired.after(now)) {
+				return true;
 			}
 		}
 
 		return false;
 	}
 
+	/**
+	 * Do on login trial
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void userLoginRequested(final UserLoginRequestedEvent event) {
 		User user = userService.findByUsernamePassword(event.getUserName(), event.getPassword());
@@ -187,6 +195,11 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		}
 	}
 
+	/**
+	 * Do for anonymous guest user
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void guestAccessRequested(final GuestAccessRequestedEvent event) {
 		setUser(User.GUEST);
@@ -194,6 +207,11 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		updateUIContent();
 	}
 
+	/**
+	 * Do on user logout
+	 * 
+	 * @param event
+	 */
 	@Handler
 	public void userLoggedOut(final UserLoggedOutEvent event) {
 		// When the user logs out, current VaadinSession gets closed and the

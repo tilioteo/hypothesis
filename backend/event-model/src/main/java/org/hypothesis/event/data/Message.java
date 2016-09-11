@@ -135,7 +135,7 @@ public class Message implements Serializable {
 				} else if (String.class.isAssignableFrom(clazz)) {
 					return data.getString(name);
 				}
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -149,15 +149,15 @@ public class Message implements Serializable {
 	public Long getSenderId() {
 		try {
 			return (long) json.getNumber(MESSAGE_SENDER);
-		} catch (Throwable e) {}
+		} catch (Exception e) {}
 
 		return null;
 	}
 
 	public Long getReceiverId() {
 		try {
-			return (Long) (long) json.getNumber(MESSAGE_RECEIVER);
-		} catch (Throwable e) {}
+			return (long) json.getNumber(MESSAGE_RECEIVER);
+		} catch (Exception e) {}
 
 		return null;
 	}
@@ -190,7 +190,7 @@ public class Message implements Serializable {
 			String str = json.getString(MESSAGE_TIMESTAMP);
 
 			return stringToDate(str);
-		} catch (Throwable e) {}
+		} catch (Exception e) {}
 
 		return null;
 	}
@@ -223,7 +223,7 @@ public class Message implements Serializable {
 				}
 			}
 
-		} catch (Throwable e) {}
+		} catch (Exception e) {}
 
 		return null;
 	}

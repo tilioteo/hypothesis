@@ -19,10 +19,34 @@ import org.hypothesis.interfaces.SlidePresenter;
  */
 public interface ComponentDataFactory extends Serializable {
 
+	/**
+	 * Serialize component data by provided writer implementation
+	 * 
+	 * @param data
+	 * @param writer
+	 * @return string representation of component data or null when some
+	 *         parameter is null.
+	 */
 	String buildComponentData(ComponentData data, DocumentWriter writer);
 
+	/**
+	 * Serialize action data from event by provided writer implementation
+	 * 
+	 * @param event
+	 * @param writer
+	 * @return string representation of event data or null when some parameter
+	 *         is null.
+	 */
 	String buildActionData(ActionEvent event, DocumentWriter writer);
 
+	/**
+	 * Serialize slide data from presenter by provided writer implementation
+	 * 
+	 * @param presenter
+	 * @param writer
+	 * @return string representation of slide data or null when some parameter
+	 *         is null.
+	 */
 	String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer);
 
 }

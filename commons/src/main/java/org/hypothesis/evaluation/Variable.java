@@ -41,7 +41,7 @@ public class Variable<T> implements org.hypothesis.interfaces.Variable<T> {
 	public void setRawValue(Object value) {
 		try {
 			this.value = (T) value;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

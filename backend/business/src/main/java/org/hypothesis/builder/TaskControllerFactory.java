@@ -17,6 +17,16 @@ import org.hypothesis.data.DocumentReader;
  */
 public interface TaskControllerFactory extends Serializable {
 
-	TaskController buildTaskController(String data, DocumentReader reader);
+	/**
+	 * Create new entity controller from string definition parsed by proper
+	 * reader implementation
+	 * 
+	 * @param data
+	 *            string definition of entity controller
+	 * @param reader
+	 *            implementation of reader knowing data structure
+	 * @return new instance or null when inconsistent parameters provided
+	 */
+	public TaskController buildTaskController(String data, DocumentReader reader);
 
 }

@@ -88,7 +88,7 @@ import com.vaadin.ui.Layout;
 @SuppressWarnings("serial")
 public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
-	private static final Logger log = Logger.getLogger(SlideContainerFactoryImpl.class);
+	private static Logger log = Logger.getLogger(SlideContainerFactoryImpl.class);
 
 	@Override
 	public SlideContainer buildSlideContainer(String template, String content, DocumentReader reader) {
@@ -113,7 +113,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			if (DocumentUtility.isValidSlideDocument(document)) {
 				return buildSlideContainer(document);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error("buildFromString()");
 		}
 
@@ -396,8 +396,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					presenter.addViewportFinishListener(new ViewportEventListener() {
 						@Override
 						public void handleEvent(EventObject event) {
-							presenter.handleEvent(container, DocumentConstants.SLIDE, null,
-									action, ComponentEventCallback.DEFAULT);
+							presenter.handleEvent(container, DocumentConstants.SLIDE, null, action,
+									ComponentEventCallback.DEFAULT);
 						}
 					});
 				} else if (DocumentConstants.SHORTCUT.equals(name)) {

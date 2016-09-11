@@ -73,6 +73,9 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 	private GroupWindowPresenter groupWindowPresenter;
 
+	/**
+	 * Constructor
+	 */
 	public GroupManagementPresenter() {
 		permissionService = PermissionService.newInstance();
 		groupService = GroupService.newInstance();
@@ -82,13 +85,13 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 	public void init() {
 		groupWindowPresenter = new GroupWindowPresenter(bus);
 	}
-	
+
 	@Override
 	public void setMainEventBus(MainEventBus bus) {
 		if (this.bus != null) {
 			this.bus.unregister(this);
 		}
-		
+
 		super.setMainEventBus(bus);
 		if (this.bus != null) {
 			this.bus.register(this);
@@ -135,6 +138,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 		selectionType.select(Messages.getString("Caption.Item.Selected"));
 
 		selectionType.addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
 			public void valueChange(ValueChangeEvent event) {
 				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
 				bus.post(new MainUIEvent.GroupSelectionChangedEvent());
@@ -191,9 +195,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 			}
 		};
 
-		String filename = Messages.getString("Caption.Export.GroupFileName");
-
-		return new StreamResource(source, filename);
+		return new StreamResource(source, Messages.getString("Caption.Export.GroupFileName"));
 	}
 
 	private InputStream getExportFile() {
@@ -286,7 +288,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 		table.setColumnCollapsingAllowed(true);
 		table.setSortContainerPropertyId(FieldConstants.NAME);
 
-		BeanContainer<Long, Group> dataSource = new BeanContainer<Long, Group>(Group.class);
+		BeanContainer<Long, Group> dataSource = new BeanContainer<>(Group.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
 		List<Group> groups;
@@ -414,20 +416,22 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 	@Override
 	public void onClose(ConfirmDialog dialog) {
-		if (dialog.isConfirmed()) {
-			if (dialog.equals(deletionConfirmDialog)) {
-				try {
-					deleteGroups();
-					Notification.show(Messages.getString("Message.Info.GroupsDeleted"));
+		if (dialog.isConfirmed() && dialog.equals(deletionConfirmDialog)) {
+			try {
+				deleteGroups();
+				Notification.show(Messages.getString("Message.Info.GroupsDeleted"));
 
-				} catch (Exception e) {
-					Notification.show(Messages.getString("Message.Error.GroupsDeletion"), e.getMessage(),
-							Notification.Type.ERROR_MESSAGE);
-				}
+			} catch (Exception e) {
+				Notification.show(Messages.getString("Message.Error.GroupsDeletion"), e.getMessage(),
+						Notification.Type.ERROR_MESSAGE);
 			}
 		}
 	}
 
+	/**
+	 * Make ui changes when new group added
+	 * @param event
+	 */
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void addGroupIntoTable(final MainUIEvent.GroupAddedEvent event) {
@@ -442,6 +446,10 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 		}
 	}
 
+	/**
+	 * Make ui changes when group user changed
+	 * @param event
+	 */
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void changeGroupUsers(final MainUIEvent.GroupUsersChangedEvent event) {
@@ -455,7 +463,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void setToolsEnabled(final MainUIEvent.GroupSelectionChangedEvent event) {
-		boolean itemsSelected = ((Set<Object>) table.getValue()).size() > 0;
+		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
 		boolean toolsEnabled = allSelected || itemsSelected;
 		buttonGroup.setEnabled(toolsEnabled);
 	}

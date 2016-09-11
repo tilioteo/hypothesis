@@ -99,6 +99,7 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 	}
 
 	@Transient
+	@Override
 	public final List<Task> getList() {
 		return getTasks();
 	}

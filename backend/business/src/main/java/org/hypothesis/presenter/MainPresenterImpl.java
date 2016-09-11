@@ -45,6 +45,11 @@ public class MainPresenterImpl implements MainPresenter {
 
 	private final HypothesisMenuPresenter menuPresenter;
 
+	/**
+	 * Construct with bus
+	 * 
+	 * @param bus
+	 */
 	public MainPresenterImpl(MainEventBus bus) {
 
 		menuPresenter = new HypothesisMenuPresenter(bus);
@@ -58,10 +63,12 @@ public class MainPresenterImpl implements MainPresenter {
 
 	@Override
 	public void attach() {
+		// nop
 	}
 
 	@Override
 	public void detach() {
+		// nop
 	}
 
 	@Override

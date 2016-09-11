@@ -38,7 +38,7 @@ public class MessageService implements Serializable {
 			messageDao.commit();
 
 			return message;
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.getMessage());
 			messageDao.rollback();
 			return null;

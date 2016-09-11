@@ -63,7 +63,7 @@ public class AsynchronousCommandExecutor extends ArrayBlockingQueue<Command> imp
 
 					try {
 						Command.Executor.execute(command);
-					} catch (Throwable e) {
+					} catch (Exception e) {
 						log.error("Error when executing asynchronous command.", e);
 					}
 				}

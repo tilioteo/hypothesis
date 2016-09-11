@@ -81,8 +81,8 @@ public class JnlpDownloadServlet extends HttpServlet {
 	private static final String PARAM_JNLP_EXTENSION = "jnlp-extension";
 	private static final String PARAM_JAR_EXTENSION = "jar-extension";
 
-	private JnlpFileHandler _jnlpFileHandler = null;
-	private JarDiffHandler _jarDiffHandler = null;
+	private JnlpFileHandler jnlpFileHandler = null;
+	private JarDiffHandler jarDiffHandler = null;
 	// private ResourceCatalog _resourceCatalog = null;
 
 	private PathRemapper pathRemapper = null;
@@ -100,15 +100,15 @@ public class JnlpDownloadServlet extends HttpServlet {
 
 			// only support query string in href for 1.5 and above
 			if (supportQuery) {
-				return _jnlpFileHandler.getJnlpFileEx(jnlpres, dreq);
+				return jnlpFileHandler.getJnlpFileEx(jnlpres, dreq);
 			} else {
-				return _jnlpFileHandler.getJnlpFile(jnlpres, dreq);
+				return jnlpFileHandler.getJnlpFile(jnlpres, dreq);
 			}
 		}
 
 		// Check if a JARDiff can be returned
 		if (dreq.getCurrentVersionId() != null && jnlpres.isJarFile()) {
-			DownloadResponse response = _jarDiffHandler.getJarDiffEntry(/* _resourceCatalog, */dreq, jnlpres);
+			DownloadResponse response = jarDiffHandler.getJarDiffEntry(/* _resourceCatalog, */dreq, jnlpres);
 			if (response != null) {
 				return response;
 			}
@@ -181,7 +181,7 @@ public class JnlpDownloadServlet extends HttpServlet {
 			// Decide what resource to return
 			JnlpResource jnlpres = locateResource(dreq);
 
-			DownloadResponse dres = null;
+			DownloadResponse dres;
 
 			if (isHead) {
 				int cl = jnlpres.getResource().openConnection().getContentLength();
@@ -213,7 +213,7 @@ public class JnlpDownloadServlet extends HttpServlet {
 			System.err.println("Response: " + ere.toString());
 			// Return response from exception
 			ere.getDownloadResponse().sendRespond(response);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			System.err.println("servlet.log.fatal.internalerror " + e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
@@ -228,8 +228,8 @@ public class JnlpDownloadServlet extends HttpServlet {
 		JnlpResource.setDefaultExtensions(config.getInitParameter(PARAM_JNLP_EXTENSION),
 				config.getInitParameter(PARAM_JAR_EXTENSION));
 
-		_jnlpFileHandler = new JnlpFileHandler(config.getServletContext());
-		_jarDiffHandler = new JarDiffHandler(config.getServletContext());
+		jnlpFileHandler = new JnlpFileHandler(config.getServletContext());
+		jarDiffHandler = new JarDiffHandler(config.getServletContext());
 
 		pathRemapper = new PathRemapper();
 		pathRemapper.put("/resource/close", "/WEB-INF/close");

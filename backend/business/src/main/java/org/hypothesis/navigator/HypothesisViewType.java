@@ -78,6 +78,12 @@ public enum HypothesisViewType {
 		return stateful;
 	}
 
+	/**
+	 * Check if role can access this view
+	 * 
+	 * @param checkRoles
+	 * @return
+	 */
 	public boolean isAllowed(Set<Role> checkRoles) {
 		if (null == checkRoles || checkRoles.isEmpty()) {
 			return roles.contains(null);
@@ -92,6 +98,12 @@ public enum HypothesisViewType {
 		return false;
 	}
 
+	/**
+	 * look for view type by view name
+	 * 
+	 * @param viewName
+	 * @return requested view or null if not found
+	 */
 	public static HypothesisViewType getByViewName(final String viewName) {
 		HypothesisViewType result = null;
 		for (HypothesisViewType viewType : values()) {
