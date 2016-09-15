@@ -12,6 +12,7 @@
 		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis-ui</artifactId>
 		<version>${project.version}</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<properties>
