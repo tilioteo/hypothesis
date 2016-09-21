@@ -2,7 +2,7 @@
  * Apache Licence Version 2.0
  * Please read the LICENCE file
  */
-package org.hypothesis.business;
+package org.hypothesis.event.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,10 +17,10 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = { ElementType.FIELD })
-public @interface Structured {
+public @interface ElementPath {
 
 	/**
-	 * String pattern for property structure
+	 * String pattern for element path
 	 * 
 	 * @return
 	 */

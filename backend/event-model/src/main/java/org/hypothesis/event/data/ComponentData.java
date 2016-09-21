@@ -5,7 +5,6 @@
 package org.hypothesis.event.data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import com.vaadin.ui.Component;
 
@@ -23,9 +22,6 @@ public class ComponentData implements Serializable {
 	private String typeName;
 	private String eventName;
 
-	private Date timestamp;
-	private Date clientTimestamp = null;
-
 	public Component getSender() {
 		return sender;
 	}
@@ -40,13 +36,5 @@ public class ComponentData implements Serializable {
 
 	public String getEventName() {
 		return eventName;
-	}
-
-	public Date getTimestamp() {
-		return timestamp;
-	}
-
-	public Date getClientTimestamp() {
-		return clientTimestamp;
 	}
 }

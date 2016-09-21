@@ -4,16 +4,19 @@
  */
 package org.hypothesis.business;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
+import org.hypothesis.event.data.ComponentDataConstants;
 import org.hypothesis.event.model.ComponentEvent;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.ComponentEventCallback;
 import org.hypothesis.presenter.SlideContainerPresenter;
-import org.hypothesis.utility.ReflectionUtility;
+import org.hypothesis.utility.ComponentDataUtility;
 
 import com.tilioteo.common.Strings;
 import com.vaadin.ui.AbstractComponent;
@@ -32,19 +35,28 @@ public class EventManager {
 
 	/**
 	 * 
-	 * @param presenter the slide container presenter which the event manager is associated with
+	 * @param presenter
+	 *            the slide container presenter which the event manager is
+	 *            associated with
 	 */
 	public EventManager(SlideContainerPresenter presenter) {
 		this.presenter = presenter;
 	}
 
 	/**
-	 * Event handling method which prepares ComponentEvent object with generated ComponentData from provided parameters
-	 * @param component the component which is an originator and handles the event
-	 * @param typeName name of component type, ie. "Button"
-	 * @param eventName name of event, ie. "Click"
-	 * @param action the action to execute
-	 * @param callback used for user initialization of event
+	 * Event handling method which prepares ComponentEvent object with generated
+	 * ComponentData from provided parameters
+	 * 
+	 * @param component
+	 *            the component which is an originator and handles the event
+	 * @param typeName
+	 *            name of component type, ie. "Button"
+	 * @param eventName
+	 *            name of event, ie. "Click"
+	 * @param action
+	 *            the action to execute
+	 * @param callback
+	 *            used for user initialization of event
 	 */
 	public void handleEvent(Component component, String typeName, String eventName, Action action,
 			ComponentEventCallback callback) {
@@ -67,7 +79,7 @@ public class EventManager {
 
 	private ComponentData createComponentData(ComponentEvent event) {
 		HashMap<String, Class<?>> properties = new HashMap<>();
-		HashMap<String, String> structures = new HashMap<>();
+		HashMap<String, Annotation> annotations = new HashMap<>();
 
 		Set<String> names = event.getPropertyNames();
 		for (String name : names) {
@@ -81,8 +93,20 @@ public class EventManager {
 				properties.put(name, Object.class);
 			}
 
-			if (event.getPropertyPattern(name) != null) {
-				structures.put(name, event.getPropertyPattern(name));
+			if (event.getPropertyElementPath(name) != null) {
+				final String elementPath = event.getPropertyElementPath(name);
+
+				annotations.put(name, new ElementPath() {
+					@Override
+					public Class<? extends Annotation> annotationType() {
+						return ElementPath.class;
+					}
+
+					@Override
+					public String value() {
+						return elementPath;
+					}
+				});
 			}
 		}
 
@@ -90,7 +114,7 @@ public class EventManager {
 			String safeClassName = event.getComponent().getClass().getName().replace(".", "_");
 			Class<?> dataClass = ComponentDataPojoGenerator.generate(
 					ComponentData.class.getName() + "$Generated" + "$" + safeClassName + "$" + event.getName(),
-					ComponentData.class, properties, structures);
+					ComponentData.class, properties, annotations);
 
 			ComponentData data = (ComponentData) dataClass.newInstance();
 
@@ -105,31 +129,16 @@ public class EventManager {
 			Component component = event.getComponent();
 
 			// set fixed fields
-			Field field = ReflectionUtility.getDeclaredField(data, "sender");
-			field.setAccessible(true);
-			field.set(data, component);
+			ComponentDataUtility.setComponentDataPropertyValue(data, ComponentDataConstants.PROP_SENDER, component);
 
 			String str = component instanceof AbstractComponent && ((AbstractComponent) component).getData() != null
 					? ((AbstractComponent) component).getData().toString() : null;
-			field = ReflectionUtility.getDeclaredField(data, "id");
-			field.setAccessible(true);
-			field.set(data, str);
 
-			field = ReflectionUtility.getDeclaredField(data, "eventName");
-			field.setAccessible(true);
-			field.set(data, event.getName());
-
-			field = ReflectionUtility.getDeclaredField(data, "typeName");
-			field.setAccessible(true);
-			field.set(data, event.getTypeName());
-
-			field = ReflectionUtility.getDeclaredField(data, "timestamp");
-			field.setAccessible(true);
-			field.set(data, event.getTimestamp());
-
-			field = ReflectionUtility.getDeclaredField(data, "clientTimestamp");
-			field.setAccessible(true);
-			field.set(data, event.getClientTimestamp());
+			ComponentDataUtility.setComponentDataPropertyValue(data, ComponentDataConstants.PROP_ID, str);
+			ComponentDataUtility.setComponentDataPropertyValue(data, ComponentDataConstants.PROP_TYPE_NAME,
+					event.getTypeName());
+			ComponentDataUtility.setComponentDataPropertyValue(data, ComponentDataConstants.PROP_EVENT_NAME,
+					event.getName());
 
 			return data;
 		} catch (Exception e) {

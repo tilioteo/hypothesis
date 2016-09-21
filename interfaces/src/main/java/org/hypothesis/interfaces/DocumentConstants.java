@@ -15,7 +15,6 @@ package org.hypothesis.interfaces;
 public interface DocumentConstants {
 
 	String SLIDE_TEMPLATE = "SlideTemplate";
-	String SLIDE_CONTENT = "SlideContent"; // used?
 	String SLIDE = "Slide";
 	String VIEWPORT = "Viewport";
 	String WINDOWS = "Windows";
@@ -56,7 +55,6 @@ public interface DocumentConstants {
 	String REFERENCE = "Reference";
 	String INSTANCE = "Instance";
 	String ITEMS = "Items";
-	String ITEM = "Item"; // used?
 	String EXPRESSION = "Expression";
 	String IF = "If";
 	String WHILE = "While";
@@ -129,19 +127,17 @@ public interface DocumentConstants {
 	String KEY = "Key";
 
 	String UID = "UID";
-	String TEMPLATE_UID = "TemplateUID"; // used?
 
 	String FIELDS = "Fields";
 	String FIELD = "Field";
 
 	String EVENT_DATA = "EventData";
-	String SLIDE_OUTPUT = "SlideOutput"; // used?
 	String SOURCES = "Sources";
 	String SOURCE = "Source";
-	String SELECTED = "Selected"; // used?
+	String SELECTED = "Selected";
 	String INDEX = "Index";
-	String X = "X"; // used?
-	String Y = "Y"; // used?
+	String X = "X";
+	String Y = "Y";
 
 	String BRANCH = "Branch";
 	String PATH = "Path";
@@ -158,5 +154,6 @@ public interface DocumentConstants {
 
 	String STR_COMMA = ",";
 	String STR_QUOTED_STRING_SPLIT_PATTERN = "['']";
+	String STR_DATE_FORMAT = "yyyy-MM-dd";
 
 }

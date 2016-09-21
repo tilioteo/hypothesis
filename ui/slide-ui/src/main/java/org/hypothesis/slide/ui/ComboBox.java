@@ -4,7 +4,9 @@
  */
 package org.hypothesis.slide.ui;
 
+import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Field;
+import org.hypothesis.slide.ui.annotations.FieldType;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -13,6 +15,7 @@ import org.hypothesis.interfaces.Field;
  *
  */
 @SuppressWarnings("serial")
+@FieldType(DocumentConstants.COMBOBOX)
 public class ComboBox extends com.vaadin.ui.ComboBox implements Field {
 
 	public ComboBox() {

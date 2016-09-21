@@ -4,8 +4,11 @@
  */
 package org.hypothesis.business;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.hypothesis.event.annotations.ElementPath;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -33,17 +36,23 @@ public class ComponentDataPojoGenerator {
 
 	/**
 	 * Generate new POJO class dynamically
-	 * @param className name of generated class
-	 * @param superClass super class to inherit from
-	 * @param properties properties to be defined in POJO, getters and setters are generated as well
-	 * @param structures optional {@link Structured} annotation passed to properties
+	 * 
+	 * @param className
+	 *            name of generated class
+	 * @param superClass
+	 *            super class to inherit from
+	 * @param properties
+	 *            properties to be defined in POJO, getters and setters are
+	 *            generated as well
+	 * @param structures
+	 *            optional {@link ElementPath} annotation passed to properties
 	 * @return new Class object or null when an error occurs
 	 * @throws NotFoundException
 	 * @throws CannotCompileException
 	 */
 	public static Class<?> generate(String className, Class<?> superClass, Map<String, Class<?>> properties,
-			Map<String, String> structures) throws NotFoundException, CannotCompileException {
-		// TODO replace structures map by specific annotation instances for general use
+			Map<String, java.lang.annotation.Annotation> annotations) throws NotFoundException, CannotCompileException {
+
 		ClassPool pool = ClassPool.getDefault();
 
 		CtClass cc = null;
@@ -74,12 +83,35 @@ public class ComponentDataPojoGenerator {
 				// specific part - insert annotation to mark serialized
 				// structure of
 				// field
-				String structure = structures.get(entry.getKey());
-				if (structure != null) {
+				java.lang.annotation.Annotation annotation = annotations.get(entry.getKey());
+				if (annotation != null) {
 					AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
-					Annotation annot = new Annotation(Structured.class.getName(), constpool);
-					annot.addMemberValue("value", new StringMemberValue(structure, ccFile.getConstPool()));
-					attr.addAnnotation(annot);
+					Annotation annot = new Annotation(annotation.annotationType().getName(), constpool);
+
+					Method[] methods = annotation.getClass().getDeclaredMethods();
+					for (Method method : methods) {
+						if (!"annotationType".equals(method.getName())) {
+							Object value;
+							method.setAccessible(true);
+							
+							try {
+								value = method.invoke(annotation);
+
+								// TODO make support for other types
+								if (String.class.isAssignableFrom(value.getClass())) {
+									try {
+										annot.addMemberValue(method.getName(),
+												new StringMemberValue(value.toString(), ccFile.getConstPool()));
+										attr.addAnnotation(annot);
+									} catch (Exception e) {
+									}
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					}
+
 					field.getFieldInfo().addAttribute(attr);
 				}
 

@@ -195,7 +195,7 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 	@Handler
 	public void processComponentEvent(ComponentEvent event) {
 		String title = event.getTypeName() + " Id=" + event.getData().getId();
-		String detail = event.getData().getEventName();
+		String detail = event.getName();
 		notifications.showNotification(null, title, detail);
 	}
 
