@@ -27,7 +27,7 @@ import net.engio.mbassy.bus.error.PublicationError;
 @SuppressWarnings("serial")
 public abstract class HypothesisEventBus<T> implements Serializable, IPublicationErrorHandler {
 
-	private final MBassador<T> eventBus = new MBassador<T>(new BusConfiguration()
+	private final MBassador<T> eventBus = new MBassador<>(new BusConfiguration()
 			.addFeature(Feature.SyncPubSub.Default()).addFeature(Feature.AsynchronousHandlerInvocation.Default())
 			.addFeature(Feature.AsynchronousMessageDispatch.Default())
 			.setProperty(Properties.Handler.PublicationError, this));

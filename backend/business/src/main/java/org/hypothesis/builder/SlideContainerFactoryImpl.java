@@ -19,6 +19,7 @@ import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.evaluation.IndexedExpression;
+import org.hypothesis.event.data.ComponentDataConstants;
 import org.hypothesis.event.model.MessageEvent;
 import org.hypothesis.event.model.ProcessEventTypes;
 import org.hypothesis.extension.PluginManager;
@@ -227,7 +228,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 									new ComponentEventCallback() {
 										@Override
 										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setProperty("time", event.getTime());
+											componentEvent.setProperty(ComponentDataConstants.PROP_TIME,
+													event.getTime(), DocumentConstants.TIME);
 										}
 									});
 						}
@@ -240,13 +242,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 									new ComponentEventCallback() {
 										@Override
 										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setProperty("time", event.getTime());
+											componentEvent.setProperty(ComponentDataConstants.PROP_TIME,
+													event.getTime(), DocumentConstants.TIME);
 										}
 									});
 						}
 					});
 				} else if (DocumentConstants.UPDATE.equals(name)) {
-					Integer interval = Strings.toInteger((element.getAttribute(DocumentConstants.INTERVAL)));
+					Integer interval = Strings.toInteger(element.getAttribute(DocumentConstants.INTERVAL));
 					if (interval != null) {
 						timer.addUpdateListener(interval, new Timer.UpdateListener() {
 							@Override
@@ -255,7 +258,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 										action, new ComponentEventCallback() {
 											@Override
 											public void initEvent(ComponentEvent componentEvent) {
-												componentEvent.setProperty("time", event.getTime());
+												componentEvent.setProperty(ComponentDataConstants.PROP_TIME,
+														event.getTime(), DocumentConstants.TIME);
 											}
 										});
 							}
@@ -269,17 +273,22 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void createWindows(Element rootElement, SlideContainerPresenter presenter) {
 		List<Element> elements = DocumentUtility.getWindowsElements(rootElement);
 
-		if (elements != null) {
-			for (Element windowElement : elements) {
-				String id = DocumentUtility.getId(windowElement);
-				if (!Strings.isNullOrEmpty(id)) {
-					Element element = DocumentUtility.getViewportOrWindowRootElement(windowElement);
+		if (null == elements) {
+			return;
+		}
 
-					if (element != null) {
-						Window window = createWindow(element, presenter);
-						presenter.setWindow(id, window);
-					}
-				}
+		for (Element windowElement : elements) {
+			String id = DocumentUtility.getId(windowElement);
+
+			if (Strings.isNullOrEmpty(id)) {
+				continue;
+			}
+
+			Element element = DocumentUtility.getViewportOrWindowRootElement(windowElement);
+
+			if (element != null) {
+				Window window = createWindow(element, presenter);
+				presenter.setWindow(id, window);
 			}
 		}
 	}
@@ -298,22 +307,26 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addWindowComponents(Window container, Element element, SlideContainerPresenter presenter) {
 		List<Element> elements = DocumentUtility.getContainerComponents(element, ValidationSets.VALID_WINDOW_CHILDREN);
 
-		if (elements != null) {
-			for (Element childElement : elements) {
-				ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
-				if (componentWrapper != null) {
-					Component component = componentWrapper.getComponent();
+		if (null == elements) {
+			return;
+		}
 
-					if (elements.size() == 1 && component instanceof Layout) {
-						container.setContent((Layout) component);
-					} else {
-						GridLayout gridLayout = new GridLayout(1, 1);
-						gridLayout.setSizeFull();
-						container.setContent(gridLayout);
-						gridLayout.addComponent(component);
-						gridLayout.setComponentAlignment(component, componentWrapper.getAlignment());
-					}
-				}
+		for (Element childElement : elements) {
+			ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
+			if (null == componentWrapper) {
+				continue;
+			}
+
+			Component component = componentWrapper.getComponent();
+
+			if (elements.size() == 1 && component instanceof Layout) {
+				container.setContent((Layout) component);
+			} else {
+				GridLayout gridLayout = new GridLayout(1, 1);
+				gridLayout.setSizeFull();
+				container.setContent(gridLayout);
+				gridLayout.addComponent(component);
+				gridLayout.setComponentAlignment(component, componentWrapper.getAlignment());
 			}
 		}
 	}
@@ -406,10 +419,6 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					if (shortcutKeys != null) {
 						KeyAction keyAction = new KeyAction(shortcutKeys.getKeyCode(), shortcutKeys.getModifiers());
 
-						// ShortcutKey shortcutKey = new
-						// ShortcutKey(shortcutKeys.getKeyCode(),
-						// shortcutKeys.getModifiers());
-
 						final String shortcut = keyAction.toString();
 
 						keyAction.addKeypressListener(new KeyActionListener() {
@@ -421,31 +430,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 											public void initEvent(ComponentEvent componentEvent) {
 												componentEvent.setTimestamp(keyPressEvent.getServerDatetime());
 												componentEvent.setClientTimestamp(keyPressEvent.getClientDatetime());
-												componentEvent.setProperty("shortcutKey", shortcut, "shortcut@key");
+												componentEvent.setProperty(ComponentDataConstants.PROP_SHORTCUT_KEY,
+														shortcut, ComponentDataConstants.ELEM_SHORTCUT_KEY);
 											}
 										});
 							}
 						});
 
-						// shortcutKey.addKeyPressListener(new
-						// KeyPressListener() {
-						// @Override
-						// public void keyPress(final KeyPressEvent event) {
-						// presenter.handleEvent(container,
-						// DocumentConstants.SLIDE,
-						// ProcessEventTypes.ShortcutKey,
-						// action, new ComponentEventCallback() {
-						// @Override
-						// public void initEvent(ComponentEvent componentEvent)
-						// {
-						// componentEvent.setProperty("shortcutKey", shortcut,
-						// "shortcut@key");
-						// }
-						// });
-						// }
-						// });
-
-						// presenter.addShortcutKey(shortcutKey);
 						presenter.addKeyAction(keyAction);
 					}
 				} else if (DocumentConstants.MESSAGE.equals(name)) {
@@ -461,10 +452,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 											action, new ComponentEventCallback() {
 												@Override
 												public void initEvent(ComponentEvent componentEvent) {
-													componentEvent.setProperty("message", messageEvent.getMessage(),
-															"");
-													componentEvent.setProperty("messageUID",
-															messageEvent.getMessage().getUid(), "message@UID");
+													componentEvent.setProperty(ComponentDataConstants.PROP_MESSAGE,
+															messageEvent.getMessage());
+													componentEvent.setProperty(ComponentDataConstants.PROP_MESSAGE_UID,
+															messageEvent.getMessage().getUid(),
+															ComponentDataConstants.ELEM_MESSAGE_UID);
 												}
 											});
 								}
@@ -510,17 +502,17 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			else if (name.equals(DocumentConstants.SELECT_PANEL))
 				component = createSelectPanel(element, properties, alignmentWrapper, presenter);
 			else if (name.equals(DocumentConstants.TEXT_FIELD))
-				component = createTextField(element, properties, alignmentWrapper, presenter);
+				component = createTextField(element, properties, alignmentWrapper);
 			else if (name.equals(DocumentConstants.TEXT_AREA))
-				component = createTextArea(element, properties, alignmentWrapper, presenter);
+				component = createTextArea(element, properties, alignmentWrapper);
 			else if (name.equals(DocumentConstants.DATE_FIELD))
-				component = createDateField(element, properties, alignmentWrapper, presenter);
+				component = createDateField(element, properties, alignmentWrapper);
 			else if (name.equals(DocumentConstants.COMBOBOX))
-				component = createComboBox(element, properties, alignmentWrapper, presenter);
+				component = createComboBox(element, properties, alignmentWrapper);
 			else if (name.equals(DocumentConstants.TIMER_LABEL))
 				component = createTimerLabel(element, properties, alignmentWrapper, presenter);
 			else if (name.equals(DocumentConstants.LABEL))
-				component = createLabel(element, properties, alignmentWrapper, presenter);
+				component = createLabel(element, properties, alignmentWrapper);
 
 			if (component != null) {
 				if (id != null) {
@@ -550,24 +542,28 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		List<Element> elements = DocumentUtility.getContainerComponents(element,
 				ValidationSets.VALID_CONTAINER_CHILDREN);
 
-		if (elements != null) {
-			for (Element childElement : elements) {
-				ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
-				if (componentWrapper != null) {
-					Component component = componentWrapper.getComponent();
+		if (null == elements) {
+			return;
+		}
 
-					container.addComponent(component);
-					container.setComponentAlignment(component, componentWrapper.getAlignment());
-
-					float ratio = 1.0f;
-					if (component.getHeightUnits() == Unit.PERCENTAGE) {
-						ratio = component.getHeight() / 100;
-						component.setHeight("100%");
-					}
-
-					container.setExpandRatio(component, ratio);
-				}
+		for (Element childElement : elements) {
+			ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
+			if (null == componentWrapper) {
+				continue;
 			}
+
+			Component component = componentWrapper.getComponent();
+
+			container.addComponent(component);
+			container.setComponentAlignment(component, componentWrapper.getAlignment());
+
+			float ratio = 1.0f;
+			if (component.getHeightUnits() == Unit.PERCENTAGE) {
+				ratio = component.getHeight() / 100;
+				component.setHeight("100%");
+			}
+
+			container.setExpandRatio(component, ratio);
 		}
 	}
 
@@ -585,24 +581,29 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		List<Element> elements = DocumentUtility.getContainerComponents(element,
 				ValidationSets.VALID_CONTAINER_CHILDREN);
 
-		if (elements != null) {
-			for (Element childElement : elements) {
-				ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
-				if (componentWrapper != null) {
-					Component component = componentWrapper.getComponent();
+		if (null == elements) {
+			return;
+		}
 
-					container.addComponent(component);
-					container.setComponentAlignment(component, componentWrapper.getAlignment());
+		for (Element childElement : elements) {
+			ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
 
-					float ratio = 1.0f;
-					if (component.getWidthUnits() == Unit.PERCENTAGE) {
-						ratio = component.getWidth() / 100;
-						component.setWidth("100%");
-					}
-
-					container.setExpandRatio(component, ratio);
-				}
+			if (null == componentWrapper) {
+				continue;
 			}
+
+			Component component = componentWrapper.getComponent();
+
+			container.addComponent(component);
+			container.setComponentAlignment(component, componentWrapper.getAlignment());
+
+			float ratio = 1.0f;
+			if (component.getWidthUnits() == Unit.PERCENTAGE) {
+				ratio = component.getWidth() / 100;
+				component.setWidth("100%");
+			}
+
+			container.setExpandRatio(component, ratio);
 		}
 	}
 
@@ -644,22 +645,27 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		List<Element> elements = DocumentUtility.getContainerComponents(element,
 				ValidationSets.VALID_CONTAINER_CHILDREN);
 
-		if (elements != null) {
-			for (Element childElement : elements) {
-				ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
-				if (componentWrapper != null) {
-					Component component = componentWrapper.getComponent();
+		if (null == elements) {
+			return;
+		}
 
-					if (elements.size() == 1 && component instanceof Layout) {
-						container.setContent((Layout) component);
-					} else {
-						GridLayout gridLayout = new GridLayout(1, 1);
-						gridLayout.setSizeFull();
-						container.setContent(gridLayout);
-						gridLayout.addComponent(component);
-						gridLayout.setComponentAlignment(component, componentWrapper.getAlignment());
-					}
-				}
+		for (Element childElement : elements) {
+			ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
+
+			if (null == componentWrapper) {
+				continue;
+			}
+
+			Component component = componentWrapper.getComponent();
+
+			if (elements.size() == 1 && component instanceof Layout) {
+				container.setContent((Layout) component);
+			} else {
+				GridLayout gridLayout = new GridLayout(1, 1);
+				gridLayout.setSizeFull();
+				container.setContent(gridLayout);
+				gridLayout.addComponent(component);
+				gridLayout.setComponentAlignment(component, componentWrapper.getAlignment());
 			}
 		}
 	}
@@ -691,8 +697,10 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 											componentEvent.setTimestamp(event.getServerDatetime());
 											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("x", event.getRelativeX());
-											componentEvent.setProperty("y", event.getRelativeY());
+											componentEvent.setProperty(ComponentDataConstants.PROP_X,
+													event.getRelativeX(), DocumentConstants.X);
+											componentEvent.setProperty(ComponentDataConstants.PROP_Y,
+													event.getRelativeY(), DocumentConstants.Y);
 										}
 									});
 						}
@@ -747,8 +755,10 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 											componentEvent.setTimestamp(event.getServerDatetime());
 											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("x", event.getRelativeX());
-											componentEvent.setProperty("y", event.getRelativeY());
+											componentEvent.setProperty(ComponentDataConstants.PROP_X,
+													event.getRelativeX(), DocumentConstants.X);
+											componentEvent.setProperty(ComponentDataConstants.PROP_Y,
+													event.getRelativeY(), DocumentConstants.Y);
 										}
 									});
 						}
@@ -770,7 +780,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 									new ComponentEventCallback() {
 										@Override
 										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setProperty("time", event.getMediaTime());
+											componentEvent.setProperty(ComponentDataConstants.PROP_TIME,
+													event.getMediaTime(), DocumentConstants.TIME);
 										}
 									});
 						}
@@ -786,7 +797,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 											componentEvent.setTimestamp(event.getServerDatetime());
 											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("time", event.getMediaTime());
+											componentEvent.setProperty(ComponentDataConstants.PROP_TIME,
+													event.getMediaTime(), DocumentConstants.TIME);
 										}
 									});
 						}
@@ -832,7 +844,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 											componentEvent.setTimestamp(event.getServerDatetime());
 											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("time", event.getMediaTime());
+											componentEvent.setProperty(ComponentDataConstants.PROP_TIME,
+													event.getMediaTime(), DocumentConstants.TIME);
 										}
 									});
 						}
@@ -848,7 +861,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 											componentEvent.setTimestamp(event.getServerDatetime());
 											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("time", event.getMediaTime());
+											componentEvent.setProperty(ComponentDataConstants.PROP_TIME,
+													event.getMediaTime(), DocumentConstants.TIME);
 										}
 									});
 						}
@@ -915,11 +929,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 											componentEvent.setTimestamp(event.getServerDatetime());
 											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("button", event.getButton(), "");
-											componentEvent.setProperty("selectedCaption",
-													event.getButton().getCaption(), "selected");
-											componentEvent.setProperty("selectedIndex",
-													buttonPanel.getChildIndex(event.getButton()) + 1, "selected@index");
+											componentEvent.setProperty(ComponentDataConstants.PROP_BUTTON,
+													event.getButton());
+											componentEvent.setProperty(ComponentDataConstants.PROP_SELECTED_CAPTION,
+													event.getButton().getCaption(), DocumentConstants.SELECTED);
+											componentEvent.setProperty(ComponentDataConstants.PROP_SELECTED_INDEX,
+													buttonPanel.getChildIndex(event.getButton()) + 1,
+													ComponentDataConstants.ELEM_SELECTED_INDEX);
 										}
 									});
 						}
@@ -957,16 +973,16 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 											componentEvent.setTimestamp(event.getServerDatetime());
 											componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("button", SelectButton.class,
-													event.getSelectButton(), "");
-											componentEvent.setProperty("selectedCaption",
-													event.getSelectButton().getCaption(), "selected");
-											componentEvent.setProperty("selectedIndex",
+											componentEvent.setProperty(ComponentDataConstants.PROP_BUTTON,
+													SelectButton.class, event.getSelectButton());
+											componentEvent.setProperty(ComponentDataConstants.PROP_SELECTED_CAPTION,
+													event.getSelectButton().getCaption(), DocumentConstants.SELECTED);
+											componentEvent.setProperty(ComponentDataConstants.PROP_SELECTED_INDEX,
 													selectPanel.getChildIndex(event.getSelectButton()) + 1,
-													"selected@index");
-											componentEvent.setProperty("selectedValue",
+													ComponentDataConstants.ELEM_SELECTED_INDEX);
+											componentEvent.setProperty(ComponentDataConstants.PROP_SELECTED_VALUE,
 													event.getSelectButton().getValue() ? "true" : "false",
-													"selected@value");
+													ComponentDataConstants.ELEM_SELECTED_VALUE);
 										}
 									});
 						}
@@ -987,9 +1003,10 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 									componentEvent.setTimestamp(event.getServerDatetime());
 									componentEvent.setClientTimestamp(event.getClientDatetime());
 
-									componentEvent.setProperty("button", event.getSource());
-									componentEvent.setProperty("selectedIndex",
-											component.getChildIndex(event.getSelectButton()) + 1, "selected@index");
+									componentEvent.setProperty(ComponentDataConstants.PROP_BUTTON, event.getSource());
+									componentEvent.setProperty(ComponentDataConstants.PROP_SELECTED_INDEX,
+											component.getChildIndex(event.getSelectButton()) + 1,
+											ComponentDataConstants.ELEM_SELECTED_INDEX);
 								}
 							});
 				}
@@ -1027,8 +1044,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private TextField createTextField(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private TextField createTextField(Element element, StringMap properties, AlignmentWrapper alignmentWrapper) {
 		TextField component = new TextField();
 		SlideComponentUtility.setTextFieldProperties(component, element, properties, alignmentWrapper);
 		addTextFieldValidators(component, element);
@@ -1058,17 +1074,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private TextArea createTextArea(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private TextArea createTextArea(Element element, StringMap properties, AlignmentWrapper alignmentWrapper) {
 		TextArea component = new TextArea();
 		SlideComponentUtility.setTextAreaProperties(component, element, properties, alignmentWrapper);
-		// addTextAreaValidators(component, element);
 
 		return component;
 	}
 
-	private DateField createDateField(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private DateField createDateField(Element element, StringMap properties, AlignmentWrapper alignmentWrapper) {
 		DateField component = new DateField();
 		SlideComponentUtility.setDateFieldProperties(component, element, properties, alignmentWrapper);
 		addDateFieldValidators(component, element);
@@ -1083,8 +1096,10 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				if (DocumentConstants.EMPTY.equals(name)) {
 					component.addValidator(new EmptyValidator(message));
 				} else if (DocumentConstants.RANGE.equals(name)) {
-					Date minValue = DocumentUtility.getDateValidatorMinValue(element, "yyyy-MM-dd");
-					Date maxValue = DocumentUtility.getDateValidatorMaxValue(element, "yyyy-MM-dd");
+					Date minValue = DocumentUtility.getDateValidatorMinValue(element,
+							DocumentConstants.STR_DATE_FORMAT);
+					Date maxValue = DocumentUtility.getDateValidatorMaxValue(element,
+							DocumentConstants.STR_DATE_FORMAT);
 
 					if (minValue != null || maxValue != null) {
 						component.addValidator(new DateRangeValidator(message, minValue, maxValue));
@@ -1094,8 +1109,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private ComboBox createComboBox(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private ComboBox createComboBox(Element element, StringMap properties, AlignmentWrapper alignmentWrapper) {
 		ComboBox component = new ComboBox();
 		SlideComponentUtility.setComboBoxProperties(component, element, properties, alignmentWrapper);
 		addComboBoxItems(component, element);
@@ -1107,16 +1121,22 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	private void addComboBoxItems(ComboBox component, Element element) {
 		List<Element> items = DocumentUtility.getComponentItems(element);
 
-		if (items != null) {
-			for (Element item : items) {
-				String value = DocumentUtility.getValue(item);
-				if (!Strings.isNullOrEmpty(value)) {
-					component.addItem(value);
+		if (null == items) {
+			return;
+		}
 
-					String caption = DocumentUtility.getCaption(item);
-					if (!Strings.isNullOrEmpty(caption))
-						component.setItemCaption(value, caption);
-				}
+		for (Element item : items) {
+			String value = DocumentUtility.getValue(item);
+
+			if (Strings.isNullOrEmpty(value)) {
+				continue;
+			}
+
+			component.addItem(value);
+
+			String caption = DocumentUtility.getCaption(item);
+			if (!Strings.isNullOrEmpty(caption)) {
+				component.setItemCaption(value, caption);
 			}
 		}
 
@@ -1147,8 +1167,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	private Label createLabel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private Label createLabel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper) {
 		Label component = new Label();
 		SlideComponentUtility.setLabelProperties(component, element, properties, alignmentWrapper);
 

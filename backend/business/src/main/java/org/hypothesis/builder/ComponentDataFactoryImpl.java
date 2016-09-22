@@ -15,8 +15,8 @@ import java.util.Map;
 
 import org.apache.jackrabbit.util.ISO9075;
 import org.hypothesis.business.ObjectConstants;
-import org.hypothesis.business.Structured;
 import org.hypothesis.data.DocumentWriter;
+import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.interfaces.Document;
@@ -28,8 +28,7 @@ import org.hypothesis.interfaces.Variable;
 import org.hypothesis.slide.ui.ComboBox;
 import org.hypothesis.slide.ui.DateField;
 import org.hypothesis.slide.ui.SelectPanel;
-import org.hypothesis.slide.ui.TextArea;
-import org.hypothesis.slide.ui.TextField;
+import org.hypothesis.slide.ui.annotations.FieldType;
 import org.vaadin.special.ui.SelectButton;
 
 import com.tilioteo.common.Strings;
@@ -63,6 +62,10 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			element.setAttribute(DocumentConstants.ID, data.getId());
 		}
 
+		if (!Strings.isNullOrEmpty(data.getEventName())) {
+			element.setAttribute(DocumentConstants.NAME, data.getEventName());
+		}
+
 		if (!Strings.isNullOrEmpty(data.getSender().getCaption())) {
 			element.setText(data.getSender().getCaption());
 		}
@@ -74,71 +77,67 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 		for (Field field : fields) {
 			if (!Modifier.isStatic(field.getModifiers())) {
-				Structured structured = field.getAnnotation(Structured.class);
-				if (structured != null && "".equals(structured.value())) {
-					continue;
-				}
+				ElementPath elementPath = field.getAnnotation(ElementPath.class);
+				if (elementPath != null && !Strings.isNullOrEmpty(elementPath.value())) {
+					field.setAccessible(true);
+					try {
+						if (field.get(data) != null) {
+							String value = field.get(data).toString();
+							/*
+							 * if
+							 * (Double.class.isAssignableFrom(field.getType())
+							 * || Float.class.isAssignableFrom(field.getType()))
+							 * {
+							 * 
+							 * try { Double doubleValue = Double.valueOf(value);
+							 * value = String.format(Locale.ROOT, "%g",
+							 * doubleValue); } catch(NumberFormatException e) {}
+							 * }
+							 */
 
-				field.setAccessible(true);
-				try {
-					if (field.get(data) != null) {
-						String value = field.get(data).toString();
-						/*
-						 * if (Double.class.isAssignableFrom(field.getType()) ||
-						 * Float.class.isAssignableFrom(field.getType())) {
-						 * 
-						 * try { Double doubleValue = Double.valueOf(value);
-						 * value = String.format(Locale.ROOT, "%g",
-						 * doubleValue); } catch(NumberFormatException e) {} }
-						 */
+							String name = elementPath.value();
 
-						String name;
-						if (structured != null) {
-							name = structured.value();
-						} else {
-							name = field.getName();
-						}
+							Element baseElement = ensureSubElement(root, DocumentConstants.SOURCE);
 
-						Element baseElement = ensureSubElement(root, DocumentConstants.SOURCE);
+							String[] elementNames = name.split("/");
+							boolean isAttribute = false;
+							String attributeName = null;
 
-						String[] elementNames = name.split("/");
-						boolean isAttribute = false;
-						String attributeName = null;
+							for (int i = 0; i < elementNames.length; ++i) {
+								String elementName = elementNames[i];
 
-						for (int i = 0; i < elementNames.length; ++i) {
-							String elementName = elementNames[i];
-
-							if (elementName.startsWith("@")) {
-								isAttribute = true;
-
-								attributeName = formatXmlName(elementName.substring(1));
-								break;
-							} else {
-								String[] parts = elementName.split("@");
-								if (parts.length > 1) {
+								if (elementName.startsWith("@")) {
 									isAttribute = true;
 
-									elementName = formatXmlName(parts[0]);
-									attributeName = formatXmlName(parts[1]);
-
-									baseElement = ensureSubElement(baseElement, elementName);
+									attributeName = formatXmlName(elementName.substring(1));
 									break;
 								} else {
-									elementName = formatXmlName(elementName);
+									String[] parts = elementName.split("@");
+									if (parts.length > 1) {
+										isAttribute = true;
 
-									baseElement = ensureSubElement(baseElement, elementName);
+										elementName = formatXmlName(parts[0]);
+										attributeName = formatXmlName(parts[1]);
+
+										baseElement = ensureSubElement(baseElement, elementName);
+										break;
+									} else {
+										elementName = formatXmlName(elementName);
+
+										baseElement = ensureSubElement(baseElement, elementName);
+									}
 								}
 							}
-						}
 
-						if (!isAttribute) {
-							baseElement.setText(value);
-						} else if (!Strings.isNullOrEmpty(attributeName)) {
-							baseElement.setAttribute(attributeName, value);
+							if (!isAttribute) {
+								baseElement.setText(value);
+							} else if (!Strings.isNullOrEmpty(attributeName)) {
+								baseElement.setAttribute(attributeName, value);
+							}
 						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
 			}
 		}
@@ -248,21 +247,22 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		}
 	}
 
-	// TODO make it better way, maybe annotation
 	private String getFieldType(AbstractComponent field) {
-		if (field instanceof ComboBox) {
-			return DocumentConstants.COMBOBOX;
-		} else if (field instanceof DateField) {
-			return DocumentConstants.DATE_FIELD;
-		} else if (field instanceof SelectPanel) {
-			return DocumentConstants.SELECT_PANEL;
-		} else if (field instanceof TextArea) {
-			return DocumentConstants.TEXT_AREA;
-		} else if (field instanceof TextField) {
-			return DocumentConstants.TEXT_FIELD;
-		}
+		FieldType fieldType = field.getClass().getAnnotation(FieldType.class);
 
-		return null;
+		return fieldType != null ? fieldType.value() : null;
+
+		/*
+		 * if (field instanceof ComboBox) { return DocumentConstants.COMBOBOX; }
+		 * else if (field instanceof DateField) { return
+		 * DocumentConstants.DATE_FIELD; } else if (field instanceof
+		 * SelectPanel) { return DocumentConstants.SELECT_PANEL; } else if
+		 * (field instanceof TextArea) { return DocumentConstants.TEXT_AREA; }
+		 * else if (field instanceof TextField) { return
+		 * DocumentConstants.TEXT_FIELD; }
+		 * 
+		 * return null;
+		 */
 	}
 
 	// TODO make it better way
@@ -281,7 +281,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 			if (dateField.getValue() != null) {
 				Date date = dateField.getValue();
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				SimpleDateFormat format = new SimpleDateFormat(DocumentConstants.STR_DATE_FORMAT);
 				valueElement.setText(format.format(date));
 			}
 		} else if (field instanceof SelectPanel) {
@@ -324,23 +324,23 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 	private void writeVariableData(Element element, Variable<?> variable) {
 		Class<?> type = variable.getType();
 		String typeName = DocumentConstants.OBJECT;
-		String valueString = "";
+		StringBuilder valueString = new StringBuilder();
 
 		if (type.equals(Integer.class)) {
 			typeName = DocumentConstants.INTEGER;
-			valueString = variable.getStringValue();
+			valueString.append(variable.getStringValue());
 
 		} else if (type.equals(Double.class)) {
 			typeName = DocumentConstants.FLOAT;
-			valueString = variable.getStringValue();
+			valueString.append(variable.getStringValue());
 
 		} else if (type.equals(Boolean.class)) {
 			typeName = DocumentConstants.BOOLEAN;
-			valueString = variable.getStringValue();
+			valueString.append(variable.getStringValue());
 
 		} else if (type.equals(String.class)) {
 			typeName = DocumentConstants.STRING;
-			valueString = variable.getStringValue();
+			valueString.append(variable.getStringValue());
 
 		} else if (type.equals(Object.class)) {
 			Object value = variable.getValue();
@@ -364,27 +364,27 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 						if (itemType.equals(Integer.class)) {
 							for (Integer item : (ArrayList<Integer>) value) {
 								if (valueString.length() > 0) {
-									valueString += DocumentConstants.STR_COMMA;
+									valueString.append(DocumentConstants.STR_COMMA);
 								}
-								valueString += item.toString();
+								valueString.append(item.toString());
 							}
 							typeName = DocumentConstants.INTEGER_ARRAY;
 
 						} else if (itemType.equals(Double.class)) {
 							for (Double item : (ArrayList<Double>) value) {
 								if (valueString.length() > 0) {
-									valueString += DocumentConstants.STR_COMMA;
+									valueString.append(DocumentConstants.STR_COMMA);
 								}
-								valueString += item.toString();
+								valueString.append(item.toString());
 							}
 							typeName = DocumentConstants.FLOAT_ARRAY;
 
 						} else if (itemType.equals(String.class)) {
 							for (String item : (ArrayList<String>) value) {
 								if (valueString.length() > 0) {
-									valueString += DocumentConstants.STR_COMMA;
+									valueString.append(DocumentConstants.STR_COMMA);
 								}
-								valueString += item;
+								valueString.append(item);
 							}
 							typeName = DocumentConstants.STRING_ARRAY;
 						}
@@ -397,7 +397,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			Element variableElement = element.createChild(DocumentConstants.VARIABLE);
 			variableElement.setAttribute(DocumentConstants.ID, variable.getName());
 			variableElement.setAttribute(DocumentConstants.TYPE, typeName);
-			variableElement.setText(valueString);
+			variableElement.setText(valueString.toString());
 		}
 	}
 
@@ -434,7 +434,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		if (type == double.class || type == float.class || type.isAssignableFrom(Double.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT);
 			// use Locale.ROOT for locale neutral formating of decimals
-			element.setText(String.format(Locale.ROOT, "%g", ((Double) value).doubleValue()));
+			element.setText(String.format(Locale.ROOT, "%g", (Double) value));
 		} else if (type == byte.class || type == int.class || type == short.class
 				|| type.isAssignableFrom(Integer.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER);
@@ -452,37 +452,37 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			ArrayList<?> array = (ArrayList<?>) value;
 			if (!array.isEmpty()) {
 				Class<?> itemType = array.get(0).getClass();
-				String str = "";
+				StringBuilder stringBuilder = new StringBuilder();
 
 				if (itemType.equals(Integer.class)) {
 					for (Integer item : (ArrayList<Integer>) value) {
-						if (str.length() > 0) {
-							str += DocumentConstants.STR_COMMA;
+						if (stringBuilder.length() > 0) {
+							stringBuilder.append(DocumentConstants.STR_COMMA);
 						}
-						str += item.toString();
+						stringBuilder.append(item.toString());
 					}
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER_ARRAY);
-					element.setText(str);
+					element.setText(stringBuilder.toString());
 
 				} else if (itemType.equals(Double.class)) {
 					for (Double item : (ArrayList<Double>) value) {
-						if (str.length() > 0) {
-							str += DocumentConstants.STR_COMMA;
+						if (stringBuilder.length() > 0) {
+							stringBuilder.append(DocumentConstants.STR_COMMA);
 						}
-						str += item.toString();
+						stringBuilder.append(item.toString());
 					}
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT_ARRAY);
-					element.setText(str);
+					element.setText(stringBuilder.toString());
 
 				} else if (itemType.equals(String.class)) {
 					for (String item : (ArrayList<String>) value) {
-						if (str.length() > 0) {
-							str += DocumentConstants.STR_COMMA;
+						if (stringBuilder.length() > 0) {
+							stringBuilder.append(DocumentConstants.STR_COMMA);
 						}
-						str += item;
+						stringBuilder.append(item);
 					}
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.STRING_ARRAY);
-					element.setText(str);
+					element.setText(stringBuilder.toString());
 
 				} else {
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.OBJECT_ARRAY);

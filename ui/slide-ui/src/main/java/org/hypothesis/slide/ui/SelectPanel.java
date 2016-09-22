@@ -10,7 +10,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Field;
+import org.hypothesis.slide.ui.annotations.FieldType;
 import org.vaadin.special.ui.SelectButton;
 
 import com.vaadin.data.Validatable;
@@ -27,6 +29,7 @@ import com.vaadin.server.ErrorMessage;
  *
  */
 @SuppressWarnings("serial")
+@FieldType(DocumentConstants.SELECT_PANEL)
 public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Field, Validatable {
 
 	/**

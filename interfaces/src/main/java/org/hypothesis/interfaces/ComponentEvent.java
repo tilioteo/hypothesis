@@ -18,9 +18,9 @@ public interface ComponentEvent {
 
 	void setProperty(String name, Class<?> clazz, Object value);
 
-	void setProperty(String name, Object value, String pattern);
+	void setProperty(String name, Object value, String elementPath);
 
-	void setProperty(String name, Class<?> clazz, Object value, String pattern);
+	void setProperty(String name, Class<?> clazz, Object value, String elementPath);
 
 	void setClientTimestamp(Date clientTimestamp);
 
