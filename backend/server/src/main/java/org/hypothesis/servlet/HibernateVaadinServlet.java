@@ -11,12 +11,12 @@ import org.apache.log4j.Logger;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.context.LogUtil;
 
+import com.vaadin.cdi.server.VaadinCDIServlet;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionDestroyEvent;
 import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
-import com.vaadin.server.VaadinServlet;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -25,7 +25,7 @@ import com.vaadin.server.VaadinServlet;
  *
  */
 @SuppressWarnings("serial")
-public class HibernateVaadinServlet extends VaadinServlet implements SessionInitListener, SessionDestroyListener {
+public class HibernateVaadinServlet extends VaadinCDIServlet implements SessionInitListener, SessionDestroyListener {
 
 	private static final Logger log = Logger.getLogger(HibernateVaadinServlet.class);
 

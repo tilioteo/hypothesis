@@ -4,8 +4,14 @@
  */
 package org.hypothesis.ui;
 
+import javax.inject.Inject;
+
+import org.hypothesis.cdi.Main;
+import org.hypothesis.interfaces.UIPresenter;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.cdi.CDIUI;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -16,6 +22,16 @@ import com.vaadin.annotations.Title;
 @SuppressWarnings("serial")
 @Title("Hypothesis")
 @Theme("hypothesis")
+@CDIUI("")
 public class MainUI extends HypothesisUI {
+
+	@Inject
+	//@Main
+	private UIPresenter presenter;
+
+	public MainUI() {
+		System.out.println("Construct MainUI");
+		setPresenter(this.presenter);
+	}
 
 }

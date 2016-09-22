@@ -4,11 +4,9 @@
  */
 package org.hypothesis.provider;
 
-import org.hypothesis.presenter.ProcessUIPresenter;
 import org.hypothesis.ui.ProcessUI;
 
 import com.vaadin.server.UIClassSelectionEvent;
-import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.UIProvider;
 import com.vaadin.ui.UI;
 
@@ -26,11 +24,4 @@ public class ProcessUIProvider extends UIProvider {
 		return ProcessUI.class;
 	}
 
-	@Override
-	public UI createInstance(UICreateEvent event) {
-		ProcessUI ui = (ProcessUI) super.createInstance(event);
-		ui.setPresenter(new ProcessUIPresenter(ui));
-
-		return ui;
-	}
 }

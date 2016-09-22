@@ -7,7 +7,10 @@ package org.hypothesis.presenter;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.cdi.Main;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent.GuestAccessRequestedEvent;
@@ -15,10 +18,10 @@ import org.hypothesis.event.interfaces.MainUIEvent.InvalidLoginEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidUserPermissionEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.UserLoggedOutEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.UserLoginRequestedEvent;
-import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.LoginPresenter;
 import org.hypothesis.interfaces.MainPresenter;
+import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.navigator.HypothesisNavigator;
 import org.hypothesis.navigator.HypothesisViewType;
 import org.hypothesis.ui.LoginScreen;
@@ -39,34 +42,32 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class MainUIPresenter extends AbstractUIPresenter implements HasMainEventBus {
+//@Main
+public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter {
 
-	private final MainUI ui;
+	@Inject
+	private MainUI ui;
+	
+	@Inject
+	private LoginPresenter loginPresenter;
+
+	@Inject
+	private MainPresenter mainPresenter;
+
+	@Inject
+	private MainEventBus bus;
+
+	@Inject
+	private UserService userService;
+
 	private MainScreen mainScreen = null;
 	private LoginScreen loginScreen = null;
 
-	private final MainEventBus bus;
-
 	private String uid;
 	// private String pid = null;
-
-	private final LoginPresenter loginPresenter;
-	private final MainPresenter mainPresenter;
-
-	private UserService userService;
-
-	/**
-	 * Construct with ui
-	 * 
-	 * @param ui
-	 */
-	public MainUIPresenter(MainUI ui) {
-		this.ui = ui;
-
-		bus = MainEventBus.createInstance(this);
-
-		loginPresenter = new LoginPresenterImpl(bus);
-		mainPresenter = new MainPresenterImpl(bus);
+	
+	public MainUIPresenter() {
+		System.out.println("Construct MainUIPresenter");
 	}
 
 	@Override
@@ -75,8 +76,6 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 		uid = UUID.randomUUID().toString().replaceAll("-", "");
 		SessionManager.setMainUID(uid);
-
-		userService = UserService.newInstance();
 
 		// pid = request.getParameter("pid");
 
@@ -225,7 +224,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	@Override
 	public void close() {
-		MainEventBus.destroyInstance(this);
+		// nop
 	}
 
 	@Override
@@ -245,16 +244,6 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		if (bus != null) {
 			bus.unregister(this);
 		}
-	}
-
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		// nop
-	}
-
-	@Override
-	public MainEventBus getMainEventBus() {
-		return bus;
 	}
 
 }
