@@ -6,7 +6,6 @@ package org.hypothesis.ui;
 
 import java.util.Locale;
 
-import org.hypothesis.interfaces.HasUIPresenter;
 import org.hypothesis.interfaces.UIPresenter;
 
 import com.vaadin.server.Resource;
@@ -20,7 +19,7 @@ import com.vaadin.ui.UI;
  *
  */
 @SuppressWarnings("serial")
-public abstract class ControlledUI extends UI implements HasUIPresenter {
+public abstract class ControlledUI extends UI {
 
 	private UIPresenter presenter;
 
@@ -64,13 +63,7 @@ public abstract class ControlledUI extends UI implements HasUIPresenter {
 		presenter.close();
 	}
 
-	@Override
-	public UIPresenter getPresenter() {
-		return presenter;
-	}
-
-	@Override
-	public void setPresenter(UIPresenter presenter) {
+	protected void setPresenter(UIPresenter presenter) {
 		this.presenter = presenter;
 	}
 
@@ -86,7 +79,7 @@ public abstract class ControlledUI extends UI implements HasUIPresenter {
 	public static String getCurrentLanguage() {
 		ControlledUI ui = getCurrent();
 		if (ui != null) {
-			Locale locale = ui.getPresenter().getCurrentLocale();
+			Locale locale = ui.presenter.getCurrentLocale();
 			if (locale != null) {
 				return locale.getLanguage();
 			}

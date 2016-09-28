@@ -8,22 +8,25 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.hypothesis.business.EventManager;
 import org.hypothesis.business.MessageManager;
 import org.hypothesis.business.ObjectConstants;
 import org.hypothesis.business.SlideDocument;
 import org.hypothesis.business.SlideNavigator;
+import org.hypothesis.cdi.Process;
 import org.hypothesis.evaluation.AbstractBaseAction;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.data.Message;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.ProcessEvent;
 import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.event.model.MessageEvent;
 import org.hypothesis.event.model.MessageEventManager;
 import org.hypothesis.event.model.ViewportEvent;
 import org.hypothesis.event.model.ViewportEventManager;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.ComponentEventCallback;
@@ -63,7 +66,10 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	private SlideContainer container;
 
-	private ProcessEventBus bus = null;
+	@Inject
+	@Process
+	protected EventBus bus;
+
 	private HypothesisUI ui = null;
 
 	private final ViewportEventManager viewportEventManager = new ViewportEventManager();
@@ -123,8 +129,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		if (component instanceof SlideContainer) {
 			viewportEventManager.setEnabled(true);
 			messageEventManager.setEnabled(true);
-
-			setProcessEventBus(ProcessEventBus.get(ui));
 
 			fireEvent(new ViewportEvent.Init(container));
 
@@ -532,10 +536,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 
 		return null;
-	}
-
-	protected void setProcessEventBus(ProcessEventBus bus) {
-		this.bus = bus;
 	}
 
 }

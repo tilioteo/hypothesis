@@ -7,7 +7,6 @@ package org.hypothesis.presenter;
 import org.hypothesis.event.model.EventQueue;
 import org.hypothesis.event.model.EventWrapper;
 import org.hypothesis.event.model.FinishSlideEvent;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.ComponentEventCallback;
 
@@ -29,7 +28,6 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 
 	private final EventQueue eventQueue;
 	private boolean disableDeferred = false;
-	private final ProcessEventBus bus;
 
 	/**
 	 * Construct
@@ -37,11 +35,10 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 	 * @param eventQueue
 	 * @param bus
 	 */
-	public SlideContainerPresenterDeferred(EventQueue eventQueue, ProcessEventBus bus) {
+	public SlideContainerPresenterDeferred(EventQueue eventQueue) {
 		super();
 
 		this.eventQueue = eventQueue;
-		this.bus = bus;
 	}
 
 	@Override
@@ -79,7 +76,6 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 	public void attach(Component component, HasComponents parent, UI ui, VaadinSession session) {
 		super.attach(component, parent, ui, session);
 
-		setProcessEventBus(bus);
 		bus.register(this);
 	}
 

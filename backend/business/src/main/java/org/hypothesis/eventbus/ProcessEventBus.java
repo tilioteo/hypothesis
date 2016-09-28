@@ -4,13 +4,11 @@
  */
 package org.hypothesis.eventbus;
 
-import java.util.HashMap;
-
+import org.hypothesis.cdi.Process;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.ProcessEvent;
-import org.hypothesis.interfaces.HasUIPresenter;
-import org.hypothesis.interfaces.UIPresenter;
 
-import com.vaadin.ui.UI;
+import com.vaadin.cdi.UIScoped;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -19,56 +17,15 @@ import com.vaadin.ui.UI;
  *
  */
 @SuppressWarnings("serial")
-public class ProcessEventBus extends HypothesisEventBus<ProcessEvent> {
+@Process
+@UIScoped
+public class ProcessEventBus extends HypothesisEventBus<ProcessEvent> implements EventBus {
 
-	private static final HashMap<HasProcessEventBus, ProcessEventBus> map = new HashMap<>();
-
-	protected ProcessEventBus() {
-	}
-
-	/**
-	 * create new event bus instance and register bus owner
-	 * 
-	 * @param hasProcessEventBus
-	 * @return
-	 */
-	public static final ProcessEventBus createInstance(HasProcessEventBus hasProcessEventBus) {
-		ProcessEventBus eventBus = new ProcessEventBus();
-		map.put(hasProcessEventBus, eventBus);
-
-		return eventBus;
-	}
-
-	/**
-	 * unregister owner
-	 * 
-	 * @param hasProcessEventBus
-	 */
-	public static final void destroyInstance(HasProcessEventBus hasProcessEventBus) {
-		map.remove(hasProcessEventBus);
-	}
-
-	public static final ProcessEventBus getCurrent() {
-		UI ui = UI.getCurrent();
-		return get(ui);
-	}
-
-	/**
-	 * get event bus by ui
-	 * 
-	 * @param ui
-	 * @return
-	 */
-	public static final ProcessEventBus get(UI ui) {
-		if (ui instanceof HasUIPresenter) {
-			UIPresenter presenter = ((HasUIPresenter) ui).getPresenter();
-
-			if (presenter instanceof HasProcessEventBus) {
-				return map.get(presenter);
-			}
+	@Override
+	public synchronized void post(Object event) {
+		if (event instanceof ProcessEvent) {
+			super.post(event);
 		}
-
-		return null;
 	}
 
 }

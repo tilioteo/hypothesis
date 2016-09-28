@@ -4,7 +4,10 @@
  */
 package org.hypothesis.navigator;
 
-import org.hypothesis.eventbus.HasMainEventBus;
+import javax.inject.Inject;
+
+import org.hypothesis.cdi.Main;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.interfaces.ViewPresenter;
@@ -21,7 +24,9 @@ import com.vaadin.navigator.ViewProvider;
 @SuppressWarnings("serial")
 public class HypothesisViewProvider implements ViewProvider {
 
-	private final MainEventBus bus;
+	@Inject
+	@Main
+	private EventBus bus;
 
 	private final HypothesisViewType viewType;
 
@@ -37,7 +42,7 @@ public class HypothesisViewProvider implements ViewProvider {
 	 * @param bus
 	 * @param viewType
 	 */
-	public HypothesisViewProvider(MainEventBus bus, HypothesisViewType viewType) {
+	public HypothesisViewProvider(/*MainEventBus bus,*/ HypothesisViewType viewType) {
 		this.bus = bus;
 		this.viewType = viewType;
 	}
@@ -81,13 +86,13 @@ public class HypothesisViewProvider implements ViewProvider {
 			try {
 				presenter = viewType.getViewPresenterClass().newInstance();
 
-				if (presenter instanceof HasMainEventBus) {
+				/*if (presenter instanceof HasMainEventBus) {
 					((HasMainEventBus) presenter).setMainEventBus(bus);
 				}
 
 				if (presenter instanceof ManagementPresenter) {
 					((ManagementPresenter) presenter).init();
-				}
+				}*/
 
 				return presenter.createView();
 

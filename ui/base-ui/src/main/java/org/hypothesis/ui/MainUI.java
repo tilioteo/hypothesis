@@ -25,13 +25,15 @@ import com.vaadin.cdi.CDIUI;
 @CDIUI("")
 public class MainUI extends HypothesisUI {
 
-	@Inject
-	//@Main
-	private UIPresenter presenter;
-
 	public MainUI() {
 		System.out.println("Construct MainUI");
-		setPresenter(this.presenter);
 	}
 
+	@Override
+	@Inject
+	public void setPresenter(@Main UIPresenter presenter) {
+		presenter.setUI(this);
+		super.setPresenter(presenter);
+	}
+	
 }

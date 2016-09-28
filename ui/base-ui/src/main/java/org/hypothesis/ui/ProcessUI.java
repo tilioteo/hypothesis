@@ -4,7 +4,11 @@
  */
 package org.hypothesis.ui;
 
+import javax.inject.Inject;
+
+import org.hypothesis.cdi.Process;
 import org.hypothesis.interfaces.Command;
+import org.hypothesis.interfaces.UIPresenter;
 import org.vaadin.jouni.animator.AnimatorProxy;
 import org.vaadin.jouni.animator.AnimatorProxy.AnimationEvent;
 import org.vaadin.jouni.animator.shared.AnimType;
@@ -36,6 +40,21 @@ public class ProcessUI extends HypothesisUI {
 	private boolean requestClose = false;
 
 	private final CssLayout clearLayout = new CssLayout();
+
+	@Inject
+	@Process
+	private UIPresenter presenter;
+
+	public ProcessUI() {
+		System.out.println("Construct ProcessUI");
+	}
+
+	@Override
+	@Inject
+	public void setPresenter(@Process UIPresenter presenter) {
+		presenter.setUI(this);
+		super.setPresenter(presenter);
+	}
 
 	public void showErrorDialog(ErrorDialog dialog) {
 		dialog.show(this);

@@ -7,7 +7,8 @@ package org.hypothesis.presenter;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.hypothesis.eventbus.MainEventBus;
+import javax.enterprise.inject.Default;
+
 import org.hypothesis.interfaces.MainPresenter;
 import org.hypothesis.servlet.ServletUtil;
 import org.hypothesis.ui.MainScreen;
@@ -33,6 +34,7 @@ import com.vaadin.ui.themes.ValoTheme;
  *
  */
 @SuppressWarnings("serial")
+@Default
 public class MainPresenterImpl implements MainPresenter {
 
 	private static String VERSION;// = Manifests.read("Version");
@@ -43,16 +45,14 @@ public class MainPresenterImpl implements MainPresenter {
 
 	private ComponentContainer content;
 
-	private final HypothesisMenuPresenter menuPresenter;
-
 	/**
 	 * Construct with bus
 	 * 
 	 * @param bus
 	 */
-	public MainPresenterImpl(MainEventBus bus) {
+	public MainPresenterImpl(/* MainEventBus bus */) {
 
-		menuPresenter = new HypothesisMenuPresenter(bus);
+		// menuPresenter = new HypothesisMenuPresenter(bus);
 
 		Manifest manifest = ServletUtil.getManifest(VaadinServlet.getCurrent().getServletContext());
 		Attributes attributes = manifest.getMainAttributes();
@@ -113,7 +113,7 @@ public class MainPresenterImpl implements MainPresenter {
 	public Component buildMainPane() {
 		HorizontalLayout layout = new HorizontalLayout();
 
-		layout.addComponent(new HypothesisMenu(menuPresenter));
+		layout.addComponent(new HypothesisMenu());
 
 		content = new CssLayout();
 		content.addStyleName("view-content");

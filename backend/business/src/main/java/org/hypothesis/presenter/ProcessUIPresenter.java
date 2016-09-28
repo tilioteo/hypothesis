@@ -4,11 +4,15 @@
  */
 package org.hypothesis.presenter;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ProcessManager;
+import org.hypothesis.cdi.Process;
+import org.hypothesis.data.interfaces.TokenService;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Token;
-import org.hypothesis.data.service.TokenService;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.ProcessViewEvent.ProcessViewEndEvent;
 import org.hypothesis.event.model.AbstractNotificationEvent;
 import org.hypothesis.event.model.AfterFinishSlideEvent;
@@ -21,9 +25,8 @@ import org.hypothesis.event.model.FinishTestEvent;
 import org.hypothesis.event.model.NextSlideEvent;
 import org.hypothesis.event.model.PriorSlideEvent;
 import org.hypothesis.event.model.RenderContentEvent;
-import org.hypothesis.eventbus.HasProcessEventBus;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.Command;
+import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.slide.ui.Window;
 import org.hypothesis.ui.ErrorDialog;
@@ -36,6 +39,7 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window.CloseEvent;
 
 import net.engio.mbassy.listener.Handler;
@@ -47,7 +51,8 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class ProcessUIPresenter extends AbstractUIPresenter implements HasProcessEventBus {
+@Process
+public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresenter {
 
 	public static final String FULLSCREEN_PARAMETER = "fs";
 	public static final String BACK_PARAMETER = "bk";
@@ -57,9 +62,11 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 
 	private static final Logger log = Logger.getLogger(ProcessUIPresenter.class);
 
-	private final ProcessUI ui;
+	private ProcessUI ui;
 
-	private final ProcessEventBus bus;
+	@Inject
+	@Process
+	private EventBus bus;
 
 	private boolean requestFullscreen = false;
 	private boolean requestBack = false;
@@ -68,22 +75,15 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	private String tokenString = null;
 	private String lastTokenString = null;
 
-	private final TokenService tokenService;
+	@Inject
+	private TokenService tokenService;
+
 	private ProcessManager processManager;
 
 	private SimpleTest preparedTest = null;
 
-	/**
-	 * Construct with bus
-	 * 
-	 * @param ui
-	 */
-	public ProcessUIPresenter(ProcessUI ui) {
-		this.ui = ui;
-
-		bus = ProcessEventBus.createInstance(this);
-
-		tokenService = TokenService.newInstance();
+	public ProcessUIPresenter() {
+		System.out.println("Construct ProcessUIPresenter");
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 
 		super.initialize(request);
 
-		processManager = new ProcessManager(bus);
+		processManager = new ProcessManager();
 
 		// TODO try to set token by uri fragment and implement
 		// UriFragmentChangeListener
@@ -154,7 +154,6 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 
 	@Override
 	public void close() {
-		ProcessEventBus.destroyInstance(this);
 	}
 
 	private void initParameters(VaadinRequest request) {
@@ -354,8 +353,10 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	}
 
 	@Override
-	public ProcessEventBus getProcessEventBus() {
-		return bus;
+	public void setUI(UI ui) {
+		if (ui instanceof ProcessUI) {
+			this.ui = (ProcessUI) ui;
+		}
 	}
 
 }

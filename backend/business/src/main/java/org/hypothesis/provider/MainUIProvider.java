@@ -29,7 +29,7 @@ public class MainUIProvider extends UIProvider {
 	@Override
 	public UI createInstance(UICreateEvent event) {
 		MainUI ui = (MainUI) super.createInstance(event);
-		ui.setPresenter(new MainUIPresenter());
+		//ui.setPresenter(new MainUIPresenter());
 		
 		return ui;
 	}

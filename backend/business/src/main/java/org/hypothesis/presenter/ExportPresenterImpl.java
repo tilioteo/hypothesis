@@ -20,6 +20,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -29,20 +32,20 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.hypothesis.builder.SlideDataParser;
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.cdi.Main;
+import org.hypothesis.data.interfaces.ExportService;
+import org.hypothesis.data.interfaces.PermissionService;
+import org.hypothesis.data.interfaces.TestService;
+import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.ExportEvent;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Status;
 import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.ExportService;
-import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.RoleService;
-import org.hypothesis.data.service.TestService;
-import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.RoleServiceImpl;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.HasMainEventBus;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ExportPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.ControlledUI;
@@ -89,17 +92,23 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings({ "serial" })
-public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
+@Default
+public class ExportPresenterImpl implements ExportPresenter {
 
 	private static final Logger log = Logger.getLogger(ExportPresenterImpl.class);
 
-	private final PermissionService permissionService;
-	private final TestService testService;
-	private final UserService userService;
+	@Inject
+	private PermissionService permissionService;
+	@Inject
+	private TestService testService;
+	@Inject
+	private UserService userService;
 
 	private User loggedUser;
 
-	private MainEventBus bus;
+	@Inject
+	@Main
+	private EventBus bus;
 
 	private List<String> sortedPacks = new ArrayList<>();
 	private HashMap<String, Pack> packMap = new HashMap<>();
@@ -119,23 +128,6 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	private HorizontalLayout toolsLayout;
 	private ExportThread currentExport = null;
 	private ProgressBar exportProgressBar = null;
-
-	public ExportPresenterImpl() {
-		permissionService = PermissionService.newInstance();
-		testService = TestService.newInstance();
-		userService = UserService.newInstance();
-
-	}
-
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		this.bus = bus;
-	}
-
-	@Override
-	public MainEventBus getMainEventBus() {
-		return bus;
-	}
 
 	@Override
 	public void attach() {
@@ -409,7 +401,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		// MANAGER see only tests created by himself and his users
 		List<User> users = null;
-		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+		if (!loggedUser.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
 			users = userService.findOwnerUsers(loggedUser);
 			users.add(loggedUser);
 		}
@@ -521,6 +513,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	/**
 	 * Update progress of export
+	 * 
 	 * @param event
 	 */
 	@Handler
@@ -533,6 +526,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	/**
 	 * Do when export finished
+	 * 
 	 * @param event
 	 */
 	@Handler
@@ -542,6 +536,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	/**
 	 * Show error occured during export
+	 * 
 	 * @param event
 	 */
 	@Handler
@@ -552,6 +547,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	/**
 	 * Update ui on user pack change
+	 * 
 	 * @param event
 	 */
 	@Handler
@@ -590,9 +586,11 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		final AtomicBoolean cancelPending = new AtomicBoolean(false);
 		final Collection<Long> testIds;
 
-		private final MainEventBus bus;
+		@Inject
+		private ExportService exportService;
+		private final EventBus bus;
 
-		public ExportThread(MainEventBus bus, final Collection<Long> testIds) {
+		public ExportThread(EventBus bus, final Collection<Long> testIds) {
 			this.bus = bus;
 			this.testIds = testIds;
 		}
@@ -655,14 +653,12 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		}
 
 		private InputStream getExportFile() {
-			ExportService exportService = ExportService.newInstance();
-
 			try {
 				List<ExportEvent> events = exportService.findExportEventsByTestId(testIds);
 
 				if (events != null) {
 					SXSSFWorkbook workbook = null;
-					
+
 					try {
 						File tempFile = File.createTempFile("htsm", null);
 
@@ -1055,7 +1051,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 								row = sheet.createRow(rowNr++);
 								row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumnValues"));
 
-								for (Entry<String, HashMap<String, String>> fieldEntry : fieldValueCaptionMap.entrySet()) {
+								for (Entry<String, HashMap<String, String>> fieldEntry : fieldValueCaptionMap
+										.entrySet()) {
 									row = sheet.createRow(rowNr++);
 									row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
 									row.createCell(1).setCellValue(fieldEntry.getKey());
@@ -1065,7 +1062,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 									row.createCell(1)
 											.setCellValue(Messages.getString("Caption.Export.UserValueDescription"));
 
-									HashMap<String, String> valueCaptions = fieldValueCaptionMap.get(fieldEntry.getKey());
+									HashMap<String, String> valueCaptions = fieldValueCaptionMap
+											.get(fieldEntry.getKey());
 									for (Entry<String, String> entry : valueCaptions.entrySet()) {
 										row = sheet.createRow(rowNr++);
 										row.createCell(0).setCellValue(entry.getValue());

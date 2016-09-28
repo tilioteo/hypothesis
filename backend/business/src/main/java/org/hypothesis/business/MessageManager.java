@@ -8,10 +8,12 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
-import org.hypothesis.data.service.MessageService;
+import org.hypothesis.data.interfaces.MessageService;
 import org.hypothesis.event.data.Message;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
@@ -28,18 +30,18 @@ import com.tilioteo.common.Strings;
 @SuppressWarnings("serial")
 public class MessageManager implements Serializable {
 
+	@Inject
 	private MessageService messageService;
 
 	private DocumentReader reader = new XmlDocumentReader();
 
-	public MessageManager() {
-		messageService = MessageService.newInstance();
-	}
-
 	/**
 	 * Create new message object by provided uid
-	 * @param uid message identifier to look for definition
-	 * @param userId user identifier passed into message
+	 * 
+	 * @param uid
+	 *            message identifier to look for definition
+	 * @param userId
+	 *            user identifier passed into message
 	 * @return new message object or null when message definition not found
 	 */
 	public Message createMessage(String uid, Long userId) {

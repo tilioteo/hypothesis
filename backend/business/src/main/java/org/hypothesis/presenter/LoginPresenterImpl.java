@@ -4,10 +4,14 @@
  */
 package org.hypothesis.presenter;
 
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
+import org.hypothesis.cdi.Main;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidLoginEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidUserPermissionEvent;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.LoginPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.LoginScreen;
@@ -45,21 +49,15 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
+@Default
 public class LoginPresenterImpl implements LoginPresenter {
 
 	private TextField username;
 	private PasswordField password;
 
-	private final MainEventBus bus;
-
-	/**
-	 * Construct with bus
-	 * 
-	 * @param bus
-	 */
-	public LoginPresenterImpl(MainEventBus bus) {
-		this.bus = bus;
-	}
+	@Inject
+	@Main
+	private EventBus bus;
 
 	@Override
 	public void attach() {

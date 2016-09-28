@@ -8,12 +8,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.data.interfaces.PermissionService;
+import org.hypothesis.data.interfaces.TokenService;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.Token;
 import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.TokenService;
 import org.hypothesis.interfaces.PacksPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.servlet.ServletUtil;
@@ -45,8 +47,10 @@ import com.vaadin.ui.Component;
 @SuppressWarnings("serial")
 public class PublicPacksPresenter implements PacksPresenter {
 
-	protected final PermissionService permissionService;
-	private final TokenService tokenService;
+	@Inject
+	protected PermissionService permissionService;
+	@Inject
+	private TokenService tokenService;
 
 	private PacksView view;
 
@@ -155,14 +159,6 @@ public class PublicPacksPresenter implements PacksPresenter {
 			view.unmask();
 		}
 	};
-
-	/**
-	 * `Constructor
-	 */
-	public PublicPacksPresenter() {
-		permissionService = PermissionService.newInstance();
-		tokenService = TokenService.newInstance();
-	}
 
 	@Override
 	public void attach() {

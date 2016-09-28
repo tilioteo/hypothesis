@@ -4,10 +4,12 @@
  */
 package org.hypothesis.presenter;
 
+import javax.inject.Inject;
+
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.cdi.Main;
 import org.hypothesis.data.model.User;
-import org.hypothesis.eventbus.HasMainEventBus;
-import org.hypothesis.eventbus.MainEventBus;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.view.ManagementView;
@@ -33,12 +35,13 @@ import com.vaadin.ui.Table.ColumnGenerator;
  *
  */
 @SuppressWarnings("serial")
-public abstract class AbstractManagementPresenter
-		implements ManagementPresenter, HasMainEventBus, ColumnGenerator, Listener {
+public abstract class AbstractManagementPresenter implements ManagementPresenter, ColumnGenerator, Listener {
 
 	protected User loggedUser;
 
-	protected MainEventBus bus;
+	@Inject
+	@Main
+	protected EventBus bus;
 
 	protected CssLayout buttonGroup;
 	protected Table table;
@@ -56,16 +59,6 @@ public abstract class AbstractManagementPresenter
 	protected abstract Button buildDeleteButton();
 
 	protected abstract Resource getExportResource();
-
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		this.bus = bus;
-	}
-
-	@Override
-	public MainEventBus getMainEventBus() {
-		return bus;
-	}
 
 	@Override
 	public void attach() {

@@ -6,6 +6,8 @@ package org.hypothesis.eventbus;
 
 import java.io.Serializable;
 
+import org.hypothesis.event.interfaces.EventBus;
+
 import net.engio.mbassy.bus.MBassador;
 import net.engio.mbassy.bus.common.Properties;
 import net.engio.mbassy.bus.config.BusConfiguration;
@@ -25,40 +27,37 @@ import net.engio.mbassy.bus.error.PublicationError;
  *            type of message
  */
 @SuppressWarnings("serial")
-public abstract class HypothesisEventBus<T> implements Serializable, IPublicationErrorHandler {
+public abstract class HypothesisEventBus<T> implements Serializable, IPublicationErrorHandler, EventBus {
 
-	private final MBassador<T> eventBus = new MBassador<T>(new BusConfiguration()
+	private final MBassador<T> eventBus = new MBassador<>(new BusConfiguration()
 			.addFeature(Feature.SyncPubSub.Default()).addFeature(Feature.AsynchronousHandlerInvocation.Default())
 			.addFeature(Feature.AsynchronousMessageDispatch.Default())
 			.setProperty(Properties.Handler.PublicationError, this));
 
-	/**
-	 * post message object to bus
-	 * 
-	 * @param event
+	/* (non-Javadoc)
+	 * @see org.hypothesis.eventbus.EventBus#post(T)
 	 */
-	public synchronized void post(final T event) {
-		eventBus.publish(event);
+	public synchronized void post(final Object event) {
+		eventBus.publish((T)event);
 	}
 
-	/**
-	 * register object to receive messages
-	 * 
-	 * @param object
+	/* (non-Javadoc)
+	 * @see org.hypothesis.eventbus.EventBus#register(java.lang.Object)
 	 */
 	public synchronized void register(final Object object) {
 		eventBus.subscribe(object);
 	}
 
-	/**
-	 * unregister object to stop receiving messages
-	 * 
-	 * @param object
+	/* (non-Javadoc)
+	 * @see org.hypothesis.eventbus.EventBus#unregister(java.lang.Object)
 	 */
 	public synchronized void unregister(final Object object) {
 		eventBus.unsubscribe(object);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.hypothesis.eventbus.EventBus#handleError(net.engio.mbassy.bus.error.PublicationError)
+	 */
 	@Override
 	public synchronized void handleError(PublicationError error) {
 		// TODO Auto-generated method stub

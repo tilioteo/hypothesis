@@ -4,8 +4,13 @@
  */
 package org.hypothesis.navigator;
 
+import javax.inject.Inject;
+
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.cdi.Main;
 import org.hypothesis.data.model.User;
+import org.hypothesis.event.interfaces.EventBus;
+import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.PostViewChangeEvent;
 import org.hypothesis.eventbus.MainEventBus;
 
@@ -27,7 +32,10 @@ public class HypothesisNavigator extends Navigator {
 
 	private static final HypothesisViewType ERROR_VIEW = HypothesisViewType.PACKS;
 	private ViewProvider errorViewProvider;
-	private final MainEventBus bus;
+
+	@Inject
+	@Main
+	private EventBus bus;
 
 	/**
 	 * Create instance and associate it with bus and container
@@ -35,10 +43,8 @@ public class HypothesisNavigator extends Navigator {
 	 * @param bus
 	 * @param container
 	 */
-	public HypothesisNavigator(MainEventBus bus, final ComponentContainer container) {
+	public HypothesisNavigator(final ComponentContainer container) {
 		super(UI.getCurrent(), container);
-
-		this.bus = bus;
 
 		initViewChangeListener();
 		initViewProviders();
@@ -69,7 +75,7 @@ public class HypothesisNavigator extends Navigator {
 	private void initViewProviders() {
 		// A dedicated view provider is added for each separate view type
 		for (final HypothesisViewType viewType : HypothesisViewType.values()) {
-			ViewProvider viewProvider = new HypothesisViewProvider(bus, viewType);
+			ViewProvider viewProvider = new HypothesisViewProvider(/*bus,*/ viewType);
 
 			addProvider(viewProvider);
 		}

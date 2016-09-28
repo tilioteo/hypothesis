@@ -21,8 +21,9 @@
 		<dom4j.version>1.6.1</dom4j.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<log4j.version>1.2.17</log4j.version>
+		<validation-api.version>1.1.0.Final</validation-api.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
-		<postgresql.version>9.4-1206-jdbc41</postgresql.version>
+		<postgresql.version>9.4.1210</postgresql.version>
 		<spring.version>4.2.1.RELEASE</spring.version>
 		<mbassador.version>1.2.1</mbassador.version>
 		<special.components.version>0.9.5</special.components.version>
@@ -39,6 +40,9 @@
 		<expressions.version>1.0.1</expressions.version>
 		<jcabi.version>1.1</jcabi.version>
 		<slf4j.version>1.7.13</slf4j.version>
+		<cdi-api.version>1.2</cdi-api.version>
+		<annotation-api.version>1.2</annotation-api.version>
+		<vaadin-cdi.version>1.0.3</vaadin-cdi.version>
 	</properties>
 
 	<profiles>
@@ -183,6 +187,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${validation-api.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>${hibernate.version}</version>
@@ -237,6 +247,22 @@
 			</dependency>
 
 			<dependency>
+				<groupId>javax.enterprise</groupId>
+				<artifactId>cdi-api</artifactId>
+				<version>${cdi-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${annotation-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-cdi</artifactId>
+				<version>${vaadin-cdi.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
@@ -271,6 +297,7 @@
 
 	<modules>
 		<module>interfaces</module>
+		<module>cdi</module>
 		<module>commons</module>
 		<module>widgetset</module>
 		<module>ui</module>

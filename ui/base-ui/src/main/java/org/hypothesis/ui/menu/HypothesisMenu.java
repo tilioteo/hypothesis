@@ -4,6 +4,8 @@
  */
 package org.hypothesis.ui.menu;
 
+import javax.inject.Inject;
+
 import org.hypothesis.interfaces.MenuPresenter;
 
 import com.vaadin.ui.CustomComponent;
@@ -19,11 +21,10 @@ public final class HypothesisMenu extends CustomComponent {
 
 	private static final String ID = "hypothesis-menu";
 
-	private final MenuPresenter presenter;
+	@Inject
+	private MenuPresenter presenter;
 
-	public HypothesisMenu(MenuPresenter presenter) {
-		this.presenter = presenter;
-
+	public HypothesisMenu() {
 		addStyleName("valo-menu-color2");
 		setId(ID);
 		setSizeUndefined();

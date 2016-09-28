@@ -11,14 +11,14 @@ import javax.inject.Inject;
 
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.cdi.Main;
+import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.UserService;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.MainUIEvent.GuestAccessRequestedEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidLoginEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidUserPermissionEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.UserLoggedOutEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.UserLoginRequestedEvent;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.LoginPresenter;
 import org.hypothesis.interfaces.MainPresenter;
 import org.hypothesis.interfaces.UIPresenter;
@@ -26,12 +26,12 @@ import org.hypothesis.navigator.HypothesisNavigator;
 import org.hypothesis.navigator.HypothesisViewType;
 import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
-import org.hypothesis.ui.MainUI;
 
 import com.tilioteo.common.Strings;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
 
 import net.engio.mbassy.listener.Handler;
 
@@ -42,12 +42,12 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-//@Main
+@Main
 public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter {
 
-	@Inject
-	private MainUI ui;
-	
+	// @Inject
+	private UI ui;
+
 	@Inject
 	private LoginPresenter loginPresenter;
 
@@ -55,7 +55,8 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 	private MainPresenter mainPresenter;
 
 	@Inject
-	private MainEventBus bus;
+	@Main
+	private EventBus bus;
 
 	@Inject
 	private UserService userService;
@@ -65,7 +66,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 
 	private String uid;
 	// private String pid = null;
-	
+
 	public MainUIPresenter() {
 		System.out.println("Construct MainUIPresenter");
 	}
@@ -85,7 +86,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 	private MainScreen getMainView() {
 		if (null == mainScreen) {
 			mainScreen = mainPresenter.createScreen();
-			new HypothesisNavigator(bus, mainScreen.getContent());
+			new HypothesisNavigator(mainScreen.getContent());
 		}
 
 		return mainScreen;
@@ -244,6 +245,11 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 		if (bus != null) {
 			bus.unregister(this);
 		}
+	}
+
+	@Override
+	public void setUI(UI ui) {
+		this.ui = ui;
 	}
 
 }

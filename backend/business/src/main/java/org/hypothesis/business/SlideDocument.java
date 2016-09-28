@@ -21,6 +21,7 @@ import com.vaadin.ui.Component.Focusable;
 @SuppressWarnings("serial")
 public class SlideDocument implements Serializable {
 
+	// TODO inject
 	private SlideContainerPresenter presenter;
 
 	/**

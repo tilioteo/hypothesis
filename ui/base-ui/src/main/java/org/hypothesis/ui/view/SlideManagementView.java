@@ -4,6 +4,8 @@
  */
 package org.hypothesis.ui.view;
 
+import javax.inject.Inject;
+
 import org.hypothesis.interfaces.SlideManagementPresenter;
 import org.vaadin.aceeditor.AceEditor;
 import org.vaadin.aceeditor.AceMode;
@@ -26,14 +28,13 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class SlideManagementView extends HorizontalLayout implements View {
 
-	private final SlideManagementPresenter presenter;
+	@Inject
+	private SlideManagementPresenter presenter;
 
 	private AceEditor editor1;
 	private AceEditor editor2;
 
-	public SlideManagementView(SlideManagementPresenter presenter) {
-		this.presenter = presenter;
-
+	public SlideManagementView() {
 		setSizeFull();
 
 		Panel contentPanel = buildContentPanel();

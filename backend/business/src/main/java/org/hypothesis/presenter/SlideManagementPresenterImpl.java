@@ -4,15 +4,18 @@
  */
 package org.hypothesis.presenter;
 
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import org.hypothesis.builder.SlideContainerFactoryDeferred;
+import org.hypothesis.cdi.Process;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.event.model.AfterRenderContentEvent;
 import org.hypothesis.event.model.ComponentEvent;
 import org.hypothesis.event.model.FinishSlideEvent;
-import org.hypothesis.eventbus.HasProcessEventBus;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.SlideManagementPresenter;
 import org.hypothesis.slide.ui.Mask;
 import org.hypothesis.ui.SlideContainer;
@@ -44,17 +47,24 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class SlideManagementPresenterImpl implements SlideManagementPresenter, HasProcessEventBus {
+@Default
+public class SlideManagementPresenterImpl implements SlideManagementPresenter {
 
 	private final DocumentReader reader = new XmlDocumentReader();
 
 	private SlideContainer container;
 
-	private final ProcessEventBus bus = ProcessEventBus.createInstance(this);
-	private final SlideContainerFactoryDeferred factory = new SlideContainerFactoryDeferred(bus);
+	@Inject
+	@Process
+	private EventBus bus;
+	private final SlideContainerFactoryDeferred factory;
 
 	private Mask mask;
 	private final FancyNotifications notifications = new FancyNotifications();
+
+	public SlideManagementPresenterImpl() {
+		factory = new SlideContainerFactoryDeferred();
+	}
 
 	@Override
 	public void attach() {
@@ -74,7 +84,7 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 	@Override
 	public View createView() {
 
-		return new SlideManagementView(this);
+		return new SlideManagementView();
 	}
 
 	@Override
@@ -158,11 +168,6 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 
 			containerPresenter.fireDeferred();
 		}
-	}
-
-	@Override
-	public ProcessEventBus getProcessEventBus() {
-		return bus;
 	}
 
 	/**

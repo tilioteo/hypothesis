@@ -4,12 +4,17 @@
  */
 package org.hypothesis.presenter;
 
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.cdi.Main;
 import org.hypothesis.data.model.User;
+import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.ProfileUpdatedEvent;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.MenuPresenter;
+import org.hypothesis.interfaces.UserSettingsWindowPresenter;
 import org.hypothesis.navigator.HypothesisViewType;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.menu.ValoMenuItemButton;
@@ -40,6 +45,7 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
+@Default
 public class HypothesisMenuPresenter implements MenuPresenter {
 
 	private static final String STYLE_VISIBLE = "valo-menu-visible";
@@ -47,19 +53,12 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 	private Component content;
 	private MenuItem settingsItem;
 
-	private final MainEventBus bus;
-	private final UserSettingsWindowPresenter userSettingsWindowPresenter;
+	@Inject
+	@Main
+	private EventBus bus;
 
-	/**
-	 * Construct with bus
-	 * 
-	 * @param bus
-	 */
-	public HypothesisMenuPresenter(MainEventBus bus) {
-		this.bus = bus;
-
-		userSettingsWindowPresenter = new UserSettingsWindowPresenter(bus);
-	}
+	@Inject
+	private UserSettingsWindowPresenter userSettingsWindowPresenter;
 
 	@Override
 	public void attach() {

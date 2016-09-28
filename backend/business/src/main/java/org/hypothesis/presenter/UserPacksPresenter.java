@@ -8,10 +8,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.UserService;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -22,16 +24,8 @@ import org.hypothesis.data.service.UserService;
 @SuppressWarnings("serial")
 public class UserPacksPresenter extends PublicPacksPresenter {
 
-	protected final UserService userService;
-
-	/**
-	 * Construct
-	 */
-	public UserPacksPresenter() {
-		super();
-
-		userService = UserService.newInstance();
-	}
+	@Inject
+	protected UserService userService;
 
 	@Override
 	protected List<Pack> getPacks() {
