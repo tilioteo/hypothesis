@@ -7,6 +7,10 @@ import static org.junit.Assert.*;
 
 import org.hypothesis.interfaces.Document;
 import org.junit.Test;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.ElementSelectors;
 
 /**
  * @author morongk
@@ -24,10 +28,33 @@ public class XmlDocumentWriterTest {
 		XmlDocumentReader reader = new XmlDocumentReader();
 		XmlDocumentWriter writer = new XmlDocumentWriter();
 
-		Document doc = reader.readString(XmlTestUtility.getSampleReaderXmlString());
+		String orig = XmlTestUtility.getSampleReaderXmlString();
+		Document doc = reader.readString(orig);
 		String str = writer.writeString(doc);
+		
+		String txt = XmlTestUtility.getSampleWriterString();
+		
+		/*
+		//@formatter:off
+		Diff similar = DiffBuilder.compare(orig).withTest(str)
+				.withNodeMatcher(new DefaultNodeMatcher(ElementSelectors.byName))
+				.ignoreComments()
+				.normalizeWhitespace()
+				.checkForSimilar()
+				.build();
+		Diff identical = DiffBuilder.compare(orig).withTest(str)
+				.withNodeMatcher(new DefaultNodeMatcher(ElementSelectors.byName))
+				.ignoreComments()
+				.normalizeWhitespace()
+				.checkForIdentical()
+				.build();
+		//@formatter:on
 
-		assertEquals("", str);
+		assertFalse("XML similar " + similar.toString(), similar.hasDifferences());
+		assertFalse("XML identical " + identical.toString(), identical.hasDifferences());
+		*/
+		
+		assertEquals(txt, str);
 	}
 
 }
