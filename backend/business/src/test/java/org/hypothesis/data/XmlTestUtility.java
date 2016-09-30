@@ -47,4 +47,14 @@ public class XmlTestUtility {
 		return null;
 	}
 
+	public static String getSampleWriterString() {
+		try {
+			return new String(Files.readAllBytes(Paths.get(XmlTestUtility.class.getResource("/xml/sampleWriter.txt").toURI())));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 }
