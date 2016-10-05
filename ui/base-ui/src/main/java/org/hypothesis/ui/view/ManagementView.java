@@ -18,21 +18,29 @@ import com.vaadin.ui.VerticalLayout;
  *
  */
 @SuppressWarnings({ "serial" })
-public class ManagementView extends VerticalLayout implements View {
+public abstract class ManagementView extends VerticalLayout implements View {
 
-	private final ManagementPresenter presenter;
+	private ManagementPresenter presenter;
 
-	public ManagementView(ManagementPresenter presenter) {
-		this.presenter = presenter;
-
+	public ManagementView() {
 		setSizeFull();
 		setMargin(true);
 		setSpacing(true);
+	}
+
+	private void buildContent() {
+		removeAllComponents();
 
 		addComponent(presenter.buildHeader());
 		Table table = presenter.buildTable();
 		addComponent(table);
 		setExpandRatio(table, 1);
+	}
+
+	protected void setPresenter(ManagementPresenter presenter) {
+		this.presenter = presenter;
+
+		buildContent();
 	}
 
 	@Override

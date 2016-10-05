@@ -38,20 +38,6 @@ public abstract class ControlledUI extends UI {
 	}
 
 	@Override
-	public void attach() {
-		super.attach();
-
-		presenter.attach();
-	}
-
-	@Override
-	public void detach() {
-		presenter.detach();
-
-		super.detach();
-	}
-
-	@Override
 	public void setResource(String key, Resource resource) {
 		super.setResource(key, resource);
 	}

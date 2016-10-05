@@ -11,6 +11,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.cdi.PublicPacks;
 import org.hypothesis.data.interfaces.PermissionService;
 import org.hypothesis.data.interfaces.TokenService;
 import org.hypothesis.data.model.Pack;
@@ -27,8 +28,8 @@ import org.vaadin.button.ui.OpenPopupButton.WindowClosedEvent;
 import org.vaadin.button.ui.OpenPopupButton.WindowClosedListener;
 import org.vaadin.jre.ui.DeployJava;
 
+import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinService;
@@ -45,10 +46,13 @@ import com.vaadin.ui.Component;
  *
  */
 @SuppressWarnings("serial")
+@PublicPacks
+@NormalViewScoped
 public class PublicPacksPresenter implements PacksPresenter {
 
 	@Inject
 	protected PermissionService permissionService;
+
 	@Inject
 	private TokenService tokenService;
 
@@ -56,10 +60,12 @@ public class PublicPacksPresenter implements PacksPresenter {
 
 	private final HashMap<PackPanel, BeanItem<Pack>> panelBeans = new HashMap<>();
 
-	private User user = null;
-
 	private boolean testStarted = false;
 	private Date featuredStart;
+	
+	public PublicPacksPresenter() {
+		System.out.println("Construct " + getClass().getName());
+	}
 
 	private final ClickListener featuredButtonClickListener = new ClickListener() {
 		@Override
@@ -161,16 +167,6 @@ public class PublicPacksPresenter implements PacksPresenter {
 	};
 
 	@Override
-	public void attach() {
-		// nop
-	}
-
-	@Override
-	public void detach() {
-		// nop
-	}
-
-	@Override
 	public void enter(ViewChangeEvent event) {
 		refreshView();
 	}
@@ -180,7 +176,9 @@ public class PublicPacksPresenter implements PacksPresenter {
 	}
 
 	private Token createToken(Pack pack) {
+		User user = SessionManager.getLoggedUser();
 		String viewUid = SessionManager.getMainUID();
+
 		return tokenService.createToken(user, pack, viewUid, true);
 	}
 
@@ -248,25 +246,35 @@ public class PublicPacksPresenter implements PacksPresenter {
 		return null;
 	}
 
-	protected User getUser() {
-		return user;
-	}
+	/*
+	 * @Override public View createView() { view = new PacksView(this);
+	 * 
+	 * view.setEmptyInfoCaption(FontAwesome.FROWN_O.getHtml() + " " +
+	 * Messages.getString("Message.Info.NoPacks"));
+	 * view.setCheckingJavaInfo(Messages.getString("Message.Info.CheckingJava"))
+	 * ; view.setJavaInstalledCaption(Messages.getString(
+	 * "Message.Info.JavaInstalled"));
+	 * view.setJavaNotInstalledCaption(Messages.getString(
+	 * "Message.Info.JavaNotInstalled"));
+	 * view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"))
+	 * ;
+	 * 
+	 * return view; }
+	 */
 
-	protected void setUser(User user) {
-		this.user = user;
-	}
-
-	@Override
-	public View createView() {
-		view = new PacksView(this);
-
+	public void initView() {
 		view.setEmptyInfoCaption(FontAwesome.FROWN_O.getHtml() + " " + Messages.getString("Message.Info.NoPacks"));
 		view.setCheckingJavaInfo(Messages.getString("Message.Info.CheckingJava"));
 		view.setJavaInstalledCaption(Messages.getString("Message.Info.JavaInstalled"));
 		view.setJavaNotInstalledCaption(Messages.getString("Message.Info.JavaNotInstalled"));
 		view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"));
+	}
 
-		return view;
+	@Override
+	public void setView(PacksView view) {
+		this.view = view;
+		
+		initView();
 	}
 
 }

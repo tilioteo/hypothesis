@@ -4,12 +4,6 @@
  */
 package org.hypothesis.navigator;
 
-import javax.inject.Inject;
-
-import org.hypothesis.cdi.Main;
-import org.hypothesis.event.interfaces.EventBus;
-import org.hypothesis.eventbus.MainEventBus;
-import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.interfaces.ViewPresenter;
 
 import com.vaadin.navigator.View;
@@ -23,10 +17,6 @@ import com.vaadin.navigator.ViewProvider;
  */
 @SuppressWarnings("serial")
 public class HypothesisViewProvider implements ViewProvider {
-
-	@Inject
-	@Main
-	private EventBus bus;
 
 	private final HypothesisViewType viewType;
 
@@ -42,8 +32,7 @@ public class HypothesisViewProvider implements ViewProvider {
 	 * @param bus
 	 * @param viewType
 	 */
-	public HypothesisViewProvider(/*MainEventBus bus,*/ HypothesisViewType viewType) {
-		this.bus = bus;
+	public HypothesisViewProvider(HypothesisViewType viewType) {
 		this.viewType = viewType;
 	}
 
@@ -69,31 +58,31 @@ public class HypothesisViewProvider implements ViewProvider {
 			if (viewType.isStateful()) {
 				// Stateful views get lazily instantiated
 				if (cachedInstance == null) {
-					cachedInstance = createView();
+					//cachedInstance = createView();
 				}
 				result = cachedInstance;
 			} else {
 				// Non-stateful views get instantiated every time
 				// they're navigated to
-				result = createView();
+				//result = createView();
 			}
 		}
 		return result;
 	}
 
-	private View createView() {
+	/*private View createView() {
 		if (null == presenter) {
 			try {
 				presenter = viewType.getViewPresenterClass().newInstance();
-
-				/*if (presenter instanceof HasMainEventBus) {
-					((HasMainEventBus) presenter).setMainEventBus(bus);
-				}
-
-				if (presenter instanceof ManagementPresenter) {
-					((ManagementPresenter) presenter).init();
-				}*/
-
+*/
+				/*
+				 * if (presenter instanceof HasMainEventBus) {
+				 * ((HasMainEventBus) presenter).setMainEventBus(bus); }
+				 * 
+				 * if (presenter instanceof ManagementPresenter) {
+				 * ((ManagementPresenter) presenter).init(); }
+				 */
+/*
 				return presenter.createView();
 
 			} catch (InstantiationException | IllegalAccessException e) {
@@ -102,6 +91,6 @@ public class HypothesisViewProvider implements ViewProvider {
 		}
 
 		return null;
-	}
+	}*/
 
 }

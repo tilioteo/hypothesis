@@ -31,20 +31,6 @@ public class LoginScreen extends VerticalLayout {
 		setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 	}
 
-	@Override
-	public void attach() {
-		super.attach();
-
-		presenter.attach();
-	}
-
-	@Override
-	public void detach() {
-		presenter.detach();
-
-		super.detach();
-	}
-
 	public void refresh() {
 		presenter.refreshLoginForm();
 	}

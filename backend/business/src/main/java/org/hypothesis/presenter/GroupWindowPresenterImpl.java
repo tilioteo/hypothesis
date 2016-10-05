@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
@@ -29,6 +30,7 @@ import org.hypothesis.interfaces.GroupWindowPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.table.SimpleCheckerColumnGenerator;
 
+import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
@@ -64,6 +66,7 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 @SuppressWarnings("serial")
 @Default
+@NormalUIScoped
 public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements GroupWindowPresenter {
 
 	@Inject
@@ -72,6 +75,9 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 	private UserService userService;
 	@Inject
 	private PermissionService permissionService;
+
+	@Inject
+	private Event<MainUIEvent> mainEvent;
 
 	private TextField idField;
 	private TextField nameField;
@@ -497,7 +503,7 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 			for (Group group : (Collection<Group>) source) {
 				group = saveGroup(group);
 				if (group != null) {
-					bus.post(new MainUIEvent.GroupAddedEvent(group));
+					mainEvent.fire(new MainUIEvent.GroupAddedEvent(group));
 				}
 			}
 
@@ -510,7 +516,7 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 			}
 			group = saveGroup(group);
 			if (group != null) {
-				bus.post(new MainUIEvent.GroupAddedEvent(group));
+				mainEvent.fire(new MainUIEvent.GroupAddedEvent(group));
 			}
 		}
 	}
@@ -548,7 +554,7 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 				}
 
 				if (user != null) {
-					bus.post(new MainUIEvent.UserGroupsChangedEvent(user));
+					mainEvent.fire(new MainUIEvent.UserGroupsChangedEvent(user));
 
 					if (user.equals(loggedUser)) {
 						updatedLoggedUser = user;
@@ -575,7 +581,7 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 
 		if (updatedLoggedUser != null) {
 			SessionManager.setLoggedUser(updatedLoggedUser);
-			bus.post(new MainUIEvent.UserPacksChangedEvent(updatedLoggedUser));
+			mainEvent.fire(new MainUIEvent.UserPacksChangedEvent(updatedLoggedUser));
 		}
 
 		return group;

@@ -7,13 +7,17 @@ package org.hypothesis.presenter;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
 import org.hypothesis.interfaces.MainPresenter;
+import org.hypothesis.interfaces.MenuPresenter;
 import org.hypothesis.servlet.ServletUtil;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.menu.HypothesisMenu;
 
+import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -35,6 +39,7 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 @SuppressWarnings("serial")
 @Default
+@NormalUIScoped
 public class MainPresenterImpl implements MainPresenter {
 
 	private static String VERSION;// = Manifests.read("Version");
@@ -43,32 +48,19 @@ public class MainPresenterImpl implements MainPresenter {
 	private static String VERSION_ADDITIONAL;// =
 												// Manifests.read("Version-Additional");*/
 
+	@Inject
+	private MenuPresenter menuPresenter;
+
 	private ComponentContainer content;
 
-	/**
-	 * Construct with bus
-	 * 
-	 * @param bus
-	 */
-	public MainPresenterImpl(/* MainEventBus bus */) {
-
-		// menuPresenter = new HypothesisMenuPresenter(bus);
+	public MainPresenterImpl() {
+		System.out.println("Construct " + getClass().getName());
 
 		Manifest manifest = ServletUtil.getManifest(VaadinServlet.getCurrent().getServletContext());
 		Attributes attributes = manifest.getMainAttributes();
 		VERSION = attributes.getValue("Version");
 		VERSION_SPECIFIC = attributes.getValue("Version-Specific");
 		VERSION_ADDITIONAL = attributes.getValue("Version-Additional");
-	}
-
-	@Override
-	public void attach() {
-		// nop
-	}
-
-	@Override
-	public void detach() {
-		// nop
 	}
 
 	@Override
@@ -113,7 +105,7 @@ public class MainPresenterImpl implements MainPresenter {
 	public Component buildMainPane() {
 		HorizontalLayout layout = new HorizontalLayout();
 
-		layout.addComponent(new HypothesisMenu());
+		layout.addComponent(buildMenu());
 
 		content = new CssLayout();
 		content.addStyleName("view-content");
@@ -154,6 +146,16 @@ public class MainPresenterImpl implements MainPresenter {
 	@Override
 	public MainScreen createScreen() {
 		return new MainScreen(this);
+	}
+
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
+	}
+
+	@Override
+	public Component buildMenu() {
+		return new HypothesisMenu(menuPresenter);
 	}
 
 }

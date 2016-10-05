@@ -4,13 +4,9 @@
  */
 package org.hypothesis.ui.menu;
 
-import org.hypothesis.event.interfaces.MainUIEvent.PostViewChangeEvent;
-
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
-
-import net.engio.mbassy.listener.Handler;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -41,10 +37,9 @@ public class ValoMenuItemButton extends Button {
 
 	}
 
-	@Handler
-	public void postViewChange(final PostViewChangeEvent event) {
+	public void afterViewChange(String viewName) {
 		removeStyleName(STYLE_SELECTED);
-		if (viewName.equals(event.getViewName())) {
+		if (this.viewName.equals(viewName)) {
 			addStyleName(STYLE_SELECTED);
 		}
 	}

@@ -20,6 +20,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
@@ -27,6 +30,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.interfaces.GroupService;
 import org.hypothesis.data.interfaces.PermissionService;
@@ -43,6 +47,7 @@ import org.hypothesis.interfaces.UserWindowPresenter;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -68,8 +73,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import net.engio.mbassy.listener.Handler;
-
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -78,6 +81,7 @@ import net.engio.mbassy.listener.Handler;
  */
 @SuppressWarnings("serial")
 @Default
+@NormalViewScoped
 public class UserManagementPresenterImpl extends AbstractManagementPresenter implements UserManagementPresenter {
 
 	@Inject
@@ -89,6 +93,13 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 
 	@Inject
 	private UserWindowPresenter userWindowPresenter;
+
+	@Inject
+	private Event<MainUIEvent> mainEvent;
+
+	public UserManagementPresenterImpl() {
+		System.out.println("Construct " + getClass().getName());
+	}
 
 	@Override
 	public Component buildHeader() {
@@ -112,8 +123,9 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		addButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				if (!loggedUser.hasRole(RoleServiceImpl.ROLE_SUPERUSER)
-						&& groupService.findOwnerGroups(loggedUser).isEmpty()) {
+				User user = SessionManager.getLoggedUser();
+
+				if (!user.hasRole(RoleServiceImpl.ROLE_SUPERUSER) && groupService.findOwnerGroups(user).isEmpty()) {
 					Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
 				} else {
 					userWindowPresenter.showWindow();
@@ -138,7 +150,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				bus.post(new MainUIEvent.UserSelectionChangedEvent());
+				mainEvent.fire(new MainUIEvent.UserSelectionChangedEvent());
 			}
 		});
 
@@ -232,6 +244,8 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 	}
 
 	private void deleteUsers() {
+		User loggedUser = SessionManager.getLoggedUser();
+
 		Collection<User> users = getSelectedUsers();
 
 		checkDeletionPermission(loggedUser, users);
@@ -245,7 +259,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 
 			for (Group group : user.getGroups()) {
 				if (group != null) {
-					bus.post(new MainUIEvent.GroupUsersChangedEvent(group));
+					mainEvent.fire(new MainUIEvent.GroupUsersChangedEvent(group));
 				}
 			}
 
@@ -253,7 +267,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		}
 
 		if (users.contains(loggedUser)) {
-			bus.post(new MainUIEvent.UserLoggedOutEvent());
+			mainEvent.fire(new MainUIEvent.UserLoggedOutEvent());
 		}
 	}
 
@@ -336,6 +350,8 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		BeanContainer<Long, User> dataSource = new BeanContainer<>(User.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
+		User loggedUser = SessionManager.getLoggedUser();
+
 		List<User> users;
 		if (loggedUser.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
 			users = userService.findAll();
@@ -373,7 +389,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		table.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				bus.post(new MainUIEvent.UserSelectionChangedEvent());
+				mainEvent.fire(new MainUIEvent.UserSelectionChangedEvent());
 			}
 		});
 
@@ -545,8 +561,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	@Handler
-	public void addUserIntoTable(final MainUIEvent.UserAddedEvent event) {
+	public void addUserIntoTable(@Observes final MainUIEvent.UserAddedEvent event) {
 		User user = event.getUser();
 		BeanContainer<Long, User> container = (BeanContainer<Long, User>) table.getContainerDataSource();
 
@@ -565,8 +580,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	@Handler
-	public void changeUserGroups(final MainUIEvent.UserGroupsChangedEvent event) {
+	public void changeUserGroups(@Observes final MainUIEvent.UserGroupsChangedEvent event) {
 		User user = event.getUser();
 		BeanContainer<Long, User> container = (BeanContainer<Long, User>) table.getContainerDataSource();
 
@@ -583,11 +597,15 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	@Handler
-	public void setToolsEnabled(final MainUIEvent.UserSelectionChangedEvent event) {
+	public void setToolsEnabled(@Observes final MainUIEvent.UserSelectionChangedEvent event) {
 		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
 		boolean toolsEnabled = allSelected || itemsSelected;
 		buttonGroup.setEnabled(toolsEnabled);
+	}
+
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
 	}
 
 }

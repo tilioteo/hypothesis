@@ -165,5 +165,8 @@ public interface MainUIEvent extends HypothesisEvent {
 			return progress;
 		}
 	}
+	
+	final class UserPacksRequestRefresh implements MainUIEvent {
+	}
 
 }

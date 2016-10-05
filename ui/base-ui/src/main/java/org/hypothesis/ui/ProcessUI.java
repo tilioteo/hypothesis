@@ -4,10 +4,12 @@
  */
 package org.hypothesis.ui;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.hypothesis.cdi.Process;
 import org.hypothesis.interfaces.Command;
+import org.hypothesis.interfaces.Detachable;
 import org.hypothesis.interfaces.UIPresenter;
 import org.vaadin.jouni.animator.AnimatorProxy;
 import org.vaadin.jouni.animator.AnimatorProxy.AnimationEvent;
@@ -49,11 +51,21 @@ public class ProcessUI extends HypothesisUI {
 		System.out.println("Construct ProcessUI");
 	}
 
-	@Override
-	@Inject
-	public void setPresenter(@Process UIPresenter presenter) {
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
+
+		setPresenter(presenter);
 		presenter.setUI(this);
-		super.setPresenter(presenter);
+	}
+
+	@Override
+	public void detach() {
+		if (presenter instanceof Detachable) {
+			((Detachable) presenter).detach();
+		}
+
+		super.detach();
 	}
 
 	public void showErrorDialog(ErrorDialog dialog) {

@@ -4,6 +4,7 @@
  */
 package org.hypothesis.ui;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.hypothesis.cdi.Main;
@@ -12,6 +13,9 @@ import org.hypothesis.interfaces.UIPresenter;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.server.VaadinRequest;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -24,16 +28,21 @@ import com.vaadin.cdi.CDIUI;
 @Theme("hypothesis")
 @CDIUI("")
 public class MainUI extends HypothesisUI {
-
-	public MainUI() {
-		System.out.println("Construct MainUI");
-	}
-
-	@Override
+	
 	@Inject
-	public void setPresenter(@Main UIPresenter presenter) {
+	@Main
+	private UIPresenter presenter; 
+	
+	public MainUI() {
+		System.out.println("Construct " + getClass().getName());
+	}
+	
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
+		
+		setPresenter(presenter);
 		presenter.setUI(this);
-		super.setPresenter(presenter);
 	}
 	
 }

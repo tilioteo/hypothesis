@@ -6,12 +6,11 @@ package org.hypothesis.presenter;
 
 import java.util.ArrayList;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.hypothesis.business.SessionManager;
-import org.hypothesis.cdi.Main;
 import org.hypothesis.data.model.User;
-import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.WindowPresenter;
 import org.hypothesis.server.Messages;
@@ -50,8 +49,7 @@ public abstract class AbstractWindowPresenter implements CloseListener, WindowPr
 	protected WindowState state;
 
 	@Inject
-	@Main
-	protected EventBus bus;
+	private Event<MainUIEvent> mainEvent;
 
 	protected ArrayList<AbstractField<?>> fields;
 
@@ -137,13 +135,15 @@ public abstract class AbstractWindowPresenter implements CloseListener, WindowPr
 
 		createWindow();
 
-		bus.post(new MainUIEvent.CloseOpenWindowsEvent());
+		mainEvent.fire(new MainUIEvent.CloseOpenWindowsEvent());
 		UI.getCurrent().addWindow(window);
 		window.center();
 		window.focus();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.hypothesis.presenter.WindowPresenter#showWindow()
 	 */
 	@Override

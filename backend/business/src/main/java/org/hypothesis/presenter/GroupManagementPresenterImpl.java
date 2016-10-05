@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
@@ -24,6 +26,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.interfaces.GroupService;
 import org.hypothesis.data.interfaces.PermissionService;
@@ -38,6 +41,7 @@ import org.hypothesis.interfaces.GroupWindowPresenter;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -61,8 +65,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import net.engio.mbassy.listener.Handler;
-
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -71,6 +73,7 @@ import net.engio.mbassy.listener.Handler;
  */
 @SuppressWarnings("serial")
 @Default
+@NormalViewScoped
 public class GroupManagementPresenterImpl extends AbstractManagementPresenter implements GroupManagementPresenter {
 
 	@Inject
@@ -80,6 +83,9 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 
 	@Inject
 	private GroupWindowPresenter groupWindowPresenter;
+
+	@Inject
+	private Event<MainUIEvent> mainEvent;
 
 	@Override
 	public Component buildHeader() {
@@ -124,7 +130,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 			@Override
 			public void valueChange(ValueChangeEvent event) {
 				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				bus.post(new MainUIEvent.GroupSelectionChangedEvent());
+				mainEvent.fire(new MainUIEvent.GroupSelectionChangedEvent());
 			}
 		});
 
@@ -233,7 +239,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 
 			for (User user : users) {
 				if (user != null) {
-					bus.post(new MainUIEvent.UserGroupsChangedEvent(user));
+					mainEvent.fire(new MainUIEvent.UserGroupsChangedEvent(user));
 				}
 			}
 
@@ -274,11 +280,12 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		BeanContainer<Long, Group> dataSource = new BeanContainer<>(Group.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
+		User user = SessionManager.getLoggedUser();
 		List<Group> groups;
-		if (loggedUser.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
+		if (user.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
 			groups = groupService.findAll();
 		} else {
-			groups = groupService.findOwnerGroups(loggedUser);
+			groups = groupService.findOwnerGroups(user);
 		}
 		for (Group group : groups) {
 			group = groupService.merge(group);
@@ -301,7 +308,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		table.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				bus.post(new MainUIEvent.GroupSelectionChangedEvent());
+				mainEvent.fire(new MainUIEvent.GroupSelectionChangedEvent());
 			}
 		});
 
@@ -420,8 +427,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	@Handler
-	public void addGroupIntoTable(final MainUIEvent.GroupAddedEvent event) {
+	public void addGroupIntoTable(@Observes final MainUIEvent.GroupAddedEvent event) {
 		Group group = event.getGroup();
 		if (group != null) {
 			BeanContainer<Long, Group> container = (BeanContainer<Long, Group>) table.getContainerDataSource();
@@ -442,8 +448,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	@Handler
-	public void changeGroupUsers(final MainUIEvent.GroupUsersChangedEvent event) {
+	public void changeGroupUsers(@Observes final MainUIEvent.GroupUsersChangedEvent event) {
 		Group group = event.getGroup();
 		BeanContainer<Long, Group> container = (BeanContainer<Long, Group>) table.getContainerDataSource();
 
@@ -460,8 +465,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	@Handler
-	public void setToolsEnabled(final MainUIEvent.GroupSelectionChangedEvent event) {
+	public void setToolsEnabled(@Observes final MainUIEvent.GroupSelectionChangedEvent event) {
 		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
 		boolean toolsEnabled = allSelected || itemsSelected;
 		buttonGroup.setEnabled(toolsEnabled);

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.hypothesis.business.EventManager;
@@ -15,12 +16,10 @@ import org.hypothesis.business.MessageManager;
 import org.hypothesis.business.ObjectConstants;
 import org.hypothesis.business.SlideDocument;
 import org.hypothesis.business.SlideNavigator;
-import org.hypothesis.cdi.Process;
 import org.hypothesis.evaluation.AbstractBaseAction;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.data.Message;
-import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.ProcessEvent;
 import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.event.model.MessageEvent;
@@ -66,10 +65,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	private SlideContainer container;
 
-	@Inject
-	@Process
-	protected EventBus bus;
-
 	private HypothesisUI ui = null;
 
 	private final ViewportEventManager viewportEventManager = new ViewportEventManager();
@@ -92,6 +87,9 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	private MessageManager messageManager = null;
 
 	private Long userId = null;
+
+	@Inject
+	private Event<ProcessEvent> procEvent;
 
 	/**
 	 * Constructor
@@ -165,7 +163,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	@Override
 	public void detach(Component component, HasComponents parent, UI ui, VaadinSession session) {
-		bus = null;
 		this.ui = null;
 
 		viewportEventManager.setEnabled(false);
@@ -219,9 +216,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	 * @param event
 	 */
 	public void fireEvent(ProcessEvent event) {
-		if (bus != null) {
-			bus.post(event);
-		}
+		procEvent.fire(event);
 	}
 
 	/**
@@ -260,9 +255,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		return new Command() {
 			@Override
 			public void execute() {
-				if (bus != null) {
-					bus.post(new ActionEvent(action));
-				}
+				procEvent.fire(new ActionEvent(action));
 			}
 		};
 	}

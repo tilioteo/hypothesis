@@ -23,6 +23,8 @@ public interface MainPresenter extends ComponentPresenter {
 
 	Component buildBottomPanel();
 
+	Component buildMenu();
+
 	ComponentContainer getContent();
 
 	MainScreen createScreen();

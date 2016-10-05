@@ -14,6 +14,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.interfaces.RoleService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Role;
+import org.hypothesis.interfaces.RoleType;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -29,9 +30,9 @@ public class RoleServiceImpl implements RoleService {
 
 	private final HibernateDao<Role, Long> roleDao;
 
-	public static final Role ROLE_SUPERUSER = initRoleByName("SUPERUSER");
-	public static final Role ROLE_MANAGER = initRoleByName("MANAGER");
-	public static final Role ROLE_USER = initRoleByName("USER");
+	public static final Role ROLE_SUPERUSER = initRoleByName(RoleType.SUPERUSER.name());
+	public static final Role ROLE_MANAGER = initRoleByName(RoleType.MANAGER.name());
+	public static final Role ROLE_USER = initRoleByName(RoleType.USER.name());
 
 	public RoleServiceImpl() {
 		roleDao = new HibernateDao<>(Role.class);

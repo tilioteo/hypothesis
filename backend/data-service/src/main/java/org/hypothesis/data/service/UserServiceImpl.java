@@ -6,6 +6,7 @@ package org.hypothesis.data.service;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Default;
 
 import org.apache.log4j.Logger;
@@ -16,6 +17,8 @@ import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.User;
 
+import com.vaadin.cdi.NormalUIScoped;
+
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -24,6 +27,7 @@ import org.hypothesis.data.model.User;
  */
 @SuppressWarnings("serial")
 @Default
+@NormalUIScoped
 public class UserServiceImpl implements UserService {
 
 	private static final Logger log = Logger.getLogger(UserServiceImpl.class);
@@ -31,6 +35,7 @@ public class UserServiceImpl implements UserService {
 	private final HibernateDao<User, Long> userDao;
 
 	public UserServiceImpl() {
+		System.out.println("Construct " + getClass().getName());
 		userDao = new HibernateDao<>(User.class);
 	}
 
@@ -283,4 +288,8 @@ public class UserServiceImpl implements UserService {
 		return false;
 	}
 
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
+	}
 }

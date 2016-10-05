@@ -6,16 +6,17 @@ package org.hypothesis.presenter;
 
 import java.io.Serializable;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
-import org.hypothesis.cdi.Main;
 import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.User;
-import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.UserSettingsWindowPresenter;
 import org.hypothesis.server.Messages;
 
+import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.PropertyId;
@@ -44,6 +45,8 @@ import com.vaadin.ui.themes.ValoTheme;
  *
  */
 @SuppressWarnings("serial")
+@Default
+@NormalUIScoped
 public class UserSettingsWindowPresenterImpl implements Serializable, UserSettingsWindowPresenter {
 
 	private Window window;
@@ -53,8 +56,7 @@ public class UserSettingsWindowPresenterImpl implements Serializable, UserSettin
 	private User user;
 
 	@Inject
-	@Main
-	private EventBus bus;
+	private Event<MainUIEvent> mainEvent;
 
 	private BeanFieldGroup<User> fieldGroup;
 
@@ -108,7 +110,7 @@ public class UserSettingsWindowPresenterImpl implements Serializable, UserSettin
 					success.setPosition(Position.BOTTOM_CENTER);
 					success.show(Page.getCurrent());
 
-					bus.post(new MainUIEvent.ProfileUpdatedEvent());
+					mainEvent.fire(new MainUIEvent.ProfileUpdatedEvent());
 					window.close();
 				} catch (CommitException e) {
 					Notification.show(Messages.getString("Message.Error.ProfileUpdate"), Type.ERROR_MESSAGE);
@@ -155,7 +157,7 @@ public class UserSettingsWindowPresenterImpl implements Serializable, UserSettin
 
 		createWindow();
 
-		bus.post(new MainUIEvent.CloseOpenWindowsEvent());
+		mainEvent.fire(new MainUIEvent.CloseOpenWindowsEvent());
 		UI.getCurrent().addWindow(window);
 		window.center();
 		window.focus();

@@ -4,19 +4,22 @@
  */
 package org.hypothesis.presenter;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
-import org.hypothesis.cdi.Main;
-import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidLoginEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidUserPermissionEvent;
+import org.hypothesis.event.interfaces.MainUIEvent.UserLoginRequestedEvent;
 import org.hypothesis.interfaces.LoginPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.LoginScreen;
 import org.vaadin.special.data.EmptyValidator;
 
+import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.ExternalResource;
@@ -40,8 +43,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import net.engio.mbassy.listener.Handler;
-
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -50,23 +51,17 @@ import net.engio.mbassy.listener.Handler;
  */
 @SuppressWarnings("serial")
 @Default
+@NormalUIScoped
 public class LoginPresenterImpl implements LoginPresenter {
 
 	private TextField username;
 	private PasswordField password;
 
 	@Inject
-	@Main
-	private EventBus bus;
-
-	@Override
-	public void attach() {
-		bus.register(this);
-	}
-
-	@Override
-	public void detach() {
-		bus.unregister(this);
+	private Event<MainUIEvent> mainEvent;
+	
+	public LoginPresenterImpl() {
+		System.out.println("Construct " + getClass().getName());
 	}
 
 	@Override
@@ -165,7 +160,10 @@ public class LoginPresenterImpl implements LoginPresenter {
 					username.setValidationVisible(true);
 					password.setValidationVisible(true);
 				} else {
-					bus.post(new MainUIEvent.UserLoginRequestedEvent(username.getValue(), password.getValue()));
+					// bus.post(new
+					// MainUIEvent.UserLoginRequestedEvent(username.getValue(),
+					// password.getValue()));
+					mainEvent.fire(new UserLoginRequestedEvent(username.getValue(), password.getValue()));
 				}
 			}
 		});
@@ -179,7 +177,7 @@ public class LoginPresenterImpl implements LoginPresenter {
 		button.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				bus.post(new MainUIEvent.GuestAccessRequestedEvent());
+				mainEvent.fire(new MainUIEvent.GuestAccessRequestedEvent());
 			}
 		});
 		return button;
@@ -205,8 +203,7 @@ public class LoginPresenterImpl implements LoginPresenter {
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void invalidLogin(InvalidLoginEvent event) {
+	public void invalidLogin(@Observes InvalidLoginEvent event) {
 		clearFields();
 		showError(Messages.getString("Message.Error.InvalidLogin"));
 	}
@@ -216,8 +213,7 @@ public class LoginPresenterImpl implements LoginPresenter {
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void invalidUserPermission(InvalidUserPermissionEvent event) {
+	public void invalidUserPermission(@Observes InvalidUserPermissionEvent event) {
 		clearFields();
 		showError(Messages.getString("Message.Error.AccessDenied"));
 	}
@@ -232,4 +228,8 @@ public class LoginPresenterImpl implements LoginPresenter {
 		return new LoginScreen(this);
 	}
 
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
+	}
 }

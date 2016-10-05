@@ -4,19 +4,11 @@
  */
 package org.hypothesis.presenter;
 
-import javax.inject.Inject;
-
-import org.hypothesis.business.SessionManager;
-import org.hypothesis.cdi.Main;
-import org.hypothesis.data.model.User;
-import org.hypothesis.event.interfaces.EventBus;
 import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.server.Messages;
-import org.hypothesis.ui.view.ManagementView;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.ConfirmDialog.Listener;
 
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
@@ -37,12 +29,6 @@ import com.vaadin.ui.Table.ColumnGenerator;
 @SuppressWarnings("serial")
 public abstract class AbstractManagementPresenter implements ManagementPresenter, ColumnGenerator, Listener {
 
-	protected User loggedUser;
-
-	@Inject
-	@Main
-	protected EventBus bus;
-
 	protected CssLayout buttonGroup;
 	protected Table table;
 
@@ -59,16 +45,6 @@ public abstract class AbstractManagementPresenter implements ManagementPresenter
 	protected abstract Button buildDeleteButton();
 
 	protected abstract Resource getExportResource();
-
-	@Override
-	public void attach() {
-		bus.register(this);
-	}
-
-	@Override
-	public void detach() {
-		bus.unregister(this);
-	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -98,13 +74,6 @@ public abstract class AbstractManagementPresenter implements ManagementPresenter
 		FileDownloader fileDownloader = new FileDownloader(exportResource);
 		fileDownloader.extend(exportButton);
 		return exportButton;
-	}
-
-	@Override
-	public View createView() {
-		loggedUser = SessionManager.getLoggedUser();
-
-		return new ManagementView(this);
 	}
 
 }

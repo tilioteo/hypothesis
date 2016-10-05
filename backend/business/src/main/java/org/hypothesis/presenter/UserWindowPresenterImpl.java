@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import org.hypothesis.business.SessionManager;
@@ -34,6 +36,7 @@ import org.hypothesis.ui.table.CheckTable;
 import org.hypothesis.ui.table.DoubleCheckerColumnGenerator;
 import org.hypothesis.ui.table.SimpleCheckerColumnGenerator;
 
+import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -78,6 +81,8 @@ import com.vaadin.ui.themes.ValoTheme;
  *
  */
 @SuppressWarnings("serial")
+@Default
+@NormalUIScoped
 public class UserWindowPresenterImpl extends AbstractWindowPresenter implements UserWindowPresenter {
 
 	@Inject
@@ -88,6 +93,9 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 	private RoleService roleService;
 	@Inject
 	private PermissionService permissionService;
+
+	@Inject
+	private Event<MainUIEvent> mainEvent;
 
 	private TextField idField;
 	private TextField usernameField;
@@ -713,7 +721,7 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 			for (User user : (Collection<User>) source) {
 				user = saveUser(user, true);
 				if (user != null) {
-					bus.post(new MainUIEvent.UserAddedEvent(user));
+					mainEvent.fire(new MainUIEvent.UserAddedEvent(user));
 				}
 			}
 
@@ -738,7 +746,7 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 			}
 			user = saveUser(user, true);
 			if (user != null) {
-				bus.post(new MainUIEvent.UserAddedEvent(user));
+				mainEvent.fire(new MainUIEvent.UserAddedEvent(user));
 			}
 		}
 	}
@@ -801,7 +809,7 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 				}
 
 				if (group != null) {
-					bus.post(new MainUIEvent.GroupUsersChangedEvent(group));
+					mainEvent.fire(new MainUIEvent.GroupUsersChangedEvent(group));
 				}
 			}
 		}
@@ -832,17 +840,17 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 				// Superuser/Manager -> User degradation
 				if (!newRoles.contains(RoleServiceImpl.ROLE_MANAGER)
 						&& !newRoles.contains(RoleServiceImpl.ROLE_SUPERUSER)) {
-					bus.post(new MainUIEvent.UserLoggedOutEvent());
+					mainEvent.fire(new MainUIEvent.UserLoggedOutEvent());
 
 					// Superuser -> Manager degradation
 				} else if (oldRoles.contains(RoleServiceImpl.ROLE_SUPERUSER)
 						&& !newRoles.contains(RoleServiceImpl.ROLE_SUPERUSER)) {
-					bus.post(new MainUIEvent.ProfileUpdatedEvent());
+					mainEvent.fire(new MainUIEvent.ProfileUpdatedEvent());
 					// TODO: zmena vypisu skupin
 				}
 			}
 
-			bus.post(new MainUIEvent.UserPacksChangedEvent(user));
+			mainEvent.fire(new MainUIEvent.UserPacksChangedEvent(user));
 		}
 
 		return user;

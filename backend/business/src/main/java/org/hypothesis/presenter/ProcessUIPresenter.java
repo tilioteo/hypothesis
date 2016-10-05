@@ -4,6 +4,9 @@
  */
 package org.hypothesis.presenter;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
@@ -12,7 +15,7 @@ import org.hypothesis.cdi.Process;
 import org.hypothesis.data.interfaces.TokenService;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Token;
-import org.hypothesis.event.interfaces.EventBus;
+import org.hypothesis.event.interfaces.ProcessEvent;
 import org.hypothesis.event.interfaces.ProcessViewEvent.ProcessViewEndEvent;
 import org.hypothesis.event.model.AbstractNotificationEvent;
 import org.hypothesis.event.model.AfterFinishSlideEvent;
@@ -26,6 +29,7 @@ import org.hypothesis.event.model.NextSlideEvent;
 import org.hypothesis.event.model.PriorSlideEvent;
 import org.hypothesis.event.model.RenderContentEvent;
 import org.hypothesis.interfaces.Command;
+import org.hypothesis.interfaces.Detachable;
 import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.slide.ui.Window;
@@ -42,8 +46,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window.CloseEvent;
 
-import net.engio.mbassy.listener.Handler;
-
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -52,7 +54,7 @@ import net.engio.mbassy.listener.Handler;
  */
 @SuppressWarnings("serial")
 @Process
-public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresenter {
+public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresenter, Detachable {
 
 	public static final String FULLSCREEN_PARAMETER = "fs";
 	public static final String BACK_PARAMETER = "bk";
@@ -64,10 +66,6 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 
 	private ProcessUI ui;
 
-	@Inject
-	@Process
-	private EventBus bus;
-
 	private boolean requestFullscreen = false;
 	private boolean requestBack = false;
 	private final boolean animate = true;
@@ -78,12 +76,15 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	@Inject
 	private TokenService tokenService;
 
+	@Inject
+	private Event<ProcessEvent> procEvent;
+
 	private ProcessManager processManager;
 
 	private SimpleTest preparedTest = null;
 
 	public ProcessUIPresenter() {
-		System.out.println("Construct ProcessUIPresenter");
+		System.out.println("Construct " + getClass().getName());
 	}
 
 	@Override
@@ -133,20 +134,9 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 		}
 	}
 
-	@Override
-	public void attach() {
-		if (bus != null) {
-			bus.register(this);
-		}
-	}
-
-	@Override
+	// @Override
 	public void detach() {
 		log.debug("detaching ProcessUI");
-
-		if (bus != null) {
-			bus.unregister(this);
-		}
 
 		processManager.requestBreakTest();
 		processManager.clean();
@@ -199,7 +189,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	 *            Error description
 	 */
 	private void fireError(String caption) {
-		bus.post(new ErrorNotificationEvent(caption));
+		procEvent.fire(new ErrorNotificationEvent(caption));
 	}
 
 	private void showErrorDialog(final ErrorNotificationEvent event) {
@@ -208,7 +198,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 		errorDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				bus.post(new CloseTestEvent());
+				procEvent.fire(new CloseTestEvent());
 			}
 		});
 		ui.showErrorDialog(errorDialog);
@@ -219,12 +209,12 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void doAfterFinishSlide(final AfterFinishSlideEvent event) {
+	public void doAfterFinishSlide(@Observes final AfterFinishSlideEvent event) {
 		ui.clearContent(animate, new Command() {
 			@Override
 			public void execute() {
-				bus.post(Direction.NEXT.equals(event.getDirection()) ? new NextSlideEvent() : new PriorSlideEvent());
+				procEvent.fire(
+						Direction.NEXT.equals(event.getDirection()) ? new NextSlideEvent() : new PriorSlideEvent());
 			}
 		});
 	}
@@ -234,14 +224,13 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void renderContent(RenderContentEvent event) {
+	public void renderContent(@Observes RenderContentEvent event) {
 		log.debug("renderContent::");
 		Component component = event.getComponent();
 		if (component != null) {
 			ui.setSlideContent(component);
 
-			bus.post(new AfterRenderContentEvent(component));
+			procEvent.fire(new AfterRenderContentEvent(component));
 		} else {
 			log.error("Error while rendering slide.");
 			fireTestError();
@@ -253,8 +242,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void showPreparedContent(final AfterPrepareTestEvent event) {
+	public void showPreparedContent(@Observes final AfterPrepareTestEvent event) {
 		log.debug(String.format("showPreparedContent: test id = %s",
 				event.getTest() != null ? event.getTest().getId() : "NULL"));
 
@@ -284,8 +272,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void processViewEnd(ProcessViewEndEvent event) {
+	public void processViewEnd(@Observes ProcessViewEndEvent event) {
 		ui.clearContent(animate, null);
 	}
 
@@ -294,8 +281,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void showFinishContent(FinishTestEvent event) {
+	public void showFinishContent(@Observes FinishTestEvent event) {
 		ui.clearContent(false, null);
 
 		TestEndScreen screen = new TestEndScreen();
@@ -304,7 +290,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 		screen.setNextCommand(new Command() {
 			@Override
 			public void execute() {
-				bus.post(new CloseTestEvent());
+				procEvent.fire(new CloseTestEvent());
 			}
 		});
 
@@ -316,8 +302,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void showNotification(AbstractNotificationEvent event) {
+	public void showNotification(@Observes AbstractNotificationEvent event) {
 		if (event instanceof ErrorNotificationEvent) {
 			showErrorDialog((ErrorNotificationEvent) event);
 
@@ -332,8 +317,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void requestClose(final CloseTestEvent event) {
+	public void requestClose(@Observes final CloseTestEvent event) {
 		log.debug("close requested");
 		if (requestBack) {
 			log.debug("closing ProcessUI with history back");
@@ -359,4 +343,8 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 		}
 	}
 
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
+	}
 }
