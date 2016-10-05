@@ -288,16 +288,14 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			SelectPanel selectPanel = (SelectPanel) field;
 
 			Collection<SelectButton> selectedButtons = selectPanel.getSelectedButtons();
-			if (!selectedButtons.isEmpty()) {
-				for (SelectButton selected : selectedButtons) {
-					if (null == valueElement) {
-						valueElement = element.createChild(DocumentConstants.VALUE);
-					}
-					valueElement.setAttribute(DocumentConstants.ID,
-							String.format("%d", selectPanel.getChildIndex(selected) + 1));
-					valueElement.setText(selected.getCaption());
-					valueElement = null;
+			for (SelectButton selected : selectedButtons) {
+				if (null == valueElement) {
+					valueElement = element.createChild(DocumentConstants.VALUE);
 				}
+				valueElement.setAttribute(DocumentConstants.ID,
+						String.format("%d", selectPanel.getChildIndex(selected) + 1));
+				valueElement.setText(selected.getCaption());
+				valueElement = null;
 			}
 		} else if (field instanceof AbstractTextField) {
 			valueElement.setText(((AbstractTextField) field).getValue());

@@ -53,47 +53,44 @@ public class MessageManager implements Serializable {
 				Message message = new Message(uid, userId);
 
 				List<Element> properties = DocumentUtility.getPropertyElements(document.root());
-				if (properties != null) {
 
-					Method method = null;
-					try {
-						method = message.getClass().getDeclaredMethod("setPropertyDefinition", String.class,
-								Class.class);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				Method method = null;
+				try {
+					method = message.getClass().getDeclaredMethod("setPropertyDefinition", String.class, Class.class);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-					if (method != null) {
-						method.setAccessible(true);
+				if (method != null) {
+					method.setAccessible(true);
 
-						for (Element propertyElement : properties) {
-							String name = DocumentUtility.getName(propertyElement);
-							String type = DocumentUtility.getType(propertyElement);
-							if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(type)) {
-								return null;
-							}
-							Class<?> clazz;
-							if (DocumentConstants.INTEGER.equalsIgnoreCase(type)) {
-								clazz = Integer.class;
-							} else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type)) {
-								clazz = Boolean.class;
-							} else if (DocumentConstants.FLOAT.equalsIgnoreCase(type)) {
-								clazz = Double.class;
-							} else if (DocumentConstants.STRING.equalsIgnoreCase(type)) {
-								clazz = String.class;
-							} else {
-								return null;
-							}
+					for (Element propertyElement : properties) {
+						String name = DocumentUtility.getName(propertyElement);
+						String type = DocumentUtility.getType(propertyElement);
+						if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(type)) {
+							return null;
+						}
+						Class<?> clazz;
+						if (DocumentConstants.INTEGER.equalsIgnoreCase(type)) {
+							clazz = Integer.class;
+						} else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type)) {
+							clazz = Boolean.class;
+						} else if (DocumentConstants.FLOAT.equalsIgnoreCase(type)) {
+							clazz = Double.class;
+						} else if (DocumentConstants.STRING.equalsIgnoreCase(type)) {
+							clazz = String.class;
+						} else {
+							return null;
+						}
 
-							// message.setPropertyDefinition(name, clazz);
+						// message.setPropertyDefinition(name, clazz);
 
-							try {
-								// invoking message.setPropertyDefinition(name,
-								// clazz);
-								method.invoke(message, name, clazz);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+						try {
+							// invoking message.setPropertyDefinition(name,
+							// clazz);
+							method.invoke(message, name, clazz);
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}
 				}
