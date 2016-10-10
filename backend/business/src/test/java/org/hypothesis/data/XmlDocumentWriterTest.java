@@ -31,9 +31,9 @@ public class XmlDocumentWriterTest {
 		String orig = XmlTestUtility.getSampleReaderXmlString();
 		Document doc = reader.readString(orig);
 		String str = writer.writeString(doc);
-		
+
 		String txt = XmlTestUtility.getSampleWriterString();
-		
+
 		/*
 		//@formatter:off
 		Diff similar = DiffBuilder.compare(orig).withTest(str)
@@ -53,7 +53,7 @@ public class XmlDocumentWriterTest {
 		assertFalse("XML similar " + similar.toString(), similar.hasDifferences());
 		assertFalse("XML identical " + identical.toString(), identical.hasDifferences());
 		*/
-		
+
 		assertEquals(txt, str);
 	}
 
