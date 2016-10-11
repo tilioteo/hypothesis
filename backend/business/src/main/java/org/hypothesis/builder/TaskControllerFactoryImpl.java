@@ -58,12 +58,10 @@ public class TaskControllerFactoryImpl implements TaskControllerFactory {
 	private void createNodes(Element rootElement, TaskController controller) {
 		List<Element> nodes = DocumentUtility.getNodesElements(rootElement);
 
-		if (nodes != null) {
-			for (Element nodeElement : nodes) {
-				Node node = createNode(nodeElement, controller);
-				if (node != null)
-					controller.addNode(node.getSlideId(), node);
-			}
+		for (Element nodeElement : nodes) {
+			Node node = createNode(nodeElement, controller);
+			if (node != null)
+				controller.addNode(node.getSlideId(), node);
 		}
 	}
 

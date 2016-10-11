@@ -148,12 +148,10 @@ public class SlideComponentUtility {
 
 		List<Resource> resources = new ArrayList<>();
 
-		if (elements != null) {
-			for (Element element : elements) {
-				String url = element.getAttribute(DocumentConstants.URL);
-				if (!Strings.isNullOrEmpty(url)) {
-					resources.add(new ExternalResource(url));
-				}
+		for (Element element : elements) {
+			String url = element.getAttribute(DocumentConstants.URL);
+			if (!Strings.isNullOrEmpty(url)) {
+				resources.add(new ExternalResource(url));
 			}
 		}
 

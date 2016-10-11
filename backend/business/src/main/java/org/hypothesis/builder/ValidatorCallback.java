@@ -16,6 +16,7 @@ import com.vaadin.data.Validatable;
  *         Hypothesis
  *
  */
+@FunctionalInterface
 public interface ValidatorCallback extends Serializable {
 
 	/**

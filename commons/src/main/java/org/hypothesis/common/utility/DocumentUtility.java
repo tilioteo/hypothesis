@@ -82,8 +82,9 @@ public final class DocumentUtility {
 	}
 
 	public static List<Element> findElementsByNameStarting(Element parent, String startName) {
+		List<Element> result = new ArrayList<>();
+
 		if (parent != null && startName.length() > 0) {
-			List<Element> result = new ArrayList<>();
 			List<Element> elements = parent.children();
 
 			for (Element element : elements) {
@@ -91,10 +92,9 @@ public final class DocumentUtility {
 					result.add(element);
 				}
 			}
-			return result;
 		}
 
-		return null;
+		return result;
 	}
 
 	public static String getTrimmedText(Element element) {
@@ -126,7 +126,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static final boolean isValidSlideDocument(Document doc) {
@@ -154,7 +154,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static Element getExpressionElement(Element element) {
@@ -234,7 +234,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static Element getReferenceSubElement(Element element) {
@@ -269,7 +269,7 @@ public final class DocumentUtility {
 			return findElementsByNameStarting(documentRoot, DocumentConstants.INPUT_VALUE);
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static List<Element> getOutputValueElements(Element documentRoot) {
@@ -282,7 +282,7 @@ public final class DocumentUtility {
 			return findElementsByNameStarting(documentRoot, DocumentConstants.OUTPUT_VALUE);
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static List<Element> getTimersElements(Element documentRoot) {
@@ -298,7 +298,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static StringMap getPropertyValueMap(Element component) {
@@ -343,7 +343,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static List<Element> getWindowsElements(Element documentRoot) {
@@ -359,7 +359,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static Element getViewportOrWindowRootElement(Element element) {
@@ -528,7 +528,7 @@ public final class DocumentUtility {
 			return documentRoot.selectElements(DocumentConstants.PATH);
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static Element getDefaultPathElement(Element documentRoot) {
@@ -565,7 +565,7 @@ public final class DocumentUtility {
 			return patternElement.selectElements(DocumentConstants.NICK);
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static Long getSlideId(Element element) {
@@ -597,7 +597,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static Element getEvaluateElement(Element element) {
@@ -626,28 +626,25 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return new ArrayList<>();
 	}
 
 	public static void iterateHandlers(Component component, Element element, SlidePresenter presenter,
 			HandlerCallback callback) {
 		List<Element> handlers = DocumentUtility.getComponentHandlers(element);
 
-		if (handlers != null) {
-			for (Element handler : handlers) {
-				String name = handler.getName();
-				String actionId = null;
+		for (Element handler : handlers) {
+			String name = handler.getName();
+			String actionId = null;
 
-				final Action anonymousAction = EvaluableUtility.createAnonymousAction(handler, presenter);
-				if (anonymousAction != null) {
-					actionId = anonymousAction.getId();
-					presenter.setAction(actionId, anonymousAction);
-				}
+			final Action anonymousAction = EvaluableUtility.createAnonymousAction(handler, presenter);
+			if (anonymousAction != null) {
+				actionId = anonymousAction.getId();
+				presenter.setAction(actionId, anonymousAction);
+			}
 
-				if (!Strings.isNullOrEmpty(actionId) && !Strings.isNullOrEmpty(name)) {
-					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction,
-							presenter);
-				}
+			if (!Strings.isNullOrEmpty(actionId) && !Strings.isNullOrEmpty(name)) {
+				callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction, presenter);
 			}
 		}
 	}

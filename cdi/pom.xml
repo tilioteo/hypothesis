@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>hypothesis-cdi</artifactId>
+	<name>hypothesis-cdi</name>
+
+	<parent>
+		<groupId>org.hypothesis</groupId>
+		<artifactId>hypothesis</artifactId>
+		<version>${project.version}</version>
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+		</dependency>
+	</dependencies>
+</project>

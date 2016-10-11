@@ -4,9 +4,11 @@
  */
 package org.hypothesis.data.validator;
 
-import org.hypothesis.data.service.UserService;
+import javax.inject.Inject;
 
+import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.server.Messages;
+
 import com.vaadin.data.Validator;
 
 /**
@@ -18,12 +20,12 @@ import com.vaadin.data.Validator;
 @SuppressWarnings("serial")
 public class UsernameValidator implements Validator {
 
-	private final UserService userService;
+	@Inject
+	private UserService userService;
 	private final Long id;
 
 	public UsernameValidator(Long id) {
 		this.id = id;
-		userService = UserService.newInstance();
 	}
 
 	@Override

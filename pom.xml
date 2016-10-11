@@ -14,16 +14,17 @@
 		<vaadin.version>7.6.8</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
-		<project.source.version>1.7</project.source.version>
-		<project.target.version>1.7</project.target.version>
+		<project.source.version>1.8</project.source.version>
+		<project.target.version>1.8</project.target.version>
 		<project.encoding>UTF-8</project.encoding>
 
 		<junit.version>4.11</junit.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<log4j.version>1.2.17</log4j.version>
+		<validation-api.version>1.1.0.Final</validation-api.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
-		<postgresql.version>9.4-1206-jdbc41</postgresql.version>
+		<postgresql.version>9.4.1210</postgresql.version>
 		<spring.version>4.2.1.RELEASE</spring.version>
 		<mbassador.version>1.2.1</mbassador.version>
 		<special.components.version>0.9.5</special.components.version>
@@ -185,6 +186,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${validation-api.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>${hibernate.version}</version>
@@ -239,6 +246,22 @@
 			</dependency>
 
 			<dependency>
+				<groupId>javax.enterprise</groupId>
+				<artifactId>cdi-api</artifactId>
+				<version>${cdi-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${annotation-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-cdi</artifactId>
+				<version>${vaadin-cdi.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
@@ -273,6 +296,7 @@
 
 	<modules>
 		<module>interfaces</module>
+		<module>cdi</module>
 		<module>commons</module>
 		<module>widgetset</module>
 		<module>ui</module>

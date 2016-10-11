@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import org.hypothesis.business.EventManager;
 import org.hypothesis.business.MessageManager;
 import org.hypothesis.business.ObjectConstants;
@@ -23,7 +26,6 @@ import org.hypothesis.event.model.MessageEvent;
 import org.hypothesis.event.model.MessageEventManager;
 import org.hypothesis.event.model.ViewportEvent;
 import org.hypothesis.event.model.ViewportEventManager;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.ComponentEventCallback;
@@ -63,7 +65,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	private SlideContainer container;
 
-	private ProcessEventBus bus = null;
 	private HypothesisUI ui = null;
 
 	private final ViewportEventManager viewportEventManager = new ViewportEventManager();
@@ -86,6 +87,9 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	private MessageManager messageManager = null;
 
 	private Long userId = null;
+
+	@Inject
+	private Event<ProcessEvent> procEvent;
 
 	/**
 	 * Constructor
@@ -124,8 +128,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 			viewportEventManager.setEnabled(true);
 			messageEventManager.setEnabled(true);
 
-			setProcessEventBus(ProcessEventBus.get(ui));
-
 			fireEvent(new ViewportEvent.Init(container));
 
 			if (ui instanceof HypothesisUI) {
@@ -161,7 +163,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	@Override
 	public void detach(Component component, HasComponents parent, UI ui, VaadinSession session) {
-		bus = null;
 		this.ui = null;
 
 		viewportEventManager.setEnabled(false);
@@ -215,9 +216,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	 * @param event
 	 */
 	public void fireEvent(ProcessEvent event) {
-		if (bus != null) {
-			bus.post(event);
-		}
+		procEvent.fire(event);
 	}
 
 	/**
@@ -256,9 +255,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		return new Command() {
 			@Override
 			public void execute() {
-				if (bus != null) {
-					bus.post(new ActionEvent(action));
-				}
+				procEvent.fire(new ActionEvent(action));
 			}
 		};
 	}
@@ -532,10 +529,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 
 		return null;
-	}
-
-	protected void setProcessEventBus(ProcessEventBus bus) {
-		this.bus = bus;
 	}
 
 }

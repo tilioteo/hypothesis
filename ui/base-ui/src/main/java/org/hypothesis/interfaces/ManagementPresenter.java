@@ -19,6 +19,4 @@ public interface ManagementPresenter extends ViewPresenter {
 
 	Table buildTable();
 	
-	void init();
-
 }

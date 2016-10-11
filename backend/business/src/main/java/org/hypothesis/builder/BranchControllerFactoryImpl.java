@@ -54,7 +54,7 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 		BranchController controller = new BranchController();
 
 		createPaths(document.root(), controller);
-		
+
 		return controller;
 	}
 
@@ -62,12 +62,10 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 		List<Element> paths = DocumentUtility.getPathElements(rootElement);
 		AbstractBasePath path;
 
-		if (paths != null) {
-			for (Element pathElement : paths) {
-				path = createAbstractBasePath(pathElement);
-				if (path != null)
-					controller.addPath(path);
-			}
+		for (Element pathElement : paths) {
+			path = createAbstractBasePath(pathElement);
+			if (path != null)
+				controller.addPath(path);
 		}
 
 		Element defaultPathElement = DocumentUtility.getDefaultPathElement(rootElement);
@@ -108,10 +106,9 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 	}
 
 	private Formula createFormula(Element element) {
-		if (element != null) {
-			Element subElement = DocumentUtility.getPatternElement(element);
-			if (subElement != null)
-				return createPattern(subElement);
+		Element subElement = DocumentUtility.getPatternElement(element);
+		if (subElement != null) {
+			return createPattern(subElement);
 		}
 
 		return null;
@@ -121,12 +118,10 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 		Pattern pattern = new Pattern();
 		List<Element> nicks = DocumentUtility.getNickElements(subElement);
 
-		if (nicks != null) {
-			int i = 0;
-			for (Element nickElement : nicks) {
-				Nick nick = createNick(nickElement);
-				pattern.addNick(++i, nick);
-			}
+		int i = 0;
+		for (Element nickElement : nicks) {
+			Nick nick = createNick(nickElement);
+			pattern.addNick(++i, nick);
 		}
 
 		return pattern;

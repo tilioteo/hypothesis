@@ -25,12 +25,13 @@ public class MainUIProvider extends UIProvider {
 	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
 		return MainUI.class;
 	}
-
+	
 	@Override
 	public UI createInstance(UICreateEvent event) {
 		MainUI ui = (MainUI) super.createInstance(event);
-		ui.setPresenter(new MainUIPresenter(ui));
-
+		//ui.setPresenter(new MainUIPresenter());
+		
 		return ui;
 	}
+
 }

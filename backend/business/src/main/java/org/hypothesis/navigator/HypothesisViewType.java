@@ -8,13 +8,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hypothesis.data.model.Role;
-import org.hypothesis.data.service.RoleService;
+import org.hypothesis.data.service.RoleServiceImpl;
 import org.hypothesis.interfaces.ViewPresenter;
 import org.hypothesis.presenter.ExportPresenterImpl;
-import org.hypothesis.presenter.GroupManagementPresenter;
+import org.hypothesis.presenter.GroupManagementPresenterImpl;
 import org.hypothesis.presenter.PublicPacksPresenter;
 import org.hypothesis.presenter.SlideManagementPresenterImpl;
-import org.hypothesis.presenter.UserManagementPresenter;
+import org.hypothesis.presenter.UserManagementPresenterImpl;
 import org.hypothesis.presenter.UserPacksPresenter;
 
 import com.vaadin.server.FontAwesome;
@@ -27,12 +27,12 @@ import com.vaadin.server.Resource;
  *
  */
 public enum HypothesisViewType {
-	PACKS("/packs", "Caption.View.Packs", UserPacksPresenter.class, FontAwesome.BARS, true, new Role[] {RoleService.ROLE_USER, RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	PUBLIC("/public", "Caption.View.Public", PublicPacksPresenter.class, FontAwesome.EYE, true, new Role[] {null, RoleService.ROLE_USER, RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	USERS("/users", "Caption.View.Users", UserManagementPresenter.class, FontAwesome.USER, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	GROUPS("/groups", "Caption.View.Groups", GroupManagementPresenter.class, FontAwesome.GROUP, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	EXPORT("/export", "Caption.View.Export", ExportPresenterImpl.class, FontAwesome.TABLE, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	SLIDES("/slides", "Caption.View.Slides", SlideManagementPresenterImpl.class, FontAwesome.FILE_CODE_O, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER});
+	PACKS("/packs", "Caption.View.Packs", UserPacksPresenter.class, FontAwesome.BARS, true, new Role[] {RoleServiceImpl.ROLE_USER, RoleServiceImpl.ROLE_MANAGER, RoleServiceImpl.ROLE_SUPERUSER}),
+	PUBLIC("/public", "Caption.View.Public", PublicPacksPresenter.class, FontAwesome.EYE, true, new Role[] {null, RoleServiceImpl.ROLE_USER, RoleServiceImpl.ROLE_MANAGER, RoleServiceImpl.ROLE_SUPERUSER}),
+	USERS("/users", "Caption.View.Users", UserManagementPresenterImpl.class, FontAwesome.USER, true, new Role[] {RoleServiceImpl.ROLE_MANAGER, RoleServiceImpl.ROLE_SUPERUSER}),
+	GROUPS("/groups", "Caption.View.Groups", GroupManagementPresenterImpl.class, FontAwesome.GROUP, true, new Role[] {RoleServiceImpl.ROLE_MANAGER, RoleServiceImpl.ROLE_SUPERUSER}),
+	EXPORT("/export", "Caption.View.Export", ExportPresenterImpl.class, FontAwesome.TABLE, true, new Role[] {RoleServiceImpl.ROLE_MANAGER, RoleServiceImpl.ROLE_SUPERUSER}),
+	SLIDES("/slides", "Caption.View.Slides", SlideManagementPresenterImpl.class, FontAwesome.FILE_CODE_O, true, new Role[] {RoleServiceImpl.ROLE_MANAGER, RoleServiceImpl.ROLE_SUPERUSER});
 
 	private final String viewName;
 	private final String caption;
