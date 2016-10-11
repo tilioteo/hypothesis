@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis</artifactId>
-		<version>1.5.0-SNAPSHOT</version>
+		<version>${hypothesis.version}</version>
 	</parent>
 
 	<properties>

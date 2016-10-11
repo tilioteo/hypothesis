@@ -6,10 +6,11 @@
 	<groupId>org.hypothesis</groupId>
 	<artifactId>hypothesis</artifactId>
 	<packaging>pom</packaging>
-	<version>1.5.4</version>
+	<version>${hypothesis.version}</version>
 	<name>hypothesis-parent</name>
 
 	<properties>
+		<hypothesis.version>1.5.4</hypothesis.version>
 		<vaadin.version>7.6.8</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
@@ -43,6 +44,7 @@
 		<cdi-api.version>1.2</cdi-api.version>
 		<annotation-api.version>1.2</annotation-api.version>
 		<vaadin-cdi.version>1.0.3</vaadin-cdi.version>
+		<jboss.weld.version>2.4.0.Final</jboss.weld.version>
 	</properties>
 
 	<profiles>

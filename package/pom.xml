@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis</artifactId>
-		<version>${project.version}</version>
+		<version>${hypothesis.version}</version>
 	</parent>
 
 	<properties>
@@ -37,6 +37,18 @@
 			<version>${project.version}</version>
 			<classifier>classes</classifier>
 			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.weld</groupId>
+			<artifactId>weld-core</artifactId>
+			<version>${jboss.weld.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.weld.servlet</groupId>
+			<artifactId>weld-servlet-core</artifactId>
+			<version>${jboss.weld.version}</version>
 		</dependency>
 
 	</dependencies>

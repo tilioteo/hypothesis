@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis-ui</artifactId>
-		<version>${project.version}</version>
+		<version>${hypothesis.version}</version>
 	</parent>
 
 	<properties>

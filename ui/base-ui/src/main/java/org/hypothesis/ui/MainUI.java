@@ -13,9 +13,6 @@ import org.hypothesis.interfaces.UIPresenter;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.CDIViewProvider;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.server.VaadinRequest;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
