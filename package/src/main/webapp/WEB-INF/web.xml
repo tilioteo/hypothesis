@@ -37,7 +37,9 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>org.hypothesis.context.ContextConfig</param-value>
-	</context-param>	<listener>
+	</context-param>
+
+	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	

@@ -15,7 +15,7 @@
 
 	<properties>
 		<vaadin.resource.directory>${project.build.directory}/${project.build.finalName}</vaadin.resource.directory>
-		
+
 		<swt.version>4.3</swt.version>
 	</properties>
 
@@ -38,7 +38,7 @@
 			<classifier>classes</classifier>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-core</artifactId>
@@ -51,6 +51,11 @@
 			<version>${jboss.weld.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.jboss</groupId>
+			<artifactId>jandex</artifactId>
+			<version>1.2.4.Final</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -182,11 +187,10 @@
 								<!--exclude>WEB-INF/lib/hypothesis-widgetset-*.jar</exclude -->
 								<!-- Exclude the Sass compiler and its dependencies. -->
 								<!-- The production WAR includes a precompiled theme. -->
-								<!--exclude>WEB-INF/lib/vaadin-sass-compiler-*.jar</exclude>
-								<exclude>WEB-INF/lib/sac-*.jar</exclude>
-								<exclude>WEB-INF/lib/flute-*.jar</exclude-->
+								<!--exclude>WEB-INF/lib/vaadin-sass-compiler-*.jar</exclude> <exclude>WEB-INF/lib/sac-*.jar</exclude> 
+									<exclude>WEB-INF/lib/flute-*.jar</exclude -->
 								<!-- Exclude Jetty dependencies. -->
-								<!--exclude>WEB-INF/lib/jetty-*.jar</exclude-->
+								<!--exclude>WEB-INF/lib/jetty-*.jar</exclude -->
 							</excludes>
 						</overlay>
 					</overlays>
@@ -224,14 +228,9 @@
 
 			<!-- The Jetty plugin allows us to easily test the production build by 
 				running jetty:run on the command line. -->
-			<!--plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>${jetty.plugin.version}</version>
-				<configuration>
-					<baseResource>${vaadin.resource.directory}</baseResource>
-				</configuration>
-			</plugin-->
+			<!--plugin> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-maven-plugin</artifactId> 
+				<version>${jetty.plugin.version}</version> <configuration> <baseResource>${vaadin.resource.directory}</baseResource> 
+				</configuration> </plugin -->
 		</plugins>
 		<!--/build -->
 
