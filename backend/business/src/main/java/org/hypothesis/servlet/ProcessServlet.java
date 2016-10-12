@@ -4,11 +4,13 @@
  */
 package org.hypothesis.servlet;
 
+import javax.servlet.annotation.WebInitParam;
 import javax.servlet.annotation.WebServlet;
 
 import org.hypothesis.ui.ProcessUI;
 
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.server.Constants;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -17,8 +19,27 @@ import com.vaadin.annotations.VaadinServletConfiguration;
  *
  */
 @SuppressWarnings("serial")
-@WebServlet(value = "/process/*", asyncSupported = true, name = "process-servlet")
-@VaadinServletConfiguration(productionMode = false, ui = ProcessUI.class, widgetset = "org.hypothesis.WidgetSet", heartbeatInterval = 60)
+@WebServlet(
+		value = "/process/*",
+		asyncSupported = true,
+		name = "process-servlet",
+		initParams = {
+				@WebInitParam(
+						name = Constants.SERVLET_PARAMETER_UI_PROVIDER,
+						value = "org.hypothesis.provider.ProcessUIProvider")
+						//value = "com.vaadin.cdi.CDIUIProvider")
+		}
+)
+@VaadinServletConfiguration(
+		productionMode = false,
+		ui = ProcessUI.class,
+		widgetset = "org.hypothesis.WidgetSet",
+		heartbeatInterval = 60
+)
 public class ProcessServlet extends HibernateVaadinServlet {
+
+	public ProcessServlet() {
+		super();
+	}
 
 }

@@ -79,6 +79,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	@Inject
 	private Event<ProcessEvent> procEvent;
 
+	@Inject
 	private ProcessManager processManager;
 
 	private SimpleTest preparedTest = null;
@@ -92,8 +93,6 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 		log.debug("ProcessUIPresenter initialization");
 
 		super.initialize(request);
-
-		processManager = new ProcessManager();
 
 		// TODO try to set token by uri fragment and implement
 		// UriFragmentChangeListener
