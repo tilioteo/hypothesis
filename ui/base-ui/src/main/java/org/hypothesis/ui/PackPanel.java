@@ -223,25 +223,19 @@ public class PackPanel extends Panel {
 
 	private OpenPopupButton buildLegacyButton() {
 		final OpenPopupButton button = new OpenPopupButton(legacyButtonCaption);
-		button.addAttachListener(new AttachListener() {
-			@Override
-			public void attach(AttachEvent event) {
-				uiDetachListener = new DetachListener() {
-					@Override
-					public void detach(DetachEvent event) {
-						button.setEnabled(false);
-					}
-				};
-				button.getUI().addDetachListener(uiDetachListener);
-			}
+		button.addAttachListener(e -> {
+			uiDetachListener = new DetachListener() {
+				@Override
+				public void detach(DetachEvent event) {
+					button.setEnabled(false);
+				}
+			};
+			button.getUI().addDetachListener(uiDetachListener);
 		});
 
-		button.addDetachListener(new DetachListener() {
-			@Override
-			public void detach(DetachEvent event) {
-				button.getUI().removeDetachListener(uiDetachListener);
-				uiDetachListener = null;
-			}
+		button.addDetachListener(e -> {
+			button.getUI().removeDetachListener(uiDetachListener);
+			uiDetachListener = null;
 		});
 
 		if (legacyButtonClickListener != null) {

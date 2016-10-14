@@ -7,8 +7,6 @@ package org.hypothesis.ui.table;
 import com.vaadin.data.Item;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
@@ -65,37 +63,31 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 			disabledButton.setData(false);
 		}
 
-		enabledButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if (enabledButton.getData().equals(false)) {
-					source.getItem(itemId).getItemProperty(stateField).setValue(true);
-					enabledButton.setData(true);
-					enabledButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-					disabledButton.setData(false);
-					disabledButton.removeStyleName(ValoTheme.BUTTON_DANGER);
-				} else {
-					source.getItem(itemId).getItemProperty(stateField).setValue(null);
-					enabledButton.setData(false);
-					enabledButton.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
-				}
+		enabledButton.addClickListener(e -> {
+			if (enabledButton.getData().equals(false)) {
+				source.getItem(itemId).getItemProperty(stateField).setValue(true);
+				enabledButton.setData(true);
+				enabledButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+				disabledButton.setData(false);
+				disabledButton.removeStyleName(ValoTheme.BUTTON_DANGER);
+			} else {
+				source.getItem(itemId).getItemProperty(stateField).setValue(null);
+				enabledButton.setData(false);
+				enabledButton.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
 			}
 		});
 
-		disabledButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if (disabledButton.getData().equals(false)) {
-					source.getItem(itemId).getItemProperty(stateField).setValue(false);
-					disabledButton.setData(true);
-					disabledButton.addStyleName(ValoTheme.BUTTON_DANGER);
-					enabledButton.setData(false);
-					enabledButton.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
-				} else {
-					source.getItem(itemId).getItemProperty(stateField).setValue(null);
-					disabledButton.setData(false);
-					disabledButton.removeStyleName(ValoTheme.BUTTON_DANGER);
-				}
+		disabledButton.addClickListener(e -> {
+			if (disabledButton.getData().equals(false)) {
+				source.getItem(itemId).getItemProperty(stateField).setValue(false);
+				disabledButton.setData(true);
+				disabledButton.addStyleName(ValoTheme.BUTTON_DANGER);
+				enabledButton.setData(false);
+				enabledButton.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
+			} else {
+				source.getItem(itemId).getItemProperty(stateField).setValue(null);
+				disabledButton.setData(false);
+				disabledButton.removeStyleName(ValoTheme.BUTTON_DANGER);
 			}
 		});
 

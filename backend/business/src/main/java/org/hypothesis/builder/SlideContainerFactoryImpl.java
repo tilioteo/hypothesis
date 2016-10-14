@@ -30,10 +30,8 @@ import org.hypothesis.interfaces.ComponentWrapper;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
-import org.hypothesis.interfaces.Evaluator;
 import org.hypothesis.interfaces.HandlerCallback;
 import org.hypothesis.interfaces.MessageEventListener;
-import org.hypothesis.interfaces.ReferenceCallback;
 import org.hypothesis.interfaces.SlideComponentPlugin;
 import org.hypothesis.interfaces.SlidePresenter;
 import org.hypothesis.interfaces.ViewportEventListener;
@@ -138,22 +136,19 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		createWindows(rootElement, presenter);
 		createViewport(rootElement, presenter);
 
-		EvaluableUtility.createVariables(rootElement, presenter, new ReferenceCallback() {
-			@Override
-			public Object getReference(String name, String id, Evaluator evaluator) {
-				if (!Strings.isNullOrEmpty(id) && evaluator instanceof SlideContainerPresenter) {
-					SlideContainerPresenter presenter = (SlideContainerPresenter) evaluator;
+		EvaluableUtility.createVariables(rootElement, presenter, (name, id, eval) -> {
+			if (!Strings.isNullOrEmpty(id) && eval instanceof SlideContainerPresenter) {
+				SlideContainerPresenter pres = (SlideContainerPresenter) eval;
 
-					if (DocumentConstants.COMPONENT.equals(name)) {
-						return presenter.getComponent(id);
-					} else if (DocumentConstants.TIMER.equals(name)) {
-						return presenter.getTimer(id);
-					} else if (DocumentConstants.WINDOW.equals(name)) {
-						return presenter.getWindow(id);
-					}
+				if (DocumentConstants.COMPONENT.equals(name)) {
+					return pres.getComponent(id);
+				} else if (DocumentConstants.TIMER.equals(name)) {
+					return pres.getTimer(id);
+				} else if (DocumentConstants.WINDOW.equals(name)) {
+					return pres.getWindow(id);
 				}
-				return null;
 			}
+			return null;
 		});
 
 		return presenter.getSlideContainer();
@@ -213,54 +208,22 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private void addTimerHandlers(Timer component, Element element, SlideContainerPresenter presenter) {
-		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
-			@Override
-			public void setComponentHandler(Component component, Element element, Element handler, String name,
-					String actionId, final Action action, final SlidePresenter presenter) {
-				final Timer timer = (Timer) component;
+		DocumentUtility.iterateHandlers(component, element, presenter, (co, el, h, n, ac, a, pr) -> {
+			final Timer timer = (Timer) co;
 
-				if (DocumentConstants.START.equals(name)) {
-					timer.addStartListener(new Timer.StartListener() {
-						@Override
-						public void start(final Timer.StartEvent event) {
-							presenter.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStart, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setProperty("time", event.getTime());
-										}
-									});
-						}
-					});
-				} else if (DocumentConstants.STOP.equals(name)) {
-					timer.addStopListener(new Timer.StopListener() {
-						@Override
-						public void stop(final Timer.StopEvent event) {
-							presenter.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStop, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setProperty("time", event.getTime());
-										}
-									});
-						}
-					});
-				} else if (DocumentConstants.UPDATE.equals(name)) {
-					Integer interval = Strings.toInteger((element.getAttribute(DocumentConstants.INTERVAL)));
-					if (interval != null) {
-						timer.addUpdateListener(interval, new Timer.UpdateListener() {
-							@Override
-							public void update(final Timer.UpdateEvent event) {
-								presenter.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerUpdate,
-										action, new ComponentEventCallback() {
-											@Override
-											public void initEvent(ComponentEvent componentEvent) {
-												componentEvent.setProperty("time", event.getTime());
-											}
-										});
-							}
-						});
-					}
+			if (DocumentConstants.START.equals(n)) {
+				timer.addStartListener(e -> pr.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStart,
+						a, c -> c.setProperty("time", e.getTime())));
+
+			} else if (DocumentConstants.STOP.equals(n)) {
+				timer.addStopListener(e -> pr.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStop,
+						a, c -> c.setProperty("time", e.getTime())));
+
+			} else if (DocumentConstants.UPDATE.equals(n)) {
+				Integer interval = Strings.toInteger(el.getAttribute(DocumentConstants.INTERVAL));
+				if (interval != null) {
+					timer.addUpdateListener(interval, e -> presenter.handleEvent(timer, DocumentConstants.TIMER,
+							ProcessEventTypes.TimerUpdate, a, c -> c.setProperty("time", e.getTime())));
 				}
 			}
 		});
@@ -319,37 +282,18 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private void addWindowHandlers(Window component, Element element, SlideContainerPresenter presenter) {
-		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
-			@Override
-			public void setComponentHandler(Component component, Element element, Element handler, String name,
-					String actionId, final Action action, final SlidePresenter presenter) {
-				final Window window = (Window) component;
+		DocumentUtility.iterateHandlers(component, element, presenter, (co, el, h, n, ac, a, pr) -> {
+			final Window window = (Window) co;
 
-				if (DocumentConstants.INIT.equals(name)) {
-					window.addInitListener(new Window.InitListener() {
-						@Override
-						public void initWindow(Window.InitEvent event) {
-							presenter.handleEvent(window, DocumentConstants.WINDOW, ProcessEventTypes.WindowInit,
-									action, ComponentEventCallback.DEFAULT);
-						}
-					});
-				} else if (DocumentConstants.OPEN.equals(name)) {
-					window.addOpenListener(new Window.OpenListener() {
-						@Override
-						public void openWindow(Window.OpenEvent event) {
-							presenter.handleEvent(window, DocumentConstants.WINDOW, ProcessEventTypes.WindowOpen,
-									action, ComponentEventCallback.DEFAULT);
-						}
-					});
-				} else if (DocumentConstants.CLOSE.equals(name)) {
-					window.addCloseListener(new Window.CloseListener() {
-						@Override
-						public void windowClose(Window.CloseEvent event) {
-							presenter.handleEvent(window, DocumentConstants.WINDOW, ProcessEventTypes.WindowClose,
-									action, ComponentEventCallback.DEFAULT);
-						}
-					});
-				}
+			if (DocumentConstants.INIT.equals(n)) {
+				window.addInitListener(e -> pr.handleEvent(window, DocumentConstants.WINDOW,
+						ProcessEventTypes.WindowInit, a, ComponentEventCallback.DEFAULT));
+			} else if (DocumentConstants.OPEN.equals(n)) {
+				window.addOpenListener(e -> pr.handleEvent(window, DocumentConstants.WINDOW,
+						ProcessEventTypes.WindowOpen, a, ComponentEventCallback.DEFAULT));
+			} else if (DocumentConstants.CLOSE.equals(n)) {
+				window.addCloseListener(e -> pr.handleEvent(window, DocumentConstants.WINDOW,
+						ProcessEventTypes.WindowClose, a, ComponentEventCallback.DEFAULT));
 			}
 		});
 	}

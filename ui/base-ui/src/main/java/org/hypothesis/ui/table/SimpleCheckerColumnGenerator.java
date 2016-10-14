@@ -7,8 +7,6 @@ package org.hypothesis.ui.table;
 import com.vaadin.data.Item;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.ValoTheme;
@@ -48,18 +46,15 @@ public class SimpleCheckerColumnGenerator implements ColumnGenerator {
 			button.setData(false);
 		}
 
-		button.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if (button.getData().equals(false)) {
-					source.getItem(itemId).getItemProperty(stateField).setValue(true);
-					button.setData(true);
-					button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-				} else {
-					source.getItem(itemId).getItemProperty(stateField).setValue(false);
-					button.setData(false);
-					button.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
-				}
+		button.addClickListener(e -> {
+			if (button.getData().equals(false)) {
+				source.getItem(itemId).getItemProperty(stateField).setValue(true);
+				button.setData(true);
+				button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+			} else {
+				source.getItem(itemId).getItemProperty(stateField).setValue(false);
+				button.setData(false);
+				button.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
 			}
 		});
 
