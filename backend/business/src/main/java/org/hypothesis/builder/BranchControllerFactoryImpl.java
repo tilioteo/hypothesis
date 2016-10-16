@@ -54,24 +54,23 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 		BranchController controller = new BranchController();
 
 		createPaths(document.root(), controller);
-		
+
 		return controller;
 	}
 
 	private void createPaths(Element rootElement, BranchController controller) {
 		List<Element> paths = DocumentUtility.getPathElements(rootElement);
-		AbstractBasePath path;
 
 		if (paths != null) {
-			for (Element pathElement : paths) {
-				path = createAbstractBasePath(pathElement);
+			paths.forEach(e -> {
+				AbstractBasePath path = createAbstractBasePath(e);
 				if (path != null)
 					controller.addPath(path);
-			}
+			});
 		}
 
 		Element defaultPathElement = DocumentUtility.getDefaultPathElement(rootElement);
-		path = createAbstractBasePath(defaultPathElement);
+		AbstractBasePath path = createAbstractBasePath(defaultPathElement);
 		if (path != null)
 			controller.addPath(path);
 	}
