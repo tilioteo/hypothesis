@@ -54,16 +54,15 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<!--dependency>
-			<groupId>com.github.tilioteo</groupId>
-			<artifactId>commons</artifactId>
-			<version>${commons.version}</version>
-		</dependency-->
-
 		<dependency>
 			<groupId>com.github.tilioteo</groupId>
 			<artifactId>expressions</artifactId>
 			<version>${expressions.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
 		<dependency>
@@ -79,11 +78,6 @@
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>jackrabbit-jcr-commons</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
 		<dependency>
