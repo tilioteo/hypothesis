@@ -48,7 +48,6 @@ import org.hypothesis.server.Messages;
 import org.hypothesis.ui.ControlledUI;
 import org.hypothesis.ui.view.ExportView;
 
-import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
@@ -64,8 +63,6 @@ import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -229,12 +226,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	}
 
 	private void buildExportCancelButton() {
-		cancelExportButton = new Button(Messages.getString("Caption.Button.Cancel"), new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				bus.post(new MainUIEvent.ExportFinishedEvent(true));
-			}
-		});
+		cancelExportButton = new Button(Messages.getString("Caption.Button.Cancel"),
+				e -> bus.post(new MainUIEvent.ExportFinishedEvent(true)));
 	}
 
 	private void buildProgress() {
@@ -253,22 +246,14 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		exportSelectionType.addItem(Messages.getString("Caption.Item.All"));
 		exportSelectionType.select(Messages.getString("Caption.Item.Selected"));
 
-		exportSelectionType.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				bus.post(new MainUIEvent.PackSelectionChangedEvent());
-			}
+		exportSelectionType.addValueChangeListener(e -> {
+			allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
+			bus.post(new MainUIEvent.PackSelectionChangedEvent());
 		});
 	}
 
 	private void buildExportButton() {
-		exportButton = new Button(Messages.getString("Caption.Button.Export"), new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				startExport();
-			}
-		});
+		exportButton = new Button(Messages.getString("Caption.Button.Export"), e -> startExport());
 		exportButton.setEnabled(false);
 
 	}
@@ -358,26 +343,23 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		dateFieldTo.addValidator(dateValidator);
 
 		Button selectionButton = new Button(Messages.getString("Caption.Button.ShowTests"));
-		selectionButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				try {
-					packsSelect.validate();
-					dateFieldFrom.validate();
-					dateFieldTo.validate();
+		selectionButton.addClickListener(e -> {
+			try {
+				packsSelect.validate();
+				dateFieldFrom.validate();
+				dateFieldTo.validate();
 
-					Pack pack = packMap.get(packsSelect.getValue());
-					Date dateFrom = dateFieldFrom.getValue();
-					Date dateTo = dateFieldTo.getValue();
+				Pack pack = packMap.get(packsSelect.getValue());
+				Date dateFrom = dateFieldFrom.getValue();
+				Date dateTo = dateFieldTo.getValue();
 
-					showTests(pack, dateFrom, dateTo);
+				showTests(pack, dateFrom, dateTo);
 
-				} catch (InvalidValueException e) {
-					packsSelect.setValidationVisible(!packsSelect.isValid());
-					dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
-					dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
-					Notification.show(e.getMessage(), Type.WARNING_MESSAGE);
-				}
+			} catch (InvalidValueException ex) {
+				packsSelect.setValidationVisible(!packsSelect.isValid());
+				dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
+				dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
+				Notification.show(ex.getMessage(), Type.WARNING_MESSAGE);
 			}
 		});
 		form.addComponent(selectionButton);
@@ -521,6 +503,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	/**
 	 * Update progress of export
+	 * 
 	 * @param event
 	 */
 	@Handler
@@ -533,6 +516,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	/**
 	 * Do when export finished
+	 * 
 	 * @param event
 	 */
 	@Handler
@@ -542,6 +526,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	/**
 	 * Show error occured during export
+	 * 
 	 * @param event
 	 */
 	@Handler
@@ -552,6 +537,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	/**
 	 * Update ui on user pack change
+	 * 
 	 * @param event
 	 */
 	@Handler
@@ -662,7 +648,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 				if (events != null) {
 					SXSSFWorkbook workbook = null;
-					
+
 					try {
 						File tempFile = File.createTempFile("htsm", null);
 
@@ -1055,7 +1041,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 								row = sheet.createRow(rowNr++);
 								row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumnValues"));
 
-								for (Entry<String, HashMap<String, String>> fieldEntry : fieldValueCaptionMap.entrySet()) {
+								for (Entry<String, HashMap<String, String>> fieldEntry : fieldValueCaptionMap
+										.entrySet()) {
 									row = sheet.createRow(rowNr++);
 									row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
 									row.createCell(1).setCellValue(fieldEntry.getKey());
@@ -1065,7 +1052,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 									row.createCell(1)
 											.setCellValue(Messages.getString("Caption.Export.UserValueDescription"));
 
-									HashMap<String, String> valueCaptions = fieldValueCaptionMap.get(fieldEntry.getKey());
+									HashMap<String, String> valueCaptions = fieldValueCaptionMap
+											.get(fieldEntry.getKey());
 									for (Entry<String, String> entry : valueCaptions.entrySet()) {
 										row = sheet.createRow(rowNr++);
 										row.createCell(0).setCellValue(entry.getValue());

@@ -95,17 +95,14 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 	protected void addField(GridLayout form, final Component field) {
 		if (state == WindowState.MULTIUPDATE) {
 			final CheckBox enabler = new CheckBox(field.getCaption());
-			enabler.addValueChangeListener(new ValueChangeListener() {
-				@Override
-				public void valueChange(Property.ValueChangeEvent event) {
-					field.setVisible(enabler.getValue());
+			enabler.addValueChangeListener(e -> {
+				field.setVisible(enabler.getValue());
 
-					if (field instanceof AbstractField<?>) {
-						if (enabler.getValue()) {
-							fields.add((AbstractField<?>) field);
-						} else {
-							fields.remove((AbstractField<?>) field);
-						}
+				if (field instanceof AbstractField<?>) {
+					if (enabler.getValue()) {
+						fields.add((AbstractField<?>) field);
+					} else {
+						fields.remove((AbstractField<?>) field);
 					}
 				}
 			});

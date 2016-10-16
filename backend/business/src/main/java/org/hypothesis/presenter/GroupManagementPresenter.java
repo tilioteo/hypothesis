@@ -34,19 +34,12 @@ import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -117,12 +110,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 	protected Button buildAddButton() {
 		final Button addButton = new Button(Messages.getString("Caption.Button.Add"));
 		addButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-		addButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				groupWindowPresenter.showWindow();
-			}
-		});
+		addButton.addClickListener(e -> groupWindowPresenter.showWindow());
 
 		return addButton;
 	}
@@ -137,12 +125,9 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 		selectionType.addItem(Messages.getString("Caption.Item.All"));
 		selectionType.select(Messages.getString("Caption.Item.Selected"));
 
-		selectionType.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				bus.post(new MainUIEvent.GroupSelectionChangedEvent());
-			}
+		selectionType.addValueChangeListener(e -> {
+			allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
+			bus.post(new MainUIEvent.GroupSelectionChangedEvent());
 		});
 
 		return selectionType;
@@ -152,16 +137,13 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 	protected Button buildUpdateButton() {
 		Button updateButton = new Button(Messages.getString("Caption.Button.Update"));
 		updateButton.setClickShortcut(KeyCode.ENTER);
-		updateButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				Collection<Group> groups = getSelectedGroups();
+		updateButton.addClickListener(e -> {
+			Collection<Group> groups = getSelectedGroups();
 
-				if (groups.size() == 1) {
-					groupWindowPresenter.showWindow(groups.iterator().next());
-				} else {
-					groupWindowPresenter.showWindow(groups);
-				}
+			if (groups.size() == 1) {
+				groupWindowPresenter.showWindow(groups.iterator().next());
+			} else {
+				groupWindowPresenter.showWindow(groups);
 			}
 		});
 		return updateButton;
@@ -171,17 +153,14 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 	protected Button buildDeleteButton() {
 		Button deleteButton = new Button(Messages.getString("Caption.Button.Delete"));
 		deleteButton.addStyleName(ValoTheme.BUTTON_DANGER);
-		deleteButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				String question = allSelected ? Messages.getString("Caption.Confirm.Group.DeleteAll")
-						: Messages.getString("Caption.Confirm.Group.DeleteSelected");
+		deleteButton.addClickListener(e -> {
+			String question = allSelected ? Messages.getString("Caption.Confirm.Group.DeleteAll")
+					: Messages.getString("Caption.Confirm.Group.DeleteSelected");
 
-				deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
-						Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
-						Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
-						GroupManagementPresenter.this);
-			}
+			deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
+					Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
+					Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
+					GroupManagementPresenter.this);
 		});
 		return deleteButton;
 	}
@@ -315,21 +294,13 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 				Messages.getString("Caption.Field.Users"), Messages.getString("Caption.Field.AvailablePacks"),
 				Messages.getString("Caption.Field.Note"));
 
-		table.addValueChangeListener(new ValueChangeListener() {
-			@Override
-			public void valueChange(final ValueChangeEvent event) {
-				bus.post(new MainUIEvent.GroupSelectionChangedEvent());
-			}
-		});
+		table.addValueChangeListener(e -> bus.post(new MainUIEvent.GroupSelectionChangedEvent()));
 
-		table.addItemClickListener(new ItemClickListener() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (event.isDoubleClick()) {
-					Group group = ((BeanItem<Group>) event.getItem()).getBean();
-					groupWindowPresenter.showWindow(group);
-				}
+		table.addItemClickListener(e -> {
+			if (e.isDoubleClick()) {
+				@SuppressWarnings("unchecked")
+				Group group = ((BeanItem<Group>) e.getItem()).getBean();
+				groupWindowPresenter.showWindow(group);
 			}
 		});
 
@@ -430,6 +401,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 	/**
 	 * Make ui changes when new group added
+	 * 
 	 * @param event
 	 */
 	@SuppressWarnings("unchecked")
@@ -448,6 +420,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 	/**
 	 * Make ui changes when group user changed
+	 * 
 	 * @param event
 	 */
 	@SuppressWarnings("unchecked")

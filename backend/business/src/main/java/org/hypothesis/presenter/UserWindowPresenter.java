@@ -690,12 +690,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
 
 		Button cancel = new Button(Messages.getString("Caption.Button.Cancel"));
-		cancel.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				window.close();
-			}
-		});
+		cancel.addClickListener(e -> window.close());
 		footer.addComponent(cancel);
 
 		return footer;

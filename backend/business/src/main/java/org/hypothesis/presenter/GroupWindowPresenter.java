@@ -39,8 +39,6 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -443,29 +441,26 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 
 		Button ok = new Button(Messages.getString("Caption.Button.OK"));
 		ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		ok.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				try {
-					commitForm();
+		ok.addClickListener(e -> {
+			try {
+				commitForm();
 
-					Notification success;
-					if (state == WindowState.CREATE) {
-						success = new Notification(Messages.getString("Message.Info.GroupAdded"));
-					} else if (state == WindowState.UPDATE) {
-						success = new Notification(Messages.getString("Message.Info.GroupUpdated"));
-					} else {
-						success = new Notification(Messages.getString("Message.Info.GroupsUpdated"));
-					}
-					success.setDelayMsec(2000);
-					success.setPosition(Position.BOTTOM_CENTER);
-					success.show(Page.getCurrent());
-
-					window.close();
-
-				} catch (CommitException e) {
-					Notification.show(e.getMessage(), Type.WARNING_MESSAGE);
+				Notification success;
+				if (state == WindowState.CREATE) {
+					success = new Notification(Messages.getString("Message.Info.GroupAdded"));
+				} else if (state == WindowState.UPDATE) {
+					success = new Notification(Messages.getString("Message.Info.GroupUpdated"));
+				} else {
+					success = new Notification(Messages.getString("Message.Info.GroupsUpdated"));
 				}
+				success.setDelayMsec(2000);
+				success.setPosition(Position.BOTTOM_CENTER);
+				success.show(Page.getCurrent());
+
+				window.close();
+
+			} catch (CommitException ex) {
+				Notification.show(ex.getMessage(), Type.WARNING_MESSAGE);
 			}
 		});
 		ok.focus();
@@ -473,12 +468,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
 
 		Button cancel = new Button(Messages.getString("Caption.Button.Cancel"));
-		cancel.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				window.close();
-			}
-		});
+		cancel.addClickListener(e -> window.close());
 		footer.addComponent(cancel);
 
 		return footer;
