@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis</artifactId>
-		<version>1.5.0-SNAPSHOT</version>
+		<version>${project.version}</version>
 	</parent>
 
 	<properties>
@@ -23,11 +23,11 @@
 			<version>${project.version}</version>
 		</dependency>
 
-		<dependency>
+		<!--dependency>
 			<groupId>com.github.tilioteo</groupId>
 			<artifactId>commons</artifactId>
 			<version>${commons.version}</version>
-		</dependency>
+		</dependency-->
 
 		<dependency>
 			<groupId>com.github.tilioteo</groupId>
@@ -38,6 +38,11 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
 		<dependency>

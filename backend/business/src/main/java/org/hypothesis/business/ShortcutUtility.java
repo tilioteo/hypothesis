@@ -7,9 +7,8 @@ package org.hypothesis.business;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.vaadin.special.data.ShortcutConstants;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -60,7 +59,7 @@ public class ShortcutUtility {
 	 * @return wrapper object or null if not recognized
 	 */
 	public static ShortcutKeys parseShortcut(String shortcutKey) {
-		if (!Strings.isNullOrEmpty(shortcutKey)) {
+		if (StringUtils.isNotEmpty(shortcutKey)) {
 			String[] parts = shortcutKey.split("\\+");
 
 			ArrayList<String> modifiers = new ArrayList<>();

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.ValidationSets;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.Document;
@@ -107,7 +108,7 @@ public final class DocumentUtility {
 
 	public static List<Element> getSubElementChildren(Element element, String subNodeName,
 			StringSet validElementNames) {
-		if (element != null && !Strings.isNullOrEmpty(subNodeName)) {
+		if (element != null && StringUtils.isNotEmpty(subNodeName)) {
 			Element subElement = element.selectElement(subNodeName);
 
 			if (subElement != null) {
@@ -571,7 +572,7 @@ public final class DocumentUtility {
 	public static Long getSlideId(Element element) {
 		if (element != null) {
 			String idString = element.getAttribute(DocumentConstants.SLIDE_ID);
-			if (!Strings.isNullOrEmpty(idString)) {
+			if (StringUtils.isNotEmpty(idString)) {
 				try {
 					return Long.parseLong(idString);
 				} catch (NumberFormatException e) {
@@ -644,7 +645,7 @@ public final class DocumentUtility {
 					presenter.setAction(actionId, anonymousAction);
 				}
 
-				if (!Strings.isNullOrEmpty(actionId) && !Strings.isNullOrEmpty(name)) {
+				if (StringUtils.isNotEmpty(actionId) && StringUtils.isNotEmpty(name)) {
 					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction,
 							presenter);
 				}

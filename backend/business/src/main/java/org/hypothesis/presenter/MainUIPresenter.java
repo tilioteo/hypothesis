@@ -7,6 +7,7 @@ package org.hypothesis.presenter;
 import java.util.Date;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
@@ -25,7 +26,6 @@ import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.MainUI;
 
-import com.tilioteo.common.Strings;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
@@ -116,7 +116,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 			String viewName = getViewName();
 
-			if (!Strings.isNullOrEmpty(viewName) && userCanAccessView(user, viewName)) {
+			if (StringUtils.isNotEmpty(viewName) && userCanAccessView(user, viewName)) {
 				ui.getNavigator().navigateTo(viewName);
 			} else {
 				if (!User.GUEST.equals(user)) {
@@ -142,7 +142,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	private String getViewName() {
 		String fragment = Page.getCurrent().getUriFragment();
-		if (!Strings.isNullOrEmpty(fragment) && fragment.startsWith("!")) {
+		if (StringUtils.isNotEmpty(fragment) && fragment.startsWith("!")) {
 			fragment = fragment.substring(1);
 			int l = fragment.lastIndexOf('/');
 			if (l > 0) {

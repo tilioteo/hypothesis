@@ -8,11 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 import org.hypothesis.utility.XmlUtility;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -20,7 +19,7 @@ import com.tilioteo.common.Strings;
  *         Hypothesis
  *
  *         Writer implementation for XML structured data
-*/
+ */
 @SuppressWarnings("serial")
 public class XmlDocumentWriter implements DocumentWriter {
 
@@ -45,7 +44,7 @@ public class XmlDocumentWriter implements DocumentWriter {
 
 		for (Element sourceElement : elements) {
 			org.dom4j.Element destXmlElement = xmlElement.addElement(sourceElement.getName());
-			if (!Strings.isNullOrEmpty(sourceElement.getText())) {
+			if (StringUtils.isNotEmpty(sourceElement.getText())) {
 				destXmlElement.addText(sourceElement.getText());
 			}
 			copyElement(sourceElement, destXmlElement);

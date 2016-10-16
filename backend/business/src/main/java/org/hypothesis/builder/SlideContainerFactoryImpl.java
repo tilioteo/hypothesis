@@ -7,6 +7,7 @@ package org.hypothesis.builder;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ShortcutUtility;
 import org.hypothesis.business.ShortcutUtility.ShortcutKeys;
@@ -127,7 +128,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		createViewport(rootElement, presenter);
 
 		EvaluableUtility.createVariables(rootElement, presenter, (name, id, eval) -> {
-			if (!Strings.isNullOrEmpty(id) && eval instanceof SlideContainerPresenter) {
+			if (StringUtils.isNotEmpty(id) && eval instanceof SlideContainerPresenter) {
 				SlideContainerPresenter pres = (SlideContainerPresenter) eval;
 
 				if (DocumentConstants.COMPONENT.equals(name)) {
@@ -178,7 +179,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		if (elements != null) {
 			for (Element element : elements) {
 				String id = DocumentUtility.getId(element);
-				if (!Strings.isNullOrEmpty(id)) {
+				if (StringUtils.isNotEmpty(id)) {
 
 					Timer timer = createTimer(element, presenter);
 					presenter.setTimer(id, timer);
@@ -225,7 +226,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		if (elements != null) {
 			for (Element windowElement : elements) {
 				String id = DocumentUtility.getId(windowElement);
-				if (!Strings.isNullOrEmpty(id)) {
+				if (StringUtils.isNotEmpty(id)) {
 					Element element = DocumentUtility.getViewportOrWindowRootElement(windowElement);
 
 					if (element != null) {
@@ -332,7 +333,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				}
 			} else if (DocumentConstants.MESSAGE.equals(n)) {
 				String uid = DocumentUtility.getUid(h);
-				if (!Strings.isNullOrEmpty(uid)) {
+				if (StringUtils.isNotEmpty(uid)) {
 					pr.addMessageListener(uid, e -> {
 						final MessageEvent messageEvent = (MessageEvent) e;
 						presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.Message, a, c -> {
@@ -841,11 +842,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		if (items != null) {
 			for (Element item : items) {
 				String value = DocumentUtility.getValue(item);
-				if (!Strings.isNullOrEmpty(value)) {
+				if (StringUtils.isNotEmpty(value)) {
 					component.addItem(value);
 
 					String caption = DocumentUtility.getCaption(item);
-					if (!Strings.isNullOrEmpty(caption))
+					if (StringUtils.isNotEmpty(caption))
 						component.setItemCaption(value, caption);
 				}
 			}
@@ -887,7 +888,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		String name = element.getShortName();
 		String namespace = element.getNamespace();
 
-		if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(namespace)) {
+		if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(namespace)) {
 			// find registered plugin
 			SlideComponentPlugin componentPlugin = PluginManager.get().getComponentPlugin(namespace, name);
 

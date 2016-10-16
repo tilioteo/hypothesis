@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -23,8 +24,6 @@ import org.hypothesis.interfaces.Plugin;
 import org.hypothesis.interfaces.SlideComponentPlugin;
 import org.hypothesis.interfaces.SlideComponentPlugin.ValidParentGroup;
 import org.hypothesis.utility.XmlUtility;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -64,6 +63,7 @@ public class PluginManager implements Serializable {
 
 	/**
 	 * Read xml configuration and initialize plugins
+	 * 
 	 * @param file
 	 */
 	public void initializeFromFile(File file) {
@@ -101,7 +101,7 @@ public class PluginManager implements Serializable {
 		Element classElement = getClassElement(element);
 		if (classElement != null) {
 			String className = classElement.getTextTrim();
-			if (!Strings.isNullOrEmpty(className)) {
+			if (StringUtils.isNotEmpty(className)) {
 				registerPluginClassName(className);
 			}
 		}

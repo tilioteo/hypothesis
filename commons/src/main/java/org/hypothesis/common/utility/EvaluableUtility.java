@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.evaluation.Call;
 import org.hypothesis.evaluation.Expression;
 import org.hypothesis.evaluation.IfStatement;
@@ -40,7 +41,7 @@ public class EvaluableUtility {
 		if (actions != null) {
 			for (Element actionElement : actions) {
 				String id = DocumentUtility.getId(actionElement);
-				if (!Strings.isNullOrEmpty(id)) {
+				if (StringUtils.isNotEmpty(id)) {
 					Action action = createAction(actionElement, evaluator);
 					if (action != null) {
 						evaluator.setAction(id, action);
@@ -77,7 +78,7 @@ public class EvaluableUtility {
 	}
 
 	private static Action createInnerAction(Element element, String id, Evaluator evaluator) {
-		if (element != null && !Strings.isNullOrEmpty(id)) {
+		if (element != null && StringUtils.isNotEmpty(id)) {
 			org.hypothesis.evaluation.Action action = new org.hypothesis.evaluation.Action(evaluator, id);
 			List<Element> elements = element.children();
 			for (Element evaluableElement : elements) {
@@ -213,7 +214,7 @@ public class EvaluableUtility {
 	private static Call createCall(Element element, Evaluator evaluator) {
 		if (element != null && element.getName().equals(DocumentConstants.CALL)) {
 			String actionId = DocumentUtility.getAction(element);
-			if (!Strings.isNullOrEmpty(actionId)) {
+			if (StringUtils.isNotEmpty(actionId)) {
 				return new Call(evaluator, actionId);
 			}
 		}
@@ -262,7 +263,7 @@ public class EvaluableUtility {
 		if (variables != null) {
 			for (Element variableElement : variables) {
 				String id = DocumentUtility.getId(variableElement);
-				if (!Strings.isNullOrEmpty(id)) {
+				if (StringUtils.isNotEmpty(id)) {
 					Variable<?> variable = createVariable(variableElement, evaluator, callback);
 					if (variable != null)
 						evaluator.getVariables().put(variable.getName(), variable);
@@ -295,7 +296,7 @@ public class EvaluableUtility {
 					if (instance != null) {
 						if (instance.getName().equals(DocumentConstants.CLASS)) {
 							String className = DocumentUtility.getName(instance);
-							if (!Strings.isNullOrEmpty(className)) {
+							if (StringUtils.isNotEmpty(className)) {
 								try {
 									Class<?> clazz = Class.forName(className);
 									Constructor<?> ctor = clazz.getConstructor();

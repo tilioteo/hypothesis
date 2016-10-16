@@ -7,6 +7,7 @@ package org.hypothesis.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.ComponentUtility;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.interfaces.AlignmentWrapper;
@@ -32,7 +33,6 @@ import org.vaadin.special.ui.MultipleComponentPanel;
 import org.vaadin.special.ui.MultipleComponentPanel.Orientation;
 import org.vaadin.special.ui.Timer;
 
-import com.tilioteo.common.Strings;
 import com.tilioteo.common.collections.StringMap;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
@@ -151,7 +151,7 @@ public class SlideComponentUtility {
 		if (elements != null) {
 			for (Element element : elements) {
 				String url = element.getAttribute(DocumentConstants.URL);
-				if (!Strings.isNullOrEmpty(url)) {
+				if (StringUtils.isNotEmpty(url)) {
 					resources.add(new ExternalResource(url));
 				}
 			}

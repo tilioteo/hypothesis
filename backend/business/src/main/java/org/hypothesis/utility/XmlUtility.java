@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
@@ -20,8 +21,6 @@ import org.dom4j.Node;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -99,7 +98,7 @@ public class XmlUtility implements Serializable {
 		Element result = null;
 		if (element != null) {
 			HashMap<String, String> namespaces = new HashMap<>();
-			if (!Strings.isNullOrEmpty(prefix) && !Strings.isNullOrEmpty(uri)) {
+			if (StringUtils.isNotEmpty(prefix) && StringUtils.isNotEmpty(uri)) {
 				name = String.format("%s:%s", prefix, name);
 				namespaces.put(prefix, uri);
 			}

@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.util.ISO9075;
 import org.hypothesis.business.ObjectConstants;
 import org.hypothesis.business.Structured;
@@ -32,7 +33,6 @@ import org.hypothesis.slide.ui.TextArea;
 import org.hypothesis.slide.ui.TextField;
 import org.vaadin.special.ui.SelectButton;
 
-import com.tilioteo.common.Strings;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractTextField;
 
@@ -59,11 +59,11 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		Element element = root.createChild(DocumentConstants.SOURCE);
 		element.setAttribute(DocumentConstants.TYPE, data.getTypeName());
 
-		if (!Strings.isNullOrEmpty(data.getId())) {
+		if (StringUtils.isNotEmpty(data.getId())) {
 			element.setAttribute(DocumentConstants.ID, data.getId());
 		}
 
-		if (!Strings.isNullOrEmpty(data.getSender().getCaption())) {
+		if (StringUtils.isNotEmpty(data.getSender().getCaption())) {
 			element.setText(data.getSender().getCaption());
 		}
 	}
@@ -133,7 +133,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 						if (!isAttribute) {
 							baseElement.setText(value);
-						} else if (!Strings.isNullOrEmpty(attributeName)) {
+						} else if (StringUtils.isNotEmpty(attributeName)) {
 							baseElement.setAttribute(attributeName, value);
 						}
 					}
@@ -211,7 +211,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		element.setAttribute(DocumentConstants.TYPE, DocumentConstants.SLIDE);
 		String id = presenter.getSlideId();
 
-		if (!Strings.isNullOrEmpty(id)) {
+		if (StringUtils.isNotEmpty(id)) {
 			element.setAttribute(DocumentConstants.ID, id);
 		}
 
@@ -233,14 +233,14 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 	private void writeFieldData(Element element, AbstractComponent field) {
 		String fieldType = getFieldType(field);
-		if (!Strings.isNullOrEmpty(fieldType)) {
+		if (StringUtils.isNotEmpty(fieldType)) {
 			Element fieldElement = element.createChild(DocumentConstants.FIELD);
 			fieldElement.setAttribute(DocumentConstants.TYPE, fieldType);
 			fieldElement.setAttribute(DocumentConstants.ID, (String) field.getData());
 
 			Element captionElement = fieldElement.createChild(DocumentConstants.CAPTION);
 			String caption = field.getCaption();
-			if (!Strings.isNullOrEmpty(caption)) {
+			if (StringUtils.isNotEmpty(caption)) {
 				captionElement.setText(caption);
 			}
 
