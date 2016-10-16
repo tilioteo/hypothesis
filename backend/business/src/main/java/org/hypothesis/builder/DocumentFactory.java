@@ -7,8 +7,6 @@ package org.hypothesis.builder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.DocumentUtility;
@@ -32,59 +30,39 @@ public class DocumentFactory {
 		Element root = document.createRoot(DocumentConstants.SLIDE);
 
 		// copy template
-		List<Element> templateElements = template.root().children();
-		for (Element element : templateElements) {
-			root.createChild(element);
-		}
+		template.root().children().forEach(root::createChild);
 
 		// bind slide content
 		Element element = content.root().selectElement(DocumentConstants.BINDINGS);
 		List<Element> elements = element.selectElements(DocumentConstants.BIND);
+		elements.stream().map(m -> m.firstChild()).filter(f -> f != null).forEach(e -> {
+			String name = e.getName();
+			String id = e.getAttribute(DocumentConstants.ID);
 
-		for (Element bindElement : elements) {
-			Element bindContent = bindElement.firstChild();
+			if (StringUtils.isNotEmpty(name)) {
+				HashMap<String, String> attributes = null;
+				boolean searchDescendants = false;
 
-			if (bindContent != null) {
-				String name = bindContent.getName();
-				String id = bindContent.getAttribute(DocumentConstants.ID);
+				if (StringUtils.isNotEmpty(id)) {
+					attributes = new HashMap<>();
+					attributes.put(DocumentConstants.ID, id);
+					searchDescendants = true;
+				}
 
-				if (StringUtils.isNotEmpty(name)) {
-					if (StringUtils.isNotEmpty(id)) {
-						HashMap<String, String> attributes = new HashMap<>();
-						attributes.put(DocumentConstants.ID, id);
-
-						Element origElement = DocumentUtility.findElementByNameAndValue(root, name, attributes, true);
-						if (origElement != null) {
-							mergeElementAttributes(origElement, bindContent);
-							List<Element> bindNodes = bindContent.children();
-
-							for (Element bindNode : bindNodes) {
-								mergeBindingNodes(origElement, bindNode);
-							}
-						}
-					} else {
-						Element origElement = DocumentUtility.findElementByNameAndValue(root, name, null, false);
-						if (origElement != null) {
-							mergeElementAttributes(origElement, bindContent);
-							List<Element> bindNodes = bindContent.children();
-
-							for (Element bindNode : bindNodes) {
-								mergeBindingNodes(origElement, bindNode);
-							}
-						}
-					}
+				Element origElement = DocumentUtility.findElementByNameAndValue(root, name, attributes,
+						searchDescendants);
+				if (origElement != null) {
+					mergeElementAttributes(origElement, e);
+					e.children().forEach(n -> mergeBindingNodes(origElement, n));
 				}
 			}
-		}
+		});
 
 		return document;
 	}
 
 	private static void mergeElementAttributes(Element destination, Element source) {
-		Map<String, String> sourceAttributes = source.attributes();
-		for (Entry<String, String> entry : sourceAttributes.entrySet()) {
-			destination.setAttribute(entry.getKey(), entry.getValue());
-		}
+		source.attributes().entrySet().forEach(e -> destination.setAttribute(e.getKey(), e.getValue()));
 	}
 
 	private static void mergeBindingNodes(Element destinationElement, Element sourceSubElement) {
@@ -116,26 +94,25 @@ public class DocumentFactory {
 
 		boolean destSubEmpty = destSubElements.isEmpty();
 
-		List<Element> sourceSubElements = source.children();
-		for (Element sourceSubElement : sourceSubElements) {
-			String name = sourceSubElement.getName();
-			String id = sourceSubElement.getAttribute(DocumentConstants.ID);
+		source.children().forEach(e -> {
+			String name = e.getName();
+			String id = e.getAttribute(DocumentConstants.ID);
 
 			Element destinationSubElement = null;
 
 			if (!destSubEmpty) {
+				HashMap<String, String> attributes = null;
 				if (StringUtils.isNotEmpty(id)) {
-					HashMap<String, String> attributes = new HashMap<>();
+					attributes = new HashMap<>();
 					attributes.put(DocumentConstants.ID, id);
-					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes,
-							false);
-				} else {
-					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, null, false);
+				}
+
+				destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes, false);
+
+				if (StringUtils.isEmpty(id) && destSubElements.contains(destinationSubElement)) {
 					// if previously created element found then skip to avoid
 					// rewrite
-					if (destSubElements.contains(destinationSubElement)) {
-						destinationSubElement = null;
-					}
+					destinationSubElement = null;
 				}
 			}
 
@@ -143,8 +120,8 @@ public class DocumentFactory {
 				destinationSubElement = destination.createChild(name);
 			}
 
-			mergeElements(destinationSubElement, sourceSubElement);
-		}
+			mergeElements(destinationSubElement, e);
+		});
 	}
 
 	public static Document createEventDataDocument() {
