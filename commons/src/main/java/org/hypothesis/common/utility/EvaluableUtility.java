@@ -277,29 +277,20 @@ public class EvaluableUtility {
 				variable = new org.hypothesis.evaluation.Variable<>(id, Strings.toDouble(value));
 			else if (DocumentConstants.STRING.equalsIgnoreCase(type))
 				variable = new org.hypothesis.evaluation.Variable<>(id, value);
-			
 
 			else if (DocumentConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<>(id);
-				variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA)).map(Integer::parseInt).collect(Collectors.toCollection(ArrayList::new)));
+				variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA))
+						.map(Integer::parseInt).collect(Collectors.toCollection(ArrayList::new)));
 			} else if (DocumentConstants.FLOAT_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<>(id);
-				variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA)).map(Double::parseDouble).collect(Collectors.toCollection(ArrayList::new)));
+				variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA))
+						.map(Double::parseDouble).collect(Collectors.toCollection(ArrayList::new)));
 			} else if (DocumentConstants.STRING_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<>(id);
-				variable.setRawValue(Arrays.stream(values.split(DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN)).map(Double::parseDouble).collect(Collectors.toCollection(ArrayList::new)));
-				XXX
-				ArrayList<String> array = new ArrayList<>();
-				String[] strings = Strings.toStringArray(values, DocumentConstants.STR_COMMA,
-						DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN);
-				if (strings != null) {
-					for (String string : strings) {
-						if (string != null) {
-							array.add(string);
-						}
-					}
-				}
-				variable.setRawValue(array);
+				variable.setRawValue(Arrays.stream(values.split(DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN))
+						.map(m -> StringUtils.strip(m, DocumentConstants.STR_QUOTE))
+						.collect(Collectors.toCollection(ArrayList::new)));
 			} else if (DocumentConstants.OBJECT_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<>(id);
 				variable.setRawValue(new ArrayList<>());
@@ -309,7 +300,7 @@ public class EvaluableUtility {
 		} else
 			return null;
 	}
-	
-	//private 
+
+	// private
 
 }
