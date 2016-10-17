@@ -42,18 +42,18 @@ public class SlideDataParser {
 				}
 			}
 
-			for (Element element : elements) {
-				String index = element.attributeValue(DocumentConstants.INDEX);
+			elements.forEach(e -> {
+				String index = e.attributeValue(DocumentConstants.INDEX);
 
 				try {
 					int i = Integer.parseInt(index);
-					String value = element.getTextTrim();
+					String value = e.getTextTrim();
 					if (!value.isEmpty() && i >= 1 && i <= list.size()) {
 						list.set(i - 1, value);
 					}
-				} catch (NumberFormatException e) {
+				} catch (NumberFormatException ex) {
 				}
-			}
+			});
 		}
 		return list;
 	}

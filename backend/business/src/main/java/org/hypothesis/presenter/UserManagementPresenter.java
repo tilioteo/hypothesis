@@ -18,7 +18,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -260,11 +262,8 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 			userService.delete(user);
 
-			for (Group group : user.getGroups()) {
-				if (group != null) {
-					bus.post(new MainUIEvent.GroupUsersChangedEvent(group));
-				}
-			}
+			user.getGroups().stream().filter(Objects::nonNull)
+					.forEach(e -> bus.post(new MainUIEvent.GroupUsersChangedEvent(e)));
 
 			table.removeItem(user.getId());
 		}
@@ -334,9 +333,8 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 	@SuppressWarnings("unchecked")
 	private Collection<User> getSelectedUsers() {
 		Collection<User> users = new HashSet<>();
-		for (Long id : getSelectedUserIds()) {
-			users.add(((BeanItem<User>) table.getItem(id)).getBean());
-		}
+		getSelectedUserIds().forEach(e -> users.add(((BeanItem<User>) table.getItem(e)).getBean()));
+
 		return users;
 	}
 
@@ -359,10 +357,10 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		} else {
 			users = userService.findOwnerUsers(loggedUser);
 		}
-		for (User user : users) {
-			user = userService.merge(user);
+		users.forEach(e -> {
+			User user = userService.merge(e);
 			dataSource.addBean(user);
-		}
+		});
 		table.setContainerDataSource(dataSource);
 		dataSource.setItemSorter(new CaseInsensitiveItemSorter());
 		table.sort();
@@ -417,24 +415,13 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 			Set<Role> roles = user.getRoles();
 			List<String> sortedRoles = new ArrayList<>();
-			for (Role role : roles) {
-				sortedRoles.add(role.getName());
-			}
+			roles.stream().map(Role::getName).forEach(sortedRoles::add);
+
 			Collections.sort(sortedRoles);
 			Label rolesLabel = new Label();
 
-			StringBuilder descriptionBuilder = new StringBuilder();
-			StringBuilder labelBuilder = new StringBuilder();
-			for (String role : sortedRoles) {
-				if (descriptionBuilder.length() != 0) {
-					descriptionBuilder.append("<br/>");
-					labelBuilder.append(", ");
-				}
-				descriptionBuilder.append(role);
-				labelBuilder.append(role);
-			}
-			rolesLabel.setDescription(descriptionBuilder.toString());
-			rolesLabel.setValue(labelBuilder.toString());
+			rolesLabel.setDescription(sortedRoles.stream().collect(Collectors.joining("<br/>")));
+			rolesLabel.setValue(sortedRoles.stream().collect(Collectors.joining(", ")));
 
 			return rolesLabel;
 		}
@@ -445,26 +432,15 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 			Set<Group> groups = user.getGroups();
 			List<String> sortedGroups = new ArrayList<>();
-			for (Group group : groups) {
-				sortedGroups.add(group.getName());
-			}
+			groups.stream().map(Group::getName).forEach(sortedGroups::add);
+
 			Collections.sort(sortedGroups);
 			Label groupsLabel = new Label();
 
-			StringBuilder descriptionBuilder = new StringBuilder();
-			StringBuilder labelBuilder = new StringBuilder();
-			for (String group : sortedGroups) {
-				if (descriptionBuilder.length() != 0) {
-					descriptionBuilder.append("<br/>");
-					labelBuilder.append(", ");
-				}
-				descriptionBuilder.append(group);
-				labelBuilder.append(group);
-			}
-			groupsLabel.setDescription(descriptionBuilder.toString());
+			groupsLabel.setDescription(sortedGroups.stream().collect(Collectors.joining("<br/>")));
 
 			if (groups.size() < 5) {
-				groupsLabel.setValue(labelBuilder.toString());
+				groupsLabel.setValue(sortedGroups.stream().collect(Collectors.joining(", ")));
 			} else {
 				groupsLabel.setValue(Messages.getString("Caption.Label.MultipleGroups", groups.size()));
 			}
@@ -502,33 +478,25 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			Set<Pack> packs = permissionService.findUserPacks2(user, false);
 			List<String> sortedPacks = new ArrayList<>();
 			List<String> sortedPackDescs = new ArrayList<>();
-			for (Pack pack : packs) {
-				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", pack.getName(), pack.getId()));
-				sortedPackDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
-						pack.getDescription()));
-			}
+
+			packs.stream().forEach(e -> {
+				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", e.getName(), e.getId()));
+				sortedPackDescs.add(
+						Messages.getString("Caption.Item.PackDescription", e.getName(), e.getId(), e.getDescription()));
+			});
 			Collections.sort(sortedPacks);
 			Collections.sort(sortedPackDescs);
 
-			StringBuilder labelBuilder = new StringBuilder();
-			for (String pack : sortedPacks) {
-				if (labelBuilder.length() != 0) {
-					labelBuilder.append(", ");
-				}
-				labelBuilder.append(pack);
-			}
 			StringBuilder descriptionBuilder = new StringBuilder();
 			descriptionBuilder.append("<ul>");
-			for (String pack : sortedPackDescs) {
-				descriptionBuilder.append("<li>" + pack + "</li>");
-			}
+			descriptionBuilder.append(sortedPackDescs.stream().collect(Collectors.joining("", "<li>", "</li>")));
 			descriptionBuilder.append("</ul>");
 
 			Label packsLabel = new Label();
 			packsLabel.setDescription(descriptionBuilder.toString());
 
 			if (packs.size() < 5) {
-				packsLabel.setValue(labelBuilder.toString());
+				packsLabel.setValue(sortedPacks.stream().collect(Collectors.joining(", ")));
 			} else {
 				packsLabel.setValue(Messages.getString("Caption.Label.MultiplePacks", packs.size()));
 			}

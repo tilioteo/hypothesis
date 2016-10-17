@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
@@ -47,10 +47,8 @@ public class ElementImpl implements Element {
 	protected ElementImpl(Element element) {
 		setName(element.getName());
 		this.text = element.getText();
+		element.attributes().entrySet().forEach(e -> this.attributes.put(e.getKey(), e.getValue()));
 
-		for (Entry<String, String> entry : element.attributes().entrySet()) {
-			this.attributes.put(entry.getKey(), entry.getValue());
-		}
 		Iterator<Element> iterator = element.iterator();
 		while (iterator.hasNext()) {
 			createChild((ElementImpl) iterator.next());
@@ -308,29 +306,18 @@ public class ElementImpl implements Element {
 		builder.append("<" + name + ":" + text + "(");
 
 		if (!attributes.isEmpty()) {
-			String str = "";
-			for (Entry<String, String> entry : attributes.entrySet()) {
-				str += entry.toString() + ",";
-			}
-			builder.append(str.substring(0, str.length() - 1));
+			builder.append(attributes.entrySet().stream().map(e -> e.getValue()).collect(Collectors.joining(",")));
 		}
 		builder.append(")[");
 
 		if (!children.isEmpty()) {
-			String str = "";
-
 			if (!detailed) {
-				for (Element element : children) {
-					str += element.getName() + ",";
-				}
-				builder.append(str.substring(0, str.length() - 1));
+				builder.append(children.stream().map(e -> e.getName()).collect(Collectors.joining(",")));
 			} else {
 				builder.append("\n");
-
-				for (Element element : children) {
-					builder.append(element.toString(detailed, ident + 1));
-					builder.append("\n");
-				}
+				builder.append(
+						children.stream().map(e -> e.toString(detailed, ident + 1)).collect(Collectors.joining("\n")));
+				builder.append("\n");
 			}
 
 			for (int i = 0; i < ident; ++i) {

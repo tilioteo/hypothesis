@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -304,9 +305,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		packsSelect = new ComboBox();
 		packsSelect.setInputPrompt(Messages.getString("Caption.Button.ChoosePack"));
-		for (String packTitle : sortedPacks) {
-			packsSelect.addItem(packTitle);
-		}
+		sortedPacks.forEach(packsSelect::addItem);
+
 		packsSelect.setTextInputAllowed(false);
 		packsSelect.setNullSelectionAllowed(false);
 		packsSelect.setRequired(true);
@@ -374,12 +374,11 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		packMap.clear();
 
 		if (packs != null) {
-			for (Pack pack : packs) {
-				String key = Messages.getString("Caption.Item.PackSelect", pack.getName(), pack.getId(),
-						pack.getDescription());
+			packs.forEach(e -> {
+				String key = Messages.getString("Caption.Item.PackSelect", e.getName(), e.getId(), e.getDescription());
 				sortedPacks.add(key);
-				packMap.put(key, pack);
-			}
+				packMap.put(key, e);
+			});
 
 			Collections.sort(sortedPacks);
 		}
@@ -546,9 +545,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		packsSelect.removeAllItems();
 		testSelection.removeAllComponents();
-		for (String packTitle : sortedPacks) {
-			packsSelect.addItem(packTitle);
-		}
+
+		sortedPacks.forEach(packsSelect::addItem);
 	}
 
 	private void afterExportFinnished(boolean canceled) {

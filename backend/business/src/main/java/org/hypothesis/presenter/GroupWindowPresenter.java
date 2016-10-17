@@ -262,10 +262,10 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			buildUsersField(
 					!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
 
-			for (User user : users) {
-				Item row = usersField.addItem(user);
-				row.getItemProperty(FieldConstants.USERNAME).setValue(user.getUsername());
-			}
+			users.forEach(e -> {
+				Item row = usersField.addItem(e);
+				row.getItemProperty(FieldConstants.USERNAME).setValue(e.getUsername());
+			});
 
 			((IndexedContainer) usersField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
 			usersField.sort(new Object[] { FieldConstants.USERNAME }, new boolean[] { true });
@@ -283,10 +283,10 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 
 		// TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
 
-		for (Pack pack : packs) {
-			Item row = packsField.addItem(pack);
-			row.getItemProperty(FieldConstants.NAME).setValue(pack.getName());
-		}
+		packs.forEach(e -> {
+			Item row = packsField.addItem(e);
+			row.getItemProperty(FieldConstants.NAME).setValue(e.getName());
+		});
 
 		((IndexedContainer) packsField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
 		packsField.sort(new Object[] { FieldConstants.NAME }, new boolean[] { true });
@@ -312,16 +312,16 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 				users = new HashSet<>();
 			}
 
-			for (Object itemId : usersField.getItemIds()) {
-				Item row = usersField.getItem(itemId);
-				User user = userService.merge((User) itemId);
+			usersField.getItemIds().forEach(e -> {
+				Item row = usersField.getItem(e);
+				User user = userService.merge((User) e);
 
 				if (users.contains(user)) {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(true);
 				} else {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(false);
 				}
-			}
+			});
 		}
 
 		// packs
@@ -333,16 +333,15 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			packs = new HashSet<>();
 		}
 
-		for (Object itemId : packsField.getItemIds()) {
-			Item row = packsField.getItem(itemId);
-			Pack pack = (Pack) itemId;
+		packsField.getItemIds().forEach(e -> {
+			Item row = packsField.getItem(e);
 
-			if (packs.contains(pack)) {
+			if (packs.contains(e)) {
 				row.getItemProperty(FieldConstants.SELECTED).setValue(true);
 			} else {
 				row.getItemProperty(FieldConstants.SELECTED).setValue(false);
 			}
-		}
+		});
 	}
 
 	@Override
@@ -490,12 +489,12 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		if (state == WindowState.MULTIUPDATE) {
-			for (Group group : (Collection<Group>) source) {
-				group = saveGroup(group);
+			((Collection<Group>) source).forEach(e -> {
+				Group group = saveGroup(e);
 				if (group != null) {
 					bus.post(new MainUIEvent.GroupAddedEvent(group));
 				}
-			}
+			});
 
 		} else {
 			Group group;
@@ -528,6 +527,9 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 
 		if (usersField != null && usersField.isVisible() && usersField.isEnabled()) {
 
+			usersField.getItemIds().forEach(e -> {
+
+			});
 			for (Object itemId : usersField.getItemIds()) {
 				Item item = usersField.getItem(itemId);
 				User user = userService.merge((User) itemId);
@@ -555,18 +557,19 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 
 		group = groupService.add(group);
 
+		final Group addedGroup = group;
 		if (packsField.isVisible()) {
 			permissionService.deleteGroupPermissions(group);
 
-			for (Object itemId : packsField.getItemIds()) {
-				Item item = packsField.getItem(itemId);
-				Pack pack = (Pack) itemId;
+			packsField.getItemIds().forEach(e -> {
+				Item item = packsField.getItem(e);
+				Pack pack = (Pack) e;
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (selected != null && selected.equals(true)) {
-					permissionService.addGroupPermission(new GroupPermission(group, pack));
+					permissionService.addGroupPermission(new GroupPermission(addedGroup, pack));
 				}
-			}
+			});
 		}
 
 		if (updatedLoggedUser != null) {

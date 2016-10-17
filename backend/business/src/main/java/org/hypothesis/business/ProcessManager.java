@@ -5,7 +5,6 @@
 package org.hypothesis.business;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -101,7 +100,8 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * 
-	 * @param bus associated event bus
+	 * @param bus
+	 *            associated event bus
 	 */
 	public ProcessManager(ProcessEventBus bus) {
 		this.bus = bus;
@@ -135,27 +135,23 @@ public class ProcessManager implements Serializable {
 	}
 
 	private boolean checkUserPack(User user, Pack pack) {
-		Collection<Pack> packs;
 		if (user != null) {
-			packs = permissionService.findUserPacks(user, true);
-			for (Pack allowedPack : packs) {
-				if (allowedPack.getId().equals(pack.getId()))
-					return true;
+			boolean match = permissionService.findUserPacks(user, true).stream()
+					.anyMatch(e -> e.getId().equals(pack.getId()));
+
+			if (match) {
+				return true;
 			}
 		}
 
-		packs = permissionService.getPublishedPacks();
-		for (Pack allowedPack : packs) {
-			if (allowedPack.getId().equals(pack.getId()))
-				return true;
-		}
-
-		return false;
+		return permissionService.getPublishedPacks().stream().anyMatch(e -> e.getId().equals(pack.getId()));
 	}
 
 	/**
 	 * Handler method for {@link ActionEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processActionEvent(ActionEvent event) {
@@ -164,7 +160,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link AfterRenderContentEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processAfterRender(AfterRenderContentEvent event) {
@@ -173,7 +171,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link BreakTestEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processBreakTest(BreakTestEvent event) {
@@ -190,7 +190,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link ComponentEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processComponentEvent(ComponentEvent event) {
@@ -199,7 +201,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link ContinueTestEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processContinueTest(ContinueTestEvent event) {
@@ -230,7 +234,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link ErrorTestEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processError(ErrorTestEvent event) {
@@ -242,7 +248,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link FinishBranchEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processFinishBranch(FinishBranchEvent event) {
@@ -257,7 +265,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link FinishSlideEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processFinishSlide(FinishSlideEvent event) {
@@ -279,7 +289,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link FinishTaskEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processFinishTask(FinishTaskEvent event) {
@@ -296,7 +308,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link FinishTestEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processFinishTest(FinishTestEvent event) {
@@ -308,7 +322,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link NextBranchEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processNextBranch(NextBranchEvent event) {
@@ -349,7 +365,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link NextSlideEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processNextSlide(NextSlideEvent event) {
@@ -375,7 +393,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link PriorSlideEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processPriorSlide(PriorSlideEvent event) {
@@ -397,7 +417,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link NextTaskEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processNextTask(NextTaskEvent event) {
@@ -408,7 +430,7 @@ public class ProcessManager implements Serializable {
 
 			setSlideManagerParent(currentTask);
 			currentSlide = slideManager.current();
-			
+
 			if (currentSlide != null) {
 				slideProcessing = true;
 				renderSlide();
@@ -445,7 +467,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link PrepareTestEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processPrepareTest(PrepareTestEvent event) {
@@ -472,7 +496,9 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Handler method for {@link StartTestEvent}
-	 * @param event observed event class object
+	 * 
+	 * @param event
+	 *            observed event class object
 	 */
 	@Handler
 	public void processStartTest(StartTestEvent event) {
@@ -483,6 +509,7 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Process the test by whole pack structure
+	 * 
 	 * @param test
 	 */
 	public void processTest(SimpleTest test) {
@@ -492,7 +519,11 @@ public class ProcessManager implements Serializable {
 
 			currentTest = test;
 
-			currentPack = persistenceService.merge(test.getPack()); // null value is checked in parent method
+			currentPack = persistenceService.merge(test.getPack()); // null
+																	// value is
+																	// checked
+																	// in parent
+																	// method
 
 			branchManager.setListFromParent(currentPack);
 			currentBranch = persistenceService.merge(branchManager.current());
@@ -534,6 +565,7 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * go to the following slide according to the direction
+	 * 
 	 * @param direction
 	 */
 	public void processSlideFollowing(Direction direction) {
@@ -548,8 +580,11 @@ public class ProcessManager implements Serializable {
 
 	/**
 	 * Make some operations based token data before test can be prepared
+	 * 
 	 * @param token
-	 * @param startAllowed if true then test will be started immediately after preparation process
+	 * @param startAllowed
+	 *            if true then test will be started immediately after
+	 *            preparation process
 	 */
 	public void processToken(Token token, boolean startAllowed) {
 		if (token != null) {

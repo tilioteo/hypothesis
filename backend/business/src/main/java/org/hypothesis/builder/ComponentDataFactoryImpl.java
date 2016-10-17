@@ -170,7 +170,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		}
 	}
 
-	// FIXME copy-paste code
+	// FIXME copy-paste code of addOutputs
 	private void addActionOutputs(Element root, ActionEvent event) {
 		Map<Integer, ExchangeVariable> outputs = event.getAction().getOutputs();
 
@@ -207,7 +207,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 	}
 
-	// FIXME copy-paste similar code
+	// FIXME copy-paste similar code to addVariables
 	private void addFields(Element root, SlidePresenter presenter) {
 		Map<String, org.hypothesis.interfaces.Field> fields = presenter.getFields();
 
@@ -287,7 +287,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		}
 	}
 
-	// FIXME copy-paste similar code
+	// FIXME copy-paste similar code to addFields
 	private void addVariables(Element root, SlidePresenter presenter) {
 		Map<String, Variable<?>> variables = presenter.getVariables();
 
@@ -301,7 +301,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	// FIXME similar code to writeOutputValue
 	private void writeVariableData(Element element, Variable<?> variable) {
 		Class<?> type = variable.getType();
 		String typeName = DocumentConstants.OBJECT;
@@ -330,45 +330,21 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 				typeName = DocumentConstants.OBJECT_ARRAY;
 
 				ArrayList<?> array = (ArrayList<?>) value;
-				if (!array.isEmpty()) {
-					Object testItem = null;
-					for (int i = 0; i < array.size(); ++i) {
-						testItem = array.get(i);
-						if (testItem != null) {
-							break;
-						}
-					}
+				Object testItem = array.stream().filter(f -> f != null).findFirst().orElseGet(null);
 
-					if (testItem != null) {
-						Class<?> itemType = testItem.getClass();
+				if (testItem != null) {
+					Class<?> itemType = testItem.getClass();
+					valueString = array.stream().map(String::valueOf)
+							.collect(Collectors.joining(DocumentConstants.STR_COMMA));
 
-						if (itemType.equals(Integer.class)) {
-							for (Integer item : (ArrayList<Integer>) value) {
-								if (valueString.length() > 0) {
-									valueString += DocumentConstants.STR_COMMA;
-								}
-								valueString += item.toString();
-							}
-							typeName = DocumentConstants.INTEGER_ARRAY;
+					if (itemType.equals(Integer.class)) {
+						typeName = DocumentConstants.INTEGER_ARRAY;
 
-						} else if (itemType.equals(Double.class)) {
-							for (Double item : (ArrayList<Double>) value) {
-								if (valueString.length() > 0) {
-									valueString += DocumentConstants.STR_COMMA;
-								}
-								valueString += item.toString();
-							}
-							typeName = DocumentConstants.FLOAT_ARRAY;
+					} else if (itemType.equals(Double.class)) {
+						typeName = DocumentConstants.FLOAT_ARRAY;
 
-						} else if (itemType.equals(String.class)) {
-							for (String item : (ArrayList<String>) value) {
-								if (valueString.length() > 0) {
-									valueString += DocumentConstants.STR_COMMA;
-								}
-								valueString += item;
-							}
-							typeName = DocumentConstants.STRING_ARRAY;
-						}
+					} else if (itemType.equals(String.class)) {
+						typeName = DocumentConstants.STRING_ARRAY;
 					}
 				}
 			}
@@ -382,7 +358,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		}
 	}
 
-	// FIXME copy-paste code
+	// FIXME copy-paste code of addActionOutputs
 	private void addOutputs(Element root, SlidePresenter presenter) {
 		Map<Integer, ExchangeVariable> outputs = presenter.getOutputs();
 
@@ -396,6 +372,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		}
 	}
 
+	// FIXME similar code to writeVariableData
 	private void writeOutputValue(Element element, Object value) {
 		Class<?> type;
 		if (value instanceof com.tilioteo.expressions.Variable) {
@@ -425,33 +402,21 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			element.setText((String) value);
 		} else if (type == ArrayList.class) {
 			ArrayList<?> array = (ArrayList<?>) value;
-			if (!array.isEmpty()) {
-				Class<?> itemType = array.get(0).getClass();
+			Object testItem = array.stream().filter(f -> f != null).findFirst().orElseGet(null);
+
+			if (testItem != null) {
+				Class<?> itemType = testItem.getClass();
+
 				element.setText(
 						array.stream().map(String::valueOf).collect(Collectors.joining(DocumentConstants.STR_COMMA)));
 
 				if (itemType.equals(Integer.class)) {
-					/*
-					 * for (Integer item : (ArrayList<Integer>) value) { if
-					 * (str.length() > 0) { str += DocumentConstants.STR_COMMA;
-					 * } str += item.toString(); }
-					 */
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER_ARRAY);
 
 				} else if (itemType.equals(Double.class)) {
-					/*
-					 * for (Double item : (ArrayList<Double>) value) { if
-					 * (str.length() > 0) { str += DocumentConstants.STR_COMMA;
-					 * } str += item.toString(); }
-					 */
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT_ARRAY);
 
 				} else if (itemType.equals(String.class)) {
-					/*
-					 * for (String item : (ArrayList<String>) value) { if
-					 * (str.length() > 0) { str += DocumentConstants.STR_COMMA;
-					 * } str += item; }
-					 */
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.STRING_ARRAY);
 
 				} else {

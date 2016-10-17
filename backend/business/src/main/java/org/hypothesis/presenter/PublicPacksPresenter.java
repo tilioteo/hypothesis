@@ -199,9 +199,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 		panelBeans.clear();
 
 		if (packs != null && !packs.isEmpty()) {
-			for (Pack pack : packs) {
-				view.addPackPanel(createPackPanel(pack));
-			}
+			packs.stream().map(this::createPackPanel).forEach(view::addPackPanel);
 		} else {
 			view.setEmptyInfo();
 		}

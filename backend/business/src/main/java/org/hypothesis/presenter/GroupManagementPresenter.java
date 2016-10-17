@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -251,9 +252,8 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 	@SuppressWarnings("unchecked")
 	private Collection<Group> getSelectedGroups() {
 		Collection<Group> groups = new HashSet<>();
-		for (Long id : getSelectedGroupIds()) {
-			groups.add(((BeanItem<Group>) table.getItem(id)).getBean());
-		}
+		getSelectedGroupIds().forEach(e -> groups.add(((BeanItem<Group>) table.getItem(e)).getBean()));
+
 		return groups;
 	}
 
@@ -276,10 +276,10 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 		} else {
 			groups = groupService.findOwnerGroups(loggedUser);
 		}
-		for (Group group : groups) {
-			group = groupService.merge(group);
+		groups.forEach(e -> {
+			Group group = groupService.merge(e);
 			dataSource.addBean(group);
-		}
+		});
 		table.setContainerDataSource(dataSource);
 		dataSource.setItemSorter(new CaseInsensitiveItemSorter());
 		table.sort();
@@ -316,22 +316,24 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 			Set<User> users = group.getUsers();
 			List<String> sortedUsers = new ArrayList<>();
-			for (User user : users) {
-				sortedUsers.add(user.getUsername());
-			}
+			users.stream().map(User::getUsername).forEach(sortedUsers::add);
+
 			Collections.sort(sortedUsers);
 			Label usersLabel = new Label();
 
 			StringBuilder descriptionBuilder = new StringBuilder();
 			StringBuilder labelBuilder = new StringBuilder();
-			for (String user : sortedUsers) {
+
+			// TODO try parallel streams?
+			sortedUsers.forEach(e -> {
 				if (descriptionBuilder.length() != 0) {
 					descriptionBuilder.append("<br/>");
 					labelBuilder.append(", ");
 				}
-				descriptionBuilder.append(user);
-				labelBuilder.append(user);
-			}
+				descriptionBuilder.append(e);
+				labelBuilder.append(e);
+			});
+
 			usersLabel.setDescription(descriptionBuilder.toString());
 
 			if (users.size() < 5) {
@@ -348,33 +350,24 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 			Set<Pack> packs = permissionService.getGroupPacks(group);
 			List<String> sortedPacks = new ArrayList<>();
 			List<String> sortedPackDescs = new ArrayList<>();
-			for (Pack pack : packs) {
-				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", pack.getName(), pack.getId()));
-				sortedPackDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
-						pack.getDescription()));
-			}
+			packs.forEach(e -> {
+				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", e.getName(), e.getId()));
+				sortedPackDescs.add(
+						Messages.getString("Caption.Item.PackDescription", e.getName(), e.getId(), e.getDescription()));
+			});
 			Collections.sort(sortedPacks);
 			Collections.sort(sortedPackDescs);
 
-			StringBuilder labelBuilder = new StringBuilder();
-			for (String pack : sortedPacks) {
-				if (labelBuilder.length() != 0) {
-					labelBuilder.append(", ");
-				}
-				labelBuilder.append(pack);
-			}
 			StringBuilder descriptionBuilder = new StringBuilder();
 			descriptionBuilder.append("<ul>");
-			for (String pack : sortedPackDescs) {
-				descriptionBuilder.append("<li>" + pack + "</li>");
-			}
+			descriptionBuilder.append(sortedPackDescs.stream().collect(Collectors.joining("", "<li>", "</li>")));
 			descriptionBuilder.append("</ul>");
 
 			Label packsLabel = new Label();
 			packsLabel.setDescription(descriptionBuilder.toString());
 
 			if (packs.size() < 5) {
-				packsLabel.setValue(labelBuilder.toString());
+				packsLabel.setValue(sortedPacks.stream().collect(Collectors.joining(", ")));
 			} else {
 				packsLabel.setValue(Messages.getString("Caption.Label.MultiplePacks", packs.size()));
 			}

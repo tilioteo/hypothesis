@@ -32,19 +32,28 @@ public class EventManager {
 
 	/**
 	 * 
-	 * @param presenter the slide container presenter which the event manager is associated with
+	 * @param presenter
+	 *            the slide container presenter which the event manager is
+	 *            associated with
 	 */
 	public EventManager(SlideContainerPresenter presenter) {
 		this.presenter = presenter;
 	}
 
 	/**
-	 * Event handling method which prepares ComponentEvent object with generated ComponentData from provided parameters
-	 * @param component the component which is an originator and handles the event
-	 * @param typeName name of component type, ie. "Button"
-	 * @param eventName name of event, ie. "Click"
-	 * @param action the action to execute
-	 * @param callback used for user initialization of event
+	 * Event handling method which prepares ComponentEvent object with generated
+	 * ComponentData from provided parameters
+	 * 
+	 * @param component
+	 *            the component which is an originator and handles the event
+	 * @param typeName
+	 *            name of component type, ie. "Button"
+	 * @param eventName
+	 *            name of event, ie. "Click"
+	 * @param action
+	 *            the action to execute
+	 * @param callback
+	 *            used for user initialization of event
 	 */
 	public void handleEvent(Component component, String typeName, String eventName, Action action,
 			ComponentEventCallback callback) {
@@ -70,21 +79,21 @@ public class EventManager {
 		HashMap<String, String> structures = new HashMap<>();
 
 		Set<String> names = event.getPropertyNames();
-		for (String name : names) {
-			Object value = event.getProperty(name);
-			Class<?> clazz = event.getPropertyClass(name);
+		event.getPropertyNames().forEach(e -> {
+			Object value = event.getProperty(e);
+			Class<?> clazz = event.getPropertyClass(e);
 			if (clazz != null) {
-				properties.put(name, clazz);
+				properties.put(e, clazz);
 			} else if (value != null) {
-				properties.put(name, value.getClass());
+				properties.put(e, value.getClass());
 			} else {
-				properties.put(name, Object.class);
+				properties.put(e, Object.class);
 			}
 
-			if (event.getPropertyPattern(name) != null) {
-				structures.put(name, event.getPropertyPattern(name));
+			if (event.getPropertyPattern(e) != null) {
+				structures.put(e, event.getPropertyPattern(e));
 			}
-		}
+		});
 
 		try {
 			String safeClassName = event.getComponent().getClass().getName().replace(".", "_");
@@ -94,13 +103,16 @@ public class EventManager {
 
 			ComponentData data = (ComponentData) dataClass.newInstance();
 
-			for (String name : names) {
-				Object value = event.getProperty(name);
+			names.forEach(e -> {
+				Object value = event.getProperty(e);
 
-				Field field = data.getClass().getDeclaredField(name);
-				field.setAccessible(true);
-				field.set(data, value);
-			}
+				try {
+					Field field = data.getClass().getDeclaredField(e);
+					field.setAccessible(true);
+					field.set(data, value);
+				} catch (Exception ex) {
+				}
+			});
 
 			Component component = event.getComponent();
 

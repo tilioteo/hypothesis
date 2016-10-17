@@ -87,29 +87,21 @@ public class XmlDocumentReader implements DocumentReader {
 	private void copyElement(org.dom4j.Element xmlElement, Element element) {
 		copyAttributes(xmlElement, element);
 
-		List<org.dom4j.Element> xmlElements = xmlElement.elements();
-
-		for (org.dom4j.Element xmlSourceElement : xmlElements) {
+		((List<org.dom4j.Element>) xmlElement.elements()).forEach(e -> {
 			String text;
-			if (xmlSourceElement.isTextOnly()) {
-				text = xmlSourceElement.getText();
+			if (e.isTextOnly()) {
+				text = e.getText();
 			} else {
-				text = xmlSourceElement.getTextTrim();
+				text = e.getTextTrim();
 			}
 
-			Element destElement = element.createChild(composeName(xmlSourceElement), text);
-
-			copyElement(xmlSourceElement, destElement);
-		}
+			copyElement(e, element.createChild(composeName(e), text));
+		});
 	}
 
 	@SuppressWarnings("unchecked")
 	private void copyAttributes(org.dom4j.Element xmlElement, Element element) {
-		List<Attribute> xmlAttributes = xmlElement.attributes();
-
-		for (Attribute xmlAttribute : xmlAttributes) {
-			element.setAttribute(xmlAttribute.getName(), xmlAttribute.getValue());
-		}
+		((List<Attribute>) xmlElement.attributes()).forEach(e -> element.setAttribute(e.getName(), e.getValue()));
 	}
 
 }

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
@@ -16,8 +17,6 @@ import org.hypothesis.event.data.Message;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -38,8 +37,11 @@ public class MessageManager implements Serializable {
 
 	/**
 	 * Create new message object by provided uid
-	 * @param uid message identifier to look for definition
-	 * @param userId user identifier passed into message
+	 * 
+	 * @param uid
+	 *            message identifier to look for definition
+	 * @param userId
+	 *            user identifier passed into message
 	 * @return new message object or null when message definition not found
 	 */
 	public Message createMessage(String uid, Long userId) {
@@ -67,7 +69,7 @@ public class MessageManager implements Serializable {
 						for (Element propertyElement : properties) {
 							String name = DocumentUtility.getName(propertyElement);
 							String type = DocumentUtility.getType(propertyElement);
-							if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(type)) {
+							if (StringUtils.isEmpty(name) || StringUtils.isEmpty(type)) {
 								return null;
 							}
 							Class<?> clazz;

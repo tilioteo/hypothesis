@@ -18,7 +18,6 @@ import org.hypothesis.common.utility.ComponentUtility;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
-import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.event.model.MessageEvent;
 import org.hypothesis.event.model.ProcessEventTypes;
 import org.hypothesis.extension.PluginManager;
@@ -149,13 +148,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		List<Element> inputElements = DocumentUtility.getInputValueElements(rootElement);
 
 		if (inputElements != null) {
-			for (Element inputElement : inputElements) {
-				IndexedExpression indexedExpression = EvaluableUtility.createValueExpression(inputElement,
-						DocumentConstants.INPUT_VALUE);
-				if (indexedExpression != null) {
-					presenter.setInputExpression(indexedExpression.getIndex(), indexedExpression);
-				}
-			}
+			inputElements.stream().map(m -> EvaluableUtility.createValueExpression(m, DocumentConstants.INPUT_VALUE))
+					.filter(f -> f != null).forEach(e -> presenter.setInputExpression(e.getIndex(), e));
 		}
 	}
 
@@ -163,13 +157,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		List<Element> outputElements = DocumentUtility.getOutputValueElements(rootElement);
 
 		if (outputElements != null) {
-			for (Element outputElement : outputElements) {
-				IndexedExpression indexedExpression = EvaluableUtility.createValueExpression(outputElement,
-						DocumentConstants.OUTPUT_VALUE);
-				if (indexedExpression != null) {
-					presenter.setOutputExpression(indexedExpression.getIndex(), indexedExpression);
-				}
-			}
+			outputElements.stream().map(m -> EvaluableUtility.createValueExpression(m, DocumentConstants.OUTPUT_VALUE))
+					.filter(f -> f != null).forEach(e -> presenter.setOutputExpression(e.getIndex(), e));
 		}
 	}
 
@@ -177,14 +166,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		List<Element> elements = DocumentUtility.getTimersElements(rootElement);
 
 		if (elements != null) {
-			for (Element element : elements) {
-				String id = DocumentUtility.getId(element);
+			elements.forEach(e -> {
+				String id = DocumentUtility.getId(e);
 				if (StringUtils.isNotEmpty(id)) {
 
-					Timer timer = createTimer(element, presenter);
+					Timer timer = createTimer(e, presenter);
 					presenter.setTimer(id, timer);
 				}
-			}
+			});
 		}
 	}
 
@@ -224,17 +213,17 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		List<Element> elements = DocumentUtility.getWindowsElements(rootElement);
 
 		if (elements != null) {
-			for (Element windowElement : elements) {
-				String id = DocumentUtility.getId(windowElement);
+			elements.forEach(e -> {
+				String id = DocumentUtility.getId(e);
 				if (StringUtils.isNotEmpty(id)) {
-					Element element = DocumentUtility.getViewportOrWindowRootElement(windowElement);
+					Element element = DocumentUtility.getViewportOrWindowRootElement(e);
 
 					if (element != null) {
 						Window window = createWindow(element, presenter);
 						presenter.setWindow(id, window);
 					}
 				}
-			}
+			});
 		}
 	}
 
@@ -249,26 +238,26 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
+	// FIXME similar to addHorizontalLayoutComponents and
+	// addVerticalLayoutComponents
+	// FIXME copy-paste code of addPanelComponents
 	private void addWindowComponents(Window container, Element element, SlideContainerPresenter presenter) {
 		List<Element> elements = DocumentUtility.getContainerComponents(element, ValidationSets.VALID_WINDOW_CHILDREN);
 
 		if (elements != null) {
-			for (Element childElement : elements) {
-				ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
-				if (componentWrapper != null) {
-					Component component = componentWrapper.getComponent();
+			elements.stream().map(m -> createComponentFromElement(m, presenter)).filter(f -> f != null).forEach(e -> {
+				Component component = e.getComponent();
 
-					if (elements.size() == 1 && component instanceof Layout) {
-						container.setContent((Layout) component);
-					} else {
-						GridLayout gridLayout = new GridLayout(1, 1);
-						gridLayout.setSizeFull();
-						container.setContent(gridLayout);
-						gridLayout.addComponent(component);
-						gridLayout.setComponentAlignment(component, componentWrapper.getAlignment());
-					}
+				if (elements.size() == 1 && component instanceof Layout) {
+					container.setContent((Layout) component);
+				} else {
+					GridLayout gridLayout = new GridLayout(1, 1);
+					gridLayout.setSizeFull();
+					container.setContent(gridLayout);
+					gridLayout.addComponent(component);
+					gridLayout.setComponentAlignment(component, e.getAlignment());
 				}
-			}
+			});
 		}
 	}
 
@@ -416,29 +405,27 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
+	// FIXME very close to addHorizontalLayoutComponents
 	private void addVerticalLayoutComponents(VerticalLayout container, Element element,
 			SlideContainerPresenter presenter) {
 		List<Element> elements = DocumentUtility.getContainerComponents(element,
 				ValidationSets.VALID_CONTAINER_CHILDREN);
 
 		if (elements != null) {
-			for (Element childElement : elements) {
-				ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
-				if (componentWrapper != null) {
-					Component component = componentWrapper.getComponent();
+			elements.stream().map(m -> createComponentFromElement(m, presenter)).filter(f -> f != null).forEach(e -> {
+				Component component = e.getComponent();
 
-					container.addComponent(component);
-					container.setComponentAlignment(component, componentWrapper.getAlignment());
+				container.addComponent(component);
+				container.setComponentAlignment(component, e.getAlignment());
 
-					float ratio = 1.0f;
-					if (component.getHeightUnits() == Unit.PERCENTAGE) {
-						ratio = component.getHeight() / 100;
-						component.setHeight("100%");
-					}
-
-					container.setExpandRatio(component, ratio);
+				float ratio = 1.0f;
+				if (component.getHeightUnits() == Unit.PERCENTAGE) {
+					ratio = component.getHeight() / 100;
+					component.setHeight("100%");
 				}
-			}
+
+				container.setExpandRatio(component, ratio);
+			});
 		}
 	}
 
@@ -451,29 +438,27 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
+	// FIXME very close to addVerticalLayoutComponents
 	private void addHorizontalLayoutComponents(HorizontalLayout container, Element element,
 			SlideContainerPresenter presenter) {
 		List<Element> elements = DocumentUtility.getContainerComponents(element,
 				ValidationSets.VALID_CONTAINER_CHILDREN);
 
 		if (elements != null) {
-			for (Element childElement : elements) {
-				ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
-				if (componentWrapper != null) {
-					Component component = componentWrapper.getComponent();
+			elements.stream().map(m -> createComponentFromElement(m, presenter)).filter(f -> f != null).forEach(e -> {
+				Component component = e.getComponent();
 
-					container.addComponent(component);
-					container.setComponentAlignment(component, componentWrapper.getAlignment());
+				container.addComponent(component);
+				container.setComponentAlignment(component, e.getAlignment());
 
-					float ratio = 1.0f;
-					if (component.getWidthUnits() == Unit.PERCENTAGE) {
-						ratio = component.getWidth() / 100;
-						component.setWidth("100%");
-					}
-
-					container.setExpandRatio(component, ratio);
+				float ratio = 1.0f;
+				if (component.getWidthUnits() == Unit.PERCENTAGE) {
+					ratio = component.getWidth() / 100;
+					component.setWidth("100%");
 				}
-			}
+
+				container.setExpandRatio(component, ratio);
+			});
 		}
 	}
 
@@ -486,19 +471,19 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
+	// FIXME similar to addHorizontalLayoutComponents and
+	// addVerticalLayoutComponents
 	private void addFormLayoutComponents(FormLayout container, Element element, SlideContainerPresenter presenter) {
 		List<Element> elements = DocumentUtility.getContainerComponents(element,
 				ValidationSets.VALID_CONTAINER_CHILDREN);
 
 		if (elements != null) {
-			for (Element childElement : elements) {
-				ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
-				if (componentWrapper != null) {
-					Component component = componentWrapper.getComponent();
-					container.addComponent(component);
-					container.setComponentAlignment(component, componentWrapper.getAlignment());
-				}
-			}
+			elements.stream().map(m -> createComponentFromElement(m, presenter)).filter(f -> f != null).forEach(e -> {
+				Component component = e.getComponent();
+
+				container.addComponent(component);
+				container.setComponentAlignment(component, e.getAlignment());
+			});
 		}
 	}
 
@@ -511,27 +496,25 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
+	// FIXME copy-paste code of addWindowComponents
 	private void addPanelComponents(Panel container, Element element, SlideContainerPresenter presenter) {
 		List<Element> elements = DocumentUtility.getContainerComponents(element,
 				ValidationSets.VALID_CONTAINER_CHILDREN);
 
 		if (elements != null) {
-			for (Element childElement : elements) {
-				ComponentWrapper componentWrapper = createComponentFromElement(childElement, presenter);
-				if (componentWrapper != null) {
-					Component component = componentWrapper.getComponent();
+			elements.stream().map(m -> createComponentFromElement(m, presenter)).filter(f -> f != null).forEach(e -> {
+				Component component = e.getComponent();
 
-					if (elements.size() == 1 && component instanceof Layout) {
-						container.setContent((Layout) component);
-					} else {
-						GridLayout gridLayout = new GridLayout(1, 1);
-						gridLayout.setSizeFull();
-						container.setContent(gridLayout);
-						gridLayout.addComponent(component);
-						gridLayout.setComponentAlignment(component, componentWrapper.getAlignment());
-					}
+				if (elements.size() == 1 && component instanceof Layout) {
+					container.setContent((Layout) component);
+				} else {
+					GridLayout gridLayout = new GridLayout(1, 1);
+					gridLayout.setSizeFull();
+					container.setContent(gridLayout);
+					gridLayout.addComponent(component);
+					gridLayout.setComponentAlignment(component, e.getAlignment());
 				}
-			}
+			});
 		}
 	}
 
@@ -742,12 +725,12 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			List<Element> validators = DocumentUtility.getComponentValidators(element);
 
 			if (validators != null) {
-				for (Element validatorElement : validators) {
-					String name = validatorElement.getName();
-					String message = DocumentUtility.getValidatorMessage(validatorElement, "");
+				validators.forEach(e -> {
+					String name = e.getName();
+					String message = DocumentUtility.getValidatorMessage(e, "");
 
-					callback.setComponentValidator((Validatable) component, validatorElement, name, message);
-				}
+					callback.setComponentValidator((Validatable) component, e, name, message);
+				});
 
 				if (!validators.isEmpty() && component instanceof AbstractComponent) {
 					((AbstractComponent) component).setImmediate(true);
@@ -840,16 +823,16 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		List<Element> items = DocumentUtility.getComponentItems(element);
 
 		if (items != null) {
-			for (Element item : items) {
-				String value = DocumentUtility.getValue(item);
+			items.stream().forEach(e -> {
+				String value = DocumentUtility.getValue(e);
 				if (StringUtils.isNotEmpty(value)) {
 					component.addItem(value);
 
-					String caption = DocumentUtility.getCaption(item);
+					String caption = DocumentUtility.getCaption(e);
 					if (StringUtils.isNotEmpty(caption))
 						component.setItemCaption(value, caption);
 				}
-			}
+			});
 		}
 
 		component.setImmediate(true);

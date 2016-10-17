@@ -7,7 +7,6 @@ package org.hypothesis.business;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.Task;
@@ -56,9 +55,7 @@ public class TaskController implements Serializable, Evaluator {
 			// copy map of variables because it will be erased at the slide
 			// finish
 			HashMap<Integer, ExchangeVariable> map = new HashMap<>();
-			for (Entry<Integer, ExchangeVariable> entry : outputValues.entrySet()) {
-				map.put(entry.getKey(), entry.getValue());
-			}
+			outputValues.entrySet().forEach(e -> map.put(e.getKey(), e.getValue()));
 
 			slideOutputs.put(slide.getId(), map);
 		}
@@ -88,12 +85,12 @@ public class TaskController implements Serializable, Evaluator {
 				// add current output values
 				Map<Integer, ExchangeVariable> outputs = slideOutputs.get(slide.getId());
 				if (outputs != null) {
-					for (Integer index : outputs.keySet()) {
-						ExchangeVariable exchangeVariable = outputs.get(index);
-						Variable<?> variable = org.hypothesis.evaluation.Variable.createVariable("output" + index,
+					outputs.entrySet().forEach(e -> {
+						ExchangeVariable exchangeVariable = e.getValue();
+						Variable<?> variable = org.hypothesis.evaluation.Variable.createVariable("output" + e.getKey(),
 								exchangeVariable.getValue());
 						node.getVariables().put(variable.getName(), variable);
-					}
+					});
 				}
 
 				// add Navigator object variable
