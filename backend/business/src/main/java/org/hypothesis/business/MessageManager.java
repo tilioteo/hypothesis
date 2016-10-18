@@ -66,35 +66,33 @@ public class MessageManager implements Serializable {
 					if (method != null) {
 						method.setAccessible(true);
 
-						for (Element propertyElement : properties) {
-							String name = DocumentUtility.getName(propertyElement);
-							String type = DocumentUtility.getType(propertyElement);
-							if (StringUtils.isEmpty(name) || StringUtils.isEmpty(type)) {
-								return null;
-							}
-							Class<?> clazz;
-							if (DocumentConstants.INTEGER.equalsIgnoreCase(type)) {
-								clazz = Integer.class;
-							} else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type)) {
-								clazz = Boolean.class;
-							} else if (DocumentConstants.FLOAT.equalsIgnoreCase(type)) {
-								clazz = Double.class;
-							} else if (DocumentConstants.STRING.equalsIgnoreCase(type)) {
-								clazz = String.class;
-							} else {
-								return null;
-							}
+						final Method finalMethod = method;
+						properties.stream().filter(f -> StringUtils.isNotBlank(DocumentUtility.getName(f))
+								&& StringUtils.isNotBlank(DocumentUtility.getType(f))).forEach(e -> {
+									String name = DocumentUtility.getName(e);
+									String type = DocumentUtility.getType(e);
 
-							// message.setPropertyDefinition(name, clazz);
-
-							try {
-								// invoking message.setPropertyDefinition(name,
-								// clazz);
-								method.invoke(message, name, clazz);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
+									Class<?> clazz = null;
+									if (DocumentConstants.INTEGER.equalsIgnoreCase(type)) {
+										clazz = Integer.class;
+									} else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type)) {
+										clazz = Boolean.class;
+									} else if (DocumentConstants.FLOAT.equalsIgnoreCase(type)) {
+										clazz = Double.class;
+									} else if (DocumentConstants.STRING.equalsIgnoreCase(type)) {
+										clazz = String.class;
+									}
+									if (clazz != null) {
+										try {
+											// invoking method
+											// message.setPropertyDefinition(name,
+											// clazz);
+											finalMethod.invoke(message, name, clazz);
+										} catch (Exception ex) {
+											ex.printStackTrace();
+										}
+									}
+								});
 					}
 				}
 

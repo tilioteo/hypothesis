@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -218,9 +219,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 			Group group = iterator.next();
 			group = groupService.merge(group);
 			Set<User> users = new HashSet<>();
-			for (User user : group.getUsers()) {
-				users.add(user);
-			}
+			group.getUsers().forEach(users::add);
 
 			/*
 			 * for (User user : users) { group.removeUser(user); }
@@ -228,6 +227,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 			groupService.delete(group);
 
+			//users.stream().filter(Objects::nonNull).forEach(e->{});
 			for (User user : users) {
 				if (user != null) {
 					bus.post(new MainUIEvent.UserGroupsChangedEvent(user));

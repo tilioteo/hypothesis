@@ -51,6 +51,11 @@ public class ShortcutUtility {
 		}
 	}
 
+	private static String capitalizeFirst(String value) {
+		String str = value.trim();
+		return StringUtils.left(str, 1).toUpperCase() + str.substring(1).toLowerCase();
+	}
+
 	/**
 	 * Parse string representation of shortcut key
 	 * 
@@ -66,8 +71,7 @@ public class ShortcutUtility {
 			String key = null;
 
 			for (String part : parts) {
-				part = part.trim().toLowerCase();
-				part = part.substring(0, 1).toUpperCase() + part.substring(1);
+				part = ShortcutUtility.capitalizeFirst(part);
 
 				if (ShortcutConstants.MODIFIER_MAP.containsKey(part)) {
 					modifiers.add(part);

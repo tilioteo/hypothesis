@@ -100,9 +100,7 @@ public class PermissionService implements Serializable {
 		try {
 			Set<GroupPermission> groupPermissions = getGroupPermissions(group);
 			groupPermissionDao.beginTransaction();
-			for (GroupPermission groupPermission : groupPermissions) {
-				groupPermissionDao.makeTransient(groupPermission);
-			}
+			groupPermissions.forEach(groupPermissionDao::makeTransient);
 			groupPermissionDao.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -116,9 +114,7 @@ public class PermissionService implements Serializable {
 		try {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
 			userPermissionDao.beginTransaction();
-			for (UserPermission userPermission : userPermissions) {
-				userPermissionDao.makeTransient(userPermission);
-			}
+			userPermissions.forEach(userPermissionDao::makeTransient);
 			userPermissionDao.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -132,11 +128,7 @@ public class PermissionService implements Serializable {
 		try {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
 			userPermissionDao.beginTransaction();
-			for (UserPermission userPermission : userPermissions) {
-				if (userPermission.getEnabled() == enabled) {
-					userPermissionDao.makeTransient(userPermission);
-				}
-			}
+			userPermissions.stream().filter(f -> f.getEnabled() == enabled).forEach(userPermissionDao::makeTransient);
 			userPermissionDao.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -212,12 +204,8 @@ public class PermissionService implements Serializable {
 						.findByCriteria(Restrictions.in(EntityConstants.GROUP, groups));
 				groupPermissionDao.commit();
 
-				for (GroupPermission groupPermission : groupsPermissions) {
-					Pack groupPack = groupPermission.getPack();
-					if (!disabledPacks.contains(groupPack)) {
-						packs.add(/* persistenceService.merge */(groupPack));
-					}
-				}
+				groupsPermissions.stream().filter(f -> !disabledPacks.contains(f.getPack()))
+						.forEach(e -> packs.add(e.getPack()));
 			} catch (Exception e) {
 				log.error(e.getMessage());
 				groupPermissionDao.rollback();

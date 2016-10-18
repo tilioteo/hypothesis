@@ -4,8 +4,11 @@
  */
 package org.hypothesis.data.model;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -103,14 +106,13 @@ public final class SlideOrder extends SerializableIdObject {
 		LinkedList<Integer> list = new LinkedList<>();
 
 		if (data != null) {
-			String[] strings = data.split(",");
-
-			for (String string : strings) {
-				Integer item = Integer.getInteger(string);
-				if (item != null) {
-					list.add(item);
+			Arrays.stream(data.split(",")).map(m -> {
+				try {
+					return (Integer) Integer.parseInt(m);
+				} catch (NumberFormatException ex) {
+					return null;
 				}
-			}
+			}).filter(Objects::nonNull).forEach(list::add);
 		}
 
 		return list;
@@ -118,20 +120,7 @@ public final class SlideOrder extends SerializableIdObject {
 
 	public final void setOrder(List<Integer> list) {
 		if (list != null) {
-			StringBuilder builder = new StringBuilder();
-			boolean first = true;
-			for (Integer item : list) {
-				if (item != null) {
-					if (first) {
-						first = false;
-					} else {
-						builder.append(",");
-					}
-					builder.append(item);
-				}
-			}
-			data = builder.toString();
-
+			data = list.stream().map(m -> m.toString()).collect(Collectors.joining(","));
 		} else {
 			data = null;
 		}

@@ -355,18 +355,9 @@ public final class DocumentUtility {
 				return element;
 			}
 
-			List<Element> elements = element.children();
-			if (!elements.isEmpty()) {
-				// find first valid child element
-				for (Element child : elements) {
-					if (ValidationSets.VALID_VIEWPORT_CHILDREN.contains(child.getName())) {
-						return child;
-					}
-				}
-				// throw new ViewportNotValidElementFound(viewport);
-			} else {
-				// throw new ViewportNoElementsException(viewport);
-			}
+			return element.children().stream().filter(f -> ValidationSets.VALID_VIEWPORT_CHILDREN.contains(f.getName()))
+					.findFirst().orElse(null);
+			// throw new ViewportNotValidElementFound(viewport);
 		}
 
 		return null;
@@ -376,12 +367,8 @@ public final class DocumentUtility {
 		Element viewportRootElement = getVieportRootElement(documentRoot);
 
 		if (viewportRootElement != null) {
-			List<Element> elements = viewportRootElement.children();
-			for (Element element : elements) {
-				if (ValidationSets.VALID_VIEWPORT_CHILDREN.contains(element.getName())) {
-					return element;
-				}
-			}
+			return viewportRootElement.children().stream()
+					.filter(f -> ValidationSets.VALID_VIEWPORT_CHILDREN.contains(f.getName())).findFirst().orElse(null);
 		}
 
 		return null;

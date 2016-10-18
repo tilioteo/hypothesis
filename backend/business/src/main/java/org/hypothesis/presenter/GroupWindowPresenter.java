@@ -510,9 +510,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		}
 	}
 
-	private Group saveGroup(Group group) {
-		User updatedLoggedUser = null;
-
+	private Group saveGroup(final Group group) {
 		if (state == WindowState.CREATE) {
 			group.setOwnerId(loggedUser.getId());
 		}
@@ -528,11 +526,8 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		if (usersField != null && usersField.isVisible() && usersField.isEnabled()) {
 
 			usersField.getItemIds().forEach(e -> {
-
-			});
-			for (Object itemId : usersField.getItemIds()) {
-				Item item = usersField.getItem(itemId);
-				User user = userService.merge((User) itemId);
+				Item item = usersField.getItem(e);
+				User user = userService.merge((User) e);
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (null == selected) {
@@ -549,15 +544,14 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 					bus.post(new MainUIEvent.UserGroupsChangedEvent(user));
 
 					if (user.equals(loggedUser)) {
-						updatedLoggedUser = user;
+						SessionManager.setLoggedUser(user);
+						bus.post(new MainUIEvent.UserPacksChangedEvent(user));
 					}
 				}
-			}
+			});
 		}
 
-		group = groupService.add(group);
-
-		final Group addedGroup = group;
+		final Group addedGroup = groupService.add(group);
 		if (packsField.isVisible()) {
 			permissionService.deleteGroupPermissions(group);
 
@@ -570,11 +564,6 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 					permissionService.addGroupPermission(new GroupPermission(addedGroup, pack));
 				}
 			});
-		}
-
-		if (updatedLoggedUser != null) {
-			SessionManager.setLoggedUser(updatedLoggedUser);
-			bus.post(new MainUIEvent.UserPacksChangedEvent(updatedLoggedUser));
 		}
 
 		return group;

@@ -61,9 +61,7 @@ public class BranchService implements Serializable {
 			List<BranchTrek> branchTreks = branchTrekDao.findByCriteria(Restrictions
 					.and(Restrictions.eq(EntityConstants.PACK, pack), Restrictions.eq(EntityConstants.BRANCH, branch)));
 
-			for (BranchTrek branchTrek : branchTreks) {
-				branchMap.put(branchTrek.getKey(), branchTrek.getNextBranch());
-			}
+			branchTreks.forEach(e -> branchMap.put(e.getKey(), e.getNextBranch()));
 			branchTrekDao.commit();
 			return branchMap;
 		} catch (Exception e) {

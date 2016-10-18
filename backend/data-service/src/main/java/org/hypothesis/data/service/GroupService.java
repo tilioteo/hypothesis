@@ -60,7 +60,7 @@ public class GroupService implements Serializable {
 		log.debug("addGroup");
 		try {
 			groupDao.beginTransaction();
-			//group = mergeInit(group);
+			// group = mergeInit(group);
 			// groupDao.clear();
 			group = groupDao.merge(group);
 			group = groupDao.makePersistent(group);
@@ -77,10 +77,8 @@ public class GroupService implements Serializable {
 	public void deleteAll() {
 		log.debug("deleteAllGroups");
 		try {
-			List<Group> allGroups = this.findAll();
-			for (Group group : allGroups) {
-				this.delete(group);
-			}
+			this.findAll().forEach(this::delete);
+			;
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}

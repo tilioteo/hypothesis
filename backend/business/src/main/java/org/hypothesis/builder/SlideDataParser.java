@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.hypothesis.interfaces.DocumentConstants;
@@ -66,11 +67,11 @@ public class SlideDataParser {
 			@SuppressWarnings("unchecked")
 			List<Element> elements = doc.getRootElement()
 					.selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.FIELD));
-			for (Element element : elements) {
-				String id = element.attributeValue(DocumentConstants.ID);
+			elements.forEach(e -> {
+				String id = e.attributeValue(DocumentConstants.ID);
 
 				String caption = null;
-				Element captionElement = (Element) element.selectSingleNode(DocumentConstants.CAPTION);
+				Element captionElement = (Element) e.selectSingleNode(DocumentConstants.CAPTION);
 				if (captionElement != null) {
 					caption = captionElement.getTextTrim();
 				}
@@ -78,11 +79,11 @@ public class SlideDataParser {
 				wrapper.fieldCaptionMap.put(id, null == caption || caption.isEmpty() ? null : caption);
 
 				String valueId;
-				Element valueElement = (Element) element.selectSingleNode(DocumentConstants.VALUE);
+				Element valueElement = (Element) e.selectSingleNode(DocumentConstants.VALUE);
 				if (valueElement != null) {
 					valueId = valueElement.attributeValue(DocumentConstants.ID);
 					String value = valueElement.getText();
-					if (valueId != null && !valueId.isEmpty()) {
+					if (StringUtils.isNotBlank(valueId)) {
 						wrapper.fieldValueMap.put(id, valueId);
 						if (!valueId.equals(value) && !value.isEmpty()) {
 							Map<String, String> valueCaptionMap = wrapper.fieldValueCaptionMap.get(id);
@@ -97,7 +98,7 @@ public class SlideDataParser {
 						wrapper.fieldValueMap.put(id, value);
 					}
 				}
-			}
+			});
 		}
 		return wrapper;
 	}
