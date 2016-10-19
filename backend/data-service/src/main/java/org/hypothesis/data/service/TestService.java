@@ -6,6 +6,7 @@ package org.hypothesis.data.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,12 +74,7 @@ public class TestService implements Serializable {
 		try {
 			testDao.beginTransaction();
 
-			int i = 0;
-			Integer[] stats = new Integer[statuses.length];
-			for (Status status : statuses) {
-				stats[i++] = status.getCode();
-			}
-
+			Integer[] stats = Arrays.stream(statuses).map(Status::getCode).toArray(s -> new Integer[s]);
 			List<SimpleTest> tests = testDao
 					.findByCriteria(Restrictions.and(Restrictions.eq(EntityConstants.PACK, pack),
 							Restrictions.and(Restrictions.eq(EntityConstants.USER, user),

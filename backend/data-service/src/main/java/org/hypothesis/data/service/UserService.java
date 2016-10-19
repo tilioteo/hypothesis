@@ -60,7 +60,7 @@ public class UserService implements Serializable {
 		log.debug("addUser");
 		try {
 			userDao.beginTransaction();
-			//user = mergeInit(user);
+			// user = mergeInit(user);
 			user = userDao.merge(user);
 			user = userDao.makePersistent(user);
 			userDao.commit();
@@ -75,21 +75,13 @@ public class UserService implements Serializable {
 	// TODO: nejak rozumneji vyhledat primo v databazi
 	public boolean anotherSuperuserExists(Long id) {
 		log.debug("anotherSuperuserExists");
-		for (User user : findAll()) {
-			if (user.hasRole(RoleService.ROLE_SUPERUSER) && !id.equals(user.getId())) {
-				return true;
-			}
-		}
-		return false;
+		return findAll().stream().anyMatch(e -> e.hasRole(RoleService.ROLE_SUPERUSER) && !id.equals(e.getId()));
 	}
 
 	public void deleteAll() {
 		log.debug("deleteAllUsers");
 		try {
-			List<User> allUsers = this.findAll();
-			for (User user : allUsers) {
-				this.delete(user);
-			}
+			findAll().forEach(this::delete);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}

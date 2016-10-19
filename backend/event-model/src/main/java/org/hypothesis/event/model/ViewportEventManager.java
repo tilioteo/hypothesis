@@ -5,6 +5,7 @@
 package org.hypothesis.event.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EventObject;
 import java.util.HashMap;
 
@@ -37,9 +38,7 @@ public class ViewportEventManager implements Serializable {
 
 	@SafeVarargs
 	public final void addListener(ViewportEventListener eventListener, Class<? extends ViewportEvent>... eventClasses) {
-		for (Class<? extends ViewportEvent> eventClass : eventClasses) {
-			addListener(eventClass, eventListener);
-		}
+		Arrays.stream(eventClasses).forEach(e -> addListener(e, eventListener));
 	}
 
 	@SuppressWarnings("unchecked")

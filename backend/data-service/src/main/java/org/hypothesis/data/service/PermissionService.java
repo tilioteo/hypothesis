@@ -240,21 +240,17 @@ public class PermissionService implements Serializable {
 			user = userService.merge(user);
 
 			if (!user.getGroups().isEmpty()) {
-				Set<GroupPermission> groupsPermissions = getGroupsPermissions(user.getGroups());
-				for (GroupPermission groupPermission : groupsPermissions) {
-					packs.put(groupPermission.getPack().getId(), groupPermission.getPack());
-				}
+				getGroupsPermissions(user.getGroups()).forEach(e -> packs.put(e.getPack().getId(), e.getPack()));
 			}
 
-			Set<UserPermission> userPermissions = getUserPermissions(user);
-			for (UserPermission userPermission : userPermissions) {
-				Long packId = userPermission.getPack().getId();
-				if (userPermission.getEnabled() && !packs.containsKey(packId)) {
-					packs.put(packId, userPermission.getPack());
-				} else if (!userPermission.getEnabled()) {
+			getUserPermissions(user).forEach(e -> {
+				Long packId = e.getPack().getId();
+				if (e.getEnabled() && !packs.containsKey(packId)) {
+					packs.put(packId, e.getPack());
+				} else if (!e.getEnabled()) {
 					packs.remove(packId);
 				}
-			}
+			});
 
 			return new HashSet<Pack>(packs.values());
 		} catch (Exception e) {
@@ -267,11 +263,8 @@ public class PermissionService implements Serializable {
 	public Set<Pack> getGroupPacks(Group group) {
 		log.debug("getGroupPacks");
 		try {
-			Set<GroupPermission> groupPermissions = getGroupPermissions(group);
 			Set<Pack> packs = new HashSet<>();
-			for (GroupPermission groupPermission : groupPermissions) {
-				packs.add(groupPermission.getPack());
-			}
+			getGroupPermissions(group).forEach(e -> packs.add(e.getPack()));
 			return packs;
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -353,23 +346,22 @@ public class PermissionService implements Serializable {
 	public Set<Pack> getUserPacks(User user, Boolean enabled, Boolean excludeFinished) {
 		log.debug("getUserPacks");
 		try {
-			Set<UserPermission> userPermissions = getUserPermissions(user);
 			Set<Pack> packs = new HashSet<>();
-			for (UserPermission userPermission : userPermissions) {
-				if (enabled == null || userPermission.getEnabled().equals(enabled)) {
-					Pack pack = userPermission.getPack();
-					// TODO check pass is not null
-					// if (userPermission.getPass() == null || excludeFinished
-					// == null || !excludeFinished) {
-					packs.add(pack);
-					/*
-					 * } else { List<SimpleTest> finishedTests =
-					 * testService.findTestsBy(user, pack, Status.FINISHED); if
-					 * (userPermission.getPass() < finishedTests.size()) {
-					 * packs.add(pack); } }
-					 */
-				}
-			}
+			getUserPermissions(user).stream().filter(f -> enabled == null || f.getEnabled().equals(enabled))
+					.forEach(e -> {
+						Pack pack = e.getPack();
+						// TODO check pass is not null
+						// if (userPermission.getPass() == null ||
+						// excludeFinished
+						// == null || !excludeFinished) {
+						packs.add(pack);
+						/*
+						 * } else { List<SimpleTest> finishedTests =
+						 * testService.findTestsBy(user, pack, Status.FINISHED);
+						 * if (userPermission.getPass() < finishedTests.size())
+						 * { packs.add(pack); } }
+						 */
+					});
 			return packs;
 		} catch (Exception e) {
 			log.error(e.getMessage());

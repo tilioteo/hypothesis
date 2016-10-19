@@ -54,7 +54,7 @@ public final class DocumentUtility {
 				if (selected.getName().equals(name)) {
 					if (attributes != null && !attributes.isEmpty()) {
 						boolean passed = true;
-						Map<String, String> selectedAttributes = selected.attributes();
+						final Map<String, String> selectedAttributes = selected.attributes();
 						for (Entry<String, String> entry : attributes.entrySet()) {
 							String key = entry.getKey();
 							String value = entry.getValue();

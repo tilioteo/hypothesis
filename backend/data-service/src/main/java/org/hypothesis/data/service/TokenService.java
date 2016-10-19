@@ -6,7 +6,6 @@ package org.hypothesis.data.service;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
@@ -59,10 +58,7 @@ public class TokenService implements Serializable {
 			date.setTime(date.getTime() - TOKEN_VALID_TIME);
 
 			tokenDao.beginTransaction();
-			List<Token> tokens = tokenDao.findByCriteria(Restrictions.lt(FieldConstants.DATETIME, date));
-			for (Token invalidToken : tokens) {
-				tokenDao.makeTransient(invalidToken);
-			}
+			tokenDao.findByCriteria(Restrictions.lt(FieldConstants.DATETIME, date)).forEach(tokenDao::makeTransient);
 			tokenDao.commit();
 		} catch (Exception e) {
 			log.error("purge of invalid tokens failed");
