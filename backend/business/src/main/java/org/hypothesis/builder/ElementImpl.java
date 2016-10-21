@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 
@@ -299,9 +300,7 @@ public class ElementImpl implements Element {
 	@Override
 	public String toString(boolean detailed, int ident) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < ident; ++i) {
-			builder.append("\t");
-		}
+		builder.append(StringUtils.rightPad("", ident, '\t'));
 
 		builder.append("<" + name + ":" + text + "(");
 
@@ -320,9 +319,7 @@ public class ElementImpl implements Element {
 				builder.append("\n");
 			}
 
-			for (int i = 0; i < ident; ++i) {
-				builder.append("\t");
-			}
+			builder.append(StringUtils.rightPad("", ident, '\t'));
 
 		}
 		builder.append("]>");

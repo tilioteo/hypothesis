@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hypothesis.business.BranchController;
+import org.hypothesis.common.IntSequence;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
@@ -118,15 +119,9 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 
 	private Pattern createPattern(Element subElement) {
 		Pattern pattern = new Pattern();
-		List<Element> nicks = DocumentUtility.getNickElements(subElement);
 
-		if (nicks != null) {
-			int i = 0;
-			for (Element nickElement : nicks) {
-				Nick nick = createNick(nickElement);
-				pattern.addNick(++i, nick);
-			}
-		}
+		final IntSequence seq = new IntSequence(0);
+		DocumentUtility.getNickElements(subElement).stream().map(this::createNick).forEach(e->pattern.addNick(seq.next(), e));
 
 		return pattern;
 	}

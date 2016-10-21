@@ -96,6 +96,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 							Element baseElement = ensureSubElement(root, DocumentConstants.SOURCE);
 
+							// FIXME use regexp Pattern and Matcher
 							String[] elementNames = name.split("/");
 							boolean isAttribute = false;
 							String attributeName = null;
