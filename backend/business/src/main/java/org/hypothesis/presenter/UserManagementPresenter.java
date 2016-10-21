@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -26,6 +24,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.hypothesis.common.IntSequence;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Group;
@@ -222,21 +221,21 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 			Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.UserSheetName"));
 
-			int rowNr = 0;
-			Row row = sheet.createRow(rowNr++);
+			final IntSequence seq = new IntSequence();
+			Row row = sheet.createRow(seq.next());
 			sheet.createFreezePane(0, 1);
 
 			row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
 			row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
 			row.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Password"));
 
-			for (Iterator<User> i = getSelectedUsers().iterator(); i.hasNext();) {
-				row = sheet.createRow(rowNr++);
-				User user = i.next();
-				row.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(user.getId());
-				row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(user.getUsername());
-				row.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(user.getPassword());
-			}
+			getSelectedUsers().forEach(e -> {
+				Row r = sheet.createRow(seq.next());
+				r.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(e.getId());
+				r.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(e.getUsername());
+				r.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(e.getPassword());
+			});
+
 			workbook.write(output);
 			workbook.close();
 			output.close();
@@ -256,17 +255,14 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		checkDeletionPermission(loggedUser, users);
 		checkSuperuserLeft(loggedUser);
 
-		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
-			User user = iterator.next();
-			// user = userService.merge(user);
+		users.forEach(e -> {
+			userService.delete(e);
 
-			userService.delete(user);
+			e.getGroups().stream().filter(Objects::nonNull)
+					.forEach(i -> bus.post(new MainUIEvent.GroupUsersChangedEvent(i)));
 
-			user.getGroups().stream().filter(Objects::nonNull)
-					.forEach(e -> bus.post(new MainUIEvent.GroupUsersChangedEvent(e)));
-
-			table.removeItem(user.getId());
-		}
+			table.removeItem(e.getId());
+		});
 
 		if (users.contains(loggedUser)) {
 			bus.post(new MainUIEvent.UserLoggedOutEvent());
@@ -284,11 +280,8 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			throw new UnsupportedOperationException(exceptionMessage);
 		}
 
-		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
-			User user = iterator.next();
-			if (user.hasRole(RoleService.ROLE_SUPERUSER)) {
-				throw new UnsupportedOperationException(exceptionMessage);
-			}
+		if (users.stream().anyMatch(e -> e.hasRole(RoleService.ROLE_SUPERUSER))) {
+			throw new UnsupportedOperationException(exceptionMessage);
 		}
 	}
 
@@ -301,17 +294,9 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		}
 
 		if (currentUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			boolean superuserLeft = false;
-			for (Iterator<Long> iterator = ((Collection<Long>) table.getItemIds()).iterator(); iterator.hasNext();) {
-				Long id = iterator.next();
-				if (!table.isSelected(id)) {
-					User user = ((BeanItem<User>) table.getItem(id)).getBean();
-					if (user.hasRole(RoleService.ROLE_SUPERUSER)) {
-						superuserLeft = true;
-						break;
-					}
-				}
-			}
+			boolean superuserLeft = ((Collection<Long>) table.getItemIds()).stream().filter(f -> !table.isSelected(f))
+					.map(m -> ((BeanItem<User>) table.getItem(m)).getBean())
+					.anyMatch(e -> e.hasRole(RoleService.ROLE_SUPERUSER));
 
 			if (!superuserLeft) {
 				throw new UnsupportedOperationException(exceptionMessage);
@@ -332,10 +317,8 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 	@SuppressWarnings("unchecked")
 	private Collection<User> getSelectedUsers() {
-		Collection<User> users = new HashSet<>();
-		getSelectedUserIds().forEach(e -> users.add(((BeanItem<User>) table.getItem(e)).getBean()));
-
-		return users;
+		return getSelectedUserIds().stream().map(m -> ((BeanItem<User>) table.getItem(m)).getBean())
+				.collect(Collectors.toSet());
 	}
 
 	@Override

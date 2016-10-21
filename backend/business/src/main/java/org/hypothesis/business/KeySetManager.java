@@ -59,17 +59,15 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 	 * @return the same item or null if not found
 	 */
 	public E find(E item) {
-		key = null;
-		element = null;
-
-		for (Entry<K, E> entry : keyset.entrySet()) {
-			E e = entry.getValue();
-			if (e == item) {
-				key = entry.getKey();
-				element = e;
-				break;
-			}
+		Entry<K, E> entry = keyset.entrySet().stream().filter(f -> f.getValue() == item).findFirst().orElse(null);
+		if (entry != null) {
+			key = entry.getKey();
+			element = entry.getValue();
+		} else {
+			key = null;
+			element = null;
 		}
+
 		return element;
 	}
 

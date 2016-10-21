@@ -72,10 +72,7 @@ public final class DocumentUtility {
 						return selected;
 					}
 				} else if (descendant) {
-					Element found = findElementByNameAndValue(selected, name, attributes, descendant);
-					if (found != null) {
-						return found;
-					}
+					return findElementByNameAndValue(selected, name, attributes, descendant);
 				}
 			}
 		}

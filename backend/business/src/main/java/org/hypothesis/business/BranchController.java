@@ -64,19 +64,8 @@ public class BranchController implements Serializable {
 	}
 
 	public String getNextBranchKey() {
-		nextKey = null;
-		boolean pathFound = false;
-
-		for (Path path : paths) {
-			if (path.isValid(slideOutputs)) {
-				nextKey = path.getBranchKey();
-				pathFound = true;
-				break;
-			}
-		}
-		if (!pathFound && defaultPath != null) {
-			nextKey = defaultPath.getBranchKey();
-		}
+		nextKey = paths.stream().filter(f -> f.isValid(slideOutputs)).map(Path::getBranchKey).findFirst()
+				.orElse(defaultPath != null ? defaultPath.getBranchKey() : null);
 		return nextKey;
 	}
 
