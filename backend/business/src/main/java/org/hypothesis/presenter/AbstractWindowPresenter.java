@@ -12,8 +12,6 @@ import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractField;

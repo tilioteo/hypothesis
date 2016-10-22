@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -46,6 +47,7 @@ import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ExportPresenter;
 import org.hypothesis.server.Messages;
+import org.hypothesis.ui.ControlledUI;
 import org.hypothesis.ui.view.ExportView;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -55,6 +57,9 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ResourceReference;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.shared.ui.datefield.Resolution;
@@ -588,26 +593,12 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 				ui.setResource("export", resource);
 				ResourceReference reference = ResourceReference.create(resource, ui, "export");
 
-				UI.getCurrent().access(new Runnable() {
-					@Override
-					public void run() {
-						bus.post(new MainUIEvent.ExportFinishedEvent(false));
-					}
-				});
+				UI.getCurrent().access(() -> bus.post(new MainUIEvent.ExportFinishedEvent(false)));
 
 				Page.getCurrent().open(reference.getURL(), null);
 			} else {
-
-				UI.getCurrent().access(new Runnable() {
-
-					@Override
-					public void run() {
-						bus.post(new MainUIEvent.ExportErrorEvent());
-					}
-				});
-
+				UI.getCurrent().access(() -> bus.post(new MainUIEvent.ExportErrorEvent()));
 			}
-
 		}
 
 		/**
@@ -622,12 +613,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 			final InputStream inputStream = getExportFile();
 
 			if (inputStream != null) {
-				StreamResource.StreamSource source = new StreamResource.StreamSource() {
-					@Override
-					public InputStream getStream() {
-						return inputStream;
-					}
-				};
+				StreamResource.StreamSource source = () -> inputStream;
 
 				String filename = Messages.getString("Caption.Export.TestFileName");
 				StreamResource resource = new StreamResource(source, filename);
@@ -639,6 +625,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 			return null;
 		}
 
+		@SuppressWarnings("unchecked")
 		private InputStream getExportFile() {
 			ExportService exportService = ExportService.newInstance();
 
@@ -652,12 +639,11 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 					try {
 						tempFile = File.createTempFile("htsm", null);
 
-						// maps hold informations for legend creation
-						HashMap<String, String> fieldCaptionMap = new HashMap<>();
-						HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<>();
-
 						workbook = new SXSSFWorkbook(-1);
-						createDataSheet(workbook, events);
+						Object[] maps = createDataSheet(workbook, events);
+						// maps hold informations for legend creation
+						HashMap<String, String> fieldCaptionMap = (HashMap<String, String>) maps[0];
+						HashMap<String, HashMap<String, String>> fieldValueCaptionMap = (HashMap<String, HashMap<String, String>>) maps[1];
 
 						// create legend sheet only if there are some
 						// informations gathered
@@ -690,15 +676,16 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 			return null;
 		}
 
-		private void createDataSheet(SXSSFWorkbook workbook, final List<ExportEvent> events)
+		private Object[] createDataSheet(SXSSFWorkbook workbook, final List<ExportEvent> events)
 				throws ExportThread.CancelledException {
+			// maps hold informations for legend creation
+			HashMap<String, String> fieldCaptionMap = new HashMap<>();
+			HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<>();
+
 			Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.TestSheetName"));
 
 			// create cell style for date cell
-			CreationHelper createHelper = workbook.getCreationHelper();
-			CellStyle dateCellStyle = workbook.createCellStyle();
-			dateCellStyle.setDataFormat(
-					createHelper.createDataFormat().getFormat(Messages.getString("Format.Export.DateTime")));
+			CellStyle dateCellStyle = createDateCellStyle(workbook);
 
 			Row header = createHeader(sheet);
 
@@ -815,121 +802,65 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 				Row row = sheet.createRow(rowNr++);
 
-				Cell cell = row.createCell(0);
-				cell.setCellValue(testId);
-				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-
-				cell = row.createCell(1);
-				cell.setCellValue(eventDate);
-				cell.setCellStyle(dateCellStyle);
+				createNumericCell(row, 0, testId);
+				createDateCell(row, 1, eventDate, dateCellStyle);
 
 				if (userId != null) {
-					cell = row.createCell(2);
-					cell.setCellValue(userId);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+					createNumericCell(row, 2, userId);
 				}
 
-				cell = row.createCell(3);
-				cell.setCellValue(event.getId());
-				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-
-				cell = row.createCell(4);
-				cell.setCellValue(event.getPackId());
-				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-
-				cell = row.createCell(5);
-				cell.setCellValue(event.getPackName());
-				cell.setCellType(Cell.CELL_TYPE_STRING);
+				createNumericCell(row, 3, event.getId());
+				createNumericCell(row, 4, event.getPackId());
+				createStringCell(row, 5, event.getPackName());
 
 				if (branchId != null) {
-					cell = row.createCell(6);
-					cell.setCellValue(branchId);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+					createNumericCell(row, 6, branchId);
 				}
-				if (branchName != null) {
-					cell = row.createCell(7);
-					cell.setCellValue(branchName);
-					cell.setCellType(Cell.CELL_TYPE_STRING);
+				createStringCell(row, 7, branchName);
+				if (taskId != null) {
+					createNumericCell(row, 8, taskId);
+				}
+				createStringCell(row, 9, taskName);
+				if (slideId != null) {
+					createNumericCell(row, 10, slideId);
+				}
+				createStringCell(row, 11, slideName);
+
+				if (branchId != null) {
+					createNumericCell(row, 12, branchOrder);
+				}
+				if (branchId != null) {
+					createNumericCell(row, 13, branchCount);
 				}
 				if (taskId != null) {
-					cell = row.createCell(8);
-					cell.setCellValue(taskId);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-				}
-				if (taskName != null) {
-					cell = row.createCell(9);
-					cell.setCellValue(taskName);
-					cell.setCellType(Cell.CELL_TYPE_STRING);
+					createNumericCell(row, 14, taskOrder);
 				}
 				if (slideId != null) {
-					cell = row.createCell(10);
-					cell.setCellValue(slideId);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-				}
-				if (slideName != null) {
-					cell = row.createCell(11);
-					cell.setCellValue(slideName);
-					cell.setCellType(Cell.CELL_TYPE_STRING);
-				}
-
-				if (branchId != null) {
-					cell = row.createCell(12);
-					cell.setCellValue(branchOrder);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-				}
-				if (branchId != null) {
-					cell = row.createCell(13);
-					cell.setCellValue(branchCount);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-				}
-				if (taskId != null) {
-					cell = row.createCell(14);
-					cell.setCellValue(taskOrder);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-				}
-				if (slideId != null) {
-					cell = row.createCell(15);
-					cell.setCellValue(slideOrder);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+					createNumericCell(row, 15, slideOrder);
 				}
 
 				if (slideId != null) {
-					cell = row.createCell(16);
-					cell.setCellValue(slideCount);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+					createNumericCell(row, 16, slideCount);
 				}
 
 				relativeTime = eventTime - startTestTime;
-				cell = row.createCell(17);
-				cell.setCellValue(relativeTime);
-				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+				createNumericCell(row, 17, relativeTime);
 
 				if (lastEventTime > 0) {
 					diffTime = eventTime - lastEventTime;
-					cell = row.createCell(18);
-					cell.setCellValue(diffTime);
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+					createNumericCell(row, 18, diffTime);
 				}
 				lastEventTime = eventTime;
 
 				if (clientDate != null) {
-					cell = row.createCell(19);
-					cell.setCellValue(clientDate.getTime());
-					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+					createNumericCell(row, 19, clientDate.getTime());
 				}
 
-				cell = row.createCell(20);
-				cell.setCellValue(event.getType());
-				cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-
-				cell = row.createCell(21);
-				cell.setCellValue(eventName);
-				cell.setCellType(Cell.CELL_TYPE_STRING);
+				createNumericCell(row, 20, event.getType());
+				createStringCell(row, 21, eventName);
 
 				String xmlData = event.getData();
-				cell = row.createCell(22);
-				cell.setCellValue(xmlData);
-				cell.setCellType(Cell.CELL_TYPE_STRING);
+				createStringCell(row, 22, xmlData);
 
 				if (slideId != null && xmlData != null) {
 					int colNr = outputValueCol;
@@ -940,7 +871,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 						List<String> outputValues = SlideDataParser.parseOutputValues(xmlData);
 						for (String outputValue : outputValues) {
 							if (outputValue != null) {
-								row.createCell(colNr).setCellValue(outputValue);
+								createStringCell(row, colNr, outputValue);
 							}
 							++colNr;
 						}
@@ -963,7 +894,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 								if (fieldCaption != null) {
 									fieldCaptionMap.put(fieldName, fieldCaption);
 								}
-								header.createCell(colNr).setCellValue(fieldName);
+								createStringCell(header, colNr, fieldName);
 							}
 							String fieldValue = fieldValues.get(fieldName);
 
@@ -981,7 +912,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 									}
 								}
 							}
-							row.createCell(colNr).setCellValue(fieldValue);
+							createStringCell(row, colNr, fieldValue);
 						}
 					}
 				}
@@ -999,14 +930,38 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 				if (progress > lastProgress) {
 					lastProgress = progress;
 
-					UI.getCurrent().access(new Runnable() {
-						@Override
-						public void run() {
-							bus.post(new MainUIEvent.ExportProgressEvent(progress / 100.0f));
-						}
-					});
+					UI.getCurrent().access(() -> bus.post(new MainUIEvent.ExportProgressEvent(progress / 100.0f)));
 				}
 			}
+			return new Object[] { fieldCaptionMap, fieldValueCaptionMap };
+		}
+
+		private void createStringCell(Row row, int column, String value) {
+			if (StringUtils.isNotBlank(value)) {
+				Cell cell = row.createCell(column);
+				cell.setCellValue(value);
+				cell.setCellType(Cell.CELL_TYPE_STRING);
+			}
+		}
+
+		private void createDateCell(Row row, int column, Date date, CellStyle cellStyle) {
+			Cell cell = row.createCell(column);
+			cell.setCellValue(date);
+			cell.setCellStyle(cellStyle);
+		}
+
+		private void createNumericCell(Row row, int column, double value) {
+			Cell cell = row.createCell(column);
+			cell.setCellValue(value);
+			cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+		}
+
+		private CellStyle createDateCellStyle(SXSSFWorkbook workbook) {
+			CreationHelper createHelper = workbook.getCreationHelper();
+			CellStyle cellStyle = workbook.createCellStyle();
+			cellStyle.setDataFormat(
+					createHelper.createDataFormat().getFormat(Messages.getString("Format.Export.DateTime")));
+			return cellStyle;
 		}
 
 		private Row createHeader(final Sheet sheet) {
