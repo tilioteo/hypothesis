@@ -414,6 +414,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			user = userService.merge(user);
 
 			Set<Group> groups = user.getGroups();
+			// FIXME sort in stream
 			List<String> sortedGroups = new ArrayList<>();
 			groups.stream().map(Group::getName).forEach(sortedGroups::add);
 

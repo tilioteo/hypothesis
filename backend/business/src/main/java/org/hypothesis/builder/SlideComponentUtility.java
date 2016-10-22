@@ -4,9 +4,7 @@
  */
 package org.hypothesis.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.ComponentUtility;
 import org.hypothesis.common.utility.DocumentUtility;
@@ -144,17 +142,12 @@ public class SlideComponentUtility {
 	}
 
 	public static void setMediaSources(AbstractMedia media, Element component) {
-		List<Element> elements = DocumentUtility.getComponentSources(component);
+		Resource[] resources = DocumentUtility.getComponentSources(component).stream()
+				.map(m -> m.getAttribute(DocumentConstants.URL)).filter(StringUtils::isNotEmpty)
+				.map(ExternalResource::new).toArray(s -> new Resource[s]);
 
-		List<Resource> resources = new ArrayList<>();
-
-		if (elements != null) {
-			elements.stream().map(m -> m.getAttribute(DocumentConstants.URL)).filter(StringUtils::isNotEmpty)
-					.forEach(e -> resources.add(new ExternalResource(e)));
-		}
-
-		if (!resources.isEmpty()) {
-			media.setSources(resources.toArray(new Resource[0]));
+		if (ArrayUtils.isNotEmpty(resources)) {
+			media.setSources(resources);
 		}
 	}
 

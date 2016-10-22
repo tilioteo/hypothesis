@@ -477,16 +477,16 @@ class ExportThread extends Thread {
 		final IntSequence seq = new IntSequence();
 		if (!fieldCaptionMap.isEmpty()) {
 			Row row = sheet.createRow(seq.next());
-			row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumns"));
+			createStringCell(row, 0, Messages.getString("Caption.Export.UserColumns"));
 
 			row = sheet.createRow(seq.next());
-			row.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
-			row.createCell(1).setCellValue(Messages.getString("Caption.Export.ColumnDescription"));
+			createStringCell(row, 0, Messages.getString("Caption.Export.ColumnName"));
+			createStringCell(row, 1, Messages.getString("Caption.Export.ColumnDescription"));
 
 			fieldCaptionMap.entrySet().forEach(e -> {
 				Row r = sheet.createRow(seq.next());
-				r.createCell(0).setCellValue(e.getKey());
-				r.createCell(1).setCellValue(fieldCaptionMap.get(e.getKey()));
+				createStringCell(r, 0, e.getKey());
+				createStringCell(r, 1, fieldCaptionMap.get(e.getKey()));
 			});
 
 			seq.next();
@@ -494,22 +494,22 @@ class ExportThread extends Thread {
 
 		if (!fieldValueCaptionMap.isEmpty()) {
 			Row row = sheet.createRow(seq.next());
-			row.createCell(0).setCellValue(Messages.getString("Caption.Export.UserColumnValues"));
+			createStringCell(row, 0, Messages.getString("Caption.Export.UserColumnValues"));
 
 			fieldValueCaptionMap.entrySet().forEach(e -> {
 				Row r = sheet.createRow(seq.next());
-				r.createCell(0).setCellValue(Messages.getString("Caption.Export.ColumnName"));
-				r.createCell(1).setCellValue(e.getKey());
+				createStringCell(r, 0, Messages.getString("Caption.Export.ColumnName"));
+				createStringCell(r, 1, e.getKey());
 
 				r = sheet.createRow(seq.next());
-				r.createCell(0).setCellValue(Messages.getString("Caption.Export.UserValue"));
-				r.createCell(1).setCellValue(Messages.getString("Caption.Export.UserValueDescription"));
+				createStringCell(r, 0, Messages.getString("Caption.Export.UserValue"));
+				createStringCell(r, 1, Messages.getString("Caption.Export.UserValueDescription"));
 
 				final HashMap<String, String> valueCaptions = e.getValue();
 				valueCaptions.entrySet().forEach(i -> {
 					Row rr = sheet.createRow(seq.next());
-					rr.createCell(0).setCellValue(i.getValue());
-					rr.createCell(1).setCellValue(valueCaptions.get(i.getValue()));
+					createStringCell(rr, 0, i.getValue());
+					createStringCell(rr, 1, valueCaptions.get(i.getValue()));
 				});
 				seq.next();
 			});

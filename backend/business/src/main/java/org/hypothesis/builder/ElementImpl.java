@@ -48,12 +48,8 @@ public class ElementImpl implements Element {
 	protected ElementImpl(Element element) {
 		setName(element.getName());
 		this.text = element.getText();
-		element.attributes().entrySet().forEach(e -> this.attributes.put(e.getKey(), e.getValue()));
-
-		Iterator<Element> iterator = element.iterator();
-		while (iterator.hasNext()) {
-			createChild((ElementImpl) iterator.next());
-		}
+		element.attributes().entrySet().forEach(e -> attributes.put(e.getKey(), e.getValue()));
+		element.children().forEach(this::createChild);
 	}
 
 	@Override

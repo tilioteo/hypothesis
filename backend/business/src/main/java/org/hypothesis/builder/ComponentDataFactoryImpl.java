@@ -275,8 +275,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		} else if (field instanceof SelectPanel) {
 			SelectPanel selectPanel = (SelectPanel) field;
 
-			Collection<SelectButton> selectedButtons = selectPanel.getSelectedButtons();
-			selectedButtons.forEach(e -> {
+			selectPanel.getSelectedButtons().forEach(e -> {
 				Element currentElement = valueElement != null ? valueElement
 						: element.createChild(DocumentConstants.VALUE);
 				currentElement.setAttribute(DocumentConstants.ID,

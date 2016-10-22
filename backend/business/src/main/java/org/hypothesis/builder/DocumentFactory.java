@@ -7,6 +7,7 @@ package org.hypothesis.builder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.DocumentUtility;
@@ -34,29 +35,29 @@ public class DocumentFactory {
 
 		// bind slide content
 		Element element = content.root().selectElement(DocumentConstants.BINDINGS);
-		List<Element> elements = element.selectElements(DocumentConstants.BIND);
-		elements.stream().map(m -> m.firstChild()).filter(f -> f != null).forEach(e -> {
-			String name = e.getName();
-			String id = e.getAttribute(DocumentConstants.ID);
+		element.selectElements(DocumentConstants.BIND).stream().map(m -> m.firstChild()).filter(Objects::nonNull)
+				.forEach(e -> {
+					String name = e.getName();
+					String id = e.getAttribute(DocumentConstants.ID);
 
-			if (StringUtils.isNotEmpty(name)) {
-				HashMap<String, String> attributes = null;
-				boolean searchDescendants = false;
+					if (StringUtils.isNotEmpty(name)) {
+						HashMap<String, String> attributes = null;
+						boolean searchDescendants = false;
 
-				if (StringUtils.isNotEmpty(id)) {
-					attributes = new HashMap<>();
-					attributes.put(DocumentConstants.ID, id);
-					searchDescendants = true;
-				}
+						if (StringUtils.isNotEmpty(id)) {
+							attributes = new HashMap<>();
+							attributes.put(DocumentConstants.ID, id);
+							searchDescendants = true;
+						}
 
-				Element origElement = DocumentUtility.findElementByNameAndValue(root, name, attributes,
-						searchDescendants);
-				if (origElement != null) {
-					mergeElementAttributes(origElement, e);
-					e.children().forEach(n -> mergeBindingNodes(origElement, n));
-				}
-			}
-		});
+						Element origElement = DocumentUtility.findElementByNameAndValue(root, name, attributes,
+								searchDescendants);
+						if (origElement != null) {
+							mergeElementAttributes(origElement, e);
+							e.children().forEach(i -> mergeBindingNodes(origElement, i));
+						}
+					}
+				});
 
 		return document;
 	}

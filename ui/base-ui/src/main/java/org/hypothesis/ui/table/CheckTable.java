@@ -4,8 +4,8 @@
  */
 package org.hypothesis.ui.table;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.hypothesis.data.model.FieldConstants;
@@ -33,13 +33,10 @@ public class CheckTable extends Table {
 
 	@Override
 	public Set<Object> getValue() {
-		Set<Object> value = new HashSet<>();
-		getItemIds().stream()
+		return getItemIds().stream()
 				.filter(e -> BooleanUtils
 						.isTrue((Boolean) getItem(e).getItemProperty(FieldConstants.SELECTED).getValue()))
-				.forEach(value::add);
-
-		return value;
+				.collect(Collectors.toSet());
 	}
 
 }

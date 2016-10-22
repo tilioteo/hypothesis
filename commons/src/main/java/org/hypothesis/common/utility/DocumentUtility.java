@@ -4,12 +4,12 @@
  */
 package org.hypothesis.common.utility;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.ValidationSets;
@@ -82,10 +82,8 @@ public final class DocumentUtility {
 
 	public static List<Element> findElementsByNameStarting(Element parent, String startName) {
 		if (parent != null && startName.length() > 0) {
-			List<Element> result = new ArrayList<>();
-			parent.children().stream().filter(f -> f.getName().startsWith(startName)).forEach(result::add);
-
-			return result;
+			return parent.children().stream().filter(f -> f.getName().startsWith(startName))
+					.collect(Collectors.toList());
 		}
 
 		return Collections.emptyList();
@@ -105,13 +103,9 @@ public final class DocumentUtility {
 			Element subElement = element.selectElement(subNodeName);
 
 			if (subElement != null) {
-				List<Element> result = new ArrayList<>();
-
-				subElement.children().stream()
+				return subElement.children().stream()
 						.filter(f -> null == validElementNames || validElementNames.contains(f.getName()))
-						.forEach(result::add);
-
-				return result;
+						.collect(Collectors.toList());
 			}
 		}
 

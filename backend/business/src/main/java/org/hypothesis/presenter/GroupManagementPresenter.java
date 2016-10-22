@@ -12,9 +12,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -218,8 +218,6 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 		for (Iterator<Group> iterator = groups.iterator(); iterator.hasNext();) {
 			Group group = iterator.next();
 			group = groupService.merge(group);
-			Set<User> users = new HashSet<>();
-			group.getUsers().forEach(users::add);
 
 			/*
 			 * for (User user : users) { group.removeUser(user); }
@@ -227,12 +225,8 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 			groupService.delete(group);
 
-			// users.stream().filter(Objects::nonNull).forEach(e->{});
-			for (User user : users) {
-				if (user != null) {
-					bus.post(new MainUIEvent.UserGroupsChangedEvent(user));
-				}
-			}
+			group.getUsers().stream().filter(Objects::nonNull)
+					.forEach(e -> bus.post(new MainUIEvent.UserGroupsChangedEvent(e)));
 
 			table.removeItem(group.getId());
 		}
@@ -313,29 +307,17 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 			group = groupService.merge(group);
 
 			Set<User> users = group.getUsers();
+			// FIXME sort in stream
 			List<String> sortedUsers = new ArrayList<>();
 			users.stream().map(User::getUsername).forEach(sortedUsers::add);
 
 			Collections.sort(sortedUsers);
 			Label usersLabel = new Label();
 
-			StringBuilder descriptionBuilder = new StringBuilder();
-			StringBuilder labelBuilder = new StringBuilder();
-
-			// TODO try parallel streams?
-			sortedUsers.forEach(e -> {
-				if (descriptionBuilder.length() != 0) {
-					descriptionBuilder.append("<br/>");
-					labelBuilder.append(", ");
-				}
-				descriptionBuilder.append(e);
-				labelBuilder.append(e);
-			});
-
-			usersLabel.setDescription(descriptionBuilder.toString());
+			usersLabel.setDescription(sortedUsers.stream().collect(Collectors.joining("<br/>")));
 
 			if (users.size() < 5) {
-				usersLabel.setValue(labelBuilder.toString());
+				usersLabel.setValue(sortedUsers.stream().collect(Collectors.joining(", ")));
 			} else {
 				usersLabel.setValue(Messages.getString("Caption.Label.MultipleUsers", users.size()));
 			}

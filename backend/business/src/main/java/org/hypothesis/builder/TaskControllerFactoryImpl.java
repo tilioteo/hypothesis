@@ -4,7 +4,7 @@
  */
 package org.hypothesis.builder;
 
-import java.util.List;
+import java.util.Objects;
 
 import org.apache.log4j.Logger;
 import org.hypothesis.business.TaskController;
@@ -14,7 +14,6 @@ import org.hypothesis.data.DocumentReader;
 import org.hypothesis.evaluation.Node;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
-import org.hypothesis.interfaces.Evaluable;
 import org.hypothesis.interfaces.Evaluator;
 
 /**
@@ -56,12 +55,8 @@ public class TaskControllerFactoryImpl implements TaskControllerFactory {
 	}
 
 	private void createNodes(Element rootElement, TaskController controller) {
-		List<Element> nodes = DocumentUtility.getNodesElements(rootElement);
-
-		if (nodes != null) {
-			nodes.stream().map(m -> createNode(m, controller)).filter(f -> f != null)
-					.forEach(e -> controller.addNode(e.getSlideId(), e));
-		}
+		DocumentUtility.getNodesElements(rootElement).stream().map(m -> createNode(m, controller))
+				.filter(Objects::nonNull).forEach(e -> controller.addNode(e.getSlideId(), e));
 	}
 
 	private Node createNode(Element element, Evaluator evaluator) {
@@ -75,7 +70,7 @@ public class TaskControllerFactoryImpl implements TaskControllerFactory {
 
 		if (evaluateElement != null) {
 			evaluateElement.children().stream().map(m -> EvaluableUtility.createEvaluable(m, evaluator))
-					.filter(f -> f != null).forEach(node::add);
+					.filter(Objects::nonNull).forEach(node::add);
 		}
 		return node;
 	}

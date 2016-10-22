@@ -78,7 +78,6 @@ public class GroupService implements Serializable {
 		log.debug("deleteAllGroups");
 		try {
 			this.findAll().forEach(this::delete);
-			;
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}

@@ -63,9 +63,7 @@ public class Action extends AbstractBaseAction {
 	@Override
 	public String toString() {
 		final StringBuilder builder = new StringBuilder(getId() + "() {\n");
-		evaluables.forEach(e -> {
-			builder.append("\t" + e.toString() + ";\n");
-		});
+		evaluables.forEach(e -> builder.append("\t" + e.toString() + ";\n"));
 		builder.append("}");
 
 		return builder.toString();

@@ -4,7 +4,7 @@
  */
 package org.hypothesis.builder;
 
-import java.util.List;
+import java.util.Objects;
 
 import org.apache.log4j.Logger;
 import org.hypothesis.business.BranchController;
@@ -60,15 +60,8 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 	}
 
 	private void createPaths(Element rootElement, BranchController controller) {
-		List<Element> paths = DocumentUtility.getPathElements(rootElement);
-
-		if (paths != null) {
-			paths.forEach(e -> {
-				AbstractBasePath path = createAbstractBasePath(e);
-				if (path != null)
-					controller.addPath(path);
-			});
-		}
+		DocumentUtility.getPathElements(rootElement).stream().map(this::createAbstractBasePath).filter(Objects::nonNull)
+				.forEach(controller::addPath);
 
 		Element defaultPathElement = DocumentUtility.getDefaultPathElement(rootElement);
 		AbstractBasePath path = createAbstractBasePath(defaultPathElement);
@@ -121,7 +114,8 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 		Pattern pattern = new Pattern();
 
 		final IntSequence seq = new IntSequence(0);
-		DocumentUtility.getNickElements(subElement).stream().map(this::createNick).forEach(e->pattern.addNick(seq.next(), e));
+		DocumentUtility.getNickElements(subElement).stream().map(this::createNick)
+				.forEach(e -> pattern.addNick(seq.next(), e));
 
 		return pattern;
 	}

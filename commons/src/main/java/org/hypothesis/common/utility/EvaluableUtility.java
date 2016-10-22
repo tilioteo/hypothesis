@@ -171,10 +171,10 @@ public class EvaluableUtility {
 
 			if (expression != null) {
 				SwitchStatement statement = new SwitchStatement(evaluator, expression);
-				DocumentUtility.getCaseElements(element).forEach(e -> {
-					e.children().stream().map(m -> createEvaluable(m, evaluator)).filter(Objects::nonNull)
-							.forEach(i -> statement.addCaseEvaluable(DocumentUtility.getValue(e), i));
-				});
+				DocumentUtility.getCaseElements(element)
+						.forEach(e -> e.children().stream().map(m -> createEvaluable(m, evaluator))
+								.filter(Objects::nonNull)
+								.forEach(i -> statement.addCaseEvaluable(DocumentUtility.getValue(e), i)));
 
 				return statement;
 			}
@@ -225,7 +225,7 @@ public class EvaluableUtility {
 
 	public static void createVariables(Element element, Evaluator evaluator, ReferenceCallback callback) {
 		DocumentUtility.getVariablesElements(element).stream()
-				.filter(f -> StringUtils.isNotEmpty(DocumentUtility.getId(f)))
+				.filter(f -> StringUtils.isNotBlank(DocumentUtility.getId(f)))
 				.map(m -> createVariable(m, evaluator, callback)).filter(Objects::nonNull)
 				.forEach(e -> evaluator.getVariables().put(e.getName(), e));
 	}

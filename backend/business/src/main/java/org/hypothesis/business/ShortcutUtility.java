@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hypothesis.common.IntSequence;
 import org.vaadin.special.data.ShortcutConstants;
 
 /**
@@ -87,10 +86,7 @@ public class ShortcutUtility {
 			}
 
 			if (null != key) {
-				int[] modifierCodes = new int[modifiers.size()];
-				final IntSequence seq = new IntSequence();
-				modifiers.forEach(e -> modifierCodes[seq.next()] = ShortcutConstants.MODIFIER_MAP.get(e));
-
+				int[] modifierCodes = modifiers.stream().mapToInt(ShortcutConstants.MODIFIER_MAP::get).toArray();
 				return new ShortcutKeys(ShortcutConstants.SHORTCUT_MAP.get(key), modifierCodes);
 			}
 		}
