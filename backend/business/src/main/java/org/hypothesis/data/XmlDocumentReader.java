@@ -6,8 +6,11 @@ package org.hypothesis.data;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
 import org.hypothesis.builder.DocumentImpl;
 import org.hypothesis.interfaces.Document;
@@ -55,24 +58,19 @@ public class XmlDocumentReader implements DocumentReader {
 
 				String[] parts = url.getHost().split("\\.");
 
-				StringBuilder namespaceBuilder = new StringBuilder();
+				StringBuilder sb = new StringBuilder();
 
 				for (int i = parts.length - 1; i >= 0; --i) {
-					namespaceBuilder.append(parts[i]);
-					namespaceBuilder.append(Document.NAMESPACE_SEPARATOR);
+					sb.append(parts[i]);
+					sb.append(Document.NAMESPACE_SEPARATOR);
 				}
 
-				parts = url.getPath().split("/");
-				for (int i = 0; i < parts.length; ++i) {
-					if (!parts[i].isEmpty()) {
-						namespaceBuilder.append(parts[i]);
-						namespaceBuilder.append(Document.NAMESPACE_SEPARATOR);
-					}
-				}
+				sb.append(Arrays.stream(url.getPath().split("/")).filter(StringUtils::isNotBlank)
+						.collect(Collectors.joining(Document.NAMESPACE_SEPARATOR)));
 
-				namespaceBuilder.append(element.getName());
+				sb.append(element.getName());
 
-				return namespaceBuilder.toString();
+				return sb.toString();
 
 			} catch (MalformedURLException e) {
 				e.printStackTrace();

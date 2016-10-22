@@ -96,6 +96,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 							Element baseElement = ensureSubElement(root, DocumentConstants.SOURCE);
 
+							// FIXME use regexp Pattern and Matcher
 							String[] elementNames = name.split("/");
 							boolean isAttribute = false;
 							String attributeName = null;
@@ -274,8 +275,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		} else if (field instanceof SelectPanel) {
 			SelectPanel selectPanel = (SelectPanel) field;
 
-			Collection<SelectButton> selectedButtons = selectPanel.getSelectedButtons();
-			selectedButtons.forEach(e -> {
+			selectPanel.getSelectedButtons().forEach(e -> {
 				Element currentElement = valueElement != null ? valueElement
 						: element.createChild(DocumentConstants.VALUE);
 				currentElement.setAttribute(DocumentConstants.ID,

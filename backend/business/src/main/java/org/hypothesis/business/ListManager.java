@@ -7,6 +7,7 @@ package org.hypothesis.business;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.hypothesis.data.interfaces.HasList;
@@ -128,7 +129,7 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 		index = -1;
 		randomGenerator = new Random();
 		if (parent != null) {
-			parent.getList().stream().filter(f -> f != null).forEach(list::add);
+			parent.getList().stream().filter(Objects::nonNull).forEach(list::add);
 
 			if (!list.isEmpty()) {
 				index = 0;

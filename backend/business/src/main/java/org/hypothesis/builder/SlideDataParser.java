@@ -6,10 +6,14 @@ package org.hypothesis.builder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -30,18 +34,13 @@ public class SlideDataParser {
 	}
 
 	public static List<String> parseOutputValues(String xmlString) {
-		List<String> list = new ArrayList<>();
 		Document doc = XmlUtility.readString(xmlString);
 		if (doc != null) {
 			@SuppressWarnings("unchecked")
 			List<Element> elements = doc.getRootElement()
 					.selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.OUTPUT_VALUE));
 
-			if (!elements.isEmpty()) {
-				for (int i = 0; i < 10; ++i) {
-					list.add(null);
-				}
-			}
+			List<String> list = Arrays.asList(new String[10]);
 
 			elements.forEach(e -> {
 				String index = e.attributeValue(DocumentConstants.INDEX);
@@ -55,8 +54,11 @@ public class SlideDataParser {
 				} catch (NumberFormatException ex) {
 				}
 			});
+			
+			return list;
+			
 		}
-		return list;
+		return Collections.emptyList();
 	}
 
 	public static FieldWrapper parseFields(String xmlString) {

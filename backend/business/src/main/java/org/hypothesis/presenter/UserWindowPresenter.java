@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
@@ -760,11 +761,9 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		if (rolesField.isVisible()) {
-			Set<Role> roles = new HashSet<>();
-			user.getRoles().forEach(roles::add);
+			Set<Role> roles = user.getRoles().stream().collect(Collectors.toSet());
 			roles.forEach(user::removeRole);
 			((Set<Role>) rolesField.getValue()).forEach(user::addRole);
-			roles = (Set<Role>) rolesField.getValue();
 		}
 
 		if (enabledField.isVisible()) {

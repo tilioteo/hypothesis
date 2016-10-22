@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.hypothesis.data.interfaces.HasId;
 import org.hypothesis.data.interfaces.HasList;
@@ -59,17 +60,15 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 	 * @return the same item or null if not found
 	 */
 	public E find(E item) {
-		key = null;
-		element = null;
-
-		for (Entry<K, E> entry : keyset.entrySet()) {
-			E e = entry.getValue();
-			if (e == item) {
-				key = entry.getKey();
-				element = e;
-				break;
-			}
+		Entry<K, E> entry = keyset.entrySet().stream().filter(f -> f.getValue() == item).findFirst().orElse(null);
+		if (entry != null) {
+			key = entry.getKey();
+			element = entry.getValue();
+		} else {
+			key = null;
+			element = null;
 		}
+
 		return element;
 	}
 
@@ -98,7 +97,7 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 		keyset.clear();
 		key = null;
 		if (parent != null) {
-			parent.getList().stream().filter(f -> f != null).forEach(e -> keyset.put(e.getId(), e));
+			parent.getList().stream().filter(Objects::nonNull).forEach(e -> keyset.put(e.getId(), e));
 
 			if (keyset.size() > 0) {
 				List<E> list = new ArrayList<>(keyset.values());

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 
@@ -47,12 +48,8 @@ public class ElementImpl implements Element {
 	protected ElementImpl(Element element) {
 		setName(element.getName());
 		this.text = element.getText();
-		element.attributes().entrySet().forEach(e -> this.attributes.put(e.getKey(), e.getValue()));
-
-		Iterator<Element> iterator = element.iterator();
-		while (iterator.hasNext()) {
-			createChild((ElementImpl) iterator.next());
-		}
+		element.attributes().entrySet().forEach(e -> attributes.put(e.getKey(), e.getValue()));
+		element.children().forEach(this::createChild);
 	}
 
 	@Override
@@ -299,9 +296,7 @@ public class ElementImpl implements Element {
 	@Override
 	public String toString(boolean detailed, int ident) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < ident; ++i) {
-			builder.append("\t");
-		}
+		builder.append(StringUtils.rightPad("", ident, '\t'));
 
 		builder.append("<" + name + ":" + text + "(");
 
@@ -320,9 +315,7 @@ public class ElementImpl implements Element {
 				builder.append("\n");
 			}
 
-			for (int i = 0; i < ident; ++i) {
-				builder.append("\t");
-			}
+			builder.append(StringUtils.rightPad("", ident, '\t'));
 
 		}
 		builder.append("]>");

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.evaluation.AbstractBasePath;
@@ -56,27 +58,14 @@ public class BranchController implements Serializable {
 	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
 		if (slide != null && slide.getId() != null && !outputValues.isEmpty()) {
 			// copy map of variables because it will be erased on slide finish
-			HashMap<Integer, ExchangeVariable> map = new HashMap<>();
-			outputValues.entrySet().forEach(e -> map.put(e.getKey(), e.getValue()));
-
-			slideOutputs.put(slide.getId(), map);
+			slideOutputs.put(slide.getId(),
+					outputValues.entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
 		}
 	}
 
 	public String getNextBranchKey() {
-		nextKey = null;
-		boolean pathFound = false;
-
-		for (Path path : paths) {
-			if (path.isValid(slideOutputs)) {
-				nextKey = path.getBranchKey();
-				pathFound = true;
-				break;
-			}
-		}
-		if (!pathFound && defaultPath != null) {
-			nextKey = defaultPath.getBranchKey();
-		}
+		nextKey = paths.stream().filter(f -> f.isValid(slideOutputs)).map(Path::getBranchKey).findFirst()
+				.orElse(defaultPath != null ? defaultPath.getBranchKey() : null);
 		return nextKey;
 	}
 

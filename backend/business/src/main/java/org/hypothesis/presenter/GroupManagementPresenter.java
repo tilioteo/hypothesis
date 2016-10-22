@@ -12,7 +12,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -23,6 +22,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.hypothesis.common.IntSequence;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Group;
@@ -186,19 +186,19 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 			Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.GroupSheetName"));
 
-			int rowNr = 0;
-			Row row = sheet.createRow(rowNr++);
+			final IntSequence seq = new IntSequence();
+			Row row = sheet.createRow(seq.next());
 			sheet.createFreezePane(0, 1);
 
 			row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
 			row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
 
-			for (Iterator<Group> i = getSelectedGroups().iterator(); i.hasNext();) {
-				row = sheet.createRow(rowNr++);
-				Group group = i.next();
-				row.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(group.getId());
-				row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(group.getName());
-			}
+			getSelectedGroups().forEach(e -> {
+				Row r = sheet.createRow(seq.next());
+				r.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(e.getId());
+				r.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(e.getName());
+			});
+
 			workbook.write(output);
 			workbook.close();
 			output.close();
@@ -218,8 +218,6 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 		for (Iterator<Group> iterator = groups.iterator(); iterator.hasNext();) {
 			Group group = iterator.next();
 			group = groupService.merge(group);
-			Set<User> users = new HashSet<>();
-			group.getUsers().forEach(users::add);
 
 			/*
 			 * for (User user : users) { group.removeUser(user); }
@@ -227,12 +225,8 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 			groupService.delete(group);
 
-			//users.stream().filter(Objects::nonNull).forEach(e->{});
-			for (User user : users) {
-				if (user != null) {
-					bus.post(new MainUIEvent.UserGroupsChangedEvent(user));
-				}
-			}
+			group.getUsers().stream().filter(Objects::nonNull)
+					.forEach(e -> bus.post(new MainUIEvent.UserGroupsChangedEvent(e)));
 
 			table.removeItem(group.getId());
 		}
@@ -251,10 +245,8 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 
 	@SuppressWarnings("unchecked")
 	private Collection<Group> getSelectedGroups() {
-		Collection<Group> groups = new HashSet<>();
-		getSelectedGroupIds().forEach(e -> groups.add(((BeanItem<Group>) table.getItem(e)).getBean()));
-
-		return groups;
+		return getSelectedGroupIds().stream().map(m -> ((BeanItem<Group>) table.getItem(m)).getBean())
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -315,29 +307,17 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 			group = groupService.merge(group);
 
 			Set<User> users = group.getUsers();
+			// FIXME sort in stream
 			List<String> sortedUsers = new ArrayList<>();
 			users.stream().map(User::getUsername).forEach(sortedUsers::add);
 
 			Collections.sort(sortedUsers);
 			Label usersLabel = new Label();
 
-			StringBuilder descriptionBuilder = new StringBuilder();
-			StringBuilder labelBuilder = new StringBuilder();
-
-			// TODO try parallel streams?
-			sortedUsers.forEach(e -> {
-				if (descriptionBuilder.length() != 0) {
-					descriptionBuilder.append("<br/>");
-					labelBuilder.append(", ");
-				}
-				descriptionBuilder.append(e);
-				labelBuilder.append(e);
-			});
-
-			usersLabel.setDescription(descriptionBuilder.toString());
+			usersLabel.setDescription(sortedUsers.stream().collect(Collectors.joining("<br/>")));
 
 			if (users.size() < 5) {
-				usersLabel.setValue(labelBuilder.toString());
+				usersLabel.setValue(sortedUsers.stream().collect(Collectors.joining(", ")));
 			} else {
 				usersLabel.setValue(Messages.getString("Caption.Label.MultipleUsers", users.size()));
 			}

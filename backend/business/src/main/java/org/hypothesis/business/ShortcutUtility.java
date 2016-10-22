@@ -86,13 +86,7 @@ public class ShortcutUtility {
 			}
 
 			if (null != key) {
-				int[] modifierCodes = new int[modifiers.size()];
-				int i = 0;
-
-				for (String modifier : modifiers) {
-					modifierCodes[i++] = ShortcutConstants.MODIFIER_MAP.get(modifier);
-				}
-
+				int[] modifierCodes = modifiers.stream().mapToInt(ShortcutConstants.MODIFIER_MAP::get).toArray();
 				return new ShortcutKeys(ShortcutConstants.SHORTCUT_MAP.get(key), modifierCodes);
 			}
 		}

@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
@@ -346,23 +347,21 @@ public class PermissionService implements Serializable {
 	public Set<Pack> getUserPacks(User user, Boolean enabled, Boolean excludeFinished) {
 		log.debug("getUserPacks");
 		try {
-			Set<Pack> packs = new HashSet<>();
-			getUserPermissions(user).stream().filter(f -> enabled == null || f.getEnabled().equals(enabled))
-					.forEach(e -> {
-						Pack pack = e.getPack();
-						// TODO check pass is not null
-						// if (userPermission.getPass() == null ||
-						// excludeFinished
-						// == null || !excludeFinished) {
-						packs.add(pack);
-						/*
-						 * } else { List<SimpleTest> finishedTests =
-						 * testService.findTestsBy(user, pack, Status.FINISHED);
-						 * if (userPermission.getPass() < finishedTests.size())
-						 * { packs.add(pack); } }
-						 */
-					});
-			return packs;
+			return getUserPermissions(user).stream().filter(f -> enabled == null || f.getEnabled().equals(enabled))
+					.map(UserPermission::getPack).collect(Collectors.toSet());
+			// .forEach(e -> {
+			// Pack pack = e.getPack();
+			// // TODO check pass is not null
+			// // if (userPermission.getPass() == null ||
+			// // excludeFinished
+			// // == null || !excludeFinished) {
+			// packs.add(pack);
+			// //
+			// // } else { List<SimpleTest> finishedTests =
+			// // testService.findTestsBy(user, pack, Status.FINISHED);
+			// // if (userPermission.getPass() < finishedTests.size())
+			// // { packs.add(pack); } }
+			// });
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return null;
