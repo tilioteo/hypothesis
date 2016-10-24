@@ -23,6 +23,9 @@ public class LogUtil {
 
 	private static boolean initialized = false;
 
+	private LogUtil() {
+	}
+
 	public static void initLogging(ServletContext servletContext) {
 		if (!initialized) {
 			String configFileName = servletContext.getInitParameter(CONTEXT_PARAM_LOG4J_CONFIG_LOCATION);

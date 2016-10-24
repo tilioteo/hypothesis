@@ -37,6 +37,8 @@ import com.tilioteo.expressions.ExpressionFactory;
  *
  */
 public class EvaluableUtility {
+	
+	private EvaluableUtility() {}
 
 	public static void createActions(Element element, Evaluator evaluator) {
 		DocumentUtility.getActionsElements(element).stream()
