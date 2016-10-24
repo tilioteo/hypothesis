@@ -29,6 +29,9 @@ public class LocaleManager {
 	private static Locale defaultLocale = null;
 	private static Locale currentLocale = null;
 
+	private LocaleManager() {
+	}
+
 	public static void initializeLocale(VaadinRequest request) {
 		WrappedSession session = request.getWrappedSession();
 		HttpSession httpSession = ((WrappedHttpSession) session).getHttpSession();
