@@ -144,21 +144,15 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	private void addWindows(UI ui) {
-		for (Window window : windows.values()) {
-			window.setFutureUI(ui);
-		}
+		windows.values().forEach(e -> e.setFutureUI(ui));
 	}
 
 	private void addTimers(HypothesisUI hui) {
-		for (Timer timer : timers.values()) {
-			hui.addTimer(timer);
-		}
+		timers.values().forEach(hui::addTimer);
 	}
 
 	private void addKeyActions(AbstractComponent component) {
-		for (KeyAction keyAction : keyActions) {
-			keyAction.extend(component);
-		}
+		keyActions.forEach(e -> e.extend(component));
 	}
 
 	@Override
@@ -179,30 +173,24 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	private void removeWindows() {
-		for (Window window : windows.values()) {
-			window.setFutureUI(null);
-		}
+		windows.values().forEach(e -> e.setFutureUI(null));
 	}
 
 	private void removeKeyActions() {
-		for (KeyAction keyAction : keyActions) {
-			keyAction.remove();
-		}
+		keyActions.forEach(e -> e.remove());
 	}
 
 	private void stopTimers() {
 		// stop timers silently
-		for (Timer timer : timers.values()) {
-			timer.stop(true);
-		}
+		timers.values().forEach(e -> e.stop(true));
 	}
 
 	private void closeWindows() {
 		// remove close listeners to close windows silently
-		for (Window window : windows.values()) {
-			window.removeAllCloseListeners();
-			window.close();
-		}
+		windows.values().forEach(e -> {
+			e.removeAllCloseListeners();
+			e.close();
+		});
 	}
 
 	@Override
@@ -412,14 +400,8 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	public boolean isValidSlide() {
-		boolean valid = true;
-
 		// validate fields
-		for (Field field : fields.values()) {
-			valid = valid && field.isValid();
-		}
-
-		return valid;
+		return fields.values().stream().allMatch(e->e.isValid());
 	}
 
 	/**
@@ -494,9 +476,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	@Override
 	public Map<Integer, ExchangeVariable> getOutputs() {
-		for (ExchangeVariable variable : outputExpressions.values()) {
-			variable.setVariables(variables);
-		}
+		outputExpressions.values().forEach(e->e.setVariables(variables));
 
 		return outputExpressions;
 	}

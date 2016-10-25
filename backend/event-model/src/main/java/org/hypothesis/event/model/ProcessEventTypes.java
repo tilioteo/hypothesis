@@ -140,9 +140,7 @@ public class ProcessEventTypes {
 		// increase next event id to begin in thousands
 		nextId = (Math.round(Math.floor(nextId / 1000)) + 1) * 1000 - 1;
 
-		for (String name : names) {
-			registerEvent(name);
-		}
+		names.forEach(ProcessEventTypes::registerEvent);
 	}
 
 }

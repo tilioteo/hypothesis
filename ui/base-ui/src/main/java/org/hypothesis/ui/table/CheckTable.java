@@ -4,11 +4,12 @@
  */
 package org.hypothesis.ui.table;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.hypothesis.data.model.FieldConstants;
-import com.vaadin.data.Item;
+
 import com.vaadin.ui.Table;
 
 /**
@@ -32,18 +33,10 @@ public class CheckTable extends Table {
 
 	@Override
 	public Set<Object> getValue() {
-		Set<Object> value = new HashSet<>();
-
-		for (Object itemId : getItemIds()) {
-			Item item = getItem(itemId);
-			Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
-
-			if (selected != null && selected.equals(true)) {
-				value.add(item);
-			}
-		}
-
-		return value;
+		return getItemIds().stream()
+				.filter(e -> BooleanUtils
+						.isTrue((Boolean) getItem(e).getItemProperty(FieldConstants.SELECTED).getValue()))
+				.collect(Collectors.toSet());
 	}
 
 }

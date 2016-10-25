@@ -4,8 +4,8 @@
  */
 package org.hypothesis.extension;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hypothesis.interfaces.Extension;
@@ -71,10 +71,7 @@ public class Convertor implements Extension {
 		ArrayList<Object> array = new ArrayList<>();
 
 		if (arr != null && arr.getClass().isArray()) {
-			int length = Array.getLength(arr);
-			for (int i = 0; i < length; ++i) {
-				array.add(Array.get(arr, i));
-			}
+			Arrays.stream((Object[]) arr).forEach(array::add);
 		}
 
 		return array;

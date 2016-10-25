@@ -38,19 +38,18 @@ public class IfStatement implements Evaluable {
 		trueBlock.add(evaluable);
 	}
 
+	@Override
 	public void evaluate() {
 		if (expression != null && variables != null) {
 			Boolean result = expression.getBoolean();
 			expression.updateVariables(variables.getVariables());
 
 			if (result != null) {
-				List<Evaluable> evaluables = result ? trueBlock : falseBlock;
-
-				for (Evaluable evaluable : evaluables) {
-					evaluable.setVariables(variables.getVariables());
-					evaluable.evaluate();
-					evaluable.updateVariables(variables.getVariables());
-				}
+				(result ? trueBlock : falseBlock).forEach(e -> {
+					e.setVariables(variables.getVariables());
+					e.evaluate();
+					e.updateVariables(variables.getVariables());
+				});
 			}
 		}
 	}
@@ -70,16 +69,12 @@ public class IfStatement implements Evaluable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("if (" + expression.toString() + ") {\n");
-		for (Evaluable evaluable : trueBlock) {
-			builder.append("\t" + evaluable.toString() + ";\n");
-		}
-
+		trueBlock.forEach(e -> builder.append("\t" + e.toString() + ";\n"));
 		builder.append("}");
+
 		if (!falseBlock.isEmpty()) {
 			builder.append(" else {\n");
-			for (Evaluable evaluable : falseBlock) {
-				builder.append("\t" + evaluable.toString() + ";\n");
-			}
+			falseBlock.forEach(e -> builder.append("\t" + e.toString() + ";\n"));
 			builder.append("}");
 		}
 

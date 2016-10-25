@@ -7,9 +7,8 @@ package org.hypothesis.business;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.vaadin.special.data.ShortcutConstants;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -52,6 +51,11 @@ public class ShortcutUtility {
 		}
 	}
 
+	private static String capitalizeFirst(String value) {
+		String str = value.trim();
+		return StringUtils.left(str, 1).toUpperCase() + str.substring(1).toLowerCase();
+	}
+
 	/**
 	 * Parse string representation of shortcut key
 	 * 
@@ -60,15 +64,14 @@ public class ShortcutUtility {
 	 * @return wrapper object or null if not recognized
 	 */
 	public static ShortcutKeys parseShortcut(String shortcutKey) {
-		if (!Strings.isNullOrEmpty(shortcutKey)) {
+		if (StringUtils.isNotEmpty(shortcutKey)) {
 			String[] parts = shortcutKey.split("\\+");
 
 			ArrayList<String> modifiers = new ArrayList<>();
 			String key = null;
 
 			for (String part : parts) {
-				part = part.trim().toLowerCase();
-				part = part.substring(0, 1).toUpperCase() + part.substring(1);
+				part = ShortcutUtility.capitalizeFirst(part);
 
 				if (ShortcutConstants.MODIFIER_MAP.containsKey(part)) {
 					modifiers.add(part);
@@ -83,13 +86,7 @@ public class ShortcutUtility {
 			}
 
 			if (null != key) {
-				int[] modifierCodes = new int[modifiers.size()];
-				int i = 0;
-
-				for (String modifier : modifiers) {
-					modifierCodes[i++] = ShortcutConstants.MODIFIER_MAP.get(modifier);
-				}
-
+				int[] modifierCodes = modifiers.stream().mapToInt(ShortcutConstants.MODIFIER_MAP::get).toArray();
 				return new ShortcutKeys(ShortcutConstants.SHORTCUT_MAP.get(key), modifierCodes);
 			}
 		}

@@ -5,7 +5,6 @@
 package org.hypothesis.data.service;
 
 import java.util.Date;
-import java.util.List;
 
 import javax.enterprise.inject.Default;
 
@@ -73,10 +72,7 @@ public class TokenServiceImpl implements TokenService {
 			date.setTime(date.getTime() - TOKEN_VALID_TIME);
 
 			tokenDao.beginTransaction();
-			List<Token> tokens = tokenDao.findByCriteria(Restrictions.lt(FieldConstants.DATETIME, date));
-			for (Token invalidToken : tokens) {
-				tokenDao.makeTransient(invalidToken);
-			}
+			tokenDao.findByCriteria(Restrictions.lt(FieldConstants.DATETIME, date)).forEach(tokenDao::makeTransient);
 			tokenDao.commit();
 		} catch (Exception e) {
 			log.error("purge of invalid tokens failed");

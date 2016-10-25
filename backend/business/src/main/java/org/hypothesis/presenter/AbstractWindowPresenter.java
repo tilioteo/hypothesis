@@ -15,8 +15,6 @@ import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.WindowPresenter;
 import org.hypothesis.server.Messages;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractField;
@@ -95,9 +93,7 @@ public abstract class AbstractWindowPresenter implements CloseListener, WindowPr
 	protected void addField(GridLayout form, final Component field) {
 		if (state == WindowState.MULTIUPDATE) {
 			final CheckBox enabler = new CheckBox(field.getCaption());
-			enabler.addValueChangeListener(new ValueChangeListener() {
-				@Override
-				public void valueChange(Property.ValueChangeEvent event) {
+			enabler.addValueChangeListener(e -> {
 					field.setVisible(enabler.getValue());
 
 					if (field instanceof AbstractField<?>) {
@@ -107,7 +103,6 @@ public abstract class AbstractWindowPresenter implements CloseListener, WindowPr
 							fields.remove((AbstractField<?>) field);
 						}
 					}
-				}
 			});
 			field.setVisible(false);
 			form.addComponent(enabler);

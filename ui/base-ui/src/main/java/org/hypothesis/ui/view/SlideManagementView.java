@@ -20,8 +20,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -77,12 +75,7 @@ public class SlideManagementView extends HorizontalLayout implements View {
 		mainLayout.addComponent(controlPanel);
 
 		Button showButton = new Button("Show");
-		showButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				showSlide();
-			}
-		});
+		showButton.addClickListener(e -> showSlide());
 
 		controlPanel.setContent(showButton);
 

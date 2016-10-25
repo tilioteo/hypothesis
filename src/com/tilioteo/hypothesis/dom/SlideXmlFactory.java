@@ -53,7 +53,7 @@ public class SlideXmlFactory implements Serializable {
 					String uri = element.getNamespaceURI();
 					
 					String id = SlideXmlUtility.getId(element);
-					if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(id)) {
+					if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(id)) {
 						Element origElement = XmlUtility.findElementByNameAndValue(true, root, name, prefix, uri, SlideXmlConstants.ID, id);
 						if (origElement != null) {
 							mergeElementAttributes(origElement, element);
@@ -124,7 +124,7 @@ public class SlideXmlFactory implements Serializable {
 		String id = SlideXmlUtility.getId(sourceSubElement);
 		
 		Element destinationSubElement = null;
-		if (!Strings.isNullOrEmpty(id)) {
+		if (StringUtils.isNotEmpty(id)) {
 			destinationSubElement = XmlUtility.findElementByNameAndValue(false, destinationElement, name, prefix, uri, SlideXmlConstants.ID, id);
 		} else {
 			destinationSubElement = XmlUtility.findElementByNameAndValue(false, destinationElement, name, prefix, uri, null, null);
@@ -167,7 +167,7 @@ public class SlideXmlFactory implements Serializable {
 				String id = SlideXmlUtility.getId(sourceSubElement);
 				
 				Element destinationSubElement = null;
-				if (!Strings.isNullOrEmpty(id)) {
+				if (StringUtils.isNotEmpty(id)) {
 					destinationSubElement = XmlUtility.findElementByNameAndValue(false, destination, name, prefix, uri, SlideXmlConstants.ID, id);
 				} else {
 					destinationSubElement = XmlUtility.findElementByNameAndValue(false, destination, name, prefix, uri, null, null);

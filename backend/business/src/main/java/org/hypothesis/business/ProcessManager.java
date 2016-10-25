@@ -5,7 +5,6 @@
 package org.hypothesis.business;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -105,7 +104,15 @@ public class ProcessManager implements Serializable {
 	@Inject
 	private javax.enterprise.event.Event<ProcessEvent> procEvent;
 
-	public ProcessManager() {
+	/**
+	 * 
+	 * @param bus
+	 *            associated event bus
+	 */
+	public ProcessManager(ProcessEventBus bus) {
+		this.bus = bus;
+		bus.register(this);
+
 		branchManager = new BranchManager();
 		taskManager = new TaskManager();
 		slideManager = new SlideManager();
@@ -124,23 +131,17 @@ public class ProcessManager implements Serializable {
 	}
 
 	private boolean checkUserPack(User user, Pack pack) {
-		Collection<Pack> packs;
 		if (user != null) {
-			packs = permissionService.findUserPacks(user, true);
-			for (Pack allowedPack : packs) {
-				if (allowedPack.getId().equals(pack.getId()))
+			boolean match = permissionService.findUserPacks(user, true).stream()
+					.anyMatch(e -> e.getId().equals(pack.getId()));
+
+			if (match) {
 					return true;
 			}
 		}
 
-		packs = permissionService.getPublishedPacks();
-		for (Pack allowedPack : packs) {
-			if (allowedPack.getId().equals(pack.getId()))
-				return true;
+		return permissionService.getPublishedPacks().stream().anyMatch(e -> e.getId().equals(pack.getId()));
 		}
-
-		return false;
-	}
 
 	/**
 	 * Handler method for {@link ActionEvent}

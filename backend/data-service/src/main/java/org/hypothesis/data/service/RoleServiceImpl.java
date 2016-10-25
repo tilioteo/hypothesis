@@ -4,8 +4,8 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.inject.Default;
 
@@ -113,10 +113,7 @@ public class RoleServiceImpl implements RoleService {
 	public void deleteAll() {
 		log.debug("deleteAllRoles");
 		try {
-			List<Role> allRoles = this.findAll();
-			for (Role roles : allRoles) {
-				this.delete(roles);
-			}
+			this.findAll().forEach(this::delete);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
@@ -151,12 +148,7 @@ public class RoleServiceImpl implements RoleService {
 	public List<String> findAllRoleNames() {
 		log.debug("findAllRoleNames");
 		try {
-			List<Role> allRoles = findAll();
-			List<String> roleNames = new ArrayList<>();
-			for (Role role : allRoles) {
-				roleNames.add(role.getName());
-			}
-			return roleNames;
+			return findAll().stream().map(Role::getName).collect(Collectors.toList());
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}

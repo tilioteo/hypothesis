@@ -5,7 +5,6 @@
 package org.hypothesis.business;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -33,17 +32,24 @@ public class ComponentDataPojoGenerator {
 
 	/**
 	 * Generate new POJO class dynamically
-	 * @param className name of generated class
-	 * @param superClass super class to inherit from
-	 * @param properties properties to be defined in POJO, getters and setters are generated as well
-	 * @param structures optional {@link Structured} annotation passed to properties
+	 * 
+	 * @param className
+	 *            name of generated class
+	 * @param superClass
+	 *            super class to inherit from
+	 * @param properties
+	 *            properties to be defined in POJO, getters and setters are
+	 *            generated as well
+	 * @param structures
+	 *            optional {@link Structured} annotation passed to properties
 	 * @return new Class object or null when an error occurs
 	 * @throws NotFoundException
 	 * @throws CannotCompileException
 	 */
 	public static Class<?> generate(String className, Class<?> superClass, Map<String, Class<?>> properties,
 			Map<String, String> structures) throws NotFoundException, CannotCompileException {
-		// TODO replace structures map by specific annotation instances for general use
+		// TODO replace structures map by specific annotation instances for
+		// general use
 		ClassPool pool = ClassPool.getDefault();
 
 		CtClass cc = null;
@@ -67,31 +73,38 @@ public class ComponentDataPojoGenerator {
 			// add this to define an interface to implement, ie:
 			// cc.addInterface(resolveCtClass(Serializable.class));
 
-			for (Entry<String, Class<?>> entry : properties.entrySet()) {
-
-				CtField field = new CtField(resolveCtClass(entry.getValue()), entry.getKey(), cc);
+			final CtClass finalCc = cc;
+			properties.entrySet().forEach(e -> {
+				CtField field;
+				try {
+					field = new CtField(resolveCtClass(e.getValue()), e.getKey(), finalCc);
 
 				// specific part - insert annotation to mark serialized
 				// structure of
 				// field
-				String structure = structures.get(entry.getKey());
+					String structure = structures.get(e.getKey());
 				if (structure != null) {
-					AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
+						AnnotationsAttribute attr = new AnnotationsAttribute(constpool,
+								AnnotationsAttribute.visibleTag);
 					Annotation annot = new Annotation(Structured.class.getName(), constpool);
 					annot.addMemberValue("value", new StringMemberValue(structure, ccFile.getConstPool()));
 					attr.addAnnotation(annot);
 					field.getFieldInfo().addAttribute(attr);
 				}
 
-				cc.addField(field);
+					finalCc.addField(field);
 
 				// add getter
-				cc.addMethod(generateGetter(cc, entry.getKey(), entry.getValue()));
+					finalCc.addMethod(generateGetter(finalCc, e.getKey(), e.getValue()));
 
 				// add setter
 				// cc.addMethod(generateSetter(cc, entry.getKey(),
 				// entry.getValue()));
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 			}
+			});
 			return cc.toClass();
 		} else {
 			Class<?> result = null;

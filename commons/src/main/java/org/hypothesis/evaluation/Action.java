@@ -26,6 +26,7 @@ public class Action extends AbstractBaseAction {
 
 	/**
 	 * Construct
+	 * 
 	 * @param variables
 	 * @param id
 	 */
@@ -35,6 +36,7 @@ public class Action extends AbstractBaseAction {
 
 	/**
 	 * Add evaluable
+	 * 
 	 * @param evaluable
 	 */
 	public void add(Evaluable evaluable) {
@@ -45,25 +47,23 @@ public class Action extends AbstractBaseAction {
 	public void execute() {
 		super.execute();
 
-		for (Evaluable evaluable : evaluables) {
-			Map<String, org.hypothesis.interfaces.Variable<?>> variables = null;
-			if (getVariables() != null)
-				variables = getVariables();
+		evaluables.forEach(e -> {
+			Map<String, org.hypothesis.interfaces.Variable<?>> variables = getVariables();
 
-			if (variables != null)
-				evaluable.setVariables(variables);
-			evaluable.evaluate();
-			if (variables != null)
-				evaluable.updateVariables(variables);
-		}
+			if (variables != null) {
+				e.setVariables(variables);
+			}
+			e.evaluate();
+			if (variables != null) {
+				e.updateVariables(variables);
+			}
+		});
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder(getId() + "() {\n");
-		for (Evaluable evaluable : evaluables) {
-			builder.append("\t" + evaluable.toString() + ";\n");
-		}
+		final StringBuilder builder = new StringBuilder(getId() + "() {\n");
+		evaluables.forEach(e -> builder.append("\t" + e.toString() + ";\n"));
 		builder.append("}");
 
 		return builder.toString();
@@ -73,9 +73,7 @@ public class Action extends AbstractBaseAction {
 	public Map<Integer, ExchangeVariable> getOutputs() {
 		Map<String, org.hypothesis.interfaces.Variable<?>> variables = getVariables();
 		if (variables != null) {
-			for (ExchangeVariable outputValue : outputValues.values()) {
-				outputValue.setVariables(variables);
-			}
+			outputValues.values().forEach(e -> e.setVariables(variables));
 		}
 
 		return outputValues;

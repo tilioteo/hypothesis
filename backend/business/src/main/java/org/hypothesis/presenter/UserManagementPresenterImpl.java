@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
@@ -30,7 +30,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.hypothesis.business.SessionManager;
+import org.hypothesis.common.IntSequence;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.interfaces.GroupService;
 import org.hypothesis.data.interfaces.PermissionService;
@@ -215,21 +215,21 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 
 			Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.UserSheetName"));
 
-			int rowNr = 0;
-			Row row = sheet.createRow(rowNr++);
+			final IntSequence seq = new IntSequence();
+			Row row = sheet.createRow(seq.next());
 			sheet.createFreezePane(0, 1);
 
 			row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
 			row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
 			row.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Password"));
 
-			for (Iterator<User> i = getSelectedUsers().iterator(); i.hasNext();) {
-				row = sheet.createRow(rowNr++);
-				User user = i.next();
-				row.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(user.getId());
-				row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(user.getUsername());
-				row.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(user.getPassword());
-			}
+			getSelectedUsers().forEach(e -> {
+				Row r = sheet.createRow(seq.next());
+				r.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(e.getId());
+				r.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(e.getUsername());
+				r.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(e.getPassword());
+			});
+
 			workbook.write(output);
 			workbook.close();
 			output.close();
@@ -251,20 +251,14 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		checkDeletionPermission(loggedUser, users);
 		checkSuperuserLeft(loggedUser);
 
-		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
-			User user = iterator.next();
-			// user = userService.merge(user);
+		users.forEach(e -> {
+			userService.delete(e);
 
-			userService.delete(user);
+			e.getGroups().stream().filter(Objects::nonNull)
+					.forEach(i -> bus.post(new MainUIEvent.GroupUsersChangedEvent(i)));
 
-			for (Group group : user.getGroups()) {
-				if (group != null) {
-					mainEvent.fire(new MainUIEvent.GroupUsersChangedEvent(group));
-				}
-			}
-
-			table.removeItem(user.getId());
-		}
+			table.removeItem(e.getId());
+		});
 
 		if (users.contains(loggedUser)) {
 			mainEvent.fire(new MainUIEvent.UserLoggedOutEvent());
@@ -282,13 +276,10 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 			throw new UnsupportedOperationException(exceptionMessage);
 		}
 
-		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
-			User user = iterator.next();
-			if (user.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
+		if (users.stream().anyMatch(e -> e.hasRole(RoleService.ROLE_SUPERUSER))) {
 				throw new UnsupportedOperationException(exceptionMessage);
 			}
 		}
-	}
 
 	@SuppressWarnings("unchecked")
 	private void checkSuperuserLeft(User currentUser) {
@@ -299,17 +290,9 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		}
 
 		if (currentUser.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
-			boolean superuserLeft = false;
-			for (Iterator<Long> iterator = ((Collection<Long>) table.getItemIds()).iterator(); iterator.hasNext();) {
-				Long id = iterator.next();
-				if (!table.isSelected(id)) {
-					User user = ((BeanItem<User>) table.getItem(id)).getBean();
-					if (user.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
-						superuserLeft = true;
-						break;
-					}
-				}
-			}
+			boolean superuserLeft = ((Collection<Long>) table.getItemIds()).stream().filter(f -> !table.isSelected(f))
+					.map(m -> ((BeanItem<User>) table.getItem(m)).getBean())
+					.anyMatch(e -> e.hasRole(RoleService.ROLE_SUPERUSER));
 
 			if (!superuserLeft) {
 				throw new UnsupportedOperationException(exceptionMessage);
@@ -330,12 +313,9 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 
 	@SuppressWarnings("unchecked")
 	private Collection<User> getSelectedUsers() {
-		Collection<User> users = new HashSet<>();
-		for (Long id : getSelectedUserIds()) {
-			users.add(((BeanItem<User>) table.getItem(id)).getBean());
+		return getSelectedUserIds().stream().map(m -> ((BeanItem<User>) table.getItem(m)).getBean())
+				.collect(Collectors.toSet());
 		}
-		return users;
-	}
 
 	@Override
 	public Table buildTable() {
@@ -358,10 +338,10 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		} else {
 			users = userService.findOwnerUsers(loggedUser);
 		}
-		for (User user : users) {
-			user = userService.merge(user);
+		users.forEach(e -> {
+			User user = userService.merge(e);
 			dataSource.addBean(user);
-		}
+		});
 		table.setContainerDataSource(dataSource);
 		dataSource.setItemSorter(new CaseInsensitiveItemSorter());
 		table.sort();
@@ -416,24 +396,13 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 
 			Set<Role> roles = user.getRoles();
 			List<String> sortedRoles = new ArrayList<>();
-			for (Role role : roles) {
-				sortedRoles.add(role.getName());
-			}
+			roles.stream().map(Role::getName).forEach(sortedRoles::add);
+
 			Collections.sort(sortedRoles);
 			Label rolesLabel = new Label();
 
-			StringBuilder descriptionBuilder = new StringBuilder();
-			StringBuilder labelBuilder = new StringBuilder();
-			for (String role : sortedRoles) {
-				if (descriptionBuilder.length() != 0) {
-					descriptionBuilder.append("<br/>");
-					labelBuilder.append(", ");
-				}
-				descriptionBuilder.append(role);
-				labelBuilder.append(role);
-			}
-			rolesLabel.setDescription(descriptionBuilder.toString());
-			rolesLabel.setValue(labelBuilder.toString());
+			rolesLabel.setDescription(sortedRoles.stream().collect(Collectors.joining("<br/>")));
+			rolesLabel.setValue(sortedRoles.stream().collect(Collectors.joining(", ")));
 
 			return rolesLabel;
 		}
@@ -443,27 +412,17 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 			user = userService.merge(user);
 
 			Set<Group> groups = user.getGroups();
+			// FIXME sort in stream
 			List<String> sortedGroups = new ArrayList<>();
-			for (Group group : groups) {
-				sortedGroups.add(group.getName());
-			}
+			groups.stream().map(Group::getName).forEach(sortedGroups::add);
+
 			Collections.sort(sortedGroups);
 			Label groupsLabel = new Label();
 
-			StringBuilder descriptionBuilder = new StringBuilder();
-			StringBuilder labelBuilder = new StringBuilder();
-			for (String group : sortedGroups) {
-				if (descriptionBuilder.length() != 0) {
-					descriptionBuilder.append("<br/>");
-					labelBuilder.append(", ");
-				}
-				descriptionBuilder.append(group);
-				labelBuilder.append(group);
-			}
-			groupsLabel.setDescription(descriptionBuilder.toString());
+			groupsLabel.setDescription(sortedGroups.stream().collect(Collectors.joining("<br/>")));
 
 			if (groups.size() < 5) {
-				groupsLabel.setValue(labelBuilder.toString());
+				groupsLabel.setValue(sortedGroups.stream().collect(Collectors.joining(", ")));
 			} else {
 				groupsLabel.setValue(Messages.getString("Caption.Label.MultipleGroups", groups.size()));
 			}
@@ -501,33 +460,25 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 			Set<Pack> packs = permissionService.findUserPacks2(user, false);
 			List<String> sortedPacks = new ArrayList<>();
 			List<String> sortedPackDescs = new ArrayList<>();
-			for (Pack pack : packs) {
-				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", pack.getName(), pack.getId()));
-				sortedPackDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
-						pack.getDescription()));
-			}
+
+			packs.stream().forEach(e -> {
+				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", e.getName(), e.getId()));
+				sortedPackDescs.add(
+						Messages.getString("Caption.Item.PackDescription", e.getName(), e.getId(), e.getDescription()));
+			});
 			Collections.sort(sortedPacks);
 			Collections.sort(sortedPackDescs);
 
-			StringBuilder labelBuilder = new StringBuilder();
-			for (String pack : sortedPacks) {
-				if (labelBuilder.length() != 0) {
-					labelBuilder.append(", ");
-				}
-				labelBuilder.append(pack);
-			}
 			StringBuilder descriptionBuilder = new StringBuilder();
 			descriptionBuilder.append("<ul>");
-			for (String pack : sortedPackDescs) {
-				descriptionBuilder.append("<li>" + pack + "</li>");
-			}
+			descriptionBuilder.append(sortedPackDescs.stream().collect(Collectors.joining("", "<li>", "</li>")));
 			descriptionBuilder.append("</ul>");
 
 			Label packsLabel = new Label();
 			packsLabel.setDescription(descriptionBuilder.toString());
 
 			if (packs.size() < 5) {
-				packsLabel.setValue(labelBuilder.toString());
+				packsLabel.setValue(sortedPacks.stream().collect(Collectors.joining(", ")));
 			} else {
 				packsLabel.setValue(Messages.getString("Caption.Label.MultiplePacks", packs.size()));
 			}

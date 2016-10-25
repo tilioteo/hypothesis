@@ -6,9 +6,13 @@ package org.hypothesis.common.utility;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.evaluation.Call;
 import org.hypothesis.evaluation.Expression;
 import org.hypothesis.evaluation.IfStatement;
@@ -33,21 +37,13 @@ import com.tilioteo.expressions.ExpressionFactory;
  *
  */
 public class EvaluableUtility {
+	
+	private EvaluableUtility() {}
 
 	public static void createActions(Element element, Evaluator evaluator) {
-		List<Element> actions = DocumentUtility.getActionsElements(element);
-
-		if (actions != null) {
-			for (Element actionElement : actions) {
-				String id = DocumentUtility.getId(actionElement);
-				if (!Strings.isNullOrEmpty(id)) {
-					Action action = createAction(actionElement, evaluator);
-					if (action != null) {
-						evaluator.setAction(id, action);
-					}
-				}
-			}
-		}
+		DocumentUtility.getActionsElements(element).stream()
+				.filter(f -> StringUtils.isNotEmpty(DocumentUtility.getId(f))).map(m -> createAction(m, evaluator))
+				.filter(Objects::nonNull).forEach(e -> evaluator.setAction(e.getId(), e));
 	}
 
 	private static Action createAction(Element element, Evaluator evaluator) {
@@ -77,14 +73,10 @@ public class EvaluableUtility {
 	}
 
 	private static Action createInnerAction(Element element, String id, Evaluator evaluator) {
-		if (element != null && !Strings.isNullOrEmpty(id)) {
+		if (element != null && StringUtils.isNotEmpty(id)) {
 			org.hypothesis.evaluation.Action action = new org.hypothesis.evaluation.Action(evaluator, id);
-			List<Element> elements = element.children();
-			for (Element evaluableElement : elements) {
-				Evaluable evaluable = createEvaluable(evaluableElement, evaluator);
-				if (evaluable != null)
-					action.add(evaluable);
-			}
+			element.children().stream().map(m -> createEvaluable(m, evaluator)).filter(Objects::nonNull)
+					.forEach(action::add);
 			createActionOutputValues(action, element);
 
 			return action;
@@ -134,16 +126,16 @@ public class EvaluableUtility {
 				for (int i = 0; i < 2; ++i) {
 					List<Element> elements = i == 0 ? trueElement != null ? trueElement.children() : null
 							: falseElement != null ? falseElement.children() : null;
+
 					if (elements != null) {
-						for (Element evaluableElement : elements) {
-							Evaluable evaluable = createEvaluable(evaluableElement, evaluator);
-							if (evaluable != null) {
-								if (i == 0)
-									statement.addTrueEvaluable(evaluable);
-								else
-									statement.addFalseEvaluable(evaluable);
-							}
-						}
+						final int index = i;
+						elements.stream().map(m -> createEvaluable(m, evaluator)).filter(Objects::nonNull)
+								.forEach(e -> {
+									if (index == 0)
+										statement.addTrueEvaluable(e);
+									else
+										statement.addFalseEvaluable(e);
+								});
 					}
 				}
 
@@ -152,6 +144,7 @@ public class EvaluableUtility {
 		}
 
 		return null;
+
 	}
 
 	private static WhileStatement createWhileStatement(Element element, Evaluator evaluator) {
@@ -162,16 +155,8 @@ public class EvaluableUtility {
 
 			if (expression != null) {
 				WhileStatement statement = new WhileStatement(evaluator, expression);
-
-				List<Element> elements = loopElement.children();
-				if (elements != null) {
-					for (Element evaluableElement : elements) {
-						Evaluable evaluable = createEvaluable(evaluableElement, evaluator);
-						if (evaluable != null) {
-							statement.addEvaluable(evaluable);
-						}
-					}
-				}
+				loopElement.children().stream().map(m -> createEvaluable(m, evaluator)).filter(Objects::nonNull)
+						.forEach(statement::addEvaluable);
 
 				return statement;
 			}
@@ -183,25 +168,15 @@ public class EvaluableUtility {
 	private static SwitchStatement createSwitchStatement(Element element, Evaluator evaluator) {
 		if (element != null && element.getName().equals(DocumentConstants.SWITCH)) {
 			Element expressionElement = DocumentUtility.getExpressionElement(element);
-			List<Element> caseElements = DocumentUtility.getCaseElements(element);
 
 			Expression expression = createExpression(expressionElement);
 
 			if (expression != null) {
 				SwitchStatement statement = new SwitchStatement(evaluator, expression);
-
-				for (Element caseElement : caseElements) {
-					String caseValue = DocumentUtility.getValue(caseElement);
-					List<Element> elements = caseElement.children();
-					if (elements != null) {
-						for (Element evaluableElement : elements) {
-							Evaluable evaluable = createEvaluable(evaluableElement, evaluator);
-							if (evaluable != null) {
-								statement.addCaseEvaluable(caseValue, evaluable);
-							}
-						}
-					}
-				}
+				DocumentUtility.getCaseElements(element)
+						.forEach(e -> e.children().stream().map(m -> createEvaluable(m, evaluator))
+								.filter(Objects::nonNull)
+								.forEach(i -> statement.addCaseEvaluable(DocumentUtility.getValue(e), i)));
 
 				return statement;
 			}
@@ -213,7 +188,7 @@ public class EvaluableUtility {
 	private static Call createCall(Element element, Evaluator evaluator) {
 		if (element != null && element.getName().equals(DocumentConstants.CALL)) {
 			String actionId = DocumentUtility.getAction(element);
-			if (!Strings.isNullOrEmpty(actionId)) {
+			if (StringUtils.isNotEmpty(actionId)) {
 				return new Call(evaluator, actionId);
 			}
 		}
@@ -225,14 +200,8 @@ public class EvaluableUtility {
 		List<Element> outputElements = DocumentUtility.findElementsByNameStarting(element,
 				DocumentConstants.OUTPUT_VALUE);
 
-		if (outputElements != null) {
-			for (Element outputElement : outputElements) {
-				IndexedExpression outputValue = createValueExpression(outputElement, DocumentConstants.OUTPUT_VALUE);
-				if (outputValue != null) {
-					action.getOutputs().put(outputValue.getIndex(), outputValue);
-				}
-			}
-		}
+		outputElements.stream().map(m -> createValueExpression(m, DocumentConstants.OUTPUT_VALUE))
+				.filter(Objects::nonNull).forEach(e -> action.getOutputs().put(e.getIndex(), e));
 	}
 
 	public static IndexedExpression createValueExpression(Element element, String prefix) {
@@ -257,18 +226,10 @@ public class EvaluableUtility {
 	}
 
 	public static void createVariables(Element element, Evaluator evaluator, ReferenceCallback callback) {
-		List<Element> variables = DocumentUtility.getVariablesElements(element);
-
-		if (variables != null) {
-			for (Element variableElement : variables) {
-				String id = DocumentUtility.getId(variableElement);
-				if (!Strings.isNullOrEmpty(id)) {
-					Variable<?> variable = createVariable(variableElement, evaluator, callback);
-					if (variable != null)
-						evaluator.getVariables().put(variable.getName(), variable);
-				}
-			}
-		}
+		DocumentUtility.getVariablesElements(element).stream()
+				.filter(f -> StringUtils.isNotBlank(DocumentUtility.getId(f)))
+				.map(m -> createVariable(m, evaluator, callback)).filter(Objects::nonNull)
+				.forEach(e -> evaluator.getVariables().put(e.getName(), e));
 	}
 
 	private static Variable<?> createVariable(Element element, Evaluator evaluator, ReferenceCallback callback) {
@@ -295,7 +256,7 @@ public class EvaluableUtility {
 					if (instance != null) {
 						if (instance.getName().equals(DocumentConstants.CLASS)) {
 							String className = DocumentUtility.getName(instance);
-							if (!Strings.isNullOrEmpty(className)) {
+							if (StringUtils.isNotEmpty(className)) {
 								try {
 									Class<?> clazz = Class.forName(className);
 									Constructor<?> ctor = clazz.getConstructor();
@@ -311,60 +272,37 @@ public class EvaluableUtility {
 					}
 				}
 			} else if (DocumentConstants.INTEGER.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<Integer>(id, Strings.toInteger(value));
+				variable = new org.hypothesis.evaluation.Variable<>(id, Strings.toInteger(value));
 			else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<Boolean>(id, Boolean.parseBoolean(value));
+				variable = new org.hypothesis.evaluation.Variable<>(id, Boolean.parseBoolean(value));
 			else if (DocumentConstants.FLOAT.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<Double>(id, Strings.toDouble(value));
+				variable = new org.hypothesis.evaluation.Variable<>(id, Strings.toDouble(value));
 			else if (DocumentConstants.STRING.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<String>(id, value);
+				variable = new org.hypothesis.evaluation.Variable<>(id, value);
 
 			else if (DocumentConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
-				variable = new org.hypothesis.evaluation.Variable<Object>(id);
-				ArrayList<Integer> array = new ArrayList<>();
-				Integer[] integers = Strings.toIntegerArray(values, DocumentConstants.STR_COMMA);
-				if (integers != null) {
-					for (Integer integer : integers) {
-						if (integer != null) {
-							array.add(integer);
-						}
-					}
-				}
-				variable.setRawValue(array);
+				variable = new org.hypothesis.evaluation.Variable<>(id);
+				variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA))
+						.map(Integer::parseInt).collect(Collectors.toCollection(ArrayList::new)));
 			} else if (DocumentConstants.FLOAT_ARRAY.equalsIgnoreCase(type)) {
-				variable = new org.hypothesis.evaluation.Variable<Object>(id);
-				ArrayList<Double> array = new ArrayList<>();
-				Double[] doubles = Strings.toDoubleArray(values, DocumentConstants.STR_COMMA);
-				if (doubles != null) {
-					for (Double dbl : doubles) {
-						if (dbl != null) {
-							array.add(dbl);
-						}
-					}
-				}
-				variable.setRawValue(array);
+				variable = new org.hypothesis.evaluation.Variable<>(id);
+				variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA))
+						.map(Double::parseDouble).collect(Collectors.toCollection(ArrayList::new)));
 			} else if (DocumentConstants.STRING_ARRAY.equalsIgnoreCase(type)) {
-				variable = new org.hypothesis.evaluation.Variable<Object>(id);
-				ArrayList<String> array = new ArrayList<>();
-				String[] strings = Strings.toStringArray(values, DocumentConstants.STR_COMMA,
-						DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN);
-				if (strings != null) {
-					for (String string : strings) {
-						if (string != null) {
-							array.add(string);
-						}
-					}
-				}
-				variable.setRawValue(array);
+				variable = new org.hypothesis.evaluation.Variable<>(id);
+				variable.setRawValue(Arrays.stream(values.split(DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN))
+						.map(m -> StringUtils.strip(m, DocumentConstants.STR_QUOTE))
+						.collect(Collectors.toCollection(ArrayList::new)));
 			} else if (DocumentConstants.OBJECT_ARRAY.equalsIgnoreCase(type)) {
-				variable = new org.hypothesis.evaluation.Variable<Object>(id);
-				ArrayList<Object> array = new ArrayList<>();
-				variable.setRawValue(array);
+				variable = new org.hypothesis.evaluation.Variable<>(id);
+				variable.setRawValue(new ArrayList<>());
 			}
 
 			return variable;
 		} else
 			return null;
 	}
+
+	// private
 
 }

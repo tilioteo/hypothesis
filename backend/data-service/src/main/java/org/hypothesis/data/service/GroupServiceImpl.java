@@ -98,10 +98,7 @@ public class GroupServiceImpl implements GroupService {
 	public void deleteAll() {
 		log.debug("deleteAllGroups");
 		try {
-			List<Group> allGroups = this.findAll();
-			for (Group group : allGroups) {
-				this.delete(group);
-			}
+			this.findAll().forEach(this::delete);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}

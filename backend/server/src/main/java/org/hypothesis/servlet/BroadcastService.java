@@ -35,23 +35,13 @@ public class BroadcastService implements Serializable {
 
 	public static synchronized void broadcast(final String message) {
 		for (final BroadcastListener listener : listeners)
-			executorService.execute(new Runnable() {
-				@Override
-				public void run() {
-					listener.receiveBroadcast(message);
-				}
-			});
+			executorService.execute(() -> listener.receiveBroadcast(message));
 	}
 
 	public static synchronized void broadcastExcept(final BroadcastListener exceptListener, final String message) {
 		for (final BroadcastListener listener : listeners)
 			if (listener != exceptListener) {
-				executorService.execute(new Runnable() {
-					@Override
-					public void run() {
-						listener.receiveBroadcast(message);
-					}
-				});
+				executorService.execute(() -> listener.receiveBroadcast(message));
 			}
 	}
 }

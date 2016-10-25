@@ -57,10 +57,8 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 	public void fireDeferred() {
 		if (!disableDeferred) {
 			if (eventQueue != null) {
-				for (EventWrapper eventWrapper : eventQueue.getList()) {
-					getEventManager().handleEvent(eventWrapper.component, eventWrapper.typeName, eventWrapper.eventName,
-							eventWrapper.action, eventWrapper.callback);
-				}
+				eventQueue.getList().forEach(
+						e -> getEventManager().handleEvent(e.component, e.typeName, e.eventName, e.action, e.callback));
 
 				eventQueue.clear();
 			}

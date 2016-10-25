@@ -9,9 +9,10 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
@@ -20,8 +21,6 @@ import org.dom4j.Node;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -43,10 +42,7 @@ public class XmlUtility implements Serializable {
 	@SuppressWarnings("unchecked")
 	public static void clearAllChilds(Node parent) {
 		if (parent != null) {
-			for (Iterator<Node> i = parent.selectNodes("").iterator(); i.hasNext();) {
-				Node node = i.next();
-				node.detach();
-			}
+			((List<Node>) parent.selectNodes("")).forEach(e -> e.detach());
 		}
 	}
 
@@ -95,11 +91,11 @@ public class XmlUtility implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public static Element findElementByNameAndValue(boolean descendant, Element element, String name, String prefix,
-			String uri, String attributeName, String attributeValue) {
+			String uri, final String attributeName, final String attributeValue) {
 		Element result = null;
 		if (element != null) {
 			HashMap<String, String> namespaces = new HashMap<>();
-			if (!Strings.isNullOrEmpty(prefix) && !Strings.isNullOrEmpty(uri)) {
+			if (StringUtils.isNotEmpty(prefix) && StringUtils.isNotEmpty(uri)) {
 				name = String.format("%s:%s", prefix, name);
 				namespaces.put(prefix, uri);
 			}
@@ -109,25 +105,25 @@ public class XmlUtility implements Serializable {
 				path.setNamespaceURIs(namespaces);
 			}
 
-			List<Node> nodes = path.selectNodes(element);
-			for (Iterator<Node> i = nodes.iterator(); i.hasNext();) {
-				Node node = i.next();
+			Stream<Element> stream = path.selectNodes(element).stream().filter(f -> f instanceof Element)
+					.map(m -> (Element) m);
 
-				if (node instanceof Element) {
-					Element el = (Element) node;
+			result = attributeName != null ? stream.filter(f -> {
+				Attribute attr = f.attribute(attributeName);
+				return attr != null && attr.getValue().equals(attributeValue);
+			}).findFirst().orElse(null) : stream.findFirst().orElse(null);
 
-					if (attributeName != null) {
-						Attribute attr = el.attribute(attributeName);
-						if (attr != null && attr.getValue().equals(attributeValue)) {
-							result = el;
-							break;
-						}
-					} else {
-						result = el;
-						break;
-					}
-				}
-			}
+			/*
+			 * for (Iterator<Node> i = nodes.iterator(); i.hasNext();) { Node
+			 * node = i.next();
+			 * 
+			 * if (node instanceof Element) { Element el = (Element) node;
+			 * 
+			 * if (attributeName != null) { Attribute attr =
+			 * el.attribute(attributeName); if (attr != null &&
+			 * attr.getValue().equals(attributeValue)) { result = el; break; } }
+			 * else { result = el; break; } } }
+			 */
 		}
 
 		return result;
@@ -135,13 +131,9 @@ public class XmlUtility implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public static Node findFirstNodeByName(Node parent, String name) {
-		if (parent != null && name.length() > 0) {
-			for (Iterator<Node> i = parent.selectNodes(String.format(DESCENDANT_FMT, name)).iterator(); i.hasNext();) {
-				Node node = i.next();
-
-				if (node.getName().equals(name))
-					return node;
-			}
+		if (parent != null && StringUtils.isNotBlank(name)) {
+			return ((List<Node>) parent.selectNodes(String.format(DESCENDANT_FMT, name))).stream()
+					.filter(f -> f.getName().equals(name)).findFirst().orElse(null);
 		}
 
 		return null;

@@ -42,7 +42,7 @@
 
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener>
+	</listener-->
 	
 	<!--servlet>
 		<servlet-name>main-servlet</servlet-name>

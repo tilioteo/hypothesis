@@ -37,7 +37,7 @@
 		<aceeditor.version>0.8.14</aceeditor.version>
 		<fancylayouts.version>1.0.1</fancylayouts.version>
 		<toolbox.version>1.0.1</toolbox.version>
-		<commons.version>1.0.1</commons.version>
+		<commons.lang.version>3.1</commons.lang.version>
 		<expressions.version>1.0.1</expressions.version>
 		<jcabi.version>1.1</jcabi.version>
 		<slf4j.version>1.7.13</slf4j.version>
@@ -249,6 +249,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons.lang.version}</version>
+			</dependency>
+
+			<dependency>
+
 				<groupId>javax.enterprise</groupId>
 				<artifactId>cdi-api</artifactId>
 				<version>${cdi-api.version}</version>

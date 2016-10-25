@@ -4,9 +4,8 @@
  */
 package org.hypothesis.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.ComponentUtility;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.interfaces.AlignmentWrapper;
@@ -32,7 +31,6 @@ import org.vaadin.special.ui.MultipleComponentPanel;
 import org.vaadin.special.ui.MultipleComponentPanel.Orientation;
 import org.vaadin.special.ui.Timer;
 
-import com.tilioteo.common.Strings;
 import com.tilioteo.common.collections.StringMap;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
@@ -144,19 +142,12 @@ public class SlideComponentUtility {
 	}
 
 	public static void setMediaSources(AbstractMedia media, Element component) {
-		List<Element> elements = DocumentUtility.getComponentSources(component);
+		Resource[] resources = DocumentUtility.getComponentSources(component).stream()
+				.map(m -> m.getAttribute(DocumentConstants.URL)).filter(StringUtils::isNotEmpty)
+				.map(ExternalResource::new).toArray(s -> new Resource[s]);
 
-		List<Resource> resources = new ArrayList<>();
-
-		for (Element element : elements) {
-			String url = element.getAttribute(DocumentConstants.URL);
-			if (!Strings.isNullOrEmpty(url)) {
-				resources.add(new ExternalResource(url));
-			}
-		}
-
-		if (!resources.isEmpty()) {
-			media.setSources(resources.toArray(new Resource[0]));
+		if (ArrayUtils.isNotEmpty(resources)) {
+			media.setSources(resources);
 		}
 	}
 

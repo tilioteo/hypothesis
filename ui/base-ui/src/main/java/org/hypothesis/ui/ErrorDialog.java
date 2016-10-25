@@ -10,7 +10,6 @@ import java.util.Locale;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -66,12 +65,7 @@ public class ErrorDialog extends Window {
 		button.setData(false);
 		button.setClickShortcut(KeyCode.ENTER, null);
 		button.focus();
-		button.addClickListener(new Button.ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				getUI().removeWindow(ErrorDialog.this);
-			}
-		});
+		button.addClickListener(e -> getUI().removeWindow(ErrorDialog.this));
 		buttons.addComponent(button);
 		buttons.setComponentAlignment(button, Alignment.MIDDLE_CENTER);
 

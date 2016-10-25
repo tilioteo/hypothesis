@@ -56,12 +56,7 @@ public class AsynchronousServiceImpl implements AsynchronousService {
 	 */
 	@Override
 	public void saveBranchOutput(final BranchOutput branchOutput) {
-		commandExecutor.add(new Command() {
-			@Override
-			public void execute() {
-				outputService.saveBranchOutput(branchOutput);
-			}
-		});
+		commandExecutor.add(() -> outputService.saveBranchOutput(branchOutput));
 	}
 
 	/*
@@ -75,54 +70,51 @@ public class AsynchronousServiceImpl implements AsynchronousService {
 	@Override
 	public void saveTestEvent(final Event event, final Date date, final String slideData, final Status status,
 			final Long testId, final Long branchId, final Long taskId, final Long slideId) {
-		commandExecutor.add(new Command() {
-			@Override
-			public void execute() {
-				SimpleTest test = testService.findById(testId);
+		commandExecutor.add(() -> {
+			SimpleTest test = testService.findById(testId);
 
-				if (test != null) {
-					Branch branch = branchId != null ? branchService.findById(branchId) : null;
-					Task task = taskId != null ? taskService.findById(taskId) : null;
-					Slide slide = slideId != null ? slideService.findById(slideId) : null;
+			if (test != null) {
+				Branch branch = branchId != null ? branchService.findById(branchId) : null;
+				Task task = taskId != null ? taskService.findById(taskId) : null;
+				Slide slide = slideId != null ? slideService.findById(slideId) : null;
 
-					// update event
-					event.setBranch(branch);
-					event.setTask(task);
-					event.setSlide(slide);
+				// update event
+				event.setBranch(branch);
+				event.setTask(task);
+				event.setSlide(slide);
 
-					if (slideData != null) {
-						event.setData(slideData);
-					}
-
-					// update test
-					if (status != null && !test.getStatus().equals(status)) {
-						test.setStatus(status);
-
-						switch (status) {
-						case BROKEN_BY_CLIENT:
-						case BROKEN_BY_ERROR:
-							test.setBroken(date);
-							break;
-						case STARTED:
-							test.setStarted(date);
-							break;
-						case FINISHED:
-							test.setFinished(date);
-							break;
-						default:
-							break;
-						}
-					}
-
-					test.setLastAccess(date);
-					test.setLastBranch(branch);
-					test.setLastTask(task);
-					test.setLastSlide(slide);
-
-					// persist event and test
-					testService.saveEvent(event, test);
-					testService.updateTest(test);
+				if (slideData != null) {
+					event.setData(slideData);
 				}
+
+				// update test
+				if (status != null && !test.getStatus().equals(status)) {
+					test.setStatus(status);
+
+					switch (status) {
+					case BROKEN_BY_CLIENT:
+					case BROKEN_BY_ERROR:
+						test.setBroken(date);
+						break;
+					case STARTED:
+						test.setStarted(date);
+						break;
+					case FINISHED:
+						test.setFinished(date);
+						break;
+					default:
+						break;
+					}
+				}
+
+				test.setLastAccess(date);
+				test.setLastBranch(branch);
+				test.setLastTask(task);
+				test.setLastSlide(slide);
+
+				// persist event and test
+				testService.saveEvent(event, test);
+				testService.updateTest(test);
 			}
 		});
 	}

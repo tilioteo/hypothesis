@@ -7,11 +7,7 @@ package org.hypothesis.presenter;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.cdi.Main;
 import org.hypothesis.data.interfaces.UserService;
@@ -31,7 +27,6 @@ import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.utility.ViewUtility;
 
-import com.tilioteo.common.Strings;
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.UIScoped;
 import com.vaadin.navigator.Navigator;
@@ -147,7 +142,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 
 			String viewName = getViewName();
 
-			if (!Strings.isNullOrEmpty(viewName) && userCanAccessView(user, viewName)) {
+			if (StringUtils.isNotEmpty(viewName) && userCanAccessView(user, viewName)) {
 				ui.getNavigator().navigateTo(viewName);
 			} else {
 				if (!User.GUEST.equals(user)) {
@@ -173,7 +168,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 
 	private String getViewName() {
 		String fragment = Page.getCurrent().getUriFragment();
-		if (!Strings.isNullOrEmpty(fragment) && fragment.startsWith("!")) {
+		if (StringUtils.isNotEmpty(fragment) && fragment.startsWith("!")) {
 			fragment = fragment.substring(1);
 			int l = fragment.lastIndexOf('/');
 			if (l > 0) {

@@ -103,13 +103,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean anotherSuperuserExists(Long id) {
 		log.debug("anotherSuperuserExists");
-		for (User user : findAll()) {
-			if (user.hasRole(RoleServiceImpl.ROLE_SUPERUSER) && !id.equals(user.getId())) {
-				return true;
+		return findAll().stream().anyMatch(e -> e.hasRole(RoleService.ROLE_SUPERUSER) && !id.equals(e.getId()));
 			}
-		}
-		return false;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -120,10 +115,7 @@ public class UserServiceImpl implements UserService {
 	public void deleteAll() {
 		log.debug("deleteAllUsers");
 		try {
-			List<User> allUsers = this.findAll();
-			for (User user : allUsers) {
-				this.delete(user);
-			}
+			findAll().forEach(this::delete);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}

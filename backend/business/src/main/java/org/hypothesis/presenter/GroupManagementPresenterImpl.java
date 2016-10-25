@@ -12,10 +12,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -26,7 +27,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.hypothesis.business.SessionManager;
+import org.hypothesis.common.IntSequence;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.interfaces.GroupService;
 import org.hypothesis.data.interfaces.PermissionService;
@@ -41,20 +42,12 @@ import org.hypothesis.interfaces.GroupWindowPresenter;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.cdi.NormalViewScoped;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -106,12 +99,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 	protected Button buildAddButton() {
 		final Button addButton = new Button(Messages.getString("Caption.Button.Add"));
 		addButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-		addButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				groupWindowPresenter.showWindow();
-			}
-		});
+		addButton.addClickListener(e -> groupWindowPresenter.showWindow());
 
 		return addButton;
 	}
@@ -126,12 +114,9 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		selectionType.addItem(Messages.getString("Caption.Item.All"));
 		selectionType.select(Messages.getString("Caption.Item.Selected"));
 
-		selectionType.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(ValueChangeEvent event) {
+		selectionType.addValueChangeListener(e -> {
 				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
 				mainEvent.fire(new MainUIEvent.GroupSelectionChangedEvent());
-			}
 		});
 
 		return selectionType;
@@ -141,9 +126,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 	protected Button buildUpdateButton() {
 		Button updateButton = new Button(Messages.getString("Caption.Button.Update"));
 		updateButton.setClickShortcut(KeyCode.ENTER);
-		updateButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
+		updateButton.addClickListener(e -> {
 				Collection<Group> groups = getSelectedGroups();
 
 				if (groups.size() == 1) {
@@ -151,7 +134,6 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 				} else {
 					groupWindowPresenter.showWindow(groups);
 				}
-			}
 		});
 		return updateButton;
 	}
@@ -160,9 +142,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 	protected Button buildDeleteButton() {
 		Button deleteButton = new Button(Messages.getString("Caption.Button.Delete"));
 		deleteButton.addStyleName(ValoTheme.BUTTON_DANGER);
-		deleteButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
+		deleteButton.addClickListener(e -> {
 				String question = allSelected ? Messages.getString("Caption.Confirm.Group.DeleteAll")
 						: Messages.getString("Caption.Confirm.Group.DeleteSelected");
 
@@ -170,7 +150,6 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 						Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
 						Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
 						GroupManagementPresenterImpl.this);
-			}
 		});
 		return deleteButton;
 	}
@@ -194,19 +173,19 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 
 			Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.GroupSheetName"));
 
-			int rowNr = 0;
-			Row row = sheet.createRow(rowNr++);
+			final IntSequence seq = new IntSequence();
+			Row row = sheet.createRow(seq.next());
 			sheet.createFreezePane(0, 1);
 
 			row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
 			row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
 
-			for (Iterator<Group> i = getSelectedGroups().iterator(); i.hasNext();) {
-				row = sheet.createRow(rowNr++);
-				Group group = i.next();
-				row.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(group.getId());
-				row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(group.getName());
-			}
+			getSelectedGroups().forEach(e -> {
+				Row r = sheet.createRow(seq.next());
+				r.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(e.getId());
+				r.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(e.getName());
+			});
+
 			workbook.write(output);
 			workbook.close();
 			output.close();
@@ -226,10 +205,6 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		for (Iterator<Group> iterator = groups.iterator(); iterator.hasNext();) {
 			Group group = iterator.next();
 			group = groupService.merge(group);
-			Set<User> users = new HashSet<>();
-			for (User user : group.getUsers()) {
-				users.add(user);
-			}
 
 			/*
 			 * for (User user : users) { group.removeUser(user); }
@@ -237,11 +212,8 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 
 			groupService.delete(group);
 
-			for (User user : users) {
-				if (user != null) {
-					mainEvent.fire(new MainUIEvent.UserGroupsChangedEvent(user));
-				}
-			}
+			group.getUsers().stream().filter(Objects::nonNull)
+					.forEach(e -> bus.post(new MainUIEvent.UserGroupsChangedEvent(e)));
 
 			table.removeItem(group.getId());
 		}
@@ -260,12 +232,9 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 
 	@SuppressWarnings("unchecked")
 	private Collection<Group> getSelectedGroups() {
-		Collection<Group> groups = new HashSet<>();
-		for (Long id : getSelectedGroupIds()) {
-			groups.add(((BeanItem<Group>) table.getItem(id)).getBean());
+		return getSelectedGroupIds().stream().map(m -> ((BeanItem<Group>) table.getItem(m)).getBean())
+				.collect(Collectors.toSet());
 		}
-		return groups;
-	}
 
 	@Override
 	public Table buildTable() {
@@ -287,10 +256,10 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		} else {
 			groups = groupService.findOwnerGroups(user);
 		}
-		for (Group group : groups) {
-			group = groupService.merge(group);
+		groups.forEach(e -> {
+			Group group = groupService.merge(e);
 			dataSource.addBean(group);
-		}
+		});
 		table.setContainerDataSource(dataSource);
 		dataSource.setItemSorter(new CaseInsensitiveItemSorter());
 		table.sort();
@@ -305,22 +274,14 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 				Messages.getString("Caption.Field.Users"), Messages.getString("Caption.Field.AvailablePacks"),
 				Messages.getString("Caption.Field.Note"));
 
-		table.addValueChangeListener(new ValueChangeListener() {
-			@Override
-			public void valueChange(final ValueChangeEvent event) {
-				mainEvent.fire(new MainUIEvent.GroupSelectionChangedEvent());
-			}
-		});
+		table.addValueChangeListener(e -> bus.post(new MainUIEvent.GroupSelectionChangedEvent()));
 
-		table.addItemClickListener(new ItemClickListener() {
+		table.addItemClickListener(e -> {
+			if (e.isDoubleClick()) {
 			@SuppressWarnings("unchecked")
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (event.isDoubleClick()) {
-					Group group = ((BeanItem<Group>) event.getItem()).getBean();
+				Group group = ((BeanItem<Group>) e.getItem()).getBean();
 					groupWindowPresenter.showWindow(group);
 				}
-			}
 		});
 
 		return table;
@@ -334,27 +295,17 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 			group = groupService.merge(group);
 
 			Set<User> users = group.getUsers();
+			// FIXME sort in stream
 			List<String> sortedUsers = new ArrayList<>();
-			for (User user : users) {
-				sortedUsers.add(user.getUsername());
-			}
+			users.stream().map(User::getUsername).forEach(sortedUsers::add);
+
 			Collections.sort(sortedUsers);
 			Label usersLabel = new Label();
 
-			StringBuilder descriptionBuilder = new StringBuilder();
-			StringBuilder labelBuilder = new StringBuilder();
-			for (String user : sortedUsers) {
-				if (descriptionBuilder.length() != 0) {
-					descriptionBuilder.append("<br/>");
-					labelBuilder.append(", ");
-				}
-				descriptionBuilder.append(user);
-				labelBuilder.append(user);
-			}
-			usersLabel.setDescription(descriptionBuilder.toString());
+			usersLabel.setDescription(sortedUsers.stream().collect(Collectors.joining("<br/>")));
 
 			if (users.size() < 5) {
-				usersLabel.setValue(labelBuilder.toString());
+				usersLabel.setValue(sortedUsers.stream().collect(Collectors.joining(", ")));
 			} else {
 				usersLabel.setValue(Messages.getString("Caption.Label.MultipleUsers", users.size()));
 			}
@@ -367,33 +318,24 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 			Set<Pack> packs = permissionService.getGroupPacks(group);
 			List<String> sortedPacks = new ArrayList<>();
 			List<String> sortedPackDescs = new ArrayList<>();
-			for (Pack pack : packs) {
-				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", pack.getName(), pack.getId()));
-				sortedPackDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
-						pack.getDescription()));
-			}
+			packs.forEach(e -> {
+				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", e.getName(), e.getId()));
+				sortedPackDescs.add(
+						Messages.getString("Caption.Item.PackDescription", e.getName(), e.getId(), e.getDescription()));
+			});
 			Collections.sort(sortedPacks);
 			Collections.sort(sortedPackDescs);
 
-			StringBuilder labelBuilder = new StringBuilder();
-			for (String pack : sortedPacks) {
-				if (labelBuilder.length() != 0) {
-					labelBuilder.append(", ");
-				}
-				labelBuilder.append(pack);
-			}
 			StringBuilder descriptionBuilder = new StringBuilder();
 			descriptionBuilder.append("<ul>");
-			for (String pack : sortedPackDescs) {
-				descriptionBuilder.append("<li>" + pack + "</li>");
-			}
+			descriptionBuilder.append(sortedPackDescs.stream().collect(Collectors.joining("", "<li>", "</li>")));
 			descriptionBuilder.append("</ul>");
 
 			Label packsLabel = new Label();
 			packsLabel.setDescription(descriptionBuilder.toString());
 
 			if (packs.size() < 5) {
-				packsLabel.setValue(labelBuilder.toString());
+				packsLabel.setValue(sortedPacks.stream().collect(Collectors.joining(", ")));
 			} else {
 				packsLabel.setValue(Messages.getString("Caption.Label.MultiplePacks", packs.size()));
 			}
@@ -418,12 +360,10 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Make ui changes when new group added
 	 * 
-	 * @see
-	 * org.hypothesis.presenter.GroupManagementPresenter#addGroupIntoTable(org.
-	 * hypothesis.event.interfaces.MainUIEvent.GroupAddedEvent)
+	 * @param event
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -439,12 +379,10 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Make ui changes when group user changed
 	 * 
-	 * @see
-	 * org.hypothesis.presenter.GroupManagementPresenter#changeGroupUsers(org.
-	 * hypothesis.event.interfaces.MainUIEvent.GroupUsersChangedEvent)
+	 * @param event
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

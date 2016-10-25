@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
@@ -110,9 +111,7 @@ public class PermissionServiceImpl implements PermissionService {
 		try {
 			Set<GroupPermission> groupPermissions = getGroupPermissions(group);
 			groupPermissionDao.beginTransaction();
-			for (GroupPermission groupPermission : groupPermissions) {
-				groupPermissionDao.makeTransient(groupPermission);
-			}
+			groupPermissions.forEach(groupPermissionDao::makeTransient);
 			groupPermissionDao.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -134,9 +133,7 @@ public class PermissionServiceImpl implements PermissionService {
 		try {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
 			userPermissionDao.beginTransaction();
-			for (UserPermission userPermission : userPermissions) {
-				userPermissionDao.makeTransient(userPermission);
-			}
+			userPermissions.forEach(userPermissionDao::makeTransient);
 			userPermissionDao.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -158,11 +155,7 @@ public class PermissionServiceImpl implements PermissionService {
 		try {
 			Set<UserPermission> userPermissions = getUserPermissions(user);
 			userPermissionDao.beginTransaction();
-			for (UserPermission userPermission : userPermissions) {
-				if (userPermission.getEnabled() == enabled) {
-					userPermissionDao.makeTransient(userPermission);
-				}
-			}
+			userPermissions.stream().filter(f -> f.getEnabled() == enabled).forEach(userPermissionDao::makeTransient);
 			userPermissionDao.commit();
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -265,12 +258,8 @@ public class PermissionServiceImpl implements PermissionService {
 						.findByCriteria(Restrictions.in(EntityConstants.GROUP, groups));
 				groupPermissionDao.commit();
 
-				for (GroupPermission groupPermission : groupsPermissions) {
-					Pack groupPack = groupPermission.getPack();
-					if (!disabledPacks.contains(groupPack)) {
-						packs.add(/* persistenceService.merge */(groupPack));
-					}
-				}
+				groupsPermissions.stream().filter(f -> !disabledPacks.contains(f.getPack()))
+						.forEach(e -> packs.add(e.getPack()));
 			} catch (Exception e) {
 				log.error(e.getMessage());
 				groupPermissionDao.rollback();
@@ -312,21 +301,17 @@ public class PermissionServiceImpl implements PermissionService {
 			user = userService.merge(user);
 
 			if (!user.getGroups().isEmpty()) {
-				Set<GroupPermission> groupsPermissions = getGroupsPermissions(user.getGroups());
-				for (GroupPermission groupPermission : groupsPermissions) {
-					packs.put(groupPermission.getPack().getId(), groupPermission.getPack());
-				}
+				getGroupsPermissions(user.getGroups()).forEach(e -> packs.put(e.getPack().getId(), e.getPack()));
 			}
 
-			Set<UserPermission> userPermissions = getUserPermissions(user);
-			for (UserPermission userPermission : userPermissions) {
-				Long packId = userPermission.getPack().getId();
-				if (userPermission.getEnabled() && !packs.containsKey(packId)) {
-					packs.put(packId, userPermission.getPack());
-				} else if (!userPermission.getEnabled()) {
+			getUserPermissions(user).forEach(e -> {
+				Long packId = e.getPack().getId();
+				if (e.getEnabled() && !packs.containsKey(packId)) {
+					packs.put(packId, e.getPack());
+				} else if (!e.getEnabled()) {
 					packs.remove(packId);
 				}
-			}
+			});
 
 			return new HashSet<Pack>(packs.values());
 		} catch (Exception e) {
@@ -346,11 +331,8 @@ public class PermissionServiceImpl implements PermissionService {
 	public Set<Pack> getGroupPacks(Group group) {
 		log.debug("getGroupPacks");
 		try {
-			Set<GroupPermission> groupPermissions = getGroupPermissions(group);
 			Set<Pack> packs = new HashSet<>();
-			for (GroupPermission groupPermission : groupPermissions) {
-				packs.add(groupPermission.getPack());
-			}
+			getGroupPermissions(group).forEach(e -> packs.add(e.getPack()));
 			return packs;
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -472,24 +454,21 @@ public class PermissionServiceImpl implements PermissionService {
 	public Set<Pack> getUserPacks(User user, Boolean enabled, Boolean excludeFinished) {
 		log.debug("getUserPacks");
 		try {
-			Set<UserPermission> userPermissions = getUserPermissions(user);
-			Set<Pack> packs = new HashSet<>();
-			for (UserPermission userPermission : userPermissions) {
-				if (enabled == null || userPermission.getEnabled().equals(enabled)) {
-					Pack pack = userPermission.getPack();
-					// TODO check pass is not null
-					// if (userPermission.getPass() == null || excludeFinished
-					// == null || !excludeFinished) {
-					packs.add(pack);
-					/*
-					 * } else { List<SimpleTest> finishedTests =
-					 * testService.findTestsBy(user, pack, Status.FINISHED); if
-					 * (userPermission.getPass() < finishedTests.size()) {
-					 * packs.add(pack); } }
-					 */
-				}
-			}
-			return packs;
+			return getUserPermissions(user).stream().filter(f -> enabled == null || f.getEnabled().equals(enabled))
+					.map(UserPermission::getPack).collect(Collectors.toSet());
+			// .forEach(e -> {
+			// Pack pack = e.getPack();
+			// // TODO check pass is not null
+			// // if (userPermission.getPass() == null ||
+			// // excludeFinished
+			// // == null || !excludeFinished) {
+			// packs.add(pack);
+			// //
+			// // } else { List<SimpleTest> finishedTests =
+			// // testService.findTestsBy(user, pack, Status.FINISHED);
+			// // if (userPermission.getPass() < finishedTests.size())
+			// // { packs.add(pack); } }
+			// });
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			return null;

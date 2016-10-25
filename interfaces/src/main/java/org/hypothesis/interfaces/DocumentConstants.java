@@ -157,6 +157,10 @@ public interface DocumentConstants {
 	String EVALUATE = "Evaluate";
 
 	String STR_COMMA = ",";
-	String STR_QUOTED_STRING_SPLIT_PATTERN = "['']";
+	String STR_QUOTE = "'";
+	String STR_DOUBLEQUOTE = "\"";
+	String STR_QUOTED_STRING_SPLIT_PATTERN = "\\s*,\\s*(?=([^']*'[^']*')*[^']*$)"; 
+	// '[^'\\]*(?:\\.[^'\\]*)*'
+	String STR_DOUBLEQUOTED_STRING_SPLIT_PATTERN = "\\s*,\\s*(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
 }

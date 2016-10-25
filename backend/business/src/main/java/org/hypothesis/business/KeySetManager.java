@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.hypothesis.data.interfaces.HasId;
 import org.hypothesis.data.interfaces.HasList;
@@ -18,9 +19,12 @@ import org.hypothesis.data.interfaces.HasList;
  * 
  *         Hypothesis
  *
- * @param <T> type (of parental object) extending {@link HasList} of item type
- * @param <E> item type
- * @param <K> key type
+ * @param <T>
+ *            type (of parental object) extending {@link HasList} of item type
+ * @param <E>
+ *            item type
+ * @param <K>
+ *            key type
  */
 @SuppressWarnings("serial")
 public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implements Serializable {
@@ -41,6 +45,7 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 
 	/**
 	 * Returns current item by internal state
+	 * 
 	 * @return element or null
 	 */
 	public E current() {
@@ -49,27 +54,29 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 
 	/**
 	 * Look for an item and set internal state
-	 * @param item to look for
+	 * 
+	 * @param item
+	 *            to look for
 	 * @return the same item or null if not found
 	 */
 	public E find(E item) {
+		Entry<K, E> entry = keyset.entrySet().stream().filter(f -> f.getValue() == item).findFirst().orElse(null);
+		if (entry != null) {
+			key = entry.getKey();
+			element = entry.getValue();
+		} else {
 		key = null;
 		element = null;
-
-		for (Entry<K, E> entry : keyset.entrySet()) {
-			E e = entry.getValue();
-			if (e == item) {
-				key = entry.getKey();
-				element = e;
-				break;
-			}
 		}
+
 		return element;
 	}
 
 	/**
 	 * Get an item by key value and set internal state
-	 * @param key key value
+	 * 
+	 * @param key
+	 *            key value
 	 * @return found item or null
 	 */
 	public E get(K key) {
@@ -90,11 +97,8 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 		keyset.clear();
 		key = null;
 		if (parent != null) {
-			for (E item : parent.getList()) {
-				if (item != null) {
-					keyset.put(item.getId(), item);
-				}
-			}
+			parent.getList().stream().filter(Objects::nonNull).forEach(e -> keyset.put(e.getId(), e));
+
 			if (keyset.size() > 0) {
 				List<E> list = new ArrayList<>(keyset.values());
 				find(list.get(0));

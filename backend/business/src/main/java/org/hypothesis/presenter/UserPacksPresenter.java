@@ -54,9 +54,7 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 				Set<Pack> packs = permissionService.findUserPacks(user, false);
 				if (packs != null) {
 					LinkedList<Pack> list = new LinkedList<>();
-					for (Pack pack : packs) {
-						list.add(pack);
-					}
+					packs.forEach(list::add);
 
 					return list;
 				}

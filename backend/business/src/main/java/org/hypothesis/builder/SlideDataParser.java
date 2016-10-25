@@ -5,11 +5,13 @@
 package org.hypothesis.builder;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.hypothesis.interfaces.DocumentConstants;
@@ -29,34 +31,32 @@ public class SlideDataParser {
 	}
 
 	public static List<String> parseOutputValues(String xmlString) {
-		List<String> list = new ArrayList<>();
 		Document doc = XmlUtility.readString(xmlString);
 		if (doc != null) {
 			@SuppressWarnings("unchecked")
 			List<Element> elements = doc.getRootElement()
 					.selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.OUTPUT_VALUE));
 
-			if (!elements.isEmpty()) {
-				for (int i = 0; i < 10; ++i) {
-					list.add(null);
-				}
-			}
+			List<String> list = Arrays.asList(new String[10]);
 
-			for (Element element : elements) {
-				String index = element.attributeValue(DocumentConstants.INDEX);
+			elements.forEach(e -> {
+				String index = e.attributeValue(DocumentConstants.INDEX);
 
 				try {
 					int i = Integer.parseInt(index);
-					String value = element.getTextTrim();
+					String value = e.getTextTrim();
 					if (!value.isEmpty() && i >= 1 && i <= list.size()) {
 						list.set(i - 1, value);
 					}
-				} catch (NumberFormatException e) {
+				} catch (NumberFormatException ex) {
 				}
+			});
+			
+			return list;
+			
 			}
+		return Collections.emptyList();
 		}
-		return list;
-	}
 
 	public static FieldWrapper parseFields(String xmlString) {
 		FieldWrapper wrapper = new FieldWrapper();
@@ -66,11 +66,11 @@ public class SlideDataParser {
 			@SuppressWarnings("unchecked")
 			List<Element> elements = doc.getRootElement()
 					.selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.FIELD));
-			for (Element element : elements) {
-				String id = element.attributeValue(DocumentConstants.ID);
+			elements.forEach(e -> {
+				String id = e.attributeValue(DocumentConstants.ID);
 
 				String caption = null;
-				Element captionElement = (Element) element.selectSingleNode(DocumentConstants.CAPTION);
+				Element captionElement = (Element) e.selectSingleNode(DocumentConstants.CAPTION);
 				if (captionElement != null) {
 					caption = captionElement.getTextTrim();
 				}
@@ -78,11 +78,11 @@ public class SlideDataParser {
 				wrapper.fieldCaptionMap.put(id, null == caption || caption.isEmpty() ? null : caption);
 
 				String valueId;
-				Element valueElement = (Element) element.selectSingleNode(DocumentConstants.VALUE);
+				Element valueElement = (Element) e.selectSingleNode(DocumentConstants.VALUE);
 				if (valueElement != null) {
 					valueId = valueElement.attributeValue(DocumentConstants.ID);
 					String value = valueElement.getText();
-					if (valueId != null && !valueId.isEmpty()) {
+					if (StringUtils.isNotBlank(valueId)) {
 						wrapper.fieldValueMap.put(id, valueId);
 						if (!valueId.equals(value) && !value.isEmpty()) {
 							Map<String, String> valueCaptionMap = wrapper.fieldValueCaptionMap.get(id);
@@ -97,8 +97,8 @@ public class SlideDataParser {
 						wrapper.fieldValueMap.put(id, value);
 					}
 				}
+			});
 			}
-		}
 		return wrapper;
 	}
 

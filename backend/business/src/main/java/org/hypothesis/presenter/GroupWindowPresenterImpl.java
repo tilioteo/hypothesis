@@ -44,8 +44,6 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -264,10 +262,10 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 			buildUsersField(!(loggedUser.hasRole(RoleServiceImpl.ROLE_SUPERUSER)
 					|| loggedUser.hasRole(RoleServiceImpl.ROLE_MANAGER)));
 
-			for (User user : users) {
-				Item row = usersField.addItem(user);
-				row.getItemProperty(FieldConstants.USERNAME).setValue(user.getUsername());
-			}
+			users.forEach(e -> {
+				Item row = usersField.addItem(e);
+				row.getItemProperty(FieldConstants.USERNAME).setValue(e.getUsername());
+			});
 
 			((IndexedContainer) usersField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
 			usersField.sort(new Object[] { FieldConstants.USERNAME }, new boolean[] { true });
@@ -285,10 +283,10 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 
 		// TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
 
-		for (Pack pack : packs) {
-			Item row = packsField.addItem(pack);
-			row.getItemProperty(FieldConstants.NAME).setValue(pack.getName());
-		}
+		packs.forEach(e -> {
+			Item row = packsField.addItem(e);
+			row.getItemProperty(FieldConstants.NAME).setValue(e.getName());
+		});
 
 		((IndexedContainer) packsField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
 		packsField.sort(new Object[] { FieldConstants.NAME }, new boolean[] { true });
@@ -314,17 +312,17 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 				users = new HashSet<>();
 			}
 
-			for (Object itemId : usersField.getItemIds()) {
-				Item row = usersField.getItem(itemId);
-				User user = userService.merge((User) itemId);
+			usersField.getItemIds().forEach(e -> {
+				Item row = usersField.getItem(e);
+				User user = userService.merge((User) e);
 
 				if (users.contains(user)) {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(true);
 				} else {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(false);
 				}
+			});
 			}
-		}
 
 		// packs
 		Set<Pack> packs;
@@ -335,17 +333,16 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 			packs = new HashSet<>();
 		}
 
-		for (Object itemId : packsField.getItemIds()) {
-			Item row = packsField.getItem(itemId);
-			Pack pack = (Pack) itemId;
+		packsField.getItemIds().forEach(e -> {
+			Item row = packsField.getItem(e);
 
-			if (packs.contains(pack)) {
+			if (packs.contains(e)) {
 				row.getItemProperty(FieldConstants.SELECTED).setValue(true);
 			} else {
 				row.getItemProperty(FieldConstants.SELECTED).setValue(false);
 			}
+		});
 		}
-	}
 
 	@Override
 	protected void clearFields() {
@@ -443,9 +440,7 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 
 		Button ok = new Button(Messages.getString("Caption.Button.OK"));
 		ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		ok.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
+		ok.addClickListener(e -> {
 				try {
 					commitForm();
 
@@ -463,22 +458,16 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 
 					window.close();
 
-				} catch (CommitException e) {
-					Notification.show(e.getMessage(), Type.WARNING_MESSAGE);
+			} catch (CommitException ex) {
+				Notification.show(ex.getMessage(), Type.WARNING_MESSAGE);
 				}
-			}
 		});
 		ok.focus();
 		footer.addComponent(ok);
 		footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
 
 		Button cancel = new Button(Messages.getString("Caption.Button.Cancel"));
-		cancel.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				window.close();
-			}
-		});
+		cancel.addClickListener(e -> window.close());
 		footer.addComponent(cancel);
 
 		return footer;
@@ -500,12 +489,12 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 		}
 
 		if (state == WindowState.MULTIUPDATE) {
-			for (Group group : (Collection<Group>) source) {
-				group = saveGroup(group);
+			((Collection<Group>) source).forEach(e -> {
+				Group group = saveGroup(e);
 				if (group != null) {
 					mainEvent.fire(new MainUIEvent.GroupAddedEvent(group));
 				}
-			}
+			});
 
 		} else {
 			Group group;
@@ -521,9 +510,7 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 		}
 	}
 
-	private Group saveGroup(Group group) {
-		User updatedLoggedUser = null;
-
+	private Group saveGroup(final Group group) {
 		if (state == WindowState.CREATE) {
 			group.setOwnerId(loggedUser.getId());
 		}
@@ -538,9 +525,9 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 
 		if (usersField != null && usersField.isVisible() && usersField.isEnabled()) {
 
-			for (Object itemId : usersField.getItemIds()) {
-				Item item = usersField.getItem(itemId);
-				User user = userService.merge((User) itemId);
+			usersField.getItemIds().forEach(e -> {
+				Item item = usersField.getItem(e);
+				User user = userService.merge((User) e);
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (null == selected) {
@@ -557,32 +544,27 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 					mainEvent.fire(new MainUIEvent.UserGroupsChangedEvent(user));
 
 					if (user.equals(loggedUser)) {
-						updatedLoggedUser = user;
+						SessionManager.setLoggedUser(user);
+						bus.post(new MainUIEvent.UserPacksChangedEvent(user));
 					}
 				}
+			});
 			}
-		}
 
-		group = groupService.add(group);
-
+		final Group addedGroup = groupService.add(group);
 		if (packsField.isVisible()) {
 			permissionService.deleteGroupPermissions(group);
 
-			for (Object itemId : packsField.getItemIds()) {
-				Item item = packsField.getItem(itemId);
-				Pack pack = (Pack) itemId;
+			packsField.getItemIds().forEach(e -> {
+				Item item = packsField.getItem(e);
+				Pack pack = (Pack) e;
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (selected != null && selected.equals(true)) {
-					permissionService.addGroupPermission(new GroupPermission(group, pack));
+					permissionService.addGroupPermission(new GroupPermission(addedGroup, pack));
 				}
+			});
 			}
-		}
-
-		if (updatedLoggedUser != null) {
-			SessionManager.setLoggedUser(updatedLoggedUser);
-			mainEvent.fire(new MainUIEvent.UserPacksChangedEvent(updatedLoggedUser));
-		}
 
 		return group;
 	}

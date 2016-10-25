@@ -7,6 +7,7 @@ package org.hypothesis.business;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import org.hypothesis.data.interfaces.HasList;
@@ -16,8 +17,10 @@ import org.hypothesis.data.interfaces.HasList;
  * 
  *         Hypothesis
  *
- * @param <T> type (of parental object) extending {@link HasList} of item type
- * @param <E> item type
+ * @param <T>
+ *            type (of parental object) extending {@link HasList} of item type
+ * @param <E>
+ *            item type
  */
 @SuppressWarnings("serial")
 public class ListManager<T extends HasList<E>, E> implements Serializable {
@@ -52,6 +55,7 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 
 	/**
 	 * Returns current item by internal state
+	 * 
 	 * @return element or null
 	 */
 	public E current() {
@@ -60,7 +64,9 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 
 	/**
 	 * Get an item by index and set internal state
-	 * @param index index value
+	 * 
+	 * @param index
+	 *            index value
 	 * @return found item or null
 	 */
 	public E get(int index) {
@@ -74,7 +80,9 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 
 	/**
 	 * Look for an item and set internal state
-	 * @param item to look for
+	 * 
+	 * @param item
+	 *            to look for
 	 * @return the same item or null if not found
 	 */
 	public E find(E item) {
@@ -84,6 +92,7 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 
 	/**
 	 * Returns next item and change internal state
+	 * 
 	 * @return element or null
 	 */
 	public E next() {
@@ -95,6 +104,7 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 
 	/**
 	 * Returns prior item and change internal state
+	 * 
 	 * @return element or null
 	 */
 	public E prior() {
@@ -119,11 +129,7 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 		index = -1;
 		randomGenerator = new Random();
 		if (parent != null) {
-			for (E item : parent.getList()) {
-				if (item != null) {
-					list.add(item);
-				}
-			}
+			parent.getList().stream().filter(Objects::nonNull).forEach(list::add);
 
 			if (!list.isEmpty()) {
 				index = 0;
@@ -133,7 +139,9 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 	}
 
 	/**
-	 * Create list of random indexes. The count of indexes equals to count of items.
+	 * Create list of random indexes. The count of indexes equals to count of
+	 * items.
+	 * 
 	 * @return new list
 	 */
 	public List<Integer> createRandomOrder() {
@@ -151,6 +159,7 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 
 	/**
 	 * Sets the internal item order by provided index list
+	 * 
 	 * @param order
 	 */
 	public void setOrder(List<Integer> order) {

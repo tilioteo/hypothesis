@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Default;
@@ -343,11 +344,11 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 		if (!groups.isEmpty()) {
 			buildGroupsField(!loggedUser.hasRole(RoleServiceImpl.ROLE_SUPERUSER));
 
-			for (Group group : groups) {
-				groupsField.addItem(group);
-				Item row = groupsField.getItem(group);
-				row.getItemProperty(FieldConstants.NAME).setValue(group.getName());
-			}
+			groups.forEach(e -> {
+				groupsField.addItem(e);
+				Item row = groupsField.getItem(e);
+				row.getItemProperty(FieldConstants.NAME).setValue(e.getName());
+			});
 
 			((IndexedContainer) groupsField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
 			groupsField.sort(new Object[] { FieldConstants.NAME }, new boolean[] { true });
@@ -365,11 +366,11 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 
 		// TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
 
-		for (Pack pack : packs) {
-			packsField.addItem(pack);
-			Item row = packsField.getItem(pack);
-			row.getItemProperty(FieldConstants.NAME).setValue(pack.getName());
-		}
+		packs.forEach(e -> {
+			packsField.addItem(e);
+			Item row = packsField.getItem(e);
+			row.getItemProperty(FieldConstants.NAME).setValue(e.getName());
+		});
 
 		((IndexedContainer) packsField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
 		packsField.sort(new Object[] { FieldConstants.NAME }, new boolean[] { true });
@@ -399,16 +400,16 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 				groups = new HashSet<>();
 			}
 
-			for (Object itemId : groupsField.getItemIds()) {
-				Item row = groupsField.getItem(itemId);
-				Group group = groupService.merge((Group) itemId);
+			groupsField.getItemIds().forEach(e -> {
+				Item row = groupsField.getItem(e);
+				Group group = groupService.merge((Group) e);
 
 				if (groups.contains(group)) {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(true);
 				} else {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(false);
 				}
-			}
+			});
 		}
 
 		// packs
@@ -423,18 +424,17 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 			disabledPacks = new HashSet<>();
 		}
 
-		for (Object itemId : packsField.getItemIds()) {
-			Item row = packsField.getItem(itemId);
-			Pack pack = (Pack) itemId;
+		packsField.getItemIds().forEach(e -> {
+			Item row = packsField.getItem(e);
 
-			if (enabledPacks.contains(pack)) {
+			if (enabledPacks.contains(e)) {
 				row.getItemProperty(FieldConstants.TEST_STATE).setValue(true);
-			} else if (disabledPacks.contains(pack)) {
+			} else if (disabledPacks.contains(e)) {
 				row.getItemProperty(FieldConstants.TEST_STATE).setValue(false);
 			} else {
 				row.getItemProperty(FieldConstants.TEST_STATE).setValue(null);
 			}
-		}
+		});
 	}
 
 	@Override
@@ -691,12 +691,7 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 		footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
 
 		Button cancel = new Button(Messages.getString("Caption.Button.Cancel"));
-		cancel.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				window.close();
-			}
-		});
+		cancel.addClickListener(e -> window.close());
 		footer.addComponent(cancel);
 
 		return footer;
@@ -718,12 +713,12 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 		}
 
 		if (state == WindowState.MULTIUPDATE) {
-			for (User user : (Collection<User>) source) {
-				user = saveUser(user, true);
+			((Collection<User>) source).forEach(e -> {
+				User user = saveUser(e, true);
 				if (user != null) {
 					mainEvent.fire(new MainUIEvent.UserAddedEvent(user));
 				}
-			}
+			});
 
 		} else if (generateNames) {
 			String usernameGroup = generatedGroupField.getValue();
@@ -767,17 +762,9 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 		}
 
 		if (rolesField.isVisible()) {
-			Set<Role> roles = new HashSet<>();
-			for (Role role : user.getRoles()) {
-				roles.add(role);
-			}
-			for (Role role : roles) {
-				user.removeRole(role);
-			}
-			roles = (Set<Role>) rolesField.getValue();
-			for (Role role : roles) {
-				user.addRole(role);
-			}
+			Set<Role> roles = user.getRoles().stream().collect(Collectors.toSet());
+			roles.forEach(user::removeRole);
+			((Set<Role>) rolesField.getValue()).forEach(user::addRole);
 		}
 
 		if (enabledField.isVisible()) {
@@ -792,42 +779,45 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 			user.setNote(noteField.getValue());
 		}
 
+		final User finalUser = user;
 		if (groupsField != null && groupsField.isVisible() && groupsField.isEnabled()) {
-			for (Object itemId : groupsField.getItemIds()) {
-				Item item = groupsField.getItem(itemId);
-				Group group = groupService.merge((Group) itemId);
+			groupsField.getItemIds().forEach(e -> {
+				Item item = groupsField.getItem(e);
+				Group group = groupService.merge((Group) e);
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (selected == null) {
 					if (state == WindowState.MULTIUPDATE) {
-						user.removeGroup(group);
+						finalUser.removeGroup(group);
 					}
 				} else if (selected.equals(true)) {
-					user.addGroup(group);
+					finalUser.addGroup(group);
 				} else if (selected.equals(false)) {
-					user.removeGroup(group);
+					finalUser.removeGroup(group);
 				}
 
 				if (group != null) {
 					mainEvent.fire(new MainUIEvent.GroupUsersChangedEvent(group));
 				}
-			}
+			});
 		}
 
 		user = userService.add(user);
 
+		final User addedUser = user;
+
 		if (packsField.isVisible()) {
 			permissionService.deleteUserPermissions(user);
 
-			for (Object itemId : packsField.getItemIds()) {
-				Item item = packsField.getItem(itemId);
-				Pack pack = (Pack) itemId;
+			packsField.getItemIds().forEach(e -> {
+				Item item = packsField.getItem(e);
+				Pack pack = (Pack) e;
 				Boolean testState = (Boolean) item.getItemProperty(FieldConstants.TEST_STATE).getValue();
 
 				if (testState != null) {
-					permissionService.addUserPermission(new UserPermission(user, pack, testState));
+					permissionService.addUserPermission(new UserPermission(addedUser, pack, testState));
 				}
-			}
+			});
 		}
 
 		if (savingLoggedUser && rolesField.isVisible()) {

@@ -25,12 +25,6 @@
 
 		<dependency>
 			<groupId>com.github.tilioteo</groupId>
-			<artifactId>commons</artifactId>
-			<version>${commons.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.tilioteo</groupId>
 			<artifactId>expressions</artifactId>
 			<version>${expressions.version}</version>
 		</dependency>
@@ -38,6 +32,11 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
 		<dependency>

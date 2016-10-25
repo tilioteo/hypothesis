@@ -37,6 +37,7 @@ public class CaseInsensitiveItemSorter extends DefaultItemSorter {
 	public static class CaseInsensitivePropertyValueComparator implements Comparator<Object>, Serializable {
 
 		@SuppressWarnings("unchecked")
+		@Override
 		public int compare(Object o1, Object o2) {
 			int r;
 			// Normal non-null comparison
