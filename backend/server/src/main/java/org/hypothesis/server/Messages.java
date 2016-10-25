@@ -6,9 +6,8 @@ package org.hypothesis.server;
 
 import java.util.Locale;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.MessageSource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.hypothesis.resource.context.MessageSource;
+import org.hypothesis.resource.context.support.ReloadableResourceBundleMessageSource;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -21,12 +20,13 @@ public class Messages {
 	private static MessageSource messageSource = null;
 	private static Locale locale = Locale.ENGLISH;
 
-	public static void initMessageSource(ApplicationContext applicationContext) {
-		messageSource = applicationContext.getBean(ReloadableResourceBundleMessageSource.class);
+	private static void initMessageSource() {
+		messageSource = new ReloadableResourceBundleMessageSource();
+		((ReloadableResourceBundleMessageSource) messageSource).setBasename("classpath:org/hypothesis/server/messages");
 	}
 
-	public static void initMessageSource(ApplicationContext applicationContext, Locale locale) {
-		initMessageSource(applicationContext);
+	public static void initMessageSource(Locale locale) {
+		initMessageSource();
 		setLocale(locale);
 	}
 
