@@ -60,8 +60,8 @@ public class BranchController implements Serializable {
 			// copy map of variables because it will be erased on slide finish
 			slideOutputs.put(slide.getId(),
 					outputValues.entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+			}
 		}
-	}
 
 	public String getNextBranchKey() {
 		nextKey = paths.stream().filter(f -> f.isValid(slideOutputs)).map(Path::getBranchKey).findFirst()

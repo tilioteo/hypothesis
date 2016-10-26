@@ -77,67 +77,67 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		fields.stream().filter(f -> !Modifier.isStatic(f.getModifiers()) && f.isAnnotationPresent(Structured.class)
 				&& StringUtils.isNotEmpty(f.getAnnotation(Structured.class).value())).forEach(e -> {
 					e.setAccessible(true);
-					try {
+				try {
 						if (e.get(data) != null) {
 							String value = e.get(data).toString();
-							/*
+						/*
 							 * if
 							 * (Double.class.isAssignableFrom(field.getType())
 							 * || Float.class.isAssignableFrom(field.getType()))
 							 * {
-							 * 
-							 * try { Double doubleValue = Double.valueOf(value);
-							 * value = String.format(Locale.ROOT, "%g",
+						 * 
+						 * try { Double doubleValue = Double.valueOf(value);
+						 * value = String.format(Locale.ROOT, "%g",
 							 * doubleValue); } catch(NumberFormatException e) {}
 							 * }
-							 */
+						 */
 							String path = e.getAnnotation(Structured.class).value();
 							String name = StringUtils.isNotEmpty(path) ? path : e.getName();
 
-							Element baseElement = ensureSubElement(root, DocumentConstants.SOURCE);
+						Element baseElement = ensureSubElement(root, DocumentConstants.SOURCE);
 
 							// FIXME use regexp Pattern and Matcher
-							String[] elementNames = name.split("/");
-							boolean isAttribute = false;
-							String attributeName = null;
+						String[] elementNames = name.split("/");
+						boolean isAttribute = false;
+						String attributeName = null;
 
-							for (int i = 0; i < elementNames.length; ++i) {
-								String elementName = elementNames[i];
+						for (int i = 0; i < elementNames.length; ++i) {
+							String elementName = elementNames[i];
 
-								if (elementName.startsWith("@")) {
+							if (elementName.startsWith("@")) {
+								isAttribute = true;
+
+								attributeName = formatXmlName(elementName.substring(1));
+								break;
+							} else {
+								String[] parts = elementName.split("@");
+								if (parts.length > 1) {
 									isAttribute = true;
 
-									attributeName = formatXmlName(elementName.substring(1));
+									elementName = formatXmlName(parts[0]);
+									attributeName = formatXmlName(parts[1]);
+
+									baseElement = ensureSubElement(baseElement, elementName);
 									break;
 								} else {
-									String[] parts = elementName.split("@");
-									if (parts.length > 1) {
-										isAttribute = true;
+									elementName = formatXmlName(elementName);
 
-										elementName = formatXmlName(parts[0]);
-										attributeName = formatXmlName(parts[1]);
-
-										baseElement = ensureSubElement(baseElement, elementName);
-										break;
-									} else {
-										elementName = formatXmlName(elementName);
-
-										baseElement = ensureSubElement(baseElement, elementName);
-									}
+									baseElement = ensureSubElement(baseElement, elementName);
 								}
 							}
-
-							if (!isAttribute) {
-								baseElement.setText(value);
-							} else if (StringUtils.isNotEmpty(attributeName)) {
-								baseElement.setAttribute(attributeName, value);
-							}
 						}
+
+						if (!isAttribute) {
+							baseElement.setText(value);
+							} else if (StringUtils.isNotEmpty(attributeName)) {
+							baseElement.setAttribute(attributeName, value);
+						}
+					}
 					} catch (Exception ex) {
 						ex.printStackTrace();
-					}
+				}
 				});
-	}
+			}
 
 	private String formatXmlName(String name) {
 		return ISO9075.encode(name.substring(0, 1).toUpperCase() + name.substring(1));
@@ -178,12 +178,12 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		if (!outputs.isEmpty()) {
 			Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
 			outputs.entrySet().stream().filter(f -> f.getValue().getValue() != null).forEach(e -> {
-				Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
+					Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
 				outputValueElement.setAttribute(DocumentConstants.INDEX, Integer.toString(e.getValue().getIndex()));
 				writeOutputValue(outputValueElement, e.getValue().getValue());
 			});
-		}
-	}
+				}
+			}
 
 	@Override
 	public String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer) {
@@ -216,8 +216,8 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			Element element = root.createChild(DocumentConstants.FIELDS);
 			fields.values().stream().filter(f -> f instanceof AbstractComponent)
 					.forEach(e -> writeFieldData(element, (AbstractComponent) e));
-		}
-	}
+				}
+			}
 
 	private void writeFieldData(Element element, AbstractComponent field) {
 		String fieldType = getFieldType(field);
@@ -298,8 +298,8 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 				return !(name.equals(ObjectConstants.COMPONENT_DATA) || name.equals(ObjectConstants.NAVIGATOR)
 						|| name.equals(ObjectConstants.DOCUMENT));
 			}).forEach(e -> writeVariableData(element, e));
-		}
-	}
+				}
+			}
 
 	// FIXME similar code to writeOutputValue
 	private void writeVariableData(Element element, Variable<?> variable) {
@@ -332,23 +332,23 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 				ArrayList<?> array = (ArrayList<?>) value;
 				Object testItem = array.stream().filter(f -> f != null).findFirst().orElseGet(null);
 
-				if (testItem != null) {
-					Class<?> itemType = testItem.getClass();
+					if (testItem != null) {
+						Class<?> itemType = testItem.getClass();
 					valueString = array.stream().map(String::valueOf)
 							.collect(Collectors.joining(DocumentConstants.STR_COMMA));
 
-					if (itemType.equals(Integer.class)) {
-						typeName = DocumentConstants.INTEGER_ARRAY;
+						if (itemType.equals(Integer.class)) {
+							typeName = DocumentConstants.INTEGER_ARRAY;
 
-					} else if (itemType.equals(Double.class)) {
-						typeName = DocumentConstants.FLOAT_ARRAY;
+						} else if (itemType.equals(Double.class)) {
+							typeName = DocumentConstants.FLOAT_ARRAY;
 
-					} else if (itemType.equals(String.class)) {
-						typeName = DocumentConstants.STRING_ARRAY;
+						} else if (itemType.equals(String.class)) {
+							typeName = DocumentConstants.STRING_ARRAY;
+						}
 					}
 				}
 			}
-		}
 
 		if (!typeName.isEmpty()) {
 			Element variableElement = element.createChild(DocumentConstants.VARIABLE);
@@ -369,8 +369,8 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 				outputValueElement.setAttribute(DocumentConstants.INDEX, Integer.toString(e.getValue().getIndex()));
 				writeOutputValue(outputValueElement, e.getValue().getValue());
 			});
-		}
-	}
+				}
+			}
 
 	// FIXME similar code to writeVariableData
 	private void writeOutputValue(Element element, Object value) {

@@ -20,6 +20,7 @@ import org.hypothesis.presenter.SlideContainerPresenter;
 @SuppressWarnings("serial")
 public class SlideNavigator implements Serializable {
 
+	// TODO inject
 	private SlideContainerPresenter presenter;
 
 	/**

@@ -43,10 +43,10 @@ public class XmlDocumentWriter implements DocumentWriter {
 			}
 			copyElement(e, destXmlElement);
 		});
-	}
+		}
 
 	private void copyAttributes(Element element, org.dom4j.Element xmlElement) {
 		element.attributes().entrySet().forEach(e -> xmlElement.addAttribute(e.getKey(), e.getValue()));
-	}
+		}
 
 }

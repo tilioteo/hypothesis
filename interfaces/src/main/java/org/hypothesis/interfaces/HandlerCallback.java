@@ -14,6 +14,7 @@ import com.vaadin.ui.Component;
  *         Hypothesis
  *
  */
+@FunctionalInterface
 public interface HandlerCallback extends Serializable {
 
 	void setComponentHandler(Component component, Element element, Element handlerElement, String name, String actionId, Action action, SlidePresenter presenter);

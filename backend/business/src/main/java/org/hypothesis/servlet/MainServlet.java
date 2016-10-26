@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import org.hypothesis.ui.MainUI;
 
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.server.Constants;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -18,9 +19,25 @@ import com.vaadin.annotations.VaadinServletConfiguration;
  *
  */
 @SuppressWarnings("serial")
-@WebServlet(value = "/*", asyncSupported = true, name = "main-servlet", initParams = {
-		@WebInitParam(name = "UIProvider", value = "org.hypothesis.provider.MainUIProvider") })
-@VaadinServletConfiguration(productionMode = false, ui = MainUI.class, widgetset = "org.hypothesis.WidgetSet")
+@WebServlet(
+		value = "/*",
+		asyncSupported = true,
+		name = "main-servlet",
+		initParams = {
+				@WebInitParam(
+						name = Constants.SERVLET_PARAMETER_UI_PROVIDER,
+						value = "com.vaadin.cdi.CDIUIProvider")
+		}
+)
+@VaadinServletConfiguration(
+		productionMode = false,
+		ui = MainUI.class,
+		widgetset = "org.hypothesis.WidgetSet"
+)
 public class MainServlet extends HibernateVaadinServlet {
+	
+	public MainServlet() {
+		super();
+	}
 
 }

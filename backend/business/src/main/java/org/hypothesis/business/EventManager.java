@@ -108,10 +108,10 @@ public class EventManager {
 
 				try {
 					Field field = data.getClass().getDeclaredField(e);
-					field.setAccessible(true);
-					field.set(data, value);
+				field.setAccessible(true);
+				field.set(data, value);
 				} catch (Exception ex) {
-				}
+			}
 			});
 
 			Component component = event.getComponent();

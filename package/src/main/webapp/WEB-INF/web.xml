@@ -33,11 +33,14 @@
 	<!--context-param>
 		<param-name>contextClass</param-name>
 		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-	</context-param>
+	</context-param-->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>org.hypothesis.context.ContextConfig</param-value>
-	</context-param>	<listener>
+		<!--param-value>org.hypothesis.context.ContextConfig</param-value-->
+		<param-value>/WEB-INF/applicationContext.xml</param-value>
+	</context-param>
+
+	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener-->
 	
@@ -58,4 +61,9 @@
 			<param-value>org.hypothesis.provider.ProcessUIProvider</param-value>
 		</init-param>
 	</servlet-->
+
+	<resource-env-ref>
+		<resource-env-ref-name>BeanManager</resource-env-ref-name>
+		<resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>
+	</resource-env-ref>
 </web-app>

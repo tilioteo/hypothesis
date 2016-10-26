@@ -4,6 +4,7 @@
  */
 package org.hypothesis.builder;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.log4j.Logger;
@@ -101,10 +102,9 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 	}
 
 	private Formula createFormula(Element element) {
-		if (element != null) {
-			Element subElement = DocumentUtility.getPatternElement(element);
-			if (subElement != null)
-				return createPattern(subElement);
+		Element subElement = DocumentUtility.getPatternElement(element);
+		if (subElement != null) {
+			return createPattern(subElement);
 		}
 
 		return null;

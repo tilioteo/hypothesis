@@ -46,7 +46,7 @@ public class DocumentFactory {
 
 						if (StringUtils.isNotEmpty(id)) {
 							attributes = new HashMap<>();
-							attributes.put(DocumentConstants.ID, id);
+						attributes.put(DocumentConstants.ID, id);
 							searchDescendants = true;
 						}
 
@@ -55,8 +55,8 @@ public class DocumentFactory {
 						if (origElement != null) {
 							mergeElementAttributes(origElement, e);
 							e.children().forEach(i -> mergeBindingNodes(origElement, i));
+							}
 						}
-					}
 				});
 
 		return document;
@@ -64,7 +64,7 @@ public class DocumentFactory {
 
 	private static void mergeElementAttributes(Element destination, Element source) {
 		source.attributes().entrySet().forEach(e -> destination.setAttribute(e.getKey(), e.getValue()));
-	}
+		}
 
 	private static void mergeBindingNodes(Element destinationElement, Element sourceSubElement) {
 		String name = sourceSubElement.getName();
@@ -113,9 +113,9 @@ public class DocumentFactory {
 				if (StringUtils.isEmpty(id) && destSubElements.contains(destinationSubElement)) {
 					// if previously created element found then skip to avoid
 					// rewrite
-					destinationSubElement = null;
+						destinationSubElement = null;
+					}
 				}
-			}
 
 			if (destinationSubElement == null) {
 				destinationSubElement = destination.createChild(name);
@@ -123,7 +123,7 @@ public class DocumentFactory {
 
 			mergeElements(destinationSubElement, e);
 		});
-	}
+		}
 
 	public static Document createEventDataDocument() {
 		Document document = new DocumentImpl();

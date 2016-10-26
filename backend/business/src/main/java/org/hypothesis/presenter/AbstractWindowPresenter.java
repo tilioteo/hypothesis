@@ -6,10 +6,13 @@ package org.hypothesis.presenter;
 
 import java.util.ArrayList;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.model.User;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.MainEventBus;
+import org.hypothesis.interfaces.WindowPresenter;
 import org.hypothesis.server.Messages;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -35,7 +38,7 @@ import com.vaadin.ui.Window.CloseListener;
  *
  */
 @SuppressWarnings("serial")
-public abstract class AbstractWindowPresenter implements CloseListener {
+public abstract class AbstractWindowPresenter implements CloseListener, WindowPresenter {
 
 	protected Object source = null;
 
@@ -43,7 +46,8 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 
 	protected WindowState state;
 
-	protected final MainEventBus bus;
+	@Inject
+	private Event<MainUIEvent> mainEvent;
 
 	protected ArrayList<AbstractField<?>> fields;
 
@@ -51,10 +55,6 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 
 	protected TabSheet tabSheet;
 	protected VerticalLayout detailsTab;
-
-	protected AbstractWindowPresenter(MainEventBus bus) {
-		this.bus = bus;
-	}
 
 	protected abstract void initFields();
 
@@ -94,15 +94,15 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 		if (state == WindowState.MULTIUPDATE) {
 			final CheckBox enabler = new CheckBox(field.getCaption());
 			enabler.addValueChangeListener(e -> {
-				field.setVisible(enabler.getValue());
+					field.setVisible(enabler.getValue());
 
-				if (field instanceof AbstractField<?>) {
-					if (enabler.getValue()) {
-						fields.add((AbstractField<?>) field);
-					} else {
-						fields.remove((AbstractField<?>) field);
+					if (field instanceof AbstractField<?>) {
+						if (enabler.getValue()) {
+							fields.add((AbstractField<?>) field);
+						} else {
+							fields.remove((AbstractField<?>) field);
+						}
 					}
-				}
 			});
 			field.setVisible(false);
 			form.addComponent(enabler);
@@ -130,15 +130,18 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 
 		createWindow();
 
-		bus.post(new MainUIEvent.CloseOpenWindowsEvent());
+		mainEvent.fire(new MainUIEvent.CloseOpenWindowsEvent());
 		UI.getCurrent().addWindow(window);
 		window.center();
 		window.focus();
 	}
 
-	/**
-	 * Show the window handled by this presenter
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.hypothesis.presenter.WindowPresenter#showWindow()
 	 */
+	@Override
 	public void showWindow() {
 		showWindow(WindowState.CREATE, null);
 	}

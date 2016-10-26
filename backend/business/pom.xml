@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis-backend</artifactId>
-		<version>${project.version}</version>
+		<version>${hypothesis.version}</version>
 	</parent>
 
 	<properties>
@@ -78,6 +78,21 @@
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>jackrabbit-jcr-commons</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-cdi</artifactId>
 		</dependency>
 
 		<dependency>

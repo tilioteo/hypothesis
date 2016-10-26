@@ -4,19 +4,15 @@
  */
 package org.hypothesis.presenter;
 
+import javax.enterprise.event.Observes;
+
 import org.hypothesis.event.model.EventQueue;
 import org.hypothesis.event.model.EventWrapper;
 import org.hypothesis.event.model.FinishSlideEvent;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.ComponentEventCallback;
 
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HasComponents;
-import com.vaadin.ui.UI;
-
-import net.engio.mbassy.listener.Handler;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -29,7 +25,6 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 
 	private final EventQueue eventQueue;
 	private boolean disableDeferred = false;
-	private final ProcessEventBus bus;
 
 	/**
 	 * Construct
@@ -37,11 +32,10 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 	 * @param eventQueue
 	 * @param bus
 	 */
-	public SlideContainerPresenterDeferred(EventQueue eventQueue, ProcessEventBus bus) {
+	public SlideContainerPresenterDeferred(EventQueue eventQueue) {
 		super();
 
 		this.eventQueue = eventQueue;
-		this.bus = bus;
 	}
 
 	@Override
@@ -73,28 +67,12 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 		}
 	}
 
-	@Override
-	public void attach(Component component, HasComponents parent, UI ui, VaadinSession session) {
-		super.attach(component, parent, ui, session);
-
-		setProcessEventBus(bus);
-		bus.register(this);
-	}
-
-	@Override
-	public void detach(Component component, HasComponents parent, UI ui, VaadinSession session) {
-		bus.unregister(this);
-
-		super.detach(component, parent, ui, session);
-	}
-
 	/**
 	 * Do on finish slide
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void processFinishSlide(FinishSlideEvent event) {
+	public void processFinishSlide(@Observes FinishSlideEvent event) {
 		viewDone();
 	}
 }

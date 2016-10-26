@@ -79,31 +79,31 @@ public class ComponentDataPojoGenerator {
 				try {
 					field = new CtField(resolveCtClass(e.getValue()), e.getKey(), finalCc);
 
-					// specific part - insert annotation to mark serialized
-					// structure of
-					// field
+				// specific part - insert annotation to mark serialized
+				// structure of
+				// field
 					String structure = structures.get(e.getKey());
-					if (structure != null) {
+				if (structure != null) {
 						AnnotationsAttribute attr = new AnnotationsAttribute(constpool,
 								AnnotationsAttribute.visibleTag);
-						Annotation annot = new Annotation(Structured.class.getName(), constpool);
-						annot.addMemberValue("value", new StringMemberValue(structure, ccFile.getConstPool()));
-						attr.addAnnotation(annot);
-						field.getFieldInfo().addAttribute(attr);
-					}
+					Annotation annot = new Annotation(Structured.class.getName(), constpool);
+					annot.addMemberValue("value", new StringMemberValue(structure, ccFile.getConstPool()));
+					attr.addAnnotation(annot);
+					field.getFieldInfo().addAttribute(attr);
+				}
 
 					finalCc.addField(field);
 
-					// add getter
+				// add getter
 					finalCc.addMethod(generateGetter(finalCc, e.getKey(), e.getValue()));
 
-					// add setter
-					// cc.addMethod(generateSetter(cc, entry.getKey(),
-					// entry.getValue()));
+				// add setter
+				// cc.addMethod(generateSetter(cc, entry.getKey(),
+				// entry.getValue()));
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-				}
+			}
 			});
 			return cc.toClass();
 		} else {

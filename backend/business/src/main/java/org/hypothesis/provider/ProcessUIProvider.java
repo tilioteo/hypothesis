@@ -4,12 +4,8 @@
  */
 package org.hypothesis.provider;
 
-import org.hypothesis.presenter.ProcessUIPresenter;
-import org.hypothesis.ui.ProcessUI;
-
-import com.vaadin.server.UIClassSelectionEvent;
+import com.vaadin.cdi.CDIUIProvider;
 import com.vaadin.server.UICreateEvent;
-import com.vaadin.server.UIProvider;
 import com.vaadin.ui.UI;
 
 /**
@@ -19,18 +15,12 @@ import com.vaadin.ui.UI;
  *
  */
 @SuppressWarnings("serial")
-public class ProcessUIProvider extends UIProvider {
+public class ProcessUIProvider extends CDIUIProvider {
 
 	@Override
-	public Class<? extends UI> getUIClass(UIClassSelectionEvent event) {
-		return ProcessUI.class;
+	public UI createInstance(UICreateEvent uiCreateEvent) {
+		// TODO Auto-generated method stub
+		return super.createInstance(uiCreateEvent);
 	}
 
-	@Override
-	public UI createInstance(UICreateEvent event) {
-		ProcessUI ui = (ProcessUI) super.createInstance(event);
-		ui.setPresenter(new ProcessUIPresenter(ui));
-
-		return ui;
-	}
 }

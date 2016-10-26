@@ -65,8 +65,8 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 			key = entry.getKey();
 			element = entry.getValue();
 		} else {
-			key = null;
-			element = null;
+		key = null;
+		element = null;
 		}
 
 		return element;

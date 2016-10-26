@@ -5,7 +5,6 @@
 package org.hypothesis.builder;
 
 import org.hypothesis.event.model.EventQueue;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.presenter.SlideContainerPresenter;
 import org.hypothesis.presenter.SlideContainerPresenterDeferred;
 
@@ -19,16 +18,11 @@ import org.hypothesis.presenter.SlideContainerPresenterDeferred;
 public class SlideContainerFactoryDeferred extends SlideContainerFactoryImpl {
 
 	private final EventQueue queue = new EventQueue();
-	private final ProcessEventBus bus;
-
-	public SlideContainerFactoryDeferred(ProcessEventBus bus) {
-		this.bus = bus;
-	}
 
 	@Override
 	protected SlideContainerPresenter createSlideContainerPresenter() {
 
-		return new SlideContainerPresenterDeferred(queue, bus);
+		return new SlideContainerPresenterDeferred(queue);
 	}
 
 	public EventQueue getEventQueue() {

@@ -4,8 +4,6 @@
  */
 package org.hypothesis.interfaces;
 
-import java.io.Serializable;
-
 import com.vaadin.ui.Component;
 
 /**
@@ -14,11 +12,7 @@ import com.vaadin.ui.Component;
  *         Hypothesis
  *
  */
-public interface MenuPresenter extends Serializable {
-
-	void attach();
-
-	void detach();
+public interface MenuPresenter extends ComponentPresenter {
 
 	Component buildContent();
 

@@ -12,6 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.model.FieldConstants;
@@ -24,8 +29,6 @@ import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.TestService;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.HasMainEventBus;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ExportPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.view.ExportView;
@@ -55,8 +58,6 @@ import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import net.engio.mbassy.listener.Handler;
-
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -64,17 +65,22 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings({ "serial" })
-public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
+@Default
+public class ExportPresenterImpl implements ExportPresenter {
 
 	static final Logger log = Logger.getLogger(ExportPresenterImpl.class);
 
-	private final PermissionService permissionService;
-	private final TestService testService;
-	private final UserService userService;
+	@Inject
+	private PermissionService permissionService;
+	
+	@Inject
+	private TestService testService;
+	
+	@Inject
+	private UserService userService;
 
-	private User loggedUser;
-
-	private MainEventBus bus;
+	@Inject
+	private Event<MainUIEvent> mainEvent;
 
 	private List<String> sortedPacks = new ArrayList<>();
 	private HashMap<String, Pack> packMap = new HashMap<>();
@@ -94,39 +100,6 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	private HorizontalLayout toolsLayout;
 	private ExportThread currentExport = null;
 	private ProgressBar exportProgressBar = null;
-
-	public ExportPresenterImpl() {
-		permissionService = PermissionService.newInstance();
-		testService = TestService.newInstance();
-		userService = UserService.newInstance();
-
-	}
-
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		this.bus = bus;
-	}
-
-	@Override
-	public MainEventBus getMainEventBus() {
-		return bus;
-	}
-
-	@Override
-	public void attach() {
-		if (bus != null) {
-			bus.register(this);
-		}
-
-		loggedUser = SessionManager.getLoggedUser();
-	}
-
-	@Override
-	public void detach() {
-		if (bus != null) {
-			bus.unregister(this);
-		}
-	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -206,7 +179,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	private void buildExportCancelButton() {
 		cancelExportButton = new Button(Messages.getString("Caption.Button.Cancel"),
 				e -> bus.post(new MainUIEvent.ExportFinishedEvent(true)));
-	}
+			}
 
 	private void buildProgress() {
 		exportProgressBar = new ProgressBar();
@@ -225,8 +198,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		exportSelectionType.select(Messages.getString("Caption.Item.Selected"));
 
 		exportSelectionType.addValueChangeListener(e -> {
-			allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-			bus.post(new MainUIEvent.PackSelectionChangedEvent());
+				allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
+				mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
 		});
 	}
 
@@ -247,7 +220,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		currentExport = new ExportThread(bus, testIds);
+		currentExport = new ExportThread(testIds);
 		currentExport.start();
 
 		UI.getCurrent().setPollInterval(1000);
@@ -321,23 +294,23 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		Button selectionButton = new Button(Messages.getString("Caption.Button.ShowTests"));
 		selectionButton.addClickListener(e -> {
-			try {
-				packsSelect.validate();
-				dateFieldFrom.validate();
-				dateFieldTo.validate();
+				try {
+					packsSelect.validate();
+					dateFieldFrom.validate();
+					dateFieldTo.validate();
 
-				Pack pack = packMap.get(packsSelect.getValue());
-				Date dateFrom = dateFieldFrom.getValue();
-				Date dateTo = dateFieldTo.getValue();
+					Pack pack = packMap.get(packsSelect.getValue());
+					Date dateFrom = dateFieldFrom.getValue();
+					Date dateTo = dateFieldTo.getValue();
 
-				showTests(pack, dateFrom, dateTo);
+					showTests(pack, dateFrom, dateTo);
 
 			} catch (InvalidValueException ex) {
-				packsSelect.setValidationVisible(!packsSelect.isValid());
-				dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
-				dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
+					packsSelect.setValidationVisible(!packsSelect.isValid());
+					dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
+					dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
 				Notification.show(ex.getMessage(), Type.WARNING_MESSAGE);
-			}
+				}
 		});
 		form.addComponent(selectionButton);
 
@@ -345,7 +318,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	}
 
 	private void initPacksSources() {
-		Set<Pack> packs = permissionService.findUserPacks2(loggedUser, false);
+		User user = SessionManager.getLoggedUser();
+		Set<Pack> packs = permissionService.findUserPacks2(user, false);
 
 		sortedPacks.clear();
 		packMap.clear();
@@ -362,14 +336,16 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	}
 
 	protected void showTests(Pack pack, Date dateFrom, Date dateTo) {
+		User user = SessionManager.getLoggedUser();
+		
 		testSelection.removeAllComponents();
 		// testSelection.setSpacing(true);
 
 		// MANAGER see only tests created by himself and his users
 		List<User> users = null;
-		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			users = userService.findOwnerUsers(loggedUser);
-			users.add(loggedUser);
+		if (!user.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
+			users = userService.findOwnerUsers(user);
+			users.add(user);
 		}
 
 		List<SimpleTest> tests = testService.findTestsBy(pack, users, dateFrom, dateTo);
@@ -383,7 +359,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		} else {
 			testSelection.addComponent(buildTestsTable(tests));
 			exportSelectionType.setEnabled(true);
-			bus.post(new MainUIEvent.PackSelectionChangedEvent());
+			mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
 		}
 	}
 
@@ -460,7 +436,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		table.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				bus.post(new MainUIEvent.PackSelectionChangedEvent());
+				mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
 			}
 		});
 
@@ -470,8 +446,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Handler
-	public void setExportEnabled(final MainUIEvent.PackSelectionChangedEvent event) {
+	public void setExportEnabled(@Observes final MainUIEvent.PackSelectionChangedEvent event) {
 		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
 		boolean exportEnabled = allTestsSelected || itemsSelected;
 		exportButton.setEnabled(exportEnabled);
@@ -482,8 +457,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void updateExportProgress(final MainUIEvent.ExportProgressEvent event) {
+	public void updateExportProgress(@Observes final MainUIEvent.ExportProgressEvent event) {
 		if (exportProgressBar.isIndeterminate() && event.getProgress() >= 0) {
 			setExportProgress();
 		}
@@ -495,8 +469,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void exportFinished(final MainUIEvent.ExportFinishedEvent event) {
+	public void exportFinished(@Observes final MainUIEvent.ExportFinishedEvent event) {
 		afterExportFinnished(event.isCanceled());
 	}
 
@@ -505,8 +478,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void exportError(final MainUIEvent.ExportErrorEvent event) {
+	public void exportError(@Observes final MainUIEvent.ExportErrorEvent event) {
 		afterExportFinnished(false);
 		Notification.show("Export failed", null, Type.WARNING_MESSAGE);
 	}
@@ -516,15 +488,14 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void changeUserPacks(final MainUIEvent.UserPacksChangedEvent event) {
+	public void changeUserPacks(@Observes final MainUIEvent.UserPacksChangedEvent event) {
 		initPacksSources();
 
 		packsSelect.removeAllItems();
 		testSelection.removeAllComponents();
 
 		sortedPacks.forEach(packsSelect::addItem);
-	}
+		}
 
 	private void afterExportFinnished(boolean canceled) {
 		if (currentExport != null) {
@@ -537,11 +508,11 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		UI.getCurrent().setPollInterval(-1);
 	}
 
-	@Override
+	/*@Override
 	public View createView() {
 		loggedUser = SessionManager.getLoggedUser();
 
 		return new ExportView(this);
-	}
+	}*/
 
 }

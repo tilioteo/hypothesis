@@ -73,18 +73,20 @@ public final class DocumentUtility {
 					}
 				} else if (descendant) {
 					return findElementByNameAndValue(selected, name, attributes, descendant);
+					}
 				}
 			}
-		}
 
 		return null;
 	}
 
 	public static List<Element> findElementsByNameStarting(Element parent, String startName) {
+		List<Element> result = new ArrayList<>();
+
 		if (parent != null && startName.length() > 0) {
 			return parent.children().stream().filter(f -> f.getName().startsWith(startName))
 					.collect(Collectors.toList());
-		}
+				}
 
 		return Collections.emptyList();
 	}
@@ -106,11 +108,11 @@ public final class DocumentUtility {
 				return subElement.children().stream()
 						.filter(f -> null == validElementNames || validElementNames.contains(f.getName()))
 						.collect(Collectors.toList());
-			}
-		}
+					}
+				}
 
 		return Collections.emptyList();
-	}
+			}
 
 	public static final boolean isValidSlideDocument(Document doc) {
 		return doc != null && doc.root() != null && doc.root().getName().equals(DocumentConstants.SLIDE);
@@ -265,7 +267,7 @@ public final class DocumentUtility {
 			return findElementsByNameStarting(documentRoot, DocumentConstants.OUTPUT_VALUE);
 		}
 
-		return Collections.emptyList();
+		return new ArrayList<>();
 	}
 
 	public static List<Element> getTimersElements(Element documentRoot) {
@@ -348,8 +350,8 @@ public final class DocumentUtility {
 
 			return element.children().stream().filter(f -> ValidationSets.VALID_VIEWPORT_CHILDREN.contains(f.getName()))
 					.findFirst().orElse(null);
-			// throw new ViewportNotValidElementFound(viewport);
-		}
+				// throw new ViewportNotValidElementFound(viewport);
+			}
 
 		return null;
 	}
@@ -360,7 +362,7 @@ public final class DocumentUtility {
 		if (viewportRootElement != null) {
 			return viewportRootElement.children().stream()
 					.filter(f -> ValidationSets.VALID_VIEWPORT_CHILDREN.contains(f.getName())).findFirst().orElse(null);
-		}
+				}
 
 		return null;
 	}

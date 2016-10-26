@@ -71,7 +71,7 @@ public class TaskControllerFactoryImpl implements TaskControllerFactory {
 		if (evaluateElement != null) {
 			evaluateElement.children().stream().map(m -> EvaluableUtility.createEvaluable(m, evaluator))
 					.filter(Objects::nonNull).forEach(node::add);
-		}
+				}
 		return node;
 	}
 

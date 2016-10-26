@@ -50,7 +50,7 @@ public class ElementImpl implements Element {
 		this.text = element.getText();
 		element.attributes().entrySet().forEach(e -> attributes.put(e.getKey(), e.getValue()));
 		element.children().forEach(this::createChild);
-	}
+		}
 
 	@Override
 	public String getName() {
@@ -302,7 +302,7 @@ public class ElementImpl implements Element {
 
 		if (!attributes.isEmpty()) {
 			builder.append(attributes.entrySet().stream().map(e -> e.getValue()).collect(Collectors.joining(",")));
-		}
+			}
 		builder.append(")[");
 
 		if (!children.isEmpty()) {
@@ -312,8 +312,8 @@ public class ElementImpl implements Element {
 				builder.append("\n");
 				builder.append(
 						children.stream().map(e -> e.toString(detailed, ident + 1)).collect(Collectors.joining("\n")));
-				builder.append("\n");
-			}
+					builder.append("\n");
+				}
 
 			builder.append(StringUtils.rightPad("", ident, '\t'));
 

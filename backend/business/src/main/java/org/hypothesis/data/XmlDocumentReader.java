@@ -95,11 +95,11 @@ public class XmlDocumentReader implements DocumentReader {
 
 			copyElement(e, element.createChild(composeName(e), text));
 		});
-	}
+		}
 
 	@SuppressWarnings("unchecked")
 	private void copyAttributes(org.dom4j.Element xmlElement, Element element) {
 		((List<Attribute>) xmlElement.attributes()).forEach(e -> element.setAttribute(e.getName(), e.getValue()));
-	}
+		}
 
 }

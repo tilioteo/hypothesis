@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
-import org.hypothesis.data.service.MessageService;
+import org.hypothesis.data.interfaces.MessageService;
 import org.hypothesis.event.data.Message;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
@@ -27,13 +27,10 @@ import org.hypothesis.interfaces.Element;
 @SuppressWarnings("serial")
 public class MessageManager implements Serializable {
 
+	@Inject
 	private MessageService messageService;
 
 	private DocumentReader reader = new XmlDocumentReader();
-
-	public MessageManager() {
-		messageService = MessageService.newInstance();
-	}
 
 	/**
 	 * Create new message object by provided uid
@@ -53,18 +50,16 @@ public class MessageManager implements Serializable {
 				Message message = new Message(uid, userId);
 
 				List<Element> properties = DocumentUtility.getPropertyElements(document.root());
-				if (properties != null) {
 
-					Method method = null;
-					try {
-						method = message.getClass().getDeclaredMethod("setPropertyDefinition", String.class,
-								Class.class);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				Method method = null;
+				try {
+					method = message.getClass().getDeclaredMethod("setPropertyDefinition", String.class, Class.class);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-					if (method != null) {
-						method.setAccessible(true);
+				if (method != null) {
+					method.setAccessible(true);
 
 						final Method finalMethod = method;
 						properties.stream().filter(f -> StringUtils.isNotBlank(DocumentUtility.getName(f))
@@ -93,7 +88,6 @@ public class MessageManager implements Serializable {
 										}
 									}
 								});
-					}
 				}
 
 				return message;

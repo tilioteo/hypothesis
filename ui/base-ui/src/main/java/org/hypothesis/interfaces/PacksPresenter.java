@@ -4,6 +4,8 @@
  */
 package org.hypothesis.interfaces;
 
+import org.hypothesis.ui.view.PacksView;
+
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -12,4 +14,5 @@ package org.hypothesis.interfaces;
  */
 public interface PacksPresenter extends ViewPresenter {
 
+	void setView(PacksView view);
 }

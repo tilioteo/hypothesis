@@ -4,11 +4,18 @@
  */
 package org.hypothesis.presenter;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ProcessManager;
+import org.hypothesis.cdi.Process;
+import org.hypothesis.data.interfaces.TokenService;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Token;
-import org.hypothesis.data.service.TokenService;
+import org.hypothesis.event.interfaces.ProcessEvent;
 import org.hypothesis.event.interfaces.ProcessViewEvent.ProcessViewEndEvent;
 import org.hypothesis.event.model.AbstractNotificationEvent;
 import org.hypothesis.event.model.AfterFinishSlideEvent;
@@ -21,9 +28,9 @@ import org.hypothesis.event.model.FinishTestEvent;
 import org.hypothesis.event.model.NextSlideEvent;
 import org.hypothesis.event.model.PriorSlideEvent;
 import org.hypothesis.event.model.RenderContentEvent;
-import org.hypothesis.eventbus.HasProcessEventBus;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.Command;
+import org.hypothesis.interfaces.Detachable;
+import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.slide.ui.Window;
 import org.hypothesis.ui.ErrorDialog;
@@ -36,9 +43,8 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Window.CloseEvent;
-
-import net.engio.mbassy.listener.Handler;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -47,7 +53,8 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class ProcessUIPresenter extends AbstractUIPresenter implements HasProcessEventBus {
+@Process
+public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresenter, Detachable {
 
 	public static final String FULLSCREEN_PARAMETER = "fs";
 	public static final String BACK_PARAMETER = "bk";
@@ -57,9 +64,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 
 	private static final Logger log = Logger.getLogger(ProcessUIPresenter.class);
 
-	private final ProcessUI ui;
-
-	private final ProcessEventBus bus;
+	private ProcessUI ui;
 
 	private boolean requestFullscreen = false;
 	private boolean requestBack = false;
@@ -68,22 +73,19 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	private String tokenString = null;
 	private String lastTokenString = null;
 
-	private final TokenService tokenService;
+	@Inject
+	private TokenService tokenService;
+
+	@Inject
+	private Event<ProcessEvent> procEvent;
+
+	@Inject
 	private ProcessManager processManager;
 
 	private SimpleTest preparedTest = null;
 
-	/**
-	 * Construct with bus
-	 * 
-	 * @param ui
-	 */
-	public ProcessUIPresenter(ProcessUI ui) {
-		this.ui = ui;
-
-		bus = ProcessEventBus.createInstance(this);
-
-		tokenService = TokenService.newInstance();
+	public ProcessUIPresenter() {
+		System.out.println("Construct " + getClass().getName());
 	}
 
 	@Override
@@ -91,8 +93,6 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		log.debug("ProcessUIPresenter initialization");
 
 		super.initialize(request);
-
-		processManager = new ProcessManager(bus);
 
 		// TODO try to set token by uri fragment and implement
 		// UriFragmentChangeListener
@@ -133,20 +133,9 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		}
 	}
 
-	@Override
-	public void attach() {
-		if (bus != null) {
-			bus.register(this);
-		}
-	}
-
-	@Override
+	// @Override
 	public void detach() {
 		log.debug("detaching ProcessUI");
-
-		if (bus != null) {
-			bus.unregister(this);
-		}
 
 		processManager.requestBreakTest();
 		processManager.clean();
@@ -154,7 +143,6 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 
 	@Override
 	public void close() {
-		ProcessEventBus.destroyInstance(this);
 	}
 
 	private void initParameters(VaadinRequest request) {
@@ -200,7 +188,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	 *            Error description
 	 */
 	private void fireError(String caption) {
-		bus.post(new ErrorNotificationEvent(caption));
+		procEvent.fire(new ErrorNotificationEvent(caption));
 	}
 
 	private void showErrorDialog(final ErrorNotificationEvent event) {
@@ -209,7 +197,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		errorDialog.addCloseListener(new Window.CloseListener() {
 			@Override
 			public void windowClose(CloseEvent e) {
-				bus.post(new CloseTestEvent());
+				procEvent.fire(new CloseTestEvent());
 			}
 		});
 		ui.showErrorDialog(errorDialog);
@@ -220,12 +208,12 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void doAfterFinishSlide(final AfterFinishSlideEvent event) {
+	public void doAfterFinishSlide(@Observes final AfterFinishSlideEvent event) {
 		ui.clearContent(animate, new Command() {
 			@Override
 			public void execute() {
-				bus.post(Direction.NEXT.equals(event.getDirection()) ? new NextSlideEvent() : new PriorSlideEvent());
+				procEvent.fire(
+						Direction.NEXT.equals(event.getDirection()) ? new NextSlideEvent() : new PriorSlideEvent());
 			}
 		});
 	}
@@ -235,14 +223,13 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void renderContent(RenderContentEvent event) {
+	public void renderContent(@Observes RenderContentEvent event) {
 		log.debug("renderContent::");
 		Component component = event.getComponent();
 		if (component != null) {
 			ui.setSlideContent(component);
 
-			bus.post(new AfterRenderContentEvent(component));
+			procEvent.fire(new AfterRenderContentEvent(component));
 		} else {
 			log.error("Error while rendering slide.");
 			fireTestError();
@@ -254,8 +241,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void showPreparedContent(final AfterPrepareTestEvent event) {
+	public void showPreparedContent(@Observes final AfterPrepareTestEvent event) {
 		log.debug(String.format("showPreparedContent: test id = %s",
 				event.getTest() != null ? event.getTest().getId() : "NULL"));
 
@@ -285,8 +271,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void processViewEnd(ProcessViewEndEvent event) {
+	public void processViewEnd(@Observes ProcessViewEndEvent event) {
 		ui.clearContent(animate, null);
 	}
 
@@ -295,8 +280,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void showFinishContent(FinishTestEvent event) {
+	public void showFinishContent(@Observes FinishTestEvent event) {
 		ui.clearContent(false, null);
 
 		TestEndScreen screen = new TestEndScreen();
@@ -305,7 +289,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		screen.setNextCommand(new Command() {
 			@Override
 			public void execute() {
-				bus.post(new CloseTestEvent());
+				procEvent.fire(new CloseTestEvent());
 			}
 		});
 
@@ -317,8 +301,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void showNotification(AbstractNotificationEvent event) {
+	public void showNotification(@Observes AbstractNotificationEvent event) {
 		if (event instanceof ErrorNotificationEvent) {
 			showErrorDialog((ErrorNotificationEvent) event);
 
@@ -333,8 +316,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void requestClose(final CloseTestEvent event) {
+	public void requestClose(@Observes final CloseTestEvent event) {
 		log.debug("close requested");
 		if (requestBack) {
 			log.debug("closing ProcessUI with history back");
@@ -354,8 +336,14 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	}
 
 	@Override
-	public ProcessEventBus getProcessEventBus() {
-		return bus;
+	public void setUI(UI ui) {
+		if (ui instanceof ProcessUI) {
+			this.ui = (ProcessUI) ui;
+		}
 	}
 
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
+	}
 }

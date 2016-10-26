@@ -4,10 +4,19 @@
  */
 package org.hypothesis.ui.view;
 
-import org.hypothesis.interfaces.ExportPresenter;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
+import org.hypothesis.annotations.RolesAllowed;
+import org.hypothesis.annotations.Title;
+import org.hypothesis.interfaces.ExportPresenter;
+import org.hypothesis.interfaces.RoleType;
+import org.hypothesis.ui.MainUI;
+
+import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
@@ -18,16 +27,24 @@ import com.vaadin.ui.VerticalLayout;
  *
  */
 @SuppressWarnings({ "serial" })
+@CDIView(value = "/export", uis = { MainUI.class })
+@Title(value = "Caption.View.Export", icon = FontAwesome.TABLE, index = 5)
+@RolesAllowed(value = { RoleType.MANAGER, RoleType.SUPERUSER })
 public class ExportView extends VerticalLayout implements View {
 
-	private final ExportPresenter presenter;
+	@Inject
+	private ExportPresenter presenter;
 
-	public ExportView(ExportPresenter presenter) {
-		this.presenter = presenter;
+	public ExportView() {
+		System.out.println("Construct " + getClass().getName());
 
 		setSizeFull();
 		setMargin(true);
 		setSpacing(true);
+	}
+
+	private void buildContent() {
+		removeAllComponents();
 
 		addComponent(presenter.buildHeader());
 		Component content = presenter.buildContent();
@@ -36,22 +53,14 @@ public class ExportView extends VerticalLayout implements View {
 	}
 
 	@Override
-	public void attach() {
-		super.attach();
-
-		presenter.attach();
-	}
-
-	@Override
-	public void detach() {
-		presenter.detach();
-
-		super.detach();
-	}
-
-	@Override
 	public void enter(ViewChangeEvent event) {
 		presenter.enter(event);
 	}
 
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
+
+		buildContent();
+	}
 }

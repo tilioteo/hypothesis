@@ -54,9 +54,9 @@ public class SlideDataParser {
 			
 			return list;
 			
-		}
+			}
 		return Collections.emptyList();
-	}
+		}
 
 	public static FieldWrapper parseFields(String xmlString) {
 		FieldWrapper wrapper = new FieldWrapper();
@@ -98,7 +98,7 @@ public class SlideDataParser {
 					}
 				}
 			});
-		}
+			}
 		return wrapper;
 	}
 

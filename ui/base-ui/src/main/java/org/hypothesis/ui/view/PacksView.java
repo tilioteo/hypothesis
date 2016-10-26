@@ -7,13 +7,13 @@ package org.hypothesis.ui.view;
 import java.util.Iterator;
 
 import org.hypothesis.interfaces.PacksPresenter;
+import org.hypothesis.slide.ui.Mask;
 import org.hypothesis.ui.PackPanel;
 import org.vaadin.jre.ui.DeployJava;
 import org.vaadin.jre.ui.DeployJava.JavaCheckedEvent;
 import org.vaadin.jre.ui.DeployJava.JavaCheckedListener;
 import org.vaadin.jre.ui.DeployJava.JavaInfoPanel;
 
-import org.hypothesis.slide.ui.Mask;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -32,9 +32,9 @@ import com.vaadin.ui.themes.ValoTheme;
  *
  */
 @SuppressWarnings("serial")
-public class PacksView extends HorizontalLayout implements View {
+public abstract class PacksView extends HorizontalLayout implements View {
 
-	private final PacksPresenter presenter;
+	private PacksPresenter presenter;
 
 	private VerticalLayout mainLayout;
 	private JavaInfoPanel javaInfoPanel;
@@ -61,16 +61,24 @@ public class PacksView extends HorizontalLayout implements View {
 
 	};
 
-	public PacksView(PacksPresenter presenter) {
-		this.presenter = presenter;
-
+	public PacksView() {
 		setSizeFull();
+	}
+
+	private void buildContent() {
+		removeAllComponents();
 
 		Panel contentPanel = buildContentPanel();
 		addComponent(contentPanel);
 		setExpandRatio(contentPanel, 1.0f);
 		addComponent(buildVerticalPane());
 
+	}
+
+	protected void setPresenter(PacksPresenter presenter) {
+		this.presenter = presenter;
+
+		buildContent();
 	}
 
 	private Panel buildContentPanel() {
@@ -167,16 +175,12 @@ public class PacksView extends HorizontalLayout implements View {
 	public void attach() {
 		super.attach();
 
-		presenter.attach();
-
 		DeployJava.get(getUI()).addJavaCheckedListener(javaCheckedListener);
 	}
 
 	@Override
 	public void detach() {
 		DeployJava.get(getUI()).removeJavaCheckedListener(javaCheckedListener);
-
-		presenter.detach();
 
 		super.detach();
 	}

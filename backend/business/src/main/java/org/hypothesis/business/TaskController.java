@@ -91,7 +91,7 @@ public class TaskController implements Serializable, Evaluator {
 								exchangeVariable.getValue());
 						node.getVariables().put(variable.getName(), variable);
 					});
-				}
+					}
 
 				// add Navigator object variable
 				addNavigatorVariable(node);
