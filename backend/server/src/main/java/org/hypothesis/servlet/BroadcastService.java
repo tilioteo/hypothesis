@@ -19,6 +19,7 @@ import java.util.concurrent.Executors;
 public class BroadcastService implements Serializable {
 	static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+	@FunctionalInterface
 	public interface BroadcastListener {
 		void receiveBroadcast(final String message);
 	}

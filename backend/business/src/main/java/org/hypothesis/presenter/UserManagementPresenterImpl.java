@@ -30,6 +30,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.hypothesis.business.SessionManager;
 import org.hypothesis.common.IntSequence;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.interfaces.GroupService;
@@ -255,7 +256,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 			userService.delete(e);
 
 			e.getGroups().stream().filter(Objects::nonNull)
-					.forEach(i -> bus.post(new MainUIEvent.GroupUsersChangedEvent(i)));
+					.forEach(i -> mainEvent.fire(new MainUIEvent.GroupUsersChangedEvent(i)));
 
 			table.removeItem(e.getId());
 		});
@@ -276,10 +277,10 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 			throw new UnsupportedOperationException(exceptionMessage);
 		}
 
-		if (users.stream().anyMatch(e -> e.hasRole(RoleService.ROLE_SUPERUSER))) {
-				throw new UnsupportedOperationException(exceptionMessage);
-			}
+		if (users.stream().anyMatch(e -> e.hasRole(RoleServiceImpl.ROLE_SUPERUSER))) {
+			throw new UnsupportedOperationException(exceptionMessage);
 		}
+	}
 
 	@SuppressWarnings("unchecked")
 	private void checkSuperuserLeft(User currentUser) {
@@ -292,7 +293,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		if (currentUser.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
 			boolean superuserLeft = ((Collection<Long>) table.getItemIds()).stream().filter(f -> !table.isSelected(f))
 					.map(m -> ((BeanItem<User>) table.getItem(m)).getBean())
-					.anyMatch(e -> e.hasRole(RoleService.ROLE_SUPERUSER));
+					.anyMatch(e -> e.hasRole(RoleServiceImpl.ROLE_SUPERUSER));
 
 			if (!superuserLeft) {
 				throw new UnsupportedOperationException(exceptionMessage);
@@ -315,7 +316,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 	private Collection<User> getSelectedUsers() {
 		return getSelectedUserIds().stream().map(m -> ((BeanItem<User>) table.getItem(m)).getBean())
 				.collect(Collectors.toSet());
-		}
+	}
 
 	@Override
 	public Table buildTable() {

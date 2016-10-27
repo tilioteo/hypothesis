@@ -7,6 +7,11 @@ package org.hypothesis.presenter;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.cdi.Main;

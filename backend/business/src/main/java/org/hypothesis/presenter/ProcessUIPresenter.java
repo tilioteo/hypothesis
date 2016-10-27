@@ -28,7 +28,6 @@ import org.hypothesis.event.model.FinishTestEvent;
 import org.hypothesis.event.model.NextSlideEvent;
 import org.hypothesis.event.model.PriorSlideEvent;
 import org.hypothesis.event.model.RenderContentEvent;
-import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.Detachable;
 import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.Messages;
@@ -133,16 +132,12 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 		}
 	}
 
-	// @Override
+	@Override
 	public void detach() {
 		log.debug("detaching ProcessUI");
 
 		processManager.requestBreakTest();
 		processManager.clean();
-	}
-
-	@Override
-	public void close() {
 	}
 
 	private void initParameters(VaadinRequest request) {
@@ -209,13 +204,8 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	 * @param event
 	 */
 	public void doAfterFinishSlide(@Observes final AfterFinishSlideEvent event) {
-		ui.clearContent(animate, new Command() {
-			@Override
-			public void execute() {
-				procEvent.fire(
-						Direction.NEXT.equals(event.getDirection()) ? new NextSlideEvent() : new PriorSlideEvent());
-			}
-		});
+		ui.clearContent(animate, () -> procEvent
+				.fire(Direction.NEXT.equals(event.getDirection()) ? new NextSlideEvent() : new PriorSlideEvent()));
 	}
 
 	/**
@@ -251,17 +241,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 		screen.setInfoLabelCaption(Messages.getString("Message.Info.TestReady"));
 		screen.setControlButtonCaption(Messages.getString("Caption.Button.Run"));
 
-		screen.setNextCommand(new Command() {
-			@Override
-			public void execute() {
-				ui.clearContent(animate, new Command() {
-					@Override
-					public void execute() {
-						processManager.processTest(preparedTest);
-					}
-				});
-			}
-		});
+		screen.setNextCommand(() -> ui.clearContent(animate, () -> processManager.processTest(preparedTest)));
 
 		ui.setContent(screen);
 	}
@@ -286,12 +266,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 		TestEndScreen screen = new TestEndScreen();
 		screen.setInfoLabelCaption(Messages.getString("Message.Info.TestFinished"));
 		screen.setControlButtonCaption(Messages.getString("Caption.Button.Close"));
-		screen.setNextCommand(new Command() {
-			@Override
-			public void execute() {
-				procEvent.fire(new CloseTestEvent());
-			}
-		});
+		screen.setNextCommand(() -> procEvent.fire(new CloseTestEvent()));
 
 		ui.setContent(screen);
 	}
@@ -345,5 +320,10 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	@PostConstruct
 	public void postConstruct() {
 		System.out.println("PostConstruct " + getClass().getName());
+	}
+
+	@Override
+	public void close() {
+		// nop
 	}
 }

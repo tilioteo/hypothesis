@@ -43,6 +43,7 @@ public class SwitchStatement implements Evaluable {
 		evaluables.add(evaluable);
 	}
 
+	@Override
 	public void evaluate() {
 		if (expression != null && variables != null) {
 			Object result = expression.getValue();

@@ -14,6 +14,9 @@ import com.vaadin.server.VaadinSession;
  */
 public class SessionUtils {
 
+	private SessionUtils() {
+	}
+
 	public static <T> void setAttribute(Class<T> type, T value) {
 		VaadinSession session = VaadinSession.getCurrent();
 		if (session != null) {

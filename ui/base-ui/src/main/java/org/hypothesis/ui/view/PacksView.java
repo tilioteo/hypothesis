@@ -150,7 +150,7 @@ public abstract class PacksView extends HorizontalLayout implements View {
 		if (javaInfoPanel != null && javaInfoPanel.isVisible() && !javaInfoPanel.isJavaOk()) {
 			try {
 				javaInfoPanel.checkJavaVersion();
-			} catch (Throwable e) {
+			} catch (Exception e) {
 			}
 		}
 	}

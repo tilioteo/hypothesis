@@ -39,20 +39,10 @@
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
 
-		<!--dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency-->
-		
-		<dependency>
-			<groupId>org.hypothesis</groupId>
+			<groupId>com.github.tilioteo</groupId>
 			<artifactId>resource</artifactId>
-			<version>0.0.1</version>
+			<version>${resource.version}</version>
 		</dependency>
 
 		<dependency>

@@ -30,20 +30,6 @@
 		<param-value>${language.default}</param-value>
 	</context-param>
 
-	<!--context-param>
-		<param-name>contextClass</param-name>
-		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-	</context-param-->
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<!--param-value>org.hypothesis.context.ContextConfig</param-value-->
-		<param-value>/WEB-INF/applicationContext.xml</param-value>
-	</context-param>
-
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener-->
-	
 	<!--servlet>
 		<servlet-name>main-servlet</servlet-name>
 		<servlet-class>org.hypothesis.servlet.MainServlet</servlet-class>

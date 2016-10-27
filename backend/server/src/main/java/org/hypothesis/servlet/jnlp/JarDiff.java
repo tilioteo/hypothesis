@@ -267,6 +267,9 @@ public class JarDiff implements JarDiffConstants {
 
 	// private static ResourceBundle _resources = null;
 
+	private JarDiff() {
+	}
+
 	/**
 	 * Writes the index file out to <code>jos</code>. <code>oldEntries</code>
 	 * gives the names of the files that were removed, <code>movedMap</code>

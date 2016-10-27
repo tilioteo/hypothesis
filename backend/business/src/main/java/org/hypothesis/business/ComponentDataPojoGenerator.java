@@ -101,7 +101,6 @@ public class ComponentDataPojoGenerator {
 				// cc.addMethod(generateSetter(cc, entry.getKey(),
 				// entry.getValue()));
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 			}
 			});

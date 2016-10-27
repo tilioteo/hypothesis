@@ -25,11 +25,10 @@
 		<validation-api.version>1.1.0.Final</validation-api.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
 		<postgresql.version>9.4.1210</postgresql.version>
-		<spring.version>4.2.1.RELEASE</spring.version>
-		<mbassador.version>1.2.1</mbassador.version>
 		<special.components.version>0.9.5</special.components.version>
 		<vbuttons.version>0.9.1</vbuttons.version>
 		<client.jre.controls.version>0.9.1</client.jre.controls.version>
+		<resource.version>0.1.0</resource.version>
 		<poi.version>3.13</poi.version>
 		<jackrabbit.version>2.11.1</jackrabbit.version>
 		<confirmdialog.version>2.1.3</confirmdialog.version>
@@ -204,24 +203,6 @@
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
 				<version>${postgresql.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>${spring.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-web</artifactId>
-				<version>${spring.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>net.engio</groupId>
-				<artifactId>mbassador</artifactId>
-				<version>${mbassador.version}</version>
 			</dependency>
 
 			<dependency>

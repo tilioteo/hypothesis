@@ -19,6 +19,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class ServletUtil {
 
+	private ServletUtil() {
+	}
+
 	public static String getContextURL(HttpServletRequest request) {
 		String scheme = request.getScheme(); // http
 		String serverName = request.getServerName(); // hostname.com

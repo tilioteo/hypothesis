@@ -9,7 +9,6 @@ import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +33,6 @@ import org.hypothesis.slide.ui.DateField;
 import org.hypothesis.slide.ui.SelectPanel;
 import org.hypothesis.slide.ui.TextArea;
 import org.hypothesis.slide.ui.TextField;
-import org.vaadin.special.ui.SelectButton;
 
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractTextField;

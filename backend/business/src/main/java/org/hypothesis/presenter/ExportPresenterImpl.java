@@ -19,26 +19,24 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.data.interfaces.PermissionService;
+import org.hypothesis.data.interfaces.TestService;
+import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Status;
 import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.RoleService;
-import org.hypothesis.data.service.TestService;
-import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.RoleServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.ExportPresenter;
 import org.hypothesis.server.Messages;
-import org.hypothesis.ui.view.ExportView;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.shared.ui.datefield.Resolution;
@@ -72,10 +70,10 @@ public class ExportPresenterImpl implements ExportPresenter {
 
 	@Inject
 	private PermissionService permissionService;
-	
+
 	@Inject
 	private TestService testService;
-	
+
 	@Inject
 	private UserService userService;
 
@@ -178,8 +176,8 @@ public class ExportPresenterImpl implements ExportPresenter {
 
 	private void buildExportCancelButton() {
 		cancelExportButton = new Button(Messages.getString("Caption.Button.Cancel"),
-				e -> bus.post(new MainUIEvent.ExportFinishedEvent(true)));
-			}
+				e -> mainEvent.fire(new MainUIEvent.ExportFinishedEvent(true)));
+	}
 
 	private void buildProgress() {
 		exportProgressBar = new ProgressBar();
@@ -198,8 +196,8 @@ public class ExportPresenterImpl implements ExportPresenter {
 		exportSelectionType.select(Messages.getString("Caption.Item.Selected"));
 
 		exportSelectionType.addValueChangeListener(e -> {
-				allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
+			allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
+			mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
 		});
 	}
 
@@ -294,23 +292,23 @@ public class ExportPresenterImpl implements ExportPresenter {
 
 		Button selectionButton = new Button(Messages.getString("Caption.Button.ShowTests"));
 		selectionButton.addClickListener(e -> {
-				try {
-					packsSelect.validate();
-					dateFieldFrom.validate();
-					dateFieldTo.validate();
+			try {
+				packsSelect.validate();
+				dateFieldFrom.validate();
+				dateFieldTo.validate();
 
-					Pack pack = packMap.get(packsSelect.getValue());
-					Date dateFrom = dateFieldFrom.getValue();
-					Date dateTo = dateFieldTo.getValue();
+				Pack pack = packMap.get(packsSelect.getValue());
+				Date dateFrom = dateFieldFrom.getValue();
+				Date dateTo = dateFieldTo.getValue();
 
-					showTests(pack, dateFrom, dateTo);
+				showTests(pack, dateFrom, dateTo);
 
 			} catch (InvalidValueException ex) {
-					packsSelect.setValidationVisible(!packsSelect.isValid());
-					dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
-					dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
+				packsSelect.setValidationVisible(!packsSelect.isValid());
+				dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
+				dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
 				Notification.show(ex.getMessage(), Type.WARNING_MESSAGE);
-				}
+			}
 		});
 		form.addComponent(selectionButton);
 
@@ -337,7 +335,7 @@ public class ExportPresenterImpl implements ExportPresenter {
 
 	protected void showTests(Pack pack, Date dateFrom, Date dateTo) {
 		User user = SessionManager.getLoggedUser();
-		
+
 		testSelection.removeAllComponents();
 		// testSelection.setSpacing(true);
 
@@ -495,7 +493,7 @@ public class ExportPresenterImpl implements ExportPresenter {
 		testSelection.removeAllComponents();
 
 		sortedPacks.forEach(packsSelect::addItem);
-		}
+	}
 
 	private void afterExportFinnished(boolean canceled) {
 		if (currentExport != null) {
@@ -508,11 +506,11 @@ public class ExportPresenterImpl implements ExportPresenter {
 		UI.getCurrent().setPollInterval(-1);
 	}
 
-	/*@Override
-	public View createView() {
-		loggedUser = SessionManager.getLoggedUser();
-
-		return new ExportView(this);
-	}*/
+	/*
+	 * @Override public View createView() { loggedUser =
+	 * SessionManager.getLoggedUser();
+	 * 
+	 * return new ExportView(this); }
+	 */
 
 }

@@ -20,6 +20,9 @@ public class Messages {
 	private static MessageSource messageSource = null;
 	private static Locale locale = Locale.ENGLISH;
 
+	private Messages() {
+	}
+
 	private static void initMessageSource() {
 		messageSource = new ReloadableResourceBundleMessageSource();
 		((ReloadableResourceBundleMessageSource) messageSource).setBasename("classpath:org/hypothesis/server/messages");

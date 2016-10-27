@@ -240,12 +240,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	private Command createActionCommand(final Action action) {
-		return new Command() {
-			@Override
-			public void execute() {
-				procEvent.fire(new ActionEvent(action));
-			}
-		};
+		return () -> procEvent.fire(new ActionEvent(action));
 	}
 
 	@Override
@@ -329,6 +324,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	/**
 	 * Get component by id
 	 */
+	@Override
 	public Component getComponent(String id) {
 		return components.get(id);
 	}
@@ -401,7 +397,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	public boolean isValidSlide() {
 		// validate fields
-		return fields.values().stream().allMatch(e->e.isValid());
+		return fields.values().stream().allMatch(e -> e.isValid());
 	}
 
 	/**
@@ -476,7 +472,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	@Override
 	public Map<Integer, ExchangeVariable> getOutputs() {
-		outputExpressions.values().forEach(e->e.setVariables(variables));
+		outputExpressions.values().forEach(e -> e.setVariables(variables));
 
 		return outputExpressions;
 	}

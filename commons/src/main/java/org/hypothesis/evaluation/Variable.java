@@ -38,6 +38,7 @@ public class Variable<T> implements org.hypothesis.interfaces.Variable<T> {
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public void setRawValue(Object value) {
 		try {
 			this.value = (T) value;

@@ -79,7 +79,6 @@ public final class User extends SerializableIdObject {
 	}
 
 	public User() {
-
 	}
 
 	/**
@@ -150,7 +149,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.ROLE_ID) )
+	@JoinTable(name = TableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.ROLE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public Set<Role> getRoles() {
@@ -161,8 +160,11 @@ public final class User extends SerializableIdObject {
 		this.roles = roles;
 	}
 
-	@ManyToMany(/*targetEntity = Group.class, cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
-	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.GROUP_ID) )
+	@ManyToMany(/*
+				 * targetEntity = Group.class, cascade = { CascadeType.PERSIST,
+				 * CascadeType.MERGE }
+				 */)
+	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.GROUP_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	public Set<Group> getGroups() {

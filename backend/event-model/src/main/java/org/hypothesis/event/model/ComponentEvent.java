@@ -43,6 +43,7 @@ public class ComponentEvent extends AbstractUserEvent implements org.hypothesis.
 		return typeName;
 	}
 
+	@Override
 	public void setProperty(String name, Object value, String serializedPattern) {
 		properties.put(name, value);
 		if (serializedPattern != null) {

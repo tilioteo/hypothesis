@@ -545,7 +545,7 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 
 					if (user.equals(loggedUser)) {
 						SessionManager.setLoggedUser(user);
-						bus.post(new MainUIEvent.UserPacksChangedEvent(user));
+						mainEvent.fire(new MainUIEvent.UserPacksChangedEvent(user));
 					}
 				}
 			});

@@ -119,6 +119,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	}
 
 	@Transient
+	@Override
 	public final List<Slide> getList() {
 		return getSlides();
 	}

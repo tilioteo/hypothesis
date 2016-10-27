@@ -35,6 +35,9 @@ public class HibernateUtil {
 	private static SessionFactory sessionFactory = null;
 	private static ServletContext servletContext = null;
 
+	private HibernateUtil() {
+	}
+
 	/**
 	 * All hibernate operations take place within a session. The session for the
 	 * current thread is provided here.
@@ -88,7 +91,8 @@ public class HibernateUtil {
 					configuration = new Configuration().configure(configFile);
 				}
 
-				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+						.applySettings(configuration.getProperties()).build();
 				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 			} catch (Exception ex) {
 				// Make sure you log the exception, as it might be swallowed

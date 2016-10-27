@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -21,10 +24,9 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.hypothesis.builder.SlideDataParser;
 import org.hypothesis.common.IntSequence;
+import org.hypothesis.data.interfaces.ExportService;
 import org.hypothesis.data.model.ExportEvent;
-import org.hypothesis.data.service.ExportService;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.ControlledUI;
 
@@ -35,7 +37,14 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 
 class ExportThread extends Thread {
+	
+	@Inject
+	private ExportService exportService;
+	
+	@Inject
+	private Event<MainUIEvent> mainEvent;
 
+	@SuppressWarnings("serial")
 	private static class CancelledException extends Exception {
 	}
 
@@ -44,10 +53,7 @@ class ExportThread extends Thread {
 	final AtomicBoolean cancelPending = new AtomicBoolean(false);
 	final Collection<Long> testIds;
 
-	private final MainEventBus bus;
-
-	public ExportThread(MainEventBus bus, final Collection<Long> testIds) {
-		this.bus = bus;
+	public ExportThread(final Collection<Long> testIds) {
 		this.testIds = testIds;
 	}
 
@@ -59,11 +65,11 @@ class ExportThread extends Thread {
 			ui.setResource("export", resource);
 			ResourceReference reference = ResourceReference.create(resource, ui, "export");
 
-			UI.getCurrent().access(() -> bus.post(new MainUIEvent.ExportFinishedEvent(false)));
+			UI.getCurrent().access(() -> mainEvent.fire(new MainUIEvent.ExportFinishedEvent(false)));
 
 			Page.getCurrent().open(reference.getURL(), null);
 		} else {
-			UI.getCurrent().access(() -> bus.post(new MainUIEvent.ExportErrorEvent()));
+			UI.getCurrent().access(() -> mainEvent.fire(new MainUIEvent.ExportErrorEvent()));
 		}
 	}
 
@@ -93,8 +99,6 @@ class ExportThread extends Thread {
 
 	@SuppressWarnings("unchecked")
 	private InputStream getExportFile() {
-		ExportService exportService = ExportService.newInstance();
-
 		try {
 			List<ExportEvent> events = exportService.findExportEventsByTestId(testIds);
 
@@ -124,9 +128,7 @@ class ExportThread extends Thread {
 
 					return new FileInputStream(tempFile);
 
-				} catch (IOException e) {
-					ExportPresenterImpl.log.error(e.getMessage());
-				} catch (ExportThread.CancelledException e) {
+				} catch (IOException | ExportThread.CancelledException e) {
 					ExportPresenterImpl.log.error(e.getMessage());
 				} finally {
 					if (workbook != null) {
@@ -394,7 +396,7 @@ class ExportThread extends Thread {
 			if (progress > lastProgress) {
 				lastProgress = progress;
 
-				UI.getCurrent().access(() -> bus.post(new MainUIEvent.ExportProgressEvent(progress / 100.0f)));
+				UI.getCurrent().access(() -> mainEvent.fire(new MainUIEvent.ExportProgressEvent(progress / 100.0f)));
 			}
 		}
 		return new Object[] { fieldCaptionMap, fieldValueCaptionMap };

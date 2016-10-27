@@ -67,6 +67,9 @@ public class ProcessEventTypes {
 	public static final String ShortcutKey = "SHORTCUT_KEY";
 	public static final String Message = "MESSAGE";
 
+	private ProcessEventTypes() {
+	}
+
 	static {
 		registerEvent(StartTest); // 1
 		registerEvent(FinishSlide); // 2

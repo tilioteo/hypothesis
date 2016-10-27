@@ -109,10 +109,7 @@ public class ProcessManager implements Serializable {
 	 * @param bus
 	 *            associated event bus
 	 */
-	public ProcessManager(ProcessEventBus bus) {
-		this.bus = bus;
-		bus.register(this);
-
+	public ProcessManager() {
 		branchManager = new BranchManager();
 		taskManager = new TaskManager();
 		slideManager = new SlideManager();
@@ -136,12 +133,12 @@ public class ProcessManager implements Serializable {
 					.anyMatch(e -> e.getId().equals(pack.getId()));
 
 			if (match) {
-					return true;
+				return true;
 			}
 		}
 
 		return permissionService.getPublishedPacks().stream().anyMatch(e -> e.getId().equals(pack.getId()));
-		}
+	}
 
 	/**
 	 * Handler method for {@link ActionEvent}

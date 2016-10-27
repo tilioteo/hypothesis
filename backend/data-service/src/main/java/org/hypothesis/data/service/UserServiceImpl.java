@@ -103,8 +103,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean anotherSuperuserExists(Long id) {
 		log.debug("anotherSuperuserExists");
-		return findAll().stream().anyMatch(e -> e.hasRole(RoleService.ROLE_SUPERUSER) && !id.equals(e.getId()));
-			}
+		return findAll().stream().anyMatch(e -> e.hasRole(RoleServiceImpl.ROLE_SUPERUSER) && !id.equals(e.getId()));
+	}
 
 	/*
 	 * (non-Javadoc)

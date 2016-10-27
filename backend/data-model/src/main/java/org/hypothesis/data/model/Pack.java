@@ -132,6 +132,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	@Transient
+	@Override
 	public final List<Branch> getList() {
 		return getBranches();
 	}

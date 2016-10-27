@@ -251,13 +251,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 			if (DocumentConstants.INIT.equals(n)) {
 				window.addInitListener(e -> pr.handleEvent(window, DocumentConstants.WINDOW,
-						ProcessEventTypes.WindowInit, a, ComponentEventCallback.DEFAULT));
+						ProcessEventTypes.WindowInit, a, ComponentEventCallback::empty));
 			} else if (DocumentConstants.OPEN.equals(n)) {
 				window.addOpenListener(e -> pr.handleEvent(window, DocumentConstants.WINDOW,
-						ProcessEventTypes.WindowOpen, a, ComponentEventCallback.DEFAULT));
+						ProcessEventTypes.WindowOpen, a, ComponentEventCallback::empty));
 			} else if (DocumentConstants.CLOSE.equals(n)) {
 				window.addCloseListener(e -> pr.handleEvent(window, DocumentConstants.WINDOW,
-						ProcessEventTypes.WindowClose, a, ComponentEventCallback.DEFAULT));
+						ProcessEventTypes.WindowClose, a, ComponentEventCallback::empty));
 						}
 					});
 						}
@@ -282,13 +282,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			final SlideContainer container = (SlideContainer) co;
 			if (DocumentConstants.INIT.equals(n)) {
 				pr.addViewportInitListener(e -> pr.handleEvent(container, DocumentConstants.SLIDE,
-						ProcessEventTypes.SlideInit, a, ComponentEventCallback.DEFAULT));
+						ProcessEventTypes.SlideInit, a, ComponentEventCallback::empty));
 			} else if (DocumentConstants.SHOW.equals(n)) {
 				pr.addViewportShowListener(e -> pr.handleEvent(container, DocumentConstants.SLIDE,
-						ProcessEventTypes.SlideShow, a, ComponentEventCallback.DEFAULT));
+						ProcessEventTypes.SlideShow, a, ComponentEventCallback::empty));
 			} else if (DocumentConstants.FINISH.equals(n)) {
 				pr.addViewportFinishListener(e -> pr.handleEvent(container, DocumentConstants.SLIDE, null, a,
-						ComponentEventCallback.DEFAULT));
+						ComponentEventCallback::empty));
 			} else if (DocumentConstants.SHORTCUT.equals(n)) {
 				String key = DocumentUtility.getKey(h);
 					ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);

@@ -22,7 +22,6 @@ import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.Status;
 import org.hypothesis.data.model.Task;
-import org.hypothesis.interfaces.Command;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -264,7 +264,7 @@ public class EvaluableUtility {
 									if (object != null) {
 										variable.setRawValue(object);
 									}
-								} catch (Throwable e) {
+								} catch (Exception e) {
 									e.printStackTrace();
 								}
 							}

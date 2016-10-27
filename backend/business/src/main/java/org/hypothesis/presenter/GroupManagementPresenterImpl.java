@@ -27,6 +27,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.hypothesis.business.SessionManager;
 import org.hypothesis.common.IntSequence;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.interfaces.GroupService;
@@ -42,6 +43,7 @@ import org.hypothesis.interfaces.GroupWindowPresenter;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
+import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -213,7 +215,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 			groupService.delete(group);
 
 			group.getUsers().stream().filter(Objects::nonNull)
-					.forEach(e -> bus.post(new MainUIEvent.UserGroupsChangedEvent(e)));
+					.forEach(e -> mainEvent.fire(new MainUIEvent.UserGroupsChangedEvent(e)));
 
 			table.removeItem(group.getId());
 		}
@@ -274,7 +276,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 				Messages.getString("Caption.Field.Users"), Messages.getString("Caption.Field.AvailablePacks"),
 				Messages.getString("Caption.Field.Note"));
 
-		table.addValueChangeListener(e -> bus.post(new MainUIEvent.GroupSelectionChangedEvent()));
+		table.addValueChangeListener(e -> mainEvent.fire(new MainUIEvent.GroupSelectionChangedEvent()));
 
 		table.addItemClickListener(e -> {
 			if (e.isDoubleClick()) {

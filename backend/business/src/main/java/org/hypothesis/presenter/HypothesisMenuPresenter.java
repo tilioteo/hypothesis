@@ -43,7 +43,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -104,12 +103,8 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
 
 		if (!User.GUEST.equals(user)) {
-			settingsItem.addItem(Messages.getString("Caption.Menu.EditProfile"), new Command() {
-				@Override
-				public void menuSelected(final MenuItem selectedItem) {
-					userSettingsWindowPresenter.showWindow(user);
-				}
-			});
+			settingsItem.addItem(Messages.getString("Caption.Menu.EditProfile"),
+					e -> userSettingsWindowPresenter.showWindow(user));
 
 			settingsItem.addSeparator();
 		}
@@ -120,14 +115,7 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 			user.setUsername(Messages.getString("Caption.User.Guest"));
 		}
 
-		settingsItem.addItem(itemCaption, new Command() {
-
-			@Override
-			public void menuSelected(final MenuItem selectedItem) {
-				mainEvent.fire(new MainUIEvent.UserLoggedOutEvent());
-			}
-
-		});
+		settingsItem.addItem(itemCaption, e -> mainEvent.fire(new MainUIEvent.UserLoggedOutEvent()));
 
 		updateUserName();
 
@@ -174,10 +162,8 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 		};
 
 		// @formatter:off
-		allViews.stream()
-				.filter(ViewUtility.filterCDIViewsForMainUI.and(ViewUtility.filterByRoles))
-				.sorted(ViewUtility.titleIndexComparator)
-				.forEach(buildMenuItem);
+		allViews.stream().filter(ViewUtility.filterCDIViewsForMainUI.and(ViewUtility.filterByRoles))
+				.sorted(ViewUtility.titleIndexComparator).forEach(buildMenuItem);
 		// @formatter:on
 
 		return menuItemsLayout;
