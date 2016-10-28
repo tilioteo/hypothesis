@@ -4,16 +4,19 @@
  */
 package org.hypothesis.business;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
+import org.hypothesis.event.data.ComponentDataConstants;
 import org.hypothesis.event.model.ComponentEvent;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.ComponentEventCallback;
 import org.hypothesis.presenter.SlideContainerPresenter;
-import org.hypothesis.utility.ReflectionUtility;
+import org.hypothesis.utility.ComponentDataUtility;
 
 import com.tilioteo.common.Strings;
 import com.vaadin.ui.AbstractComponent;
@@ -76,10 +79,10 @@ public class EventManager {
 
 	private ComponentData createComponentData(ComponentEvent event) {
 		HashMap<String, Class<?>> properties = new HashMap<>();
-		HashMap<String, String> structures = new HashMap<>();
+		HashMap<String, Annotation> annotations = new HashMap<>();
 
 		Set<String> names = event.getPropertyNames();
-		event.getPropertyNames().forEach(e -> {
+		names.forEach(e -> {
 			Object value = event.getProperty(e);
 			Class<?> clazz = event.getPropertyClass(e);
 			if (clazz != null) {
@@ -90,8 +93,8 @@ public class EventManager {
 				properties.put(e, Object.class);
 			}
 
-			if (event.getPropertyPattern(e) != null) {
-				structures.put(e, event.getPropertyPattern(e));
+			if (event.getPropertyElementPath(e) != null) {
+				annotations.put(e, createElementPathAnnotation(event.getPropertyElementPath(e)));
 			}
 		});
 
@@ -99,7 +102,7 @@ public class EventManager {
 			String safeClassName = event.getComponent().getClass().getName().replace(".", "_");
 			Class<?> dataClass = ComponentDataPojoGenerator.generate(
 					ComponentData.class.getName() + "$Generated" + "$" + safeClassName + "$" + event.getName(),
-					ComponentData.class, properties, structures);
+					ComponentData.class, properties, annotations);
 
 			ComponentData data = (ComponentData) dataClass.newInstance();
 
@@ -108,40 +111,26 @@ public class EventManager {
 
 				try {
 					Field field = data.getClass().getDeclaredField(e);
-				field.setAccessible(true);
-				field.set(data, value);
+					field.setAccessible(true);
+					field.set(data, value);
 				} catch (Exception ex) {
-			}
+					ex.printStackTrace();
+				}
 			});
 
 			Component component = event.getComponent();
 
 			// set fixed fields
-			Field field = ReflectionUtility.getDeclaredField(data, "sender");
-			field.setAccessible(true);
-			field.set(data, component);
+			ComponentDataUtility.setComponentDataPropertyValue(data, ComponentDataConstants.PROP_SENDER, component);
 
 			String str = component instanceof AbstractComponent && ((AbstractComponent) component).getData() != null
 					? ((AbstractComponent) component).getData().toString() : null;
-			field = ReflectionUtility.getDeclaredField(data, "id");
-			field.setAccessible(true);
-			field.set(data, str);
 
-			field = ReflectionUtility.getDeclaredField(data, "eventName");
-			field.setAccessible(true);
-			field.set(data, event.getName());
-
-			field = ReflectionUtility.getDeclaredField(data, "typeName");
-			field.setAccessible(true);
-			field.set(data, event.getTypeName());
-
-			field = ReflectionUtility.getDeclaredField(data, "timestamp");
-			field.setAccessible(true);
-			field.set(data, event.getTimestamp());
-
-			field = ReflectionUtility.getDeclaredField(data, "clientTimestamp");
-			field.setAccessible(true);
-			field.set(data, event.getClientTimestamp());
+			ComponentDataUtility.setComponentDataPropertyValue(data, ComponentDataConstants.PROP_ID, str);
+			ComponentDataUtility.setComponentDataPropertyValue(data, ComponentDataConstants.PROP_TYPE_NAME,
+					event.getTypeName());
+			ComponentDataUtility.setComponentDataPropertyValue(data, ComponentDataConstants.PROP_EVENT_NAME,
+					event.getName());
 
 			return data;
 		} catch (Exception e) {
@@ -149,5 +138,19 @@ public class EventManager {
 		}
 
 		return null;
+	}
+
+	private ElementPath createElementPathAnnotation(final String value) {
+		return new ElementPath() {
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return ElementPath.class;
+			}
+
+			@Override
+			public String value() {
+				return value;
+			}
+		};
 	}
 }

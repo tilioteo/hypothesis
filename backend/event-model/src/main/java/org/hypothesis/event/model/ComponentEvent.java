@@ -26,7 +26,7 @@ public class ComponentEvent extends AbstractUserEvent implements org.hypothesis.
 
 	private final HashMap<String, Object> properties = new HashMap<>();
 	private final HashMap<String, Class<?>> classes = new HashMap<>();
-	private final HashMap<String, String> patterns = new HashMap<>();
+	private final HashMap<String, String> elementPaths = new HashMap<>();
 
 	public ComponentEvent(Component component, String typeName, String eventName) {
 		super(null/* errorHandler */);
@@ -43,17 +43,16 @@ public class ComponentEvent extends AbstractUserEvent implements org.hypothesis.
 		return typeName;
 	}
 
-	@Override
-	public void setProperty(String name, Object value, String serializedPattern) {
+	public void setProperty(String name, Object value, String elementPath) {
 		properties.put(name, value);
-		if (serializedPattern != null) {
-			patterns.put(name, serializedPattern);
+		if (elementPath != null) {
+			elementPaths.put(name, elementPath);
 		}
 	}
 
 	@Override
-	public void setProperty(String name, Class<?> clazz, Object value, String pattern) {
-		setProperty(name, value, null);
+	public void setProperty(String name, Class<?> clazz, Object value, String elementPath) {
+		setProperty(name, value, elementPath);
 		
 		if (clazz != null) {
 			classes.put(name, clazz);
@@ -67,7 +66,7 @@ public class ComponentEvent extends AbstractUserEvent implements org.hypothesis.
 
 	@Override
 	public void setProperty(String name, Class<?> clazz, Object value) {
-		setProperty(name, null, value, null);
+		setProperty(name, clazz, value, null);
 	}
 
 	public Object getProperty(String name) {
@@ -78,8 +77,8 @@ public class ComponentEvent extends AbstractUserEvent implements org.hypothesis.
 		return classes.get(name);
 	}
 
-	public String getPropertyPattern(String name) {
-		return patterns.get(name);
+	public String getPropertyElementPath(String name) {
+		return elementPaths.get(name);
 	}
 
 	public Set<String> getPropertyNames() {

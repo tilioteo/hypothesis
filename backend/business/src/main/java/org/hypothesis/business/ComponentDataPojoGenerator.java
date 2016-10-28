@@ -4,7 +4,10 @@
  */
 package org.hypothesis.business;
 
+import java.util.Arrays;
 import java.util.Map;
+
+import org.hypothesis.event.annotations.ElementPath;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -41,15 +44,14 @@ public class ComponentDataPojoGenerator {
 	 *            properties to be defined in POJO, getters and setters are
 	 *            generated as well
 	 * @param structures
-	 *            optional {@link Structured} annotation passed to properties
+	 *            optional {@link ElementPath} annotation passed to properties
 	 * @return new Class object or null when an error occurs
 	 * @throws NotFoundException
 	 * @throws CannotCompileException
 	 */
 	public static Class<?> generate(String className, Class<?> superClass, Map<String, Class<?>> properties,
-			Map<String, String> structures) throws NotFoundException, CannotCompileException {
-		// TODO replace structures map by specific annotation instances for
-		// general use
+			Map<String, java.lang.annotation.Annotation> annotations) throws NotFoundException, CannotCompileException {
+
 		ClassPool pool = ClassPool.getDefault();
 
 		CtClass cc = null;
@@ -75,34 +77,53 @@ public class ComponentDataPojoGenerator {
 
 			final CtClass finalCc = cc;
 			properties.entrySet().forEach(e -> {
-				CtField field;
 				try {
-					field = new CtField(resolveCtClass(e.getValue()), e.getKey(), finalCc);
+					CtField field = new CtField(resolveCtClass(e.getValue()), e.getKey(), finalCc);
 
-				// specific part - insert annotation to mark serialized
-				// structure of
-				// field
-					String structure = structures.get(e.getKey());
-				if (structure != null) {
+					// specific part - insert annotation to mark serialized
+					// structure of
+					// field
+					java.lang.annotation.Annotation annotation = annotations.get(e.getKey());
+					if (annotation != null) {
 						AnnotationsAttribute attr = new AnnotationsAttribute(constpool,
 								AnnotationsAttribute.visibleTag);
-					Annotation annot = new Annotation(Structured.class.getName(), constpool);
-					annot.addMemberValue("value", new StringMemberValue(structure, ccFile.getConstPool()));
-					attr.addAnnotation(annot);
-					field.getFieldInfo().addAttribute(attr);
-				}
+						Annotation annot = new Annotation(annotation.annotationType().getName(), constpool);
+
+						Arrays.stream(annotation.getClass().getDeclaredMethods())
+								.filter(f -> !"annotationType".equals(f.getName())).forEach(i -> {
+									Object value;
+									i.setAccessible(true);
+
+									try {
+										value = i.invoke(annotation);
+
+										// TODO make support for other types
+										if (String.class.isAssignableFrom(value.getClass())) {
+											try {
+												annot.addMemberValue(i.getName(),
+														new StringMemberValue(value.toString(), ccFile.getConstPool()));
+												attr.addAnnotation(annot);
+											} catch (Exception ex) {
+											}
+										}
+									} catch (Exception ex) {
+										ex.printStackTrace();
+									}
+								});
+
+						field.getFieldInfo().addAttribute(attr);
+					}
 
 					finalCc.addField(field);
 
-				// add getter
+					// add getter
 					finalCc.addMethod(generateGetter(finalCc, e.getKey(), e.getValue()));
 
-				// add setter
-				// cc.addMethod(generateSetter(cc, entry.getKey(),
-				// entry.getValue()));
-				} catch (Exception e1) {
-					e1.printStackTrace();
-			}
+					// add setter
+					// cc.addMethod(generateSetter(cc, entry.getKey(),
+					// entry.getValue()));
+				} catch (CannotCompileException | NotFoundException ex) {
+				}
 			});
 			return cc.toClass();
 		} else {

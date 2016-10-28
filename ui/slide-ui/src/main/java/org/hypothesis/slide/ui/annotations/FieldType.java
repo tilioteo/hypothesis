@@ -2,7 +2,7 @@
  * Apache Licence Version 2.0
  * Please read the LICENCE file
  */
-package org.hypothesis.business;
+package org.hypothesis.slide.ui.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,11 +16,11 @@ import java.lang.annotation.Target;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = { ElementType.FIELD })
-public @interface Structured {
+@Target(value = { ElementType.TYPE })
+public @interface FieldType {
 
 	/**
-	 * String pattern for property structure
+	 * String name of field type
 	 * 
 	 * @return
 	 */

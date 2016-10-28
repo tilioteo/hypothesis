@@ -19,6 +19,7 @@ import org.hypothesis.common.utility.ComponentUtility;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
+import org.hypothesis.event.data.ComponentDataConstants;
 import org.hypothesis.event.model.MessageEvent;
 import org.hypothesis.event.model.ProcessEventTypes;
 import org.hypothesis.extension.PluginManager;
@@ -131,15 +132,15 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			if (StringUtils.isNotEmpty(id) && eval instanceof SlideContainerPresenter) {
 				SlideContainerPresenter pres = (SlideContainerPresenter) eval;
 
-					if (DocumentConstants.COMPONENT.equals(name)) {
+				if (DocumentConstants.COMPONENT.equals(name)) {
 					return pres.getComponent(id);
-					} else if (DocumentConstants.TIMER.equals(name)) {
+				} else if (DocumentConstants.TIMER.equals(name)) {
 					return pres.getTimer(id);
-					} else if (DocumentConstants.WINDOW.equals(name)) {
+				} else if (DocumentConstants.WINDOW.equals(name)) {
 					return pres.getWindow(id);
-					}
 				}
-				return null;
+			}
+			return null;
 		});
 
 		return presenter.getSlideContainer();
@@ -149,13 +150,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		DocumentUtility.getInputValueElements(rootElement).stream()
 				.map(m -> EvaluableUtility.createValueExpression(m, DocumentConstants.INPUT_VALUE))
 				.filter(Objects::nonNull).forEach(e -> presenter.setInputExpression(e.getIndex(), e));
-				}
+	}
 
 	private void createOutputExpressions(Element rootElement, SlideContainerPresenter presenter) {
 		DocumentUtility.getOutputValueElements(rootElement).stream()
 				.map(m -> EvaluableUtility.createValueExpression(m, DocumentConstants.OUTPUT_VALUE))
 				.filter(Objects::nonNull).forEach(e -> presenter.setOutputExpression(e.getIndex(), e));
-				}
+	}
 
 	private void createTimers(Element rootElement, SlideContainerPresenter presenter) {
 		DocumentUtility.getTimersElements(rootElement).forEach(e -> {
@@ -163,10 +164,10 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			if (StringUtils.isNotEmpty(id)) {
 
 				Timer timer = createTimer(e, presenter);
-					presenter.setTimer(id, timer);
-				}
-		});
+				presenter.setTimer(id, timer);
 			}
+		});
+	}
 
 	private Timer createTimer(Element element, SlideContainerPresenter presenter) {
 		StringMap properties = DocumentUtility.getPropertyValueMap(element);
@@ -184,21 +185,22 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 			if (DocumentConstants.START.equals(n)) {
 				timer.addStartListener(e -> pr.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStart,
-						a, c -> c.setProperty("time", e.getTime())));
+						a, c -> c.setProperty(ComponentDataConstants.PROP_TIME, e.getTime(), DocumentConstants.TIME)));
 
 			} else if (DocumentConstants.STOP.equals(n)) {
 				timer.addStopListener(e -> pr.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStop,
-						a, c -> c.setProperty("time", e.getTime())));
+						a, c -> c.setProperty(ComponentDataConstants.PROP_TIME, e.getTime(), DocumentConstants.TIME)));
 
 			} else if (DocumentConstants.UPDATE.equals(n)) {
 				Integer interval = Strings.toInteger(el.getAttribute(DocumentConstants.INTERVAL));
-					if (interval != null) {
+				if (interval != null) {
 					timer.addUpdateListener(interval, e -> presenter.handleEvent(timer, DocumentConstants.TIMER,
-							ProcessEventTypes.TimerUpdate, a, c -> c.setProperty("time", e.getTime())));
-											}
-							}
-						});
-					}
+							ProcessEventTypes.TimerUpdate, a,
+							c -> c.setProperty(ComponentDataConstants.PROP_TIME, e.getTime(), DocumentConstants.TIME)));
+				}
+			}
+		});
+	}
 
 	private void createWindows(Element rootElement, SlideContainerPresenter presenter) {
 		DocumentUtility.getWindowsElements(rootElement).forEach(e -> {
@@ -258,9 +260,9 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			} else if (DocumentConstants.CLOSE.equals(n)) {
 				window.addCloseListener(e -> pr.handleEvent(window, DocumentConstants.WINDOW,
 						ProcessEventTypes.WindowClose, a, ComponentEventCallback::empty));
-						}
-					});
-						}
+			}
+		});
+	}
 
 	private void createViewport(Element rootElement, SlideContainerPresenter presenter) {
 		Element componentElement = DocumentUtility.getViewportInnerComponent(rootElement);
@@ -291,34 +293,36 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						ComponentEventCallback::empty));
 			} else if (DocumentConstants.SHORTCUT.equals(n)) {
 				String key = DocumentUtility.getKey(h);
-					ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);
-					if (shortcutKeys != null) {
-						KeyAction keyAction = new KeyAction(shortcutKeys.getKeyCode(), shortcutKeys.getModifiers());
-						final String shortcut = keyAction.toString();
+				ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);
+				if (shortcutKeys != null) {
+					KeyAction keyAction = new KeyAction(shortcutKeys.getKeyCode(), shortcutKeys.getModifiers());
+					final String shortcut = keyAction.toString();
 
 					keyAction.addKeypressListener(e -> pr.handleEvent(container, DocumentConstants.SLIDE,
 							ProcessEventTypes.ShortcutKey, a, c -> {
 								c.setTimestamp(e.getServerDatetime());
 								c.setClientTimestamp(e.getClientDatetime());
-								c.setProperty("shortcutKey", shortcut, "shortcut@key");
+								c.setProperty(ComponentDataConstants.PROP_SHORTCUT_KEY, shortcut,
+										ComponentDataConstants.ELEM_SHORTCUT_KEY);
 							}));
 					pr.addKeyAction(keyAction);
-											}
+				}
 			} else if (DocumentConstants.MESSAGE.equals(n)) {
 				String uid = DocumentUtility.getUid(h);
 				if (StringUtils.isNotEmpty(uid)) {
 					pr.addMessageListener(uid, e -> {
 						final MessageEvent messageEvent = (MessageEvent) e;
 						presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.Message, a, c -> {
-							c.setProperty("message", messageEvent.getMessage(), "");
-							c.setProperty("messageUID", messageEvent.getMessage().getUid(), "message@UID");
-										});
+							c.setProperty(ComponentDataConstants.PROP_MESSAGE, messageEvent.getMessage());
+							c.setProperty(ComponentDataConstants.PROP_MESSAGE_UID, messageEvent.getMessage().getUid(),
+									ComponentDataConstants.ELEM_MESSAGE_UID);
 						});
-					}
-												}
-											});
+					});
+				}
+			}
+		});
 
-								}
+	}
 
 	private ComponentWrapper createComponentFromElement(Element element, SlideContainerPresenter presenter) {
 		if (element != null) {
@@ -396,16 +400,16 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				.map(m -> createComponentFromElement(m, presenter)).filter(Objects::nonNull).forEach(e -> {
 					Component component = e.getComponent();
 
-				container.addComponent(component);
+					container.addComponent(component);
 					container.setComponentAlignment(component, e.getAlignment());
 
-				float ratio = 1.0f;
-				if (component.getHeightUnits() == Unit.PERCENTAGE) {
-					ratio = component.getHeight() / 100;
-					component.setHeight("100%");
-				}
+					float ratio = 1.0f;
+					if (component.getHeightUnits() == Unit.PERCENTAGE) {
+						ratio = component.getHeight() / 100;
+						component.setHeight("100%");
+					}
 
-				container.setExpandRatio(component, ratio);
+					container.setExpandRatio(component, ratio);
 				});
 	}
 
@@ -425,16 +429,16 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				.map(m -> createComponentFromElement(m, presenter)).filter(Objects::nonNull).forEach(e -> {
 					Component component = e.getComponent();
 
-				container.addComponent(component);
+					container.addComponent(component);
 					container.setComponentAlignment(component, e.getAlignment());
 
-				float ratio = 1.0f;
-				if (component.getWidthUnits() == Unit.PERCENTAGE) {
-					ratio = component.getWidth() / 100;
-					component.setWidth("100%");
-				}
+					float ratio = 1.0f;
+					if (component.getWidthUnits() == Unit.PERCENTAGE) {
+						ratio = component.getWidth() / 100;
+						component.setWidth("100%");
+					}
 
-				container.setExpandRatio(component, ratio);
+					container.setExpandRatio(component, ratio);
 				});
 	}
 
@@ -454,7 +458,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				.map(m -> createComponentFromElement(m, presenter)).filter(Objects::nonNull).forEach(e -> {
 					Component component = e.getComponent();
 
-				container.addComponent(component);
+					container.addComponent(component);
 					container.setComponentAlignment(component, e.getAlignment());
 				});
 	}
@@ -507,8 +511,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 							c.setTimestamp(e.getServerDatetime());
 							c.setClientTimestamp(e.getClientDatetime());
 
-							c.setProperty("x", e.getRelativeX());
-							c.setProperty("y", e.getRelativeY());
+							c.setProperty(ComponentDataConstants.PROP_X, e.getRelativeX(), DocumentConstants.X);
+							c.setProperty(ComponentDataConstants.PROP_Y, e.getRelativeY(), DocumentConstants.Y);
 						}));
 			} else if (DocumentConstants.LOAD.equals(n)) {
 				image.addLoadListener(e -> pr.handleEvent(image, DocumentConstants.IMAGE, ProcessEventTypes.ImageLoad,
@@ -516,9 +520,9 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			} else if (DocumentConstants.ERROR.equals(n)) {
 				image.addErrorListener(e -> pr.handleEvent(image, DocumentConstants.IMAGE, ProcessEventTypes.ImageError,
 						a, ComponentUtility.createDefaultEventCallback(e.getServerDatetime(), e.getClientDatetime())));
-										}
-									});
-						}
+			}
+		});
+	}
 
 	private Video createVideo(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
@@ -538,8 +542,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 							c.setTimestamp(e.getServerDatetime());
 							c.setClientTimestamp(e.getClientDatetime());
 
-							c.setProperty("x", e.getRelativeX());
-							c.setProperty("y", e.getRelativeY());
+							c.setProperty(ComponentDataConstants.PROP_X, e.getRelativeX(), DocumentConstants.X);
+							c.setProperty(ComponentDataConstants.PROP_Y, e.getRelativeY(), DocumentConstants.Y);
 						}));
 			} else if (DocumentConstants.LOAD.equals(n)) {
 				video.addCanPlayThroughListener(e -> pr.handleEvent(video, DocumentConstants.VIDEO,
@@ -547,18 +551,19 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						ComponentUtility.createDefaultEventCallback(e.getServerDatetime(), e.getClientDatetime())));
 			} else if (DocumentConstants.START.equals(n)) {
 				video.addStartListener(e -> presenter.handleEvent(video, DocumentConstants.VIDEO,
-						ProcessEventTypes.VideoStart, a, c -> c.setProperty("time", e.getMediaTime())));
+						ProcessEventTypes.VideoStart, a, c -> c.setProperty(ComponentDataConstants.PROP_TIME,
+								e.getMediaTime(), DocumentConstants.TIME)));
 			} else if (DocumentConstants.STOP.equals(n)) {
 				video.addStopListener(
 						e -> pr.handleEvent(video, DocumentConstants.VIDEO, ProcessEventTypes.VideoStop, a, c -> {
 							c.setTimestamp(e.getServerDatetime());
 							c.setClientTimestamp(e.getClientDatetime());
 
-							c.setProperty("time", e.getMediaTime());
+							c.setProperty(ComponentDataConstants.PROP_TIME, e.getMediaTime(), DocumentConstants.TIME);
 						}));
-										}
-									});
-						}
+			}
+		});
+	}
 
 	private Audio createAudio(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
@@ -583,7 +588,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 							c.setTimestamp(e.getServerDatetime());
 							c.setClientTimestamp(e.getClientDatetime());
 
-							c.setProperty("time", e.getMediaTime());
+							c.setProperty(ComponentDataConstants.PROP_TIME, e.getMediaTime(), DocumentConstants.TIME);
 						}));
 			} else if (DocumentConstants.STOP.equals(n)) {
 				audio.addStopListener(
@@ -591,11 +596,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 							c.setTimestamp(e.getServerDatetime());
 							c.setClientTimestamp(e.getClientDatetime());
 
-							c.setProperty("time", e.getMediaTime());
+							c.setProperty(ComponentDataConstants.PROP_TIME, e.getMediaTime(), DocumentConstants.TIME);
 						}));
-										}
-									});
-						}
+			}
+		});
+	}
 
 	private Button createButton(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
@@ -614,9 +619,9 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				button.addClickListener(e -> pr.handleEvent(button, DocumentConstants.BUTTON,
 						ProcessEventTypes.ButtonClick, a,
 						ComponentUtility.createDefaultEventCallback(e.getServerDatetime(), e.getClientDatetime())));
-						}
-					});
-				}
+			}
+		});
+	}
 
 	private ButtonPanel createButtonPanel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
@@ -637,14 +642,16 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 							c.setTimestamp(e.getServerDatetime());
 							c.setClientTimestamp(e.getClientDatetime());
 
-							c.setProperty("button", e.getButton(), "");
-							c.setProperty("selectedCaption", e.getButton().getCaption(), "selected");
-							c.setProperty("selectedIndex", buttonPanel.getChildIndex(e.getButton()) + 1,
-									"selected@index");
+							c.setProperty(ComponentDataConstants.PROP_BUTTON, e.getButton());
+							c.setProperty(ComponentDataConstants.PROP_SELECTED_CAPTION, e.getButton().getCaption(),
+									DocumentConstants.SELECTED);
+							c.setProperty(ComponentDataConstants.PROP_SELECTED_INDEX,
+									buttonPanel.getChildIndex(e.getButton()) + 1,
+									ComponentDataConstants.ELEM_SELECTED_INDEX);
 						}));
-										}
-									});
-						}
+			}
+		});
+	}
 
 	private SelectPanel createSelectPanel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
@@ -666,15 +673,18 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 							c.setTimestamp(e.getServerDatetime());
 							c.setClientTimestamp(e.getClientDatetime());
 
-							c.setProperty("button", SelectButton.class, e.getSelectButton(), "");
-							c.setProperty("selectedCaption", e.getSelectButton().getCaption(), "selected");
-							c.setProperty("selectedIndex", selectPanel.getChildIndex(e.getSelectButton()) + 1,
-													"selected@index");
-							c.setProperty("selectedValue", e.getSelectButton().getValue() ? "true" : "false",
-													"selected@value");
+							c.setProperty(ComponentDataConstants.PROP_BUTTON, SelectButton.class, e.getSelectButton());
+							c.setProperty(ComponentDataConstants.PROP_SELECTED_CAPTION,
+									e.getSelectButton().getCaption(), DocumentConstants.SELECTED);
+							c.setProperty(ComponentDataConstants.PROP_SELECTED_INDEX,
+									selectPanel.getChildIndex(e.getSelectButton()) + 1,
+									ComponentDataConstants.ELEM_SELECTED_INDEX);
+							c.setProperty(ComponentDataConstants.PROP_SELECTED_VALUE,
+									e.getSelectButton().getValue() ? "true" : "false",
+									ComponentDataConstants.ELEM_SELECTED_VALUE);
 						}));
-										}
-									});
+			}
+		});
 
 		// add default click handler if none defined
 		if (!component.hasClickListener()) {
@@ -683,12 +693,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						c.setTimestamp(e.getServerDatetime());
 						c.setClientTimestamp(e.getClientDatetime());
 
-						c.setProperty("button", e.getSource());
-						c.setProperty("selectedIndex", component.getChildIndex(e.getSelectButton()) + 1,
-								"selected@index");
+						c.setProperty(ComponentDataConstants.PROP_BUTTON, e.getSource());
+						c.setProperty(ComponentDataConstants.PROP_SELECTED_INDEX,
+								component.getChildIndex(e.getSelectButton()) + 1,
+								ComponentDataConstants.ELEM_SELECTED_INDEX);
 					}));
-								}
-				}
+		}
+	}
 
 	private void iterateValidators(Component component, Element element, ValidatorCallback callback) {
 		if (component instanceof Validatable) {
@@ -711,7 +722,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		iterateValidators(component, element, (co, el, n, m) -> {
 			if (DocumentConstants.EMPTY.equals(n)) {
 				co.addValidator(new SelectPanelEmptyValidator(m));
-				}
+			}
 		});
 	}
 
@@ -736,10 +747,10 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				Double minValue = DocumentUtility.getNumberValidatorMinValue(el);
 				Double maxValue = DocumentUtility.getNumberValidatorMaxValue(el);
 
-					if (minValue != null || maxValue != null) {
+				if (minValue != null || maxValue != null) {
 					co.addValidator(new NumberRangeValidator(m, minValue, maxValue));
-					}
 				}
+			}
 		});
 	}
 
@@ -766,13 +777,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			if (DocumentConstants.EMPTY.equals(n)) {
 				co.addValidator(new EmptyValidator(m));
 			} else if (DocumentConstants.RANGE.equals(n)) {
-				Date minValue = DocumentUtility.getDateValidatorMinValue(el, "yyyy-MM-dd");
-				Date maxValue = DocumentUtility.getDateValidatorMaxValue(el, "yyyy-MM-dd");
+				Date minValue = DocumentUtility.getDateValidatorMinValue(el, DocumentConstants.STR_DATE_FORMAT);
+				Date maxValue = DocumentUtility.getDateValidatorMaxValue(el, DocumentConstants.STR_DATE_FORMAT);
 
-					if (minValue != null || maxValue != null) {
+				if (minValue != null || maxValue != null) {
 					co.addValidator(new DateRangeValidator(m, minValue, maxValue));
-					}
 				}
+			}
 		});
 
 	}
@@ -806,7 +817,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		iterateValidators(component, element, (co, el, n, m) -> {
 			if (DocumentConstants.EMPTY.equals(n)) {
 				co.addValidator(new EmptyValidator(m));
-				}
+			}
 		});
 	}
 
