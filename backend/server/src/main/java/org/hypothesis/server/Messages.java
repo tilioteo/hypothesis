@@ -4,10 +4,10 @@
  */
 package org.hypothesis.server;
 
-import java.util.Locale;
-
 import org.hypothesis.resource.context.MessageSource;
 import org.hypothesis.resource.context.support.ReloadableResourceBundleMessageSource;
+
+import java.util.Locale;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -15,7 +15,7 @@ import org.hypothesis.resource.context.support.ReloadableResourceBundleMessageSo
  *         Hypothesis
  *
  */
-public class Messages {
+public final class Messages {
 
 	private static MessageSource messageSource = null;
 	private static Locale locale = Locale.ENGLISH;

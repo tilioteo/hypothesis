@@ -4,11 +4,9 @@
  */
 package org.hypothesis.business;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Set;
-
+import com.tilioteo.common.Strings;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
 import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.data.ComponentDataConstants;
@@ -18,9 +16,11 @@ import org.hypothesis.interfaces.ComponentEventCallback;
 import org.hypothesis.presenter.SlideContainerPresenter;
 import org.hypothesis.utility.ComponentDataUtility;
 
-import com.tilioteo.common.Strings;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Component;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -78,8 +78,8 @@ public class EventManager {
 	}
 
 	private ComponentData createComponentData(ComponentEvent event) {
-		HashMap<String, Class<?>> properties = new HashMap<>();
-		HashMap<String, Annotation> annotations = new HashMap<>();
+		Map<String, Class<?>> properties = new HashMap<>();
+		Map<String, Annotation> annotations = new HashMap<>();
 
 		Set<String> names = event.getPropertyNames();
 		names.forEach(e -> {

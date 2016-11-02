@@ -17,7 +17,7 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class EventQueue implements Serializable {
 
-	private final ArrayList<EventWrapper> list = new ArrayList<>();
+	private final List<EventWrapper> list = new ArrayList<>();
 
 	public void add(EventWrapper eventWrapper) {
 		list.add(eventWrapper);

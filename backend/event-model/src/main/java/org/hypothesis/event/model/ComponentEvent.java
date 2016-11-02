@@ -4,12 +4,12 @@
  */
 package org.hypothesis.event.model;
 
-import java.util.HashMap;
-import java.util.Set;
-
+import com.vaadin.ui.Component;
 import org.hypothesis.event.data.ComponentData;
 
-import com.vaadin.ui.Component;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -24,9 +24,9 @@ public class ComponentEvent extends AbstractUserEvent implements org.hypothesis.
 	private ComponentData data;
 	private final String typeName;
 
-	private final HashMap<String, Object> properties = new HashMap<>();
-	private final HashMap<String, Class<?>> classes = new HashMap<>();
-	private final HashMap<String, String> elementPaths = new HashMap<>();
+	private final Map<String, Object> properties = new HashMap<>();
+	private final Map<String, Class<?>> classes = new HashMap<>();
+	private final Map<String, String> elementPaths = new HashMap<>();
 
 	public ComponentEvent(Component component, String typeName, String eventName) {
 		super(null/* errorHandler */);

@@ -4,61 +4,20 @@
  */
 package org.hypothesis.business;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import org.apache.log4j.Logger;
+import org.hypothesis.data.interfaces.*;
+import org.hypothesis.data.model.*;
+import org.hypothesis.event.interfaces.ProcessEvent;
+import org.hypothesis.event.model.*;
+import org.hypothesis.event.model.FinishSlideEvent.Direction;
+import org.hypothesis.server.Messages;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
-import org.hypothesis.data.interfaces.AsynchronousService;
-import org.hypothesis.data.interfaces.BranchService;
-import org.hypothesis.data.interfaces.HasStatus;
-import org.hypothesis.data.interfaces.OutputService;
-import org.hypothesis.data.interfaces.PermissionService;
-import org.hypothesis.data.interfaces.PersistenceService;
-import org.hypothesis.data.interfaces.TestService;
-import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.BranchMap;
-import org.hypothesis.data.model.BranchOutput;
-import org.hypothesis.data.model.Event;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.data.model.SlideOrder;
-import org.hypothesis.data.model.Status;
-import org.hypothesis.data.model.Task;
-import org.hypothesis.data.model.Token;
-import org.hypothesis.data.model.User;
-import org.hypothesis.event.interfaces.ProcessEvent;
-import org.hypothesis.event.model.AbstractProcessEvent;
-import org.hypothesis.event.model.AbstractRunningEvent;
-import org.hypothesis.event.model.AbstractUserEvent;
-import org.hypothesis.event.model.ActionEvent;
-import org.hypothesis.event.model.AfterFinishSlideEvent;
-import org.hypothesis.event.model.AfterPrepareTestEvent;
-import org.hypothesis.event.model.AfterRenderContentEvent;
-import org.hypothesis.event.model.BreakTestEvent;
-import org.hypothesis.event.model.ComponentEvent;
-import org.hypothesis.event.model.ContinueTestEvent;
-import org.hypothesis.event.model.ErrorNotificationEvent;
-import org.hypothesis.event.model.ErrorTestEvent;
-import org.hypothesis.event.model.FinishBranchEvent;
-import org.hypothesis.event.model.FinishSlideEvent;
-import org.hypothesis.event.model.FinishSlideEvent.Direction;
-import org.hypothesis.event.model.FinishTaskEvent;
-import org.hypothesis.event.model.FinishTestEvent;
-import org.hypothesis.event.model.NextBranchEvent;
-import org.hypothesis.event.model.NextSlideEvent;
-import org.hypothesis.event.model.NextTaskEvent;
-import org.hypothesis.event.model.PrepareTestEvent;
-import org.hypothesis.event.model.PriorSlideEvent;
-import org.hypothesis.event.model.ProcessEventType;
-import org.hypothesis.event.model.ProcessEventTypes;
-import org.hypothesis.event.model.RenderContentEvent;
-import org.hypothesis.event.model.StartTestEvent;
-import org.hypothesis.server.Messages;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -312,7 +271,7 @@ public class ProcessManager implements Serializable {
 	public void processNextBranch(@Observes NextBranchEvent event) {
 		saveRunningEvent(event);
 
-		BranchMap branchMap = branchService.getBranchMap(currentPack, currentBranch);
+		Map<String, Branch> branchMap = branchService.getBranches(currentPack, currentBranch);
 		Branch nextBranch = branchManager.getNextBranch(branchMap);
 
 		if (nextBranch != null) {

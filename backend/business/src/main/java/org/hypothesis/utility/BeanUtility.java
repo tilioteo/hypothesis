@@ -3,15 +3,14 @@
  */
 package org.hypothesis.utility;
 
-import java.lang.annotation.Annotation;
-
 import javax.enterprise.inject.spi.Bean;
+import java.lang.annotation.Annotation;
 
 /**
  * @author kamil
  *
  */
-public class BeanUtility {
+public final class BeanUtility {
 
 	private BeanUtility() {
 	}

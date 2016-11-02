@@ -4,6 +4,11 @@
  */
 package org.hypothesis.builder;
 
+import com.tilioteo.common.collections.StringMap;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Resource;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractMedia;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.ComponentUtility;
@@ -11,31 +16,12 @@ import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.interfaces.AlignmentWrapper;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
-import org.hypothesis.slide.ui.Audio;
-import org.hypothesis.slide.ui.Button;
-import org.hypothesis.slide.ui.ButtonPanel;
-import org.hypothesis.slide.ui.ComboBox;
-import org.hypothesis.slide.ui.DateField;
-import org.hypothesis.slide.ui.Image;
-import org.hypothesis.slide.ui.Label;
-import org.hypothesis.slide.ui.Panel;
-import org.hypothesis.slide.ui.SelectPanel;
-import org.hypothesis.slide.ui.TextArea;
-import org.hypothesis.slide.ui.TextField;
-import org.hypothesis.slide.ui.TimerLabel;
-import org.hypothesis.slide.ui.Video;
-import org.hypothesis.slide.ui.Window;
+import org.hypothesis.slide.ui.*;
 import org.vaadin.special.shared.ui.selectbutton.SelectButtonState.LabelPosition;
 import org.vaadin.special.shared.ui.timer.TimerState.Direction;
 import org.vaadin.special.ui.MultipleComponentPanel;
 import org.vaadin.special.ui.MultipleComponentPanel.Orientation;
 import org.vaadin.special.ui.Timer;
-
-import com.tilioteo.common.collections.StringMap;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Resource;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractMedia;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -43,7 +29,7 @@ import com.vaadin.ui.AbstractMedia;
  *         Hypothesis
  *
  */
-public class SlideComponentUtility {
+public final class SlideComponentUtility {
 
 	private SlideComponentUtility() {
 	}

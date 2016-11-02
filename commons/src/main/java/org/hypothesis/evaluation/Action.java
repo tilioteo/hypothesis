@@ -3,14 +3,14 @@
  */
 package org.hypothesis.evaluation;
 
+import org.hypothesis.interfaces.Evaluable;
+import org.hypothesis.interfaces.ExchangeVariable;
+import org.hypothesis.interfaces.HasVariables;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.hypothesis.interfaces.Evaluable;
-import org.hypothesis.interfaces.ExchangeVariable;
-import org.hypothesis.interfaces.HasVariables;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -21,7 +21,7 @@ import org.hypothesis.interfaces.HasVariables;
 @SuppressWarnings("serial")
 public class Action extends AbstractBaseAction {
 
-	private final HashMap<Integer, ExchangeVariable> outputValues = new HashMap<>();
+	private final Map<Integer, ExchangeVariable> outputValues = new HashMap<>();
 	private final List<Evaluable> evaluables = new ArrayList<>();
 
 	/**

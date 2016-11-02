@@ -4,23 +4,16 @@
  */
 package org.hypothesis.business;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.hypothesis.event.annotations.ElementPath;
-
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtField;
-import javassist.CtMethod;
-import javassist.LoaderClassPath;
-import javassist.NotFoundException;
+import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
+import org.hypothesis.event.annotations.ElementPath;
+
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -28,7 +21,7 @@ import javassist.bytecode.annotation.StringMemberValue;
  *         Hypothesis
  *
  */
-public class ComponentDataPojoGenerator {
+public final class ComponentDataPojoGenerator {
 
 	private ComponentDataPojoGenerator() {
 	}
@@ -43,8 +36,8 @@ public class ComponentDataPojoGenerator {
 	 * @param properties
 	 *            properties to be defined in POJO, getters and setters are
 	 *            generated as well
-	 * @param structures
-	 *            optional {@link ElementPath} annotation passed to properties
+	 * @param annotations
+	 *            optional map of annotations passed to properties
 	 * @return new Class object or null when an error occurs
 	 * @throws NotFoundException
 	 * @throws CannotCompileException

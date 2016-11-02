@@ -3,16 +3,19 @@ package org.hypothesis.utility;
  * 
  */
 
-import java.lang.reflect.Field;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.event.data.ComponentData;
+
+import java.lang.reflect.Field;
 
 /**
  * @author Kamil Morong
  *
  */
-public class ComponentDataUtility {
+public final class ComponentDataUtility {
+
+	private ComponentDataUtility() {
+	}
 
 	public static void setComponentDataPropertyValue(ComponentData data, String name, Object value) {
 		if (data != null && StringUtils.isNotEmpty(name)) {

@@ -1,26 +1,13 @@
 package org.hypothesis.presenter;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
+import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ResourceReference;
+import com.vaadin.server.StreamResource;
+import com.vaadin.ui.UI;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.hypothesis.builder.SlideDataParser;
 import org.hypothesis.common.IntSequence;
@@ -30,14 +17,17 @@ import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.ControlledUI;
 
-import com.vaadin.server.Page;
-import com.vaadin.server.Resource;
-import com.vaadin.server.ResourceReference;
-import com.vaadin.server.StreamResource;
-import com.vaadin.ui.UI;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-class ExportThread extends Thread {
-	
+@SuppressWarnings("serial")
+public class ExportThreadedServiceImpl implements ExportThreadedService, Runnable {
+
+	static final Logger log = Logger.getLogger(ExportThreadedServiceImpl.class);
+
 	@Inject
 	private ExportService exportService;
 	
@@ -48,14 +38,13 @@ class ExportThread extends Thread {
 	private static class CancelledException extends Exception {
 	}
 
+	private Collection<Long> testIds;
+
+	private transient Thread thread;
+
 	private volatile int progress;
 
-	final AtomicBoolean cancelPending = new AtomicBoolean(false);
-	final Collection<Long> testIds;
-
-	public ExportThread(final Collection<Long> testIds) {
-		this.testIds = testIds;
-	}
+	private final AtomicBoolean cancelPending = new AtomicBoolean(false);
 
 	@Override
 	public void run() {
@@ -73,10 +62,19 @@ class ExportThread extends Thread {
 		}
 	}
 
+	@Override
+	public void exportTests(Collection<Long> testIds) {
+		this.testIds = testIds;
+
+		thread = new Thread(this);
+		thread.start();
+	}
+
 	/**
-	 * Request cancel of export
+	 * Request requestCancel of export
 	 */
-	public void cancel() {
+	@Override
+	public void requestCancel() {
 		cancelPending.set(true);
 	}
 
@@ -112,8 +110,8 @@ class ExportThread extends Thread {
 					workbook = new SXSSFWorkbook(-1);
 					Object[] maps = createDataSheet(workbook, events);
 					// maps hold informations for legend creation
-					HashMap<String, String> fieldCaptionMap = (HashMap<String, String>) maps[0];
-					HashMap<String, HashMap<String, String>> fieldValueCaptionMap = (HashMap<String, HashMap<String, String>>) maps[1];
+					Map<String, String> fieldCaptionMap = (Map<String, String>) maps[0];
+					Map<String, Map<String, String>> fieldValueCaptionMap = (Map<String, Map<String, String>>) maps[1];
 
 					// create legend sheet only if there are some
 					// informations gathered
@@ -128,8 +126,8 @@ class ExportThread extends Thread {
 
 					return new FileInputStream(tempFile);
 
-				} catch (IOException | ExportThread.CancelledException e) {
-					ExportPresenterImpl.log.error(e.getMessage());
+				} catch (IOException | ExportThreadedServiceImpl.CancelledException e) {
+					log.error(e.getMessage());
 				} finally {
 					if (workbook != null) {
 						workbook.close();
@@ -138,17 +136,17 @@ class ExportThread extends Thread {
 			}
 
 		} catch (Exception e) {
-			ExportPresenterImpl.log.error(e.getMessage());
+			log.error(e.getMessage());
 		}
 
 		return null;
 	}
 
 	private Object[] createDataSheet(SXSSFWorkbook workbook, final List<ExportEvent> events)
-			throws ExportThread.CancelledException {
+			throws ExportThreadedServiceImpl.CancelledException {
 		// maps hold informations for legend creation
-		HashMap<String, String> fieldCaptionMap = new HashMap<>();
-		HashMap<String, HashMap<String, String>> fieldValueCaptionMap = new HashMap<>();
+		Map<String, String> fieldCaptionMap = new HashMap<>();
+		Map<String, Map<String, String>> fieldValueCaptionMap = new HashMap<>();
 
 		Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.TestSheetName"));
 
@@ -171,9 +169,9 @@ class ExportThread extends Thread {
 		long lastEventTime = 0;
 		long diffTime;
 
-		HashMap<String, Integer> fieldColumnMap = new HashMap<>();
-		HashMap<Long, Integer> branchCountMap = new HashMap<>();
-		HashMap<Long, Integer> slideCountMap = new HashMap<>();
+		Map<String, Integer> fieldColumnMap = new HashMap<>();
+		Map<Long, Integer> branchCountMap = new HashMap<>();
+		Map<Long, Integer> slideCountMap = new HashMap<>();
 
 		int outputValueCol = 23;
 		final IntSequence colSeq = new IntSequence(outputValueCol + 10 - 1);
@@ -187,7 +185,7 @@ class ExportThread extends Thread {
 
 		for (ExportEvent event : events) {
 			if (cancelPending.get()) {
-				throw new ExportThread.CancelledException();
+				throw new CancelledException();
 			}
 
 			Long testId = event.getTestId();
@@ -368,7 +366,7 @@ class ExportThread extends Thread {
 						if (fieldValueCaptions.get(fieldName) != null) {
 							String valueCaption = fieldValueCaptions.get(fieldName).get(fieldValue);
 							if (valueCaption != null) {
-								HashMap<String, String> valueCaptionMap = fieldValueCaptionMap.get(fieldName);
+								Map<String, String> valueCaptionMap = fieldValueCaptionMap.get(fieldName);
 								if (null == valueCaptionMap) {
 									valueCaptionMap = new HashMap<>();
 									fieldValueCaptionMap.put(fieldName, valueCaptionMap);
@@ -444,7 +442,7 @@ class ExportThread extends Thread {
 		row.createCell(6).setCellValue("branch_id");
 		row.createCell(7).setCellValue("branch_name");
 		row.createCell(8).setCellValue("task_id");
-		row.createCell(9).setCellValue("task_iname");
+		row.createCell(9).setCellValue("task_name");
 		row.createCell(10).setCellValue("slide_id");
 		row.createCell(11).setCellValue("slide_name");
 		row.createCell(12).setCellValue("branch_order_pack");
@@ -473,8 +471,8 @@ class ExportThread extends Thread {
 		return row;
 	}
 
-	private void createLegendSheet(SXSSFWorkbook workbook, HashMap<String, String> fieldCaptionMap,
-			HashMap<String, HashMap<String, String>> fieldValueCaptionMap) {
+	private void createLegendSheet(SXSSFWorkbook workbook, Map<String, String> fieldCaptionMap,
+			Map<String, Map<String, String>> fieldValueCaptionMap) {
 		final Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.LegendSheetName"));
 		final IntSequence seq = new IntSequence();
 		if (!fieldCaptionMap.isEmpty()) {
@@ -507,7 +505,7 @@ class ExportThread extends Thread {
 				createStringCell(r, 0, Messages.getString("Caption.Export.UserValue"));
 				createStringCell(r, 1, Messages.getString("Caption.Export.UserValueDescription"));
 
-				final HashMap<String, String> valueCaptions = e.getValue();
+				final Map<String, String> valueCaptions = e.getValue();
 				valueCaptions.entrySet().forEach(i -> {
 					Row rr = sheet.createRow(seq.next());
 					createStringCell(rr, 0, i.getValue());

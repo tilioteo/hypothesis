@@ -4,29 +4,14 @@
  */
 package org.hypothesis.data.model;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hypothesis.data.interfaces.HasList;
+
+import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -133,15 +118,15 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 
 	@Transient
 	@Override
-	public final List<Branch> getList() {
+	public List<Branch> getList() {
 		return getBranches();
 	}
 
-	public final void addBranch(Branch b) {
+	public void addBranch(Branch b) {
 		getBranches().add(b);
 	}
 
-	public final void removeBranch(Branch b) {
+	public void removeBranch(Branch b) {
 		getBranches().remove(b);
 	}
 

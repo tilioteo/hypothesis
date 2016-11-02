@@ -4,13 +4,14 @@
  */
 package org.hypothesis.slide.ui;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.UI;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -24,7 +25,7 @@ public class Window extends com.vaadin.ui.Window {
 	private boolean initialized = false;
 	private boolean opened = false;
 
-	private final ArrayList<CloseListener> closeListeners = new ArrayList<>();
+	private final List<CloseListener> closeListeners = new ArrayList<>();
 
 	private UI futureUI = null;
 

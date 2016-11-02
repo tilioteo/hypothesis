@@ -4,19 +4,12 @@
  */
 package org.hypothesis.ui;
 
+import com.vaadin.data.Property;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.ValoTheme;
 import org.vaadin.button.ui.OpenPopupButton;
 import org.vaadin.button.ui.OpenPopupButton.WindowClosedListener;
-
-import com.vaadin.data.Property;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -224,12 +217,7 @@ public class PackPanel extends Panel {
 	private OpenPopupButton buildLegacyButton() {
 		final OpenPopupButton button = new OpenPopupButton(legacyButtonCaption);
 		button.addAttachListener(e -> {
-			uiDetachListener = new DetachListener() {
-				@Override
-				public void detach(DetachEvent event) {
-					button.setEnabled(false);
-				}
-			};
+			uiDetachListener = de -> button.setEnabled(false);
 			button.getUI().addDetachListener(uiDetachListener);
 		});
 

@@ -4,19 +4,17 @@
  */
 package org.hypothesis.context;
 
-import java.io.File;
-
-import javax.servlet.ServletContext;
-
+import com.vaadin.server.VaadinSession;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hypothesis.server.SessionMap;
 
-import com.vaadin.server.VaadinSession;
+import javax.servlet.ServletContext;
+import java.io.File;
+import java.util.HashMap;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -26,7 +24,7 @@ import com.vaadin.server.VaadinSession;
  *         Utilitiy to work with Hibernate
  * 
  */
-public class HibernateUtil {
+public final class HibernateUtil {
 
 	public static final String CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION = "hibernateConfigLocation";
 
@@ -38,6 +36,9 @@ public class HibernateUtil {
 	private HibernateUtil() {
 	}
 
+	private static class SessionMap extends HashMap<Thread, Session> {
+	}
+
 	/**
 	 * All hibernate operations take place within a session. The session for the
 	 * current thread is provided here.
@@ -46,7 +47,7 @@ public class HibernateUtil {
 		SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
 		if (null == sessions) {
 			sessions = new SessionMap();
-			VaadinSession.getCurrent().setAttribute(SessionMap.class, sessions);
+			VaadinSession.getCurrent().setAttribute(HashMap.class, sessions);
 		}
 
 		Session session = sessions.get(Thread.currentThread());

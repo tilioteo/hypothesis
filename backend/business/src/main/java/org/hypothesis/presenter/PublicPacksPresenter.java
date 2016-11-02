@@ -4,12 +4,16 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.inject.Inject;
-
+import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.cdi.PublicPacks;
 import org.hypothesis.data.interfaces.PermissionService;
@@ -24,228 +28,218 @@ import org.hypothesis.ui.ControlledUI;
 import org.hypothesis.ui.PackPanel;
 import org.hypothesis.ui.view.PacksView;
 import org.vaadin.button.ui.OpenPopupButton;
-import org.vaadin.button.ui.OpenPopupButton.WindowClosedEvent;
 import org.vaadin.button.ui.OpenPopupButton.WindowClosedListener;
 import org.vaadin.jre.ui.DeployJava;
 
-import com.vaadin.cdi.NormalViewScoped;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
+import javax.inject.Inject;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
- * 
+ *         <p>
  *         Hypothesis
- *
  */
 @SuppressWarnings("serial")
 @PublicPacks
 @NormalViewScoped
 public class PublicPacksPresenter implements PacksPresenter {
 
-	@Inject
-	protected PermissionService permissionService;
+    @Inject
+    protected PermissionService permissionService;
 
-	@Inject
-	private TokenService tokenService;
+    @Inject
+    private TokenService tokenService;
 
-	private PacksView view;
+    private PacksView view;
 
-	private final HashMap<PackPanel, BeanItem<Pack>> panelBeans = new HashMap<>();
+    private final Map<PackPanel, BeanItem<Pack>> panelBeans = new HashMap<>();
 
-	private boolean testStarted = false;
-	private Date featuredStart;
-	
-	public PublicPacksPresenter() {
-		System.out.println("Construct " + getClass().getName());
-	}
+    private boolean testStarted = false;
+    private Date featuredStart;
 
-	private final ClickListener featuredButtonClickListener = new ClickListener() {
-		@Override
-		public void buttonClick(ClickEvent event) {
-			if (!testStarted) {
-				Pack pack = getPanelBean(getParentPanel(event.getButton()));
+    public PublicPacksPresenter() {
+        System.out.println("Construct " + getClass().getName());
+    }
 
-				if (pack != null) {
-					Date now = new Date();
+    private final ClickListener featuredButtonClickListener = new ClickListener() {
+        @Override
+        public void buttonClick(ClickEvent event) {
+            if (!testStarted) {
+                Pack pack = getPanelBean(getParentPanel(event.getButton()));
 
-					// apply 30 seconds delay from last featured start
-					Date beforeDate = new Date(now.getTime() - 30000);
-					if (featuredStart != null && featuredStart.after(beforeDate)) {
-						return;
-					}
+                if (pack != null) {
+                    Date now = new Date();
 
-					featuredStart = null;
-					Token token = createToken(pack);
+                    // apply 30 seconds delay from last featured start
+                    Date beforeDate = new Date(now.getTime() - 30000);
+                    if (featuredStart != null && featuredStart.after(beforeDate)) {
+                        return;
+                    }
 
-					if (token != null) {
-						featuredStart = new Date();
-						DeployJava.get(view.getUI()).launchJavaWebStart(constructStartJnlp(token.getUid()));
-					}
-				}
-			}
-		}
+                    featuredStart = null;
+                    Token token = createToken(pack);
 
-		private String constructStartJnlp(String uid) {
-			StringBuilder builder = new StringBuilder();
-			String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
-			builder.append(contextUrl);
-			builder.append("/resource/browserapplication.jnlp?");
-			builder.append("jnlp.app_url=");
-			builder.append(contextUrl);
-			builder.append("/process/");
-			builder.append("&jnlp.close_key=");
-			builder.append("close.html");
-			builder.append("&jnlp.token=");
-			builder.append(uid);
+                    if (token != null) {
+                        featuredStart = new Date();
+                        DeployJava.get(view.getUI()).launchJavaWebStart(constructStartJnlp(token.getUid()));
+                    }
+                }
+            }
+        }
 
-			return builder.toString();
-		}
-	};
+        private String constructStartJnlp(String uid) {
+            StringBuilder builder = new StringBuilder();
+            String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
+            builder.append(contextUrl);
+            builder.append("/resource/browserapplication.jnlp?");
+            builder.append("jnlp.app_url=");
+            builder.append(contextUrl);
+            builder.append("/process/");
+            builder.append("&jnlp.close_key=");
+            builder.append("close.html");
+            builder.append("&jnlp.token=");
+            builder.append(uid);
 
-	private final ClickListener legacyButtonClickListener = new ClickListener() {
-		@Override
-		public void buttonClick(ClickEvent event) {
-			if (!testStarted) {
-				Button button = event.getButton();
+            return builder.toString();
+        }
+    };
 
-				if (button instanceof OpenPopupButton) {
-					Pack pack = getPanelBean(getParentPanel(button));
+    private final ClickListener legacyButtonClickListener = new ClickListener() {
+        @Override
+        public void buttonClick(ClickEvent event) {
+            if (!testStarted) {
+                Button button = event.getButton();
 
-					if (pack != null) {
-						Token token = createToken(pack);
+                if (button instanceof OpenPopupButton) {
+                    Pack pack = getPanelBean(getParentPanel(button));
 
-						if (token != null) {
-							view.mask();
-							((OpenPopupButton) button).setUrl(constructStartUrl(token.getUid(), false));
-							testStarted = true;
-						}
-					}
-				}
-			}
-		}
+                    if (pack != null) {
+                        Token token = createToken(pack);
 
-		private String constructStartUrl(String uid, boolean returnBack) {
-			StringBuilder builder = new StringBuilder();
-			String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
-			builder.append(contextUrl);
-			builder.append("/process/?");
+                        if (token != null) {
+                            view.mask();
+                            ((OpenPopupButton) button).setUrl(constructStartUrl(token.getUid(), false));
+                            testStarted = true;
+                        }
+                    }
+                }
+            }
+        }
 
-			// client debug
-			// builder.append("gwt.codesvr=127.0.0.1:9997&");
+        private String constructStartUrl(String uid, boolean returnBack) {
+            StringBuilder builder = new StringBuilder();
+            String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
+            builder.append(contextUrl);
+            builder.append("/process/?");
 
-			builder.append("token=");
-			builder.append(uid);
-			builder.append("&fs");
-			if (returnBack) {
-				builder.append("&bk=true");
-			}
+            // client debug
+            // builder.append("gwt.codesvr=127.0.0.1:9997&");
 
-			String lang = ControlledUI.getCurrentLanguage();
-			if (lang != null) {
-				builder.append("&lang=");
-				builder.append(lang);
-			}
+            builder.append("token=");
+            builder.append(uid);
+            builder.append("&fs");
+            if (returnBack) {
+                builder.append("&bk=true");
+            }
 
-			return builder.toString();
-		}
-	};
+            String lang = ControlledUI.getCurrentLanguage();
+            if (lang != null) {
+                builder.append("&lang=");
+                builder.append(lang);
+            }
 
-	private final WindowClosedListener legacyButtonWindowClosedListener = new WindowClosedListener() {
-		@Override
-		public void windowClosed(WindowClosedEvent event) {
-			testStarted = false;
-			view.unmask();
-		}
-	};
+            return builder.toString();
+        }
+    };
 
-	@Override
-	public void enter(ViewChangeEvent event) {
-		refreshView();
-	}
+    private final WindowClosedListener legacyButtonWindowClosedListener = e -> {
+        testStarted = false;
+        view.unmask();
+    };
 
-	protected void afterCreate() {
-		refreshView();
-	}
+    @Override
+    public void enter(ViewChangeEvent event) {
+        refreshView();
+    }
 
-	private Token createToken(Pack pack) {
-		User user = SessionManager.getLoggedUser();
-		String viewUid = SessionManager.getMainUID();
+    protected void afterCreate() {
+        refreshView();
+    }
 
-		return tokenService.createToken(user, pack, viewUid, true);
-	}
+    private Token createToken(Pack pack) {
+        User user = SessionManager.getLoggedUser();
+        String viewUid = SessionManager.getMainUID();
 
-	protected List<Pack> getPacks() {
-		return permissionService.getPublishedPacks();
-	}
+        return tokenService.createToken(user, pack, viewUid, true);
+    }
 
-	protected void refreshView() {
-		view.clearMainLayout();
+    protected List<Pack> getPacks() {
+        return permissionService.getPublishedPacks();
+    }
 
-		List<Pack> packs = getPacks();
-		panelBeans.clear();
+    protected void refreshView() {
+        view.clearMainLayout();
 
-		if (packs != null && !packs.isEmpty()) {
-			packs.stream().map(this::createPackPanel).forEach(view::addPackPanel);
-		} else {
-			view.setEmptyInfo();
-		}
+        List<Pack> packs = getPacks();
+        panelBeans.clear();
 
-		view.markAsDirty();
-	}
+        if (packs != null && !packs.isEmpty()) {
+            packs.stream().map(this::createPackPanel).forEach(view::addPackPanel);
+        } else {
+            view.setEmptyInfo();
+        }
 
-	private PackPanel createPackPanel(Pack pack) {
-		BeanItem<Pack> beanItem = new BeanItem<>(pack);
-		PackPanel panel = new PackPanel();
+        view.markAsDirty();
+    }
 
-		panel.setCaption(pack.getName());
-		panel.setIcon(FontAwesome.ARCHIVE);
-		panel.setDescriptionPropertyDataSource(beanItem.getItemProperty("description"));
-		panel.setStartInfoCaption(Messages.getString("Caption.Pack.ControlTop"));
-		panel.setStartInfoSingleCaption(Messages.getString("Caption.Pack.ControlTopSingle"));
-		panel.setModeCaption(Messages.getString("Caption.Pack.ControlBottom"));
-		panel.setModeSingleCaption(Messages.getString("Caption.Pack.ControlBottomSingle"));
-		panel.setNoJavaCaption(Messages.getString("Caption.Pack.NoJava"));
-		panel.setFeaturedButtonCaption(Messages.getString("Caption.Button.StartFeatured"));
-		panel.setFeaturedButtonClickListener(featuredButtonClickListener);
-		panel.setLegacyButtonCaption(Messages.getString("Caption.Button.StartLegacy"));
-		panel.setLegacyButtonClickListener(legacyButtonClickListener);
-		panel.setLegacyButtonWindowClosedListener(legacyButtonWindowClosedListener);
+    private PackPanel createPackPanel(Pack pack) {
+        BeanItem<Pack> beanItem = new BeanItem<>(pack);
+        PackPanel panel = new PackPanel();
 
-		panel.setJavaRequired(pack.isJavaRequired());
+        panel.setCaption(pack.getName());
+        panel.setIcon(FontAwesome.ARCHIVE);
+        panel.setDescriptionPropertyDataSource(beanItem.getItemProperty("description"));
+        panel.setStartInfoCaption(Messages.getString("Caption.Pack.ControlTop"));
+        panel.setStartInfoSingleCaption(Messages.getString("Caption.Pack.ControlTopSingle"));
+        panel.setModeCaption(Messages.getString("Caption.Pack.ControlBottom"));
+        panel.setModeSingleCaption(Messages.getString("Caption.Pack.ControlBottomSingle"));
+        panel.setNoJavaCaption(Messages.getString("Caption.Pack.NoJava"));
+        panel.setFeaturedButtonCaption(Messages.getString("Caption.Button.StartFeatured"));
+        panel.setFeaturedButtonClickListener(featuredButtonClickListener);
+        panel.setLegacyButtonCaption(Messages.getString("Caption.Button.StartLegacy"));
+        panel.setLegacyButtonClickListener(legacyButtonClickListener);
+        panel.setLegacyButtonWindowClosedListener(legacyButtonWindowClosedListener);
 
-		panelBeans.put(panel, beanItem);
+        panel.setJavaRequired(pack.isJavaRequired());
 
-		return panel;
-	}
+        panelBeans.put(panel, beanItem);
 
-	private PackPanel getParentPanel(Component component) {
-		Component searchComponent = component;
-		while (searchComponent != null && !(searchComponent instanceof PackPanel)) {
-			searchComponent = searchComponent.getParent();
-		}
+        return panel;
+    }
 
-		return (PackPanel) searchComponent;
-	}
+    private PackPanel getParentPanel(Component component) {
+        Component searchComponent = component;
+        while (searchComponent != null && !(searchComponent instanceof PackPanel)) {
+            searchComponent = searchComponent.getParent();
+        }
 
-	private Pack getPanelBean(PackPanel panel) {
-		BeanItem<Pack> beanItem = panelBeans.get(panel);
-		if (beanItem != null) {
-			return beanItem.getBean();
-		}
+        return (PackPanel) searchComponent;
+    }
 
-		return null;
-	}
+    private Pack getPanelBean(PackPanel panel) {
+        BeanItem<Pack> beanItem = panelBeans.get(panel);
+        if (beanItem != null) {
+            return beanItem.getBean();
+        }
+
+        return null;
+    }
 
 	/*
-	 * @Override public View createView() { view = new PacksView(this);
+     * @Override public View createView() { view = new PacksView(this);
 	 * 
 	 * view.setEmptyInfoCaption(FontAwesome.FROWN_O.getHtml() + " " +
 	 * Messages.getString("Message.Info.NoPacks"));
@@ -260,19 +254,19 @@ public class PublicPacksPresenter implements PacksPresenter {
 	 * return view; }
 	 */
 
-	public void initView() {
-		view.setEmptyInfoCaption(FontAwesome.FROWN_O.getHtml() + " " + Messages.getString("Message.Info.NoPacks"));
-		view.setCheckingJavaInfo(Messages.getString("Message.Info.CheckingJava"));
-		view.setJavaInstalledCaption(Messages.getString("Message.Info.JavaInstalled"));
-		view.setJavaNotInstalledCaption(Messages.getString("Message.Info.JavaNotInstalled"));
-		view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"));
-	}
+    public void initView() {
+        view.setEmptyInfoCaption(FontAwesome.FROWN_O.getHtml() + " " + Messages.getString("Message.Info.NoPacks"));
+        view.setCheckingJavaInfo(Messages.getString("Message.Info.CheckingJava"));
+        view.setJavaInstalledCaption(Messages.getString("Message.Info.JavaInstalled"));
+        view.setJavaNotInstalledCaption(Messages.getString("Message.Info.JavaNotInstalled"));
+        view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"));
+    }
 
-	@Override
-	public void setView(PacksView view) {
-		this.view = view;
-		
-		initView();
-	}
+    @Override
+    public void setView(PacksView view) {
+        this.view = view;
+
+        initView();
+    }
 
 }

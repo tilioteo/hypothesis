@@ -6,6 +6,7 @@ package org.hypothesis.servlet;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,7 +25,7 @@ public class BroadcastService implements Serializable {
 		void receiveBroadcast(final String message);
 	}
 
-	private static final LinkedList<BroadcastListener> listeners = new LinkedList<>();
+	private static final List<BroadcastListener> listeners = new LinkedList<>();
 
 	public static synchronized void register(BroadcastListener listener) {
 		listeners.add(listener);

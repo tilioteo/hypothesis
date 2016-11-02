@@ -4,38 +4,21 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-
-import org.hypothesis.business.EventManager;
-import org.hypothesis.business.MessageManager;
-import org.hypothesis.business.ObjectConstants;
-import org.hypothesis.business.SlideDocument;
-import org.hypothesis.business.SlideNavigator;
+import com.vaadin.server.Extension;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.communication.PushMode;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HasComponents;
+import com.vaadin.ui.UI;
+import org.hypothesis.business.*;
 import org.hypothesis.evaluation.AbstractBaseAction;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.data.Message;
 import org.hypothesis.event.interfaces.ProcessEvent;
-import org.hypothesis.event.model.ActionEvent;
-import org.hypothesis.event.model.MessageEvent;
-import org.hypothesis.event.model.MessageEventManager;
-import org.hypothesis.event.model.ViewportEvent;
-import org.hypothesis.event.model.ViewportEventManager;
-import org.hypothesis.interfaces.Action;
-import org.hypothesis.interfaces.Command;
-import org.hypothesis.interfaces.ComponentEventCallback;
-import org.hypothesis.interfaces.Evaluator;
-import org.hypothesis.interfaces.ExchangeVariable;
-import org.hypothesis.interfaces.Field;
-import org.hypothesis.interfaces.MessageEventListener;
-import org.hypothesis.interfaces.SlidePresenter;
-import org.hypothesis.interfaces.Variable;
-import org.hypothesis.interfaces.ViewportEventListener;
+import org.hypothesis.event.model.*;
+import org.hypothesis.interfaces.*;
 import org.hypothesis.servlet.BroadcastService;
 import org.hypothesis.servlet.BroadcastService.BroadcastListener;
 import org.hypothesis.slide.ui.Window;
@@ -44,13 +27,12 @@ import org.hypothesis.ui.SlideContainer;
 import org.vaadin.special.ui.KeyAction;
 import org.vaadin.special.ui.Timer;
 
-import com.vaadin.server.Extension;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.communication.PushMode;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HasComponents;
-import com.vaadin.ui.UI;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -70,18 +52,18 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	private final ViewportEventManager viewportEventManager = new ViewportEventManager();
 	private final MessageEventManager messageEventManager = new MessageEventManager();
 
-	private final HashMap<String, Component> components = new HashMap<>();
-	private final HashMap<String, Field> fields = new HashMap<>();
-	private final HashMap<String, Window> windows = new HashMap<>();
-	private final HashMap<String, Timer> timers = new HashMap<>();
+	private final Map<String, Component> components = new HashMap<>();
+	private final Map<String, Field> fields = new HashMap<>();
+	private final Map<String, Window> windows = new HashMap<>();
+	private final Map<String, Timer> timers = new HashMap<>();
 
-	private final HashMap<String, Variable<?>> variables = new HashMap<>();
-	private final HashMap<String, Action> actions = new HashMap<>();
+	private final Map<String, Variable<?>> variables = new HashMap<>();
+	private final Map<String, Action> actions = new HashMap<>();
 
-	private HashSet<KeyAction> keyActions = new HashSet<>();
+	private Set<KeyAction> keyActions = new HashSet<>();
 
-	private final HashMap<Integer, ExchangeVariable> inputExpressions = new HashMap<>();
-	private final HashMap<Integer, ExchangeVariable> outputExpressions = new HashMap<>();
+	private final Map<Integer, ExchangeVariable> inputExpressions = new HashMap<>();
+	private final Map<Integer, ExchangeVariable> outputExpressions = new HashMap<>();
 
 	private final EventManager eventManager;
 	private MessageManager messageManager = null;
@@ -431,19 +413,16 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 				if (null == userId || null == receiverId || receiverId.equals(userId)) {
 					// ok - receive this message
-					ui.access(new Runnable() {
-						@Override
-						public void run() {
-							fireEvent(new MessageEvent(message));
-							if (PushMode.MANUAL == ui.getPushConfiguration().getPushMode()) {
-								try {
-									ui.push();
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-						}
-					});
+					ui.access(() -> {
+                        fireEvent(new MessageEvent(message));
+                        if (PushMode.MANUAL == ui.getPushConfiguration().getPushMode()) {
+                            try {
+                                ui.push();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
 				}
 			}
 		}

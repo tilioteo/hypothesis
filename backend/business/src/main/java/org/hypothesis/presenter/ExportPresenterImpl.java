@@ -4,57 +4,30 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
-import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.interfaces.PermissionService;
-import org.hypothesis.data.interfaces.TestService;
-import org.hypothesis.data.interfaces.UserService;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Status;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.RoleServiceImpl;
-import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.interfaces.ExportPresenter;
-import org.hypothesis.server.Messages;
-
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.PopupDateField;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import org.apache.log4j.Logger;
+import org.hypothesis.business.SessionManager;
+import org.hypothesis.data.interfaces.PermissionService;
+import org.hypothesis.data.interfaces.TestService;
+import org.hypothesis.data.interfaces.UserService;
+import org.hypothesis.data.model.*;
+import org.hypothesis.data.service.RoleServiceImpl;
+import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.interfaces.ExportPresenter;
+import org.hypothesis.server.Messages;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import java.util.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -78,10 +51,13 @@ public class ExportPresenterImpl implements ExportPresenter {
 	private UserService userService;
 
 	@Inject
+	private ExportThreadedService exportThreadedService;
+
+	@Inject
 	private Event<MainUIEvent> mainEvent;
 
 	private List<String> sortedPacks = new ArrayList<>();
-	private HashMap<String, Pack> packMap = new HashMap<>();
+	private Map<String, Pack> packMap = new HashMap<>();
 
 	private VerticalLayout content;
 	private VerticalLayout testSelection;
@@ -96,7 +72,6 @@ public class ExportPresenterImpl implements ExportPresenter {
 	boolean allTestsSelected = false;
 
 	private HorizontalLayout toolsLayout;
-	private ExportThread currentExport = null;
 	private ProgressBar exportProgressBar = null;
 
 	@Override
@@ -176,7 +151,7 @@ public class ExportPresenterImpl implements ExportPresenter {
 
 	private void buildExportCancelButton() {
 		cancelExportButton = new Button(Messages.getString("Caption.Button.Cancel"),
-				e -> mainEvent.fire(new MainUIEvent.ExportFinishedEvent(true)));
+				e -> exportThreadedService.requestCancel());
 	}
 
 	private void buildProgress() {
@@ -218,8 +193,7 @@ public class ExportPresenterImpl implements ExportPresenter {
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		currentExport = new ExportThread(testIds);
-		currentExport.start();
+		exportThreadedService.exportTests(testIds);
 
 		UI.getCurrent().setPollInterval(1000);
 	}
@@ -278,15 +252,12 @@ public class ExportPresenterImpl implements ExportPresenter {
 		dateFieldTo.setValidationVisible(false);
 		form.addComponent(dateFieldTo);
 
-		Validator dateValidator = new Validator() {
-			@Override
-			public void validate(Object value) throws InvalidValueException {
-				if (dateFieldFrom.getValue() == null && dateFieldTo.getValue() == null) {
-					throw new InvalidValueException(Messages.getString("Message.Error.NoDateSelected"));
-				}
+		Validator dateValidator = e -> {
+            if (dateFieldFrom.getValue() == null && dateFieldTo.getValue() == null) {
+                throw new InvalidValueException(Messages.getString("Message.Error.NoDateSelected"));
+            }
 
-			}
-		};
+        };
 		dateFieldFrom.addValidator(dateValidator);
 		dateFieldTo.addValidator(dateValidator);
 
@@ -378,46 +349,37 @@ public class ExportPresenterImpl implements ExportPresenter {
 		dataSource.addAll(tests);
 		table.setContainerDataSource(dataSource);
 
-		table.addGeneratedColumn(FieldConstants.USER_ID, new ColumnGenerator() {
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				SimpleTest test = dataSource.getItem(itemId).getBean();
-				return test.getUser() != null ? test.getUser().getId() : null;
-			}
-		});
+		table.addGeneratedColumn(FieldConstants.USER_ID, (source, itemId, columnId) -> {
+            SimpleTest test = dataSource.getItem(itemId).getBean();
+            return test.getUser() != null ? test.getUser().getId() : null;
+        });
 
-		table.addGeneratedColumn(FieldConstants.USERNAME, new ColumnGenerator() {
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				SimpleTest test = dataSource.getItem(itemId).getBean();
-				return test.getUser() != null ? test.getUser().getUsername() : null;
-			}
-		});
+		table.addGeneratedColumn(FieldConstants.USERNAME, (source, itemId, columnId) -> {
+            SimpleTest test = dataSource.getItem(itemId).getBean();
+            return test.getUser() != null ? test.getUser().getUsername() : null;
+        });
 
-		table.addGeneratedColumn(FieldConstants.STATUS, new ColumnGenerator() {
-			@Override
-			public Object generateCell(Table source, Object itemId, Object columnId) {
-				SimpleTest test = dataSource.getItem(itemId).getBean();
-				Status status = test.getStatus();
-				if (status != null) {
-					switch (status) {
-					case CREATED:
-						return Messages.getString("Status.Created");
-					case STARTED:
-						return Messages.getString("Status.Started");
-					case BROKEN_BY_CLIENT:
-						return Messages.getString("Status.BrokenClient");
-					case BROKEN_BY_ERROR:
-						return Messages.getString("Status.BrokenError");
-					case FINISHED:
-						return Messages.getString("Status.Finished");
-					default:
-						break;
-					}
-				}
-				return null;
-			}
-		});
+		table.addGeneratedColumn(FieldConstants.STATUS, (source, itemId, columnId) -> {
+            SimpleTest test = dataSource.getItem(itemId).getBean();
+            Status status = test.getStatus();
+            if (status != null) {
+                switch (status) {
+                case CREATED:
+                    return Messages.getString("Status.Created");
+                case STARTED:
+                    return Messages.getString("Status.Started");
+                case BROKEN_BY_CLIENT:
+                    return Messages.getString("Status.BrokenClient");
+                case BROKEN_BY_ERROR:
+                    return Messages.getString("Status.BrokenError");
+                case FINISHED:
+                    return Messages.getString("Status.Finished");
+                default:
+                    break;
+                }
+            }
+            return null;
+        });
 
 		table.setVisibleColumns(FieldConstants.ID, FieldConstants.USER_ID,
 				// FieldConstants.USERNAME,
@@ -431,12 +393,7 @@ public class ExportPresenterImpl implements ExportPresenter {
 				// Messages.getString("Caption.Field.Username"),
 				Messages.getString("Caption.Field.Created"), Messages.getString("Caption.Field.Status"));
 
-		table.addValueChangeListener(new ValueChangeListener() {
-			@Override
-			public void valueChange(final ValueChangeEvent event) {
-				mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
-			}
-		});
+		table.addValueChangeListener(e -> mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent()));
 
 		table.setPageLength(table.size());
 
@@ -468,7 +425,7 @@ public class ExportPresenterImpl implements ExportPresenter {
 	 * @param event
 	 */
 	public void exportFinished(@Observes final MainUIEvent.ExportFinishedEvent event) {
-		afterExportFinnished(event.isCanceled());
+		afterExportFinished();
 	}
 
 	/**
@@ -477,7 +434,7 @@ public class ExportPresenterImpl implements ExportPresenter {
 	 * @param event
 	 */
 	public void exportError(@Observes final MainUIEvent.ExportErrorEvent event) {
-		afterExportFinnished(false);
+		afterExportFinished();
 		Notification.show("Export failed", null, Type.WARNING_MESSAGE);
 	}
 
@@ -495,22 +452,9 @@ public class ExportPresenterImpl implements ExportPresenter {
 		sortedPacks.forEach(packsSelect::addItem);
 	}
 
-	private void afterExportFinnished(boolean canceled) {
-		if (currentExport != null) {
-			if (canceled) {
-				currentExport.cancel();
-			}
-			currentExport = null;
-		}
+	private void afterExportFinished() {
 		setExportSelection();
 		UI.getCurrent().setPollInterval(-1);
 	}
-
-	/*
-	 * @Override public View createView() { loggedUser =
-	 * SessionManager.getLoggedUser();
-	 * 
-	 * return new ExportView(this); }
-	 */
 
 }

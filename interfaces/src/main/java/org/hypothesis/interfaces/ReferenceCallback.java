@@ -12,6 +12,7 @@ import java.io.Serializable;
  *         Hypothesis
  *
  */
+@FunctionalInterface
 public interface ReferenceCallback extends Serializable {
 
 	Object getReference(String name, String id, Evaluator evaluator);

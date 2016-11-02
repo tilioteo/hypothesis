@@ -4,18 +4,6 @@
  */
 package org.hypothesis.presenter;
 
-import java.io.Serializable;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
-import org.hypothesis.data.interfaces.UserService;
-import org.hypothesis.data.model.User;
-import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.interfaces.UserSettingsWindowPresenter;
-import org.hypothesis.server.Messages;
-
 import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
@@ -24,19 +12,19 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.Position;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import org.hypothesis.data.interfaces.UserService;
+import org.hypothesis.data.model.User;
+import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.interfaces.UserSettingsWindowPresenter;
+import org.hypothesis.server.Messages;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -98,38 +86,32 @@ public class UserSettingsWindowPresenterImpl implements Serializable, UserSettin
 
 		Button ok = new Button(Messages.getString("Caption.Button.OK"));
 		ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		ok.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				try {
-					fieldGroup.commit();
-					userService.add(fieldGroup.getItemDataSource().getBean());
+		ok.addClickListener(e -> {
+            try {
+                fieldGroup.commit();
+                userService.add(fieldGroup.getItemDataSource().getBean());
 
-					Notification success = new Notification(Messages.getString("Message.Info.ProfileUpdated"));
-					success.setDelayMsec(2000);
-					success.setPosition(Position.BOTTOM_CENTER);
-					success.show(Page.getCurrent());
+                Notification success = new Notification(Messages.getString("Message.Info.ProfileUpdated"));
+                success.setDelayMsec(2000);
+                success.setPosition(Position.BOTTOM_CENTER);
+                success.show(Page.getCurrent());
 
-					mainEvent.fire(new MainUIEvent.ProfileUpdatedEvent());
-					window.close();
-				} catch (CommitException e) {
-					Notification.show(Messages.getString("Message.Error.ProfileUpdate"), Type.ERROR_MESSAGE);
-				}
+                mainEvent.fire(new MainUIEvent.ProfileUpdatedEvent());
+                window.close();
+            } catch (CommitException ex) {
+                Notification.show(Messages.getString("Message.Error.ProfileUpdate"), Type.ERROR_MESSAGE);
+            }
 
-			}
-		});
+        });
 		ok.focus();
 		footer.addComponent(ok);
 		footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);
 
 		Button cancel = new Button(Messages.getString("Caption.Button.Cancel"));
-		cancel.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				fieldGroup.discard();
-				window.close();
-			}
-		});
+		cancel.addClickListener(e -> {
+            fieldGroup.discard();
+            window.close();
+        });
 		footer.addComponent(cancel);
 
 		return footer;

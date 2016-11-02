@@ -4,24 +4,18 @@
  */
 package org.hypothesis.builder;
 
-import java.util.Objects;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.business.BranchController;
 import org.hypothesis.common.IntSequence;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
-import org.hypothesis.evaluation.AbstractBasePath;
-import org.hypothesis.evaluation.DefaultPath;
-import org.hypothesis.evaluation.Expression;
-import org.hypothesis.evaluation.Formula;
-import org.hypothesis.evaluation.Nick;
-import org.hypothesis.evaluation.Path;
-import org.hypothesis.evaluation.Pattern;
+import org.hypothesis.evaluation.*;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
+
+import java.util.Objects;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -4,10 +4,10 @@
  */
 package org.hypothesis.presenter;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
-
+import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
 import org.hypothesis.builder.SlideContainerFactoryDeferred;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
@@ -23,18 +23,9 @@ import org.vaadin.alump.fancylayouts.gwt.client.shared.FancyNotificationsState.P
 import org.vaadin.johan.Toolbox;
 import org.vaadin.johan.Toolbox.ORIENTATION;
 
-import com.vaadin.cdi.NormalViewScoped;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -100,13 +91,10 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter {
 
 			HorizontalLayout hl = new HorizontalLayout();
 			hl.setSpacing(true);
-			Button startButton = new Button("Start slide", new ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					event.getButton().setEnabled(false);
-					startClicked();
-				}
-			});
+			Button startButton = new Button("Start slide", e -> {
+                e.getButton().setEnabled(false);
+                startClicked();
+            });
 			hl.addComponent(startButton);
 
 			CssLayout tlLayout = new CssLayout(toolbox);

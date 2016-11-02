@@ -4,20 +4,18 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.util.AnnotationLiteral;
-import javax.inject.Inject;
-
+import com.vaadin.cdi.CDIView;
+import com.vaadin.cdi.NormalUIScoped;
+import com.vaadin.navigator.View;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.themes.ValoTheme;
 import org.hypothesis.annotations.Title;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.model.User;
@@ -31,20 +29,18 @@ import org.hypothesis.ui.menu.ValoMenuItemButton;
 import org.hypothesis.utility.BeanUtility;
 import org.hypothesis.utility.ViewUtility;
 
-import com.vaadin.cdi.CDIView;
-import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.navigator.View;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.themes.ValoTheme;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Default;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -123,16 +119,13 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 	}
 
 	private Component buildToggleButton() {
-		Button valoMenuToggleButton = new Button("Menu", new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				if (content.getStyleName().contains(STYLE_VISIBLE)) {
-					content.removeStyleName(STYLE_VISIBLE);
-				} else {
-					content.addStyleName(STYLE_VISIBLE);
-				}
-			}
-		});
+		Button valoMenuToggleButton = new Button("Menu", e -> {
+            if (content.getStyleName().contains(STYLE_VISIBLE)) {
+                content.removeStyleName(STYLE_VISIBLE);
+            } else {
+                content.addStyleName(STYLE_VISIBLE);
+            }
+        });
 
 		valoMenuToggleButton.setIcon(FontAwesome.LIST);
 		valoMenuToggleButton.addStyleName("valo-menu-toggle");

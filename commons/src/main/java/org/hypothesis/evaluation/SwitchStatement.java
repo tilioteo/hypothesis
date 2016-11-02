@@ -4,15 +4,14 @@
  */
 package org.hypothesis.evaluation;
 
+import com.tilioteo.expressions.ExpressionFactory;
+import org.hypothesis.interfaces.Evaluable;
+import org.hypothesis.interfaces.HasVariables;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.hypothesis.interfaces.Evaluable;
-import org.hypothesis.interfaces.HasVariables;
-
-import com.tilioteo.expressions.ExpressionFactory;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -26,7 +25,7 @@ public class SwitchStatement implements Evaluable {
 	private final HasVariables variables;
 	private final Expression expression;
 
-	private final HashMap<String, List<Evaluable>> caseMap = new HashMap<>();
+	private final Map<String, List<Evaluable>> caseMap = new HashMap<>();
 
 	public SwitchStatement(HasVariables variables, Expression expression) {
 		this.variables = variables;

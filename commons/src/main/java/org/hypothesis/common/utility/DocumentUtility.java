@@ -4,26 +4,20 @@
  */
 package org.hypothesis.common.utility;
 
+import com.tilioteo.common.Strings;
+import com.tilioteo.common.collections.StringMap;
+import com.tilioteo.common.collections.StringSet;
+import com.vaadin.ui.Component;
+import org.apache.commons.lang3.StringUtils;
+import org.hypothesis.common.ValidationSets;
+import org.hypothesis.interfaces.*;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hypothesis.common.ValidationSets;
-import org.hypothesis.interfaces.Action;
-import org.hypothesis.interfaces.Document;
-import org.hypothesis.interfaces.DocumentConstants;
-import org.hypothesis.interfaces.Element;
-import org.hypothesis.interfaces.HandlerCallback;
-import org.hypothesis.interfaces.SlidePresenter;
-
-import com.tilioteo.common.Strings;
-import com.tilioteo.common.collections.StringMap;
-import com.tilioteo.common.collections.StringSet;
-import com.vaadin.ui.Component;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -45,7 +39,7 @@ public final class DocumentUtility {
 	 * @param descendant
 	 * @return
 	 */
-	public static final Element findElementByNameAndValue(Element element, String name, Map<String, String> attributes,
+	public static Element findElementByNameAndValue(Element element, String name, Map<String, String> attributes,
 			boolean descendant) {
 		if (element != null) {
 			List<Element> elements = element.children();
@@ -112,7 +106,7 @@ public final class DocumentUtility {
 		return Collections.emptyList();
 	}
 
-	public static final boolean isValidSlideDocument(Document doc) {
+	public static boolean isValidSlideDocument(Document doc) {
 		return doc != null && doc.root() != null && doc.root().getName().equals(DocumentConstants.SLIDE);
 	}
 
@@ -572,7 +566,7 @@ public final class DocumentUtility {
 		return null;
 	}
 
-	public static final boolean isValidMessageDocument(Document document) {
+	public static boolean isValidMessageDocument(Document document) {
 		return document != null && document.root() != null
 				&& document.root().getName().equals(DocumentConstants.MESSAGE);
 	}

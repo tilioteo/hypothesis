@@ -4,43 +4,8 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
-import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.CaseInsensitiveItemSorter;
-import org.hypothesis.data.interfaces.GroupService;
-import org.hypothesis.data.interfaces.PermissionService;
-import org.hypothesis.data.interfaces.RoleService;
-import org.hypothesis.data.interfaces.UserService;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Role;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.model.UserPermission;
-import org.hypothesis.data.service.RoleServiceImpl;
-import org.hypothesis.data.validator.RoleValidator;
-import org.hypothesis.data.validator.UsernameValidator;
-import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.interfaces.UserWindowPresenter;
-import org.hypothesis.server.Messages;
-import org.hypothesis.ui.table.CheckTable;
-import org.hypothesis.ui.table.DoubleCheckerColumnGenerator;
-import org.hypothesis.ui.table.SimpleCheckerColumnGenerator;
-
 import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.data.Item;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItemContainer;
@@ -53,27 +18,31 @@ import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.Position;
 import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.PopupDateField;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import org.hypothesis.business.SessionManager;
+import org.hypothesis.data.CaseInsensitiveItemSorter;
+import org.hypothesis.data.interfaces.GroupService;
+import org.hypothesis.data.interfaces.PermissionService;
+import org.hypothesis.data.interfaces.RoleService;
+import org.hypothesis.data.interfaces.UserService;
+import org.hypothesis.data.model.*;
+import org.hypothesis.data.service.RoleServiceImpl;
+import org.hypothesis.data.validator.RoleValidator;
+import org.hypothesis.data.validator.UsernameValidator;
+import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.interfaces.UserWindowPresenter;
+import org.hypothesis.server.Messages;
+import org.hypothesis.ui.table.CheckTable;
+import org.hypothesis.ui.table.DoubleCheckerColumnGenerator;
+import org.hypothesis.ui.table.SimpleCheckerColumnGenerator;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -223,13 +192,10 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 
 			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED));
 
-			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
-				@Override
-				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					Group group = (Group) itemId;
-					return Messages.getString("Caption.Item.GroupDescription", group.getName(), group.getId());
-				}
-			});
+			table.setItemDescriptionGenerator((source, itemId, propertyId) -> {
+                Group group = (Group) itemId;
+                return Messages.getString("Caption.Item.GroupDescription", group.getName(), group.getId());
+            });
 
 			table.setVisibleColumns(FieldConstants.ENABLER, FieldConstants.NAME);
 			table.setColumnHeaders(Messages.getString("Caption.Field.State"), Messages.getString("Caption.Field.Name"));
@@ -266,14 +232,11 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 			table.addGeneratedColumn(FieldConstants.TEST_ENABLER,
 					new DoubleCheckerColumnGenerator(FieldConstants.TEST_STATE));
 
-			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
-				@Override
-				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					Pack pack = (Pack) itemId;
-					return Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
-							pack.getDescription());
-				}
-			});
+			table.setItemDescriptionGenerator((source, itemId, propertyId) -> {
+                Pack pack = (Pack) itemId;
+                return Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
+                        pack.getDescription());
+            });
 
 			table.setVisibleColumns(FieldConstants.TEST_ENABLER, FieldConstants.NAME);
 			table.setColumnHeaders(Messages.getString("Caption.Field.State"), Messages.getString("Caption.Field.Name"));
@@ -528,26 +491,23 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 			addField(form, generatedNameLayout);
 
 			final CheckBox nameFieldSwitch = new CheckBox(Messages.getString("Caption.Button.GenerateName"));
-			nameFieldSwitch.addValueChangeListener(new ValueChangeListener() {
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-					boolean generate = nameFieldSwitch.getValue();
-					generatedNameLayout.setVisible(generate);
-					usernameField.setVisible(!generate);
-					passwordField.setEnabled(!generate);
-					generateNames = generate;
+			nameFieldSwitch.addValueChangeListener(e -> {
+                boolean generate = nameFieldSwitch.getValue();
+                generatedNameLayout.setVisible(generate);
+                usernameField.setVisible(!generate);
+                passwordField.setEnabled(!generate);
+                generateNames = generate;
 
-					if (generate) {
-						fields.add(0, generatedCountField);
-						fields.add(0, generatedGroupField);
-						fields.remove(usernameField);
-					} else {
-						fields.remove(generatedGroupField);
-						fields.remove(generatedCountField);
-						fields.add(0, usernameField);
-					}
-				}
-			});
+                if (generate) {
+                    fields.add(0, generatedCountField);
+                    fields.add(0, generatedGroupField);
+                    fields.remove(usernameField);
+                } else {
+                    fields.remove(generatedGroupField);
+                    fields.remove(generatedCountField);
+                    fields.add(0, usernameField);
+                }
+            });
 
 			nameLayout.addComponent(usernameField);
 			nameLayout.addComponent(generatedNameLayout);
@@ -661,31 +621,28 @@ public class UserWindowPresenterImpl extends AbstractWindowPresenter implements 
 
 		Button ok = new Button(Messages.getString("Caption.Button.OK"));
 		ok.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		ok.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				try {
-					commitForm();
+		ok.addClickListener(e -> {
+            try {
+                commitForm();
 
-					Notification success;
-					if (state == WindowState.CREATE) {
-						success = new Notification(Messages.getString("Message.Info.UserAdded"));
-					} else if (state == WindowState.UPDATE) {
-						success = new Notification(Messages.getString("Message.Info.UserUpdated"));
-					} else {
-						success = new Notification(Messages.getString("Message.Info.UsersUpdated"));
-					}
-					success.setDelayMsec(2000);
-					success.setPosition(Position.BOTTOM_CENTER);
-					success.show(Page.getCurrent());
+                Notification success;
+                if (state == WindowState.CREATE) {
+                    success = new Notification(Messages.getString("Message.Info.UserAdded"));
+                } else if (state == WindowState.UPDATE) {
+                    success = new Notification(Messages.getString("Message.Info.UserUpdated"));
+                } else {
+                    success = new Notification(Messages.getString("Message.Info.UsersUpdated"));
+                }
+                success.setDelayMsec(2000);
+                success.setPosition(Position.BOTTOM_CENTER);
+                success.show(Page.getCurrent());
 
-					window.close();
+                window.close();
 
-				} catch (CommitException e) {
-					Notification.show(e.getMessage(), Type.WARNING_MESSAGE);
-				}
-			}
-		});
+            } catch (CommitException ex) {
+                Notification.show(ex.getMessage(), Type.WARNING_MESSAGE);
+            }
+        });
 		ok.focus();
 		footer.addComponent(ok);
 		footer.setComponentAlignment(ok, Alignment.TOP_RIGHT);

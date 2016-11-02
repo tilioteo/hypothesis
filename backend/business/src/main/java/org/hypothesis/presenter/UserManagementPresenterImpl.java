@@ -4,28 +4,19 @@
  */
 package org.hypothesis.presenter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
+import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
+import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.themes.ValoTheme;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -36,11 +27,7 @@ import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.interfaces.GroupService;
 import org.hypothesis.data.interfaces.PermissionService;
 import org.hypothesis.data.interfaces.UserService;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Role;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.model.*;
 import org.hypothesis.data.service.RoleServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.UserManagementPresenter;
@@ -48,31 +35,16 @@ import org.hypothesis.interfaces.UserWindowPresenter;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.cdi.NormalViewScoped;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
-import com.vaadin.server.StreamResource;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -121,18 +93,15 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 	protected Button buildAddButton() {
 		final Button addButton = new Button(Messages.getString("Caption.Button.Add"));
 		addButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-		addButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				User user = SessionManager.getLoggedUser();
+		addButton.addClickListener(e -> {
+            User user = SessionManager.getLoggedUser();
 
-				if (!user.hasRole(RoleServiceImpl.ROLE_SUPERUSER) && groupService.findOwnerGroups(user).isEmpty()) {
-					Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
-				} else {
-					userWindowPresenter.showWindow();
-				}
-			}
-		});
+            if (!user.hasRole(RoleServiceImpl.ROLE_SUPERUSER) && groupService.findOwnerGroups(user).isEmpty()) {
+                Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
+            } else {
+                userWindowPresenter.showWindow();
+            }
+        });
 
 		return addButton;
 	}
@@ -147,13 +116,10 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		selectionType.addItem(Messages.getString("Caption.Item.All"));
 		selectionType.select(Messages.getString("Caption.Item.Selected"));
 
-		selectionType.addValueChangeListener(new Property.ValueChangeListener() {
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				mainEvent.fire(new MainUIEvent.UserSelectionChangedEvent());
-			}
-		});
+		selectionType.addValueChangeListener(e -> {
+            allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
+            mainEvent.fire(new MainUIEvent.UserSelectionChangedEvent());
+        });
 
 		return selectionType;
 	}
@@ -162,18 +128,15 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 	protected Button buildUpdateButton() {
 		Button updateButton = new Button(Messages.getString("Caption.Button.Update"));
 		updateButton.setClickShortcut(KeyCode.ENTER);
-		updateButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				Collection<User> users = getSelectedUsers();
+		updateButton.addClickListener(e -> {
+            Collection<User> users = getSelectedUsers();
 
-				if (users.size() == 1) {
-					userWindowPresenter.showWindow(users.iterator().next());
-				} else {
-					userWindowPresenter.showWindow(users);
-				}
-			}
-		});
+            if (users.size() == 1) {
+                userWindowPresenter.showWindow(users.iterator().next());
+            } else {
+                userWindowPresenter.showWindow(users);
+            }
+        });
 		return updateButton;
 	}
 
@@ -181,29 +144,21 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 	protected Button buildDeleteButton() {
 		Button deleteButton = new Button(Messages.getString("Caption.Button.Delete"));
 		deleteButton.addStyleName(ValoTheme.BUTTON_DANGER);
-		deleteButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				String question = allSelected ? Messages.getString("Caption.Confirm.User.DeleteAll")
-						: Messages.getString("Caption.Confirm.User.DeleteSelected");
+		deleteButton.addClickListener(e -> {
+            String question = allSelected ? Messages.getString("Caption.Confirm.User.DeleteAll")
+                    : Messages.getString("Caption.Confirm.User.DeleteSelected");
 
-				deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
-						Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
-						Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
-						UserManagementPresenterImpl.this);
-			}
-		});
+            deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
+                    Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
+                    Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
+                    UserManagementPresenterImpl.this);
+        });
 		return deleteButton;
 	}
 
 	@Override
 	protected Resource getExportResource() {
-		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			@Override
-			public InputStream getStream() {
-				return getExportFile();
-			}
-		};
+		StreamResource.StreamSource source = () -> getExportFile();
 
 		String filename = Messages.getString("Caption.Export.UserFileName");
 		return new StreamResource(source, filename);
@@ -367,23 +322,14 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 				Messages.getString("Caption.Field.Enabled"), Messages.getString("Caption.Field.ExpireDate"),
 				Messages.getString("Caption.Field.Note"));
 
-		table.addValueChangeListener(new ValueChangeListener() {
-			@Override
-			public void valueChange(final ValueChangeEvent event) {
-				mainEvent.fire(new MainUIEvent.UserSelectionChangedEvent());
-			}
-		});
+		table.addValueChangeListener(e -> mainEvent.fire(new MainUIEvent.UserSelectionChangedEvent()));
 
-		table.addItemClickListener(new ItemClickListener() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (event.isDoubleClick()) {
-					User user = ((BeanItem<User>) event.getItem()).getBean();
-					userWindowPresenter.showWindow(user);
-				}
-			}
-		});
+		table.addItemClickListener(e -> {
+            if (e.isDoubleClick()) {
+                User user = ((BeanItem<User>) e.getItem()).getBean();
+                userWindowPresenter.showWindow(user);
+            }
+        });
 
 		return table;
 	}
@@ -560,4 +506,8 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		System.out.println("PostConstruct " + getClass().getName());
 	}
 
+	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		// nop
+	}
 }

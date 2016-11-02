@@ -4,23 +4,19 @@
  */
 package org.hypothesis.utility;
 
+import org.apache.commons.lang3.StringUtils;
+import org.dom4j.*;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
+
 import java.io.File;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.DocumentFactory;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.XPath;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -94,19 +90,19 @@ public class XmlUtility implements Serializable {
 			String uri, final String attributeName, final String attributeValue) {
 		Element result = null;
 		if (element != null) {
-			HashMap<String, String> namespaces = new HashMap<>();
+			Map<String, String> namespaces = new HashMap<>();
 			if (StringUtils.isNotEmpty(prefix) && StringUtils.isNotEmpty(uri)) {
 				name = String.format("%s:%s", prefix, name);
 				namespaces.put(prefix, uri);
 			}
 
-			XPath path = element.createXPath(descendant ? String.format(DESCENDANT_FMT, name) : name);
+			XPath path = element.createXPath(descendant ? String.format(XmlUtility.DESCENDANT_FMT, name) : name);
 			if (namespaces.size() > 0) {
 				path.setNamespaceURIs(namespaces);
 			}
 
 			Stream<Element> stream = path.selectNodes(element).stream().filter(f -> f instanceof Element)
-					.map(m -> (Element) m);
+					.map(m -> m);
 
 			result = attributeName != null ? stream.filter(f -> {
 				Attribute attr = f.attribute(attributeName);
@@ -132,7 +128,7 @@ public class XmlUtility implements Serializable {
 	@SuppressWarnings("unchecked")
 	public static Node findFirstNodeByName(Node parent, String name) {
 		if (parent != null && StringUtils.isNotBlank(name)) {
-			return ((List<Node>) parent.selectNodes(String.format(DESCENDANT_FMT, name))).stream()
+			return ((List<Node>) parent.selectNodes(String.format(XmlUtility.DESCENDANT_FMT, name))).stream()
 					.filter(f -> f.getName().equals(name)).findFirst().orElse(null);
 		}
 
@@ -148,7 +144,7 @@ public class XmlUtility implements Serializable {
 		return null;
 	}
 
-	public static Document readFile(final File file) {
+	public static Document readFile(File file) {
 		if (file.exists()) {
 			try {
 				SAXReader reader = new SAXReader();
@@ -162,7 +158,7 @@ public class XmlUtility implements Serializable {
 		return null;
 	}
 
-	public static Document readString(final String xmlString) {
+	public static Document readString(String xmlString) {
 		if (xmlString != null && xmlString.length() > 0) {
 			try {
 				StringReader stringReader = new StringReader(xmlString);
@@ -179,7 +175,7 @@ public class XmlUtility implements Serializable {
 		return null;
 	}
 
-	public static String writeString(final Document doc) {
+	public static String writeString(Document doc) {
 		String string = null;
 		if (doc != null) {
 			try {

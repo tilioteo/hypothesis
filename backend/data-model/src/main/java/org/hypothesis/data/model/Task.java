@@ -4,30 +4,15 @@
  */
 package org.hypothesis.data.model;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hypothesis.data.interfaces.HasList;
+
+import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -120,17 +105,17 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 
 	@Transient
 	@Override
-	public final List<Slide> getList() {
+	public List<Slide> getList() {
 		return getSlides();
 	}
 
-	public final void addSlide(Slide slide) {
+	public void addSlide(Slide slide) {
 		if (slide != null) {
 			getSlides().add(slide);
 		}
 	}
 
-	public final void removeSlide(Slide slide) {
+	public void removeSlide(Slide slide) {
 		getSlides().remove(slide);
 	}
 

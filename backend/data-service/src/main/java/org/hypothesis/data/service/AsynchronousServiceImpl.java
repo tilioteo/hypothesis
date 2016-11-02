@@ -4,24 +4,12 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.Date;
+import org.hypothesis.data.interfaces.*;
+import org.hypothesis.data.model.*;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-
-import org.hypothesis.data.interfaces.AsynchronousService;
-import org.hypothesis.data.interfaces.BranchService;
-import org.hypothesis.data.interfaces.OutputService;
-import org.hypothesis.data.interfaces.SlideService;
-import org.hypothesis.data.interfaces.TaskService;
-import org.hypothesis.data.interfaces.TestService;
-import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.BranchOutput;
-import org.hypothesis.data.model.Event;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.data.model.Status;
-import org.hypothesis.data.model.Task;
+import java.util.Date;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -73,9 +61,9 @@ public class AsynchronousServiceImpl implements AsynchronousService {
 			SimpleTest test = testService.findById(testId);
 
 			if (test != null) {
-				Branch branch = branchId != null ? branchService.findById(branchId) : null;
-				Task task = taskId != null ? taskService.findById(taskId) : null;
-				Slide slide = slideId != null ? slideService.findById(slideId) : null;
+				Branch branch = (branchId != null) ? branchService.findById(branchId) : null;
+				Task task = (taskId != null) ? taskService.findById(taskId) : null;
+				Slide slide = (slideId != null) ? slideService.findById(slideId) : null;
 
 				// update event
 				event.setBranch(branch);
@@ -87,7 +75,7 @@ public class AsynchronousServiceImpl implements AsynchronousService {
 				}
 
 				// update test
-				if (status != null && !test.getStatus().equals(status)) {
+				if ((status != null) && !test.getStatus().equals(status)) {
 					test.setStatus(status);
 
 					switch (status) {

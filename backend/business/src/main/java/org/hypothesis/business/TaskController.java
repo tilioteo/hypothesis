@@ -4,10 +4,6 @@
  */
 package org.hypothesis.business;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.Task;
 import org.hypothesis.evaluation.Node;
@@ -15,6 +11,10 @@ import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.Evaluator;
 import org.hypothesis.interfaces.ExchangeVariable;
 import org.hypothesis.interfaces.Variable;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -25,12 +25,12 @@ import org.hypothesis.interfaces.Variable;
 @SuppressWarnings("serial")
 public class TaskController implements Serializable, Evaluator {
 
-	private HashMap<Long, Node> nodes = new HashMap<>();
+	private Map<Long, Node> nodes = new HashMap<>();
 
-	private HashMap<String, Variable<?>> variables = new HashMap<>();
-	private HashMap<String, Action> actions = new HashMap<>();
+	private Map<String, Variable<?>> variables = new HashMap<>();
+	private Map<String, Action> actions = new HashMap<>();
 
-	private HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
+	private Map<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
 
 	/**
 	 * Add controller node previously created from its definition

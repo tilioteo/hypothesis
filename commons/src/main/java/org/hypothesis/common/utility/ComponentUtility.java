@@ -4,20 +4,14 @@
  */
 package org.hypothesis.common.utility;
 
-import java.util.Date;
-
+import com.tilioteo.common.collections.StringMap;
+import com.vaadin.ui.*;
 import org.hypothesis.interfaces.AlignmentWrapper;
-import org.hypothesis.interfaces.ComponentEvent;
 import org.hypothesis.interfaces.ComponentEventCallback;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
 
-import com.tilioteo.common.collections.StringMap;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
+import java.util.Date;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -25,7 +19,7 @@ import com.vaadin.ui.Component;
  *         Hypothesis
  *
  */
-public class ComponentUtility {
+public final class ComponentUtility {
 
 	private ComponentUtility() {
 	}
@@ -182,12 +176,9 @@ public class ComponentUtility {
 	 */
 	public static ComponentEventCallback createDefaultEventCallback(final Date serverTimestamp,
 			final Date clientTimestamp) {
-		return new ComponentEventCallback() {
-			@Override
-			public void initEvent(ComponentEvent componentEvent) {
-				componentEvent.setTimestamp(serverTimestamp);
-				componentEvent.setClientTimestamp(clientTimestamp);
-			}
-		};
+		return e -> {
+            e.setTimestamp(serverTimestamp);
+            e.setClientTimestamp(clientTimestamp);
+        };
 	}
 }

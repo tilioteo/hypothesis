@@ -4,14 +4,14 @@
  */
 package org.hypothesis.event.model;
 
+import org.hypothesis.interfaces.ViewportEventListener;
+
+import javax.swing.event.EventListenerList;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.EventObject;
 import java.util.HashMap;
-
-import javax.swing.event.EventListenerList;
-
-import org.hypothesis.interfaces.ViewportEventListener;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -22,7 +22,7 @@ import org.hypothesis.interfaces.ViewportEventListener;
 @SuppressWarnings("serial")
 public class ViewportEventManager implements Serializable {
 
-	private final HashMap<Class<? extends ViewportEvent>, EventListenerList> listenersMap = new HashMap<>();
+	private final Map<Class<? extends ViewportEvent>, EventListenerList> listenersMap = new HashMap<>();
 	private boolean enabled = false;
 
 	public final void addListener(Class<? extends ViewportEvent> eventClass, ViewportEventListener eventListener) {

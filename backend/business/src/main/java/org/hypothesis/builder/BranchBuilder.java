@@ -4,11 +4,11 @@
  */
 package org.hypothesis.builder;
 
-import java.io.Serializable;
-
 import org.hypothesis.business.BranchController;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.model.Branch;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -17,7 +17,7 @@ import org.hypothesis.data.model.Branch;
  *
  */
 @SuppressWarnings("serial")
-public class BranchBuilder implements Serializable {
+public final class BranchBuilder implements Serializable {
 
 	private BranchBuilder() {
 	}

@@ -4,6 +4,12 @@
  */
 package org.hypothesis.business;
 
+import org.hypothesis.data.model.Slide;
+import org.hypothesis.evaluation.AbstractBasePath;
+import org.hypothesis.evaluation.DefaultPath;
+import org.hypothesis.evaluation.Path;
+import org.hypothesis.interfaces.ExchangeVariable;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,12 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.evaluation.AbstractBasePath;
-import org.hypothesis.evaluation.DefaultPath;
-import org.hypothesis.evaluation.Path;
-import org.hypothesis.interfaces.ExchangeVariable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -32,7 +32,7 @@ public class BranchController implements Serializable {
 
 	private String nextKey = null;
 
-	private HashMap<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
+	private Map<Long, Map<Integer, ExchangeVariable>> slideOutputs = new HashMap<>();
 
 	/**
 	 * Add branch path previously created from it's definition

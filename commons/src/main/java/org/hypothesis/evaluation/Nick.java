@@ -4,11 +4,11 @@
  */
 package org.hypothesis.evaluation;
 
+import org.hypothesis.interfaces.ExchangeVariable;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.hypothesis.interfaces.ExchangeVariable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -36,7 +36,7 @@ public class Nick implements Serializable {
 
 	public boolean pass(Map<Integer, ExchangeVariable> inputs) {
 		if (inputs != null && expression != null) {
-			HashMap<String, org.hypothesis.interfaces.Variable<?>> variables = new HashMap<>();
+			Map<String, org.hypothesis.interfaces.Variable<?>> variables = new HashMap<>();
 			inputs.entrySet().forEach(e -> {
 				org.hypothesis.interfaces.Variable<?> variable = Variable.createVariable("output" + e.getKey(),
 						e.getValue().getValue());

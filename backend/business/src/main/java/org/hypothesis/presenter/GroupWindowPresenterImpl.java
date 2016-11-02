@@ -4,32 +4,6 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
-import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.CaseInsensitiveItemSorter;
-import org.hypothesis.data.interfaces.GroupService;
-import org.hypothesis.data.interfaces.PermissionService;
-import org.hypothesis.data.interfaces.UserService;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.GroupPermission;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.RoleServiceImpl;
-import org.hypothesis.data.validator.GroupNameValidator;
-import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.interfaces.GroupWindowPresenter;
-import org.hypothesis.server.Messages;
-import org.hypothesis.ui.table.SimpleCheckerColumnGenerator;
-
 import com.vaadin.cdi.NormalUIScoped;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator.InvalidValueException;
@@ -40,21 +14,29 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.Position;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import org.hypothesis.business.SessionManager;
+import org.hypothesis.data.CaseInsensitiveItemSorter;
+import org.hypothesis.data.interfaces.GroupService;
+import org.hypothesis.data.interfaces.PermissionService;
+import org.hypothesis.data.interfaces.UserService;
+import org.hypothesis.data.model.*;
+import org.hypothesis.data.service.RoleServiceImpl;
+import org.hypothesis.data.validator.GroupNameValidator;
+import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.interfaces.GroupWindowPresenter;
+import org.hypothesis.server.Messages;
+import org.hypothesis.ui.table.SimpleCheckerColumnGenerator;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -126,13 +108,10 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 
 			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED));
 
-			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
-				@Override
-				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					User user = (User) itemId;
-					return Messages.getString("Caption.Item.UserDescription", user.getUsername(), user.getId());
-				}
-			});
+			table.setItemDescriptionGenerator((source, itemId, propertyId) -> {
+                User user = (User) itemId;
+                return Messages.getString("Caption.Item.UserDescription", user.getUsername(), user.getId());
+            });
 
 			table.setVisibleColumns(FieldConstants.ENABLER, FieldConstants.USERNAME);
 			table.setColumnHeaders(Messages.getString("Caption.Field.State"),
@@ -167,14 +146,11 @@ public class GroupWindowPresenterImpl extends AbstractWindowPresenter implements
 
 			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED));
 
-			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
-				@Override
-				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					Pack pack = (Pack) itemId;
-					return Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
-							pack.getDescription());
-				}
-			});
+			table.setItemDescriptionGenerator((source, itemId, propertyId) -> {
+                Pack pack = (Pack) itemId;
+                return Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
+                        pack.getDescription());
+            });
 
 			table.setVisibleColumns(FieldConstants.ENABLER, FieldConstants.NAME);
 			table.setColumnHeaders(Messages.getString("Caption.Field.State"), Messages.getString("Caption.Field.Name"));

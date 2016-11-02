@@ -35,18 +35,10 @@
  */
 package org.hypothesis.servlet.jnlp;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.TimeZone;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -56,11 +48,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.*;
 
 /* The JNLP file handler implements a class that keeps
  * track of JNLP files and their specializations
@@ -91,7 +82,7 @@ public class JnlpFileHandler {
 	// private static final String HEADER_LASTMOD = "Last-Modified";
 	private final ServletContext _servletContext;
 
-	private HashMap<String, JnlpFileEntry> _jnlpFiles = null;
+	private Map<String, JnlpFileEntry> _jnlpFiles = null;
 
 	/** Initialize JnlpFileHandler for the specific ServletContext */
 	public JnlpFileHandler(ServletContext servletContext) {

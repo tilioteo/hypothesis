@@ -4,25 +4,16 @@
  */
 package org.hypothesis.presenter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
+import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Resource;
+import com.vaadin.server.StreamResource;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.themes.ValoTheme;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -43,22 +34,13 @@ import org.hypothesis.interfaces.GroupWindowPresenter;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.vaadin.cdi.NormalViewScoped;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.Resource;
-import com.vaadin.server.StreamResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -158,12 +140,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 
 	@Override
 	protected Resource getExportResource() {
-		StreamResource.StreamSource source = new StreamResource.StreamSource() {
-			@Override
-			public InputStream getStream() {
-				return getExportFile();
-			}
-		};
+		StreamResource.StreamSource source = () -> getExportFile();
 
 		return new StreamResource(source, Messages.getString("Caption.Export.GroupFileName"));
 	}
@@ -411,4 +388,8 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		buttonGroup.setEnabled(toolsEnabled);
 	}
 
+	@Override
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
+		// nop
+	}
 }

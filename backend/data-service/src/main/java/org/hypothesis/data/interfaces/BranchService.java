@@ -1,15 +1,15 @@
 package org.hypothesis.data.interfaces;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.BranchMap;
 import org.hypothesis.data.model.Pack;
+
+import java.io.Serializable;
+import java.util.Map;
 
 public interface BranchService extends Serializable {
 
 	Branch findById(Long id);
 
-	BranchMap getBranchMap(Pack pack, Branch branch);
+	Map<String, Branch> getBranches(Pack pack, Branch branch);
 
 }

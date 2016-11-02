@@ -12,7 +12,7 @@ import com.vaadin.server.VaadinSession;
  *         Hypothesis
  *
  */
-public class SessionUtils {
+public final class SessionUtils {
 
 	private SessionUtils() {
 	}

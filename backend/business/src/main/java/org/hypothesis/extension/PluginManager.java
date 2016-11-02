@@ -4,15 +4,6 @@
  */
 package org.hypothesis.extension;
 
-import java.io.File;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -22,6 +13,12 @@ import org.hypothesis.event.model.ProcessEventTypes;
 import org.hypothesis.interfaces.Plugin;
 import org.hypothesis.interfaces.SlideComponentPlugin;
 import org.hypothesis.utility.XmlUtility;
+
+import java.io.File;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -38,10 +35,10 @@ public class PluginManager implements Serializable {
 
 	private static PluginManager instance = null;
 
-	private HashSet<SlideComponentPlugin> componentPlugins = new HashSet<>();
-	private HashMap<String, SlideComponentPlugin> namespacePluginMap = new HashMap<>();
-	private HashMap<String, Set<String>> namespaceElementMap = new HashMap<>();
-	private HashSet<Class<? extends Plugin>> registeredClasses = new HashSet<>();
+	private Set<SlideComponentPlugin> componentPlugins = new HashSet<>();
+	private Map<String, SlideComponentPlugin> namespacePluginMap = new HashMap<>();
+	private Map<String, Set<String>> namespaceElementMap = new HashMap<>();
+	private Set<Class<? extends Plugin>> registeredClasses = new HashSet<>();
 
 	protected PluginManager() {
 	}

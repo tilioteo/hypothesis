@@ -4,11 +4,12 @@
  */
 package org.hypothesis.business;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import org.apache.commons.lang3.StringUtils;
 import org.vaadin.special.data.ShortcutConstants;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -16,7 +17,7 @@ import org.vaadin.special.data.ShortcutConstants;
  *         Hypothesis
  *
  */
-public class ShortcutUtility {
+public final class ShortcutUtility {
 
 	private ShortcutUtility() {
 	}
@@ -67,7 +68,7 @@ public class ShortcutUtility {
 		if (StringUtils.isNotEmpty(shortcutKey)) {
 			String[] parts = shortcutKey.split("\\+");
 
-			ArrayList<String> modifiers = new ArrayList<>();
+			List<String> modifiers = new ArrayList<>();
 			String key = null;
 
 			for (String part : parts) {

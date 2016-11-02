@@ -4,17 +4,8 @@
  */
 package org.hypothesis.builder;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractTextField;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.util.ISO9075;
 import org.hypothesis.business.ObjectConstants;
@@ -22,19 +13,17 @@ import org.hypothesis.data.DocumentWriter;
 import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.model.ActionEvent;
-import org.hypothesis.interfaces.Document;
-import org.hypothesis.interfaces.DocumentConstants;
-import org.hypothesis.interfaces.Element;
-import org.hypothesis.interfaces.ExchangeVariable;
-import org.hypothesis.interfaces.SlidePresenter;
-import org.hypothesis.interfaces.Variable;
+import org.hypothesis.interfaces.*;
 import org.hypothesis.slide.ui.ComboBox;
 import org.hypothesis.slide.ui.DateField;
 import org.hypothesis.slide.ui.SelectPanel;
 import org.hypothesis.slide.ui.annotations.FieldType;
 
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractTextField;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -326,7 +315,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			if (value != null && value.getClass() == ArrayList.class) {
 				typeName = DocumentConstants.OBJECT_ARRAY;
 
-				ArrayList<?> array = (ArrayList<?>) value;
+				List<?> array = (List<?>) value;
 				Object testItem = array.stream().filter(f -> f != null).findFirst().orElseGet(null);
 
 				if (testItem != null) {
@@ -398,7 +387,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.STRING);
 			element.setText((String) value);
 		} else if (type == ArrayList.class) {
-			ArrayList<?> array = (ArrayList<?>) value;
+			List<?> array = (List<?>) value;
 			Object testItem = array.stream().filter(f -> f != null).findFirst().orElseGet(null);
 
 			if (testItem != null) {

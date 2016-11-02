@@ -4,17 +4,17 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.List;
-
-import javax.enterprise.inject.Default;
-
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.interfaces.BranchService;
 import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.BranchMap;
 import org.hypothesis.data.model.BranchTrek;
 import org.hypothesis.data.model.Pack;
+
+import javax.enterprise.inject.Default;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -65,10 +65,10 @@ public class BranchServiceImpl implements BranchService {
 	 * data.model.Pack, org.hypothesis.data.model.Branch)
 	 */
 	@Override
-	public BranchMap getBranchMap(Pack pack, Branch branch) {
-		log.debug("getBranchMap");
+	public Map<String, Branch> getBranches(Pack pack, Branch branch) {
+		log.debug("getBranches");
 		try {
-			BranchMap branchMap = new BranchMap();
+			Map<String, Branch> branchMap = new HashMap<>();
 			branchTrekDao.beginTransaction();
 			List<BranchTrek> branchTreks = branchTrekDao.findByCriteria(Restrictions
 					.and(Restrictions.eq(EntityConstants.PACK, pack), Restrictions.eq(EntityConstants.BRANCH, branch)));

@@ -4,14 +4,14 @@
  */
 package org.hypothesis.ui;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-
+import com.vaadin.ui.Component;
 import org.vaadin.special.ui.NonVisualComponent;
 import org.vaadin.special.ui.ShortcutKey;
 import org.vaadin.special.ui.Timer;
 
-import com.vaadin.ui.Component;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -25,12 +25,12 @@ public abstract class HypothesisUI extends ControlledUI {
 	/**
 	 * List of timers in this UI.
 	 */
-	private final LinkedHashSet<Timer> timers = new LinkedHashSet<>();
+	private final Set<Timer> timers = new LinkedHashSet<>();
 
 	/**
 	 * List of timers in this UI.
 	 */
-	private final LinkedHashSet<ShortcutKey> shortcuts = new LinkedHashSet<>();
+	private final Set<ShortcutKey> shortcuts = new LinkedHashSet<>();
 
 	@Override
 	public void setContent(Component content) {

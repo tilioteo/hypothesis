@@ -4,18 +4,14 @@
  */
 package org.hypothesis.builder;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.utility.XmlUtility;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -25,7 +21,7 @@ import org.hypothesis.utility.XmlUtility;
  * @deprecated
  */
 @Deprecated
-public class SlideDataParser {
+public final class SlideDataParser {
 
 	private SlideDataParser() {
 	}
@@ -108,9 +104,9 @@ public class SlideDataParser {
 	 *
 	 */
 	public static final class FieldWrapper implements Serializable {
-		private HashMap<String, String> fieldCaptionMap = new HashMap<>();
-		private HashMap<String, String> fieldValueMap = new HashMap<>();
-		private HashMap<String, Map<String, String>> fieldValueCaptionMap = new HashMap<>();
+		private Map<String, String> fieldCaptionMap = new HashMap<>();
+		private Map<String, String> fieldValueMap = new HashMap<>();
+		private Map<String, Map<String, String>> fieldValueCaptionMap = new HashMap<>();
 
 		protected FieldWrapper() {
 		}

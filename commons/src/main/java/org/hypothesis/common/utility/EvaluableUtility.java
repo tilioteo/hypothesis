@@ -4,31 +4,17 @@
  */
 package org.hypothesis.common.utility;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hypothesis.evaluation.Call;
-import org.hypothesis.evaluation.Expression;
-import org.hypothesis.evaluation.IfStatement;
-import org.hypothesis.evaluation.IndexedExpression;
-import org.hypothesis.evaluation.SwitchStatement;
-import org.hypothesis.evaluation.WhileStatement;
-import org.hypothesis.interfaces.Action;
-import org.hypothesis.interfaces.DocumentConstants;
-import org.hypothesis.interfaces.Element;
-import org.hypothesis.interfaces.Evaluable;
-import org.hypothesis.interfaces.Evaluator;
-import org.hypothesis.interfaces.ReferenceCallback;
-import org.hypothesis.interfaces.Variable;
-
 import com.tilioteo.common.Strings;
 import com.tilioteo.expressions.ExpressionFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.hypothesis.evaluation.*;
+import org.hypothesis.interfaces.Action;
+import org.hypothesis.interfaces.*;
+import org.hypothesis.interfaces.Variable;
+
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -36,7 +22,7 @@ import com.tilioteo.expressions.ExpressionFactory;
  *         Hypothesis
  *
  */
-public class EvaluableUtility {
+public final class EvaluableUtility {
 	
 	private EvaluableUtility() {}
 

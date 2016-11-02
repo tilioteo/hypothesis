@@ -5,6 +5,7 @@
 package org.hypothesis.event.model;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -13,11 +14,11 @@ import java.util.Set;
  *         Hypothesis
  *
  */
-public class ProcessEventTypes {
+public final class ProcessEventTypes {
 
 	private static long nextId = 0;
 
-	private static final HashMap<String, ProcessEventType> events = new HashMap<>();
+	private static final Map<String, ProcessEventType> events = new HashMap<>();
 
 	public static final String Null = null;// "";
 

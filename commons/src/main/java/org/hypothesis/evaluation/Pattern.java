@@ -4,11 +4,11 @@
  */
 package org.hypothesis.evaluation;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.interfaces.ExchangeVariable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -21,7 +21,7 @@ public class Pattern implements Formula {
 
 	private static final Logger log = Logger.getLogger(Pattern.class);
 
-	private final HashMap<Long, Nick> nickMap = new HashMap<>();
+	private final Map<Long, Nick> nickMap = new HashMap<>();
 
 	public void addNick(int number, Nick nick) {
 		if (nick != null)

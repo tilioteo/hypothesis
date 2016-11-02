@@ -4,27 +4,15 @@
  */
 package org.hypothesis.data.model;
 
+import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Index;
-import org.hibernate.annotations.Type;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -102,7 +90,7 @@ public final class SlideOrder extends SerializableIdObject {
 	}
 
 	@Transient
-	public final List<Integer> getOrder() {
+	public List<Integer> getOrder() {
 		LinkedList<Integer> list = new LinkedList<>();
 
 		if (data != null) {
@@ -118,7 +106,7 @@ public final class SlideOrder extends SerializableIdObject {
 		return list;
 	}
 
-	public final void setOrder(List<Integer> list) {
+	public void setOrder(List<Integer> list) {
 		if (list != null) {
 			data = list.stream().map(m -> m.toString()).collect(Collectors.joining(","));
 		} else {

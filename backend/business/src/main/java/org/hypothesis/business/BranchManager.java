@@ -4,17 +4,16 @@
  */
 package org.hypothesis.business;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.builder.BranchBuilder;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.BranchMap;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.interfaces.ExchangeVariable;
+
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -80,7 +79,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	 * @param branchMap
 	 * @return the next branch or null if map is empty or nothing found.
 	 */
-	public Branch getNextBranch(BranchMap branchMap) {
+	public Branch getNextBranch(Map<String, Branch> branchMap) {
 		if (branchMap != null && controller != null) {
 			String key = controller.getNextBranchKey();
 
