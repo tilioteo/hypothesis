@@ -4,15 +4,15 @@
  */
 package org.hypothesis.data.service;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-
 import org.hibernate.Criteria;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hypothesis.context.HibernateUtil;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

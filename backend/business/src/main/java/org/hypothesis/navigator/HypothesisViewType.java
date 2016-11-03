@@ -4,21 +4,15 @@
  */
 package org.hypothesis.navigator;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import org.hypothesis.data.model.Role;
 import org.hypothesis.data.service.RoleServiceImpl;
 import org.hypothesis.interfaces.ViewPresenter;
-import org.hypothesis.presenter.ExportPresenterImpl;
-import org.hypothesis.presenter.GroupManagementPresenterImpl;
-import org.hypothesis.presenter.PublicPacksPresenter;
-import org.hypothesis.presenter.SlideManagementPresenterImpl;
-import org.hypothesis.presenter.UserManagementPresenterImpl;
-import org.hypothesis.presenter.UserPacksPresenter;
+import org.hypothesis.presenter.*;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

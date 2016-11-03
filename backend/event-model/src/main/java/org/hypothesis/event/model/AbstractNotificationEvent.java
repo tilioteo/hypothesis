@@ -4,9 +4,8 @@
  */
 package org.hypothesis.event.model;
 
-import org.hypothesis.event.interfaces.ProcessViewEvent;
-
 import com.vaadin.ui.Notification;
+import org.hypothesis.event.interfaces.ProcessViewEvent;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -1,8 +1,8 @@
 package org.hypothesis.data.interfaces;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.model.Slide;
+
+import java.io.Serializable;
 
 public interface SlideService extends Serializable {
 

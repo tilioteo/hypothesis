@@ -4,11 +4,10 @@
  */
 package org.hypothesis.event.model;
 
-import java.util.Date;
-
+import com.vaadin.server.ErrorHandler;
 import org.hypothesis.event.interfaces.ProcessEvent;
 
-import com.vaadin.server.ErrorHandler;
+import java.util.Date;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

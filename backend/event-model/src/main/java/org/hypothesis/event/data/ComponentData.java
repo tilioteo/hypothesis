@@ -4,9 +4,9 @@
  */
 package org.hypothesis.event.data;
 
-import java.io.Serializable;
-
 import com.vaadin.ui.Component;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

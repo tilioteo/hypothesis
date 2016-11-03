@@ -3,10 +3,10 @@
  */
 package org.hypothesis.data;
 
-import static org.junit.Assert.*;
-
 import org.hypothesis.interfaces.Document;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author morongk

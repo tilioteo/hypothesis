@@ -3,12 +3,12 @@
  */
 package org.hypothesis.annotations;
 
+import org.hypothesis.interfaces.RoleType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import org.hypothesis.interfaces.RoleType;
 
 /**
  * @author kamil

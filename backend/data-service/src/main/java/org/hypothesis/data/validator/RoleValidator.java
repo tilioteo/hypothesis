@@ -4,17 +4,15 @@
  */
 package org.hypothesis.data.validator;
 
-import java.util.Set;
-
-import javax.inject.Inject;
-
+import com.vaadin.data.Validator;
 import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.Role;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.RoleServiceImpl;
 import org.hypothesis.server.Messages;
 
-import com.vaadin.data.Validator;
+import javax.inject.Inject;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

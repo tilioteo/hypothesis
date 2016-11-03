@@ -4,10 +4,9 @@
  */
 package org.hypothesis.navigator;
 
-import org.hypothesis.interfaces.ViewPresenter;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
+import org.hypothesis.interfaces.ViewPresenter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -4,15 +4,14 @@
  */
 package org.hypothesis.ui;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.hypothesis.cdi.Main;
-import org.hypothesis.interfaces.UIPresenter;
-
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.cdi.CDIUI;
+import org.hypothesis.cdi.Main;
+import org.hypothesis.interfaces.UIPresenter;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

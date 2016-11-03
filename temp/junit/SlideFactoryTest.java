@@ -3,8 +3,7 @@
  */
 package org.hypothesis.application.junit;
 
-import static org.junit.Assert.*;
-
+import com.vaadin.ui.Component;
 import org.dom4j.Document;
 import org.hypothesis.application.collector.core.SlideFactory;
 import org.hypothesis.application.collector.core.SlideManager;
@@ -15,7 +14,7 @@ import org.hypothesis.entity.SlideContent;
 import org.hypothesis.entity.SlideTemplate;
 import org.junit.Test;
 
-import com.vaadin.ui.Component;
+import static org.junit.Assert.*;
 
 /**
  * 

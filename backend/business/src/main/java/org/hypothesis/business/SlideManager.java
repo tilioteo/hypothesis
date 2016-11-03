@@ -4,9 +4,7 @@
  */
 package org.hypothesis.business;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.vaadin.ui.Component;
 import org.apache.log4j.Logger;
 import org.hypothesis.builder.ComponentDataBuilder;
 import org.hypothesis.builder.SlideBuilder;
@@ -23,7 +21,8 @@ import org.hypothesis.event.model.ComponentEvent;
 import org.hypothesis.interfaces.ExchangeVariable;
 import org.hypothesis.ui.SlideContainer;
 
-import com.vaadin.ui.Component;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

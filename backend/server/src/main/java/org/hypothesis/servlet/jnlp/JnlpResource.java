@@ -35,13 +35,12 @@
  */
 package org.hypothesis.servlet.jnlp;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
-
-import javax.servlet.ServletContext;
 
 /**
  * A JnlpResource encapsulate the information about a resource that is needed to

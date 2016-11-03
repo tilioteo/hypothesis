@@ -4,10 +4,10 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.interfaces.Command;
+
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

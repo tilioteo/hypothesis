@@ -4,11 +4,11 @@
  */
 package org.hypothesis.data.service;
 
-import javax.enterprise.inject.Default;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.data.interfaces.TaskService;
 import org.hypothesis.data.model.Task;
+
+import javax.enterprise.inject.Default;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

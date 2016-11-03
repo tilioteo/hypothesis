@@ -3,9 +3,9 @@
  */
 package com.tilioteo.hypothesis.core;
 
-import java.util.Random;
-
 import com.tilioteo.hypothesis.interfaces.CoreObject;
+
+import java.util.Random;
 
 /**
  * @author kamil

@@ -4,34 +4,6 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.Date;
-import java.util.UUID;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hypothesis.business.SessionManager;
-import org.hypothesis.cdi.Main;
-import org.hypothesis.data.interfaces.UserService;
-import org.hypothesis.data.model.User;
-import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.GuestAccessRequestedEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.InvalidLoginEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.InvalidUserPermissionEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.PostViewChangeEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.UserLoggedOutEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.UserLoginRequestedEvent;
-import org.hypothesis.interfaces.LoginPresenter;
-import org.hypothesis.interfaces.MainPresenter;
-import org.hypothesis.interfaces.UIPresenter;
-import org.hypothesis.navigator.HypothesisViewType;
-import org.hypothesis.ui.LoginScreen;
-import org.hypothesis.ui.MainScreen;
-import org.hypothesis.utility.ViewUtility;
-
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.UIScoped;
 import com.vaadin.navigator.Navigator;
@@ -41,6 +13,27 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.UI;
+import org.apache.commons.lang3.StringUtils;
+import org.hypothesis.business.SessionManager;
+import org.hypothesis.cdi.Main;
+import org.hypothesis.data.interfaces.UserService;
+import org.hypothesis.data.model.User;
+import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.event.interfaces.MainUIEvent.*;
+import org.hypothesis.interfaces.LoginPresenter;
+import org.hypothesis.interfaces.MainPresenter;
+import org.hypothesis.interfaces.UIPresenter;
+import org.hypothesis.navigator.HypothesisViewType;
+import org.hypothesis.ui.LoginScreen;
+import org.hypothesis.ui.MainScreen;
+import org.hypothesis.utility.ViewUtility;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

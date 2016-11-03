@@ -4,11 +4,10 @@
  */
 package org.hypothesis.builder;
 
-import java.io.Serializable;
-
+import com.vaadin.data.Validatable;
 import org.hypothesis.interfaces.Element;
 
-import com.vaadin.data.Validatable;
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

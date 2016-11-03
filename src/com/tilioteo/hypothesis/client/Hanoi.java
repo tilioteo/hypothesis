@@ -4,7 +4,6 @@
 package com.tilioteo.hypothesis.client;
 
 import com.google.gwt.core.client.JavaScriptObject;
-
 import processing.core.IJsEventHandler;
 import processing.core.ISketchEventHandler;
 import processing.core.PApplet;

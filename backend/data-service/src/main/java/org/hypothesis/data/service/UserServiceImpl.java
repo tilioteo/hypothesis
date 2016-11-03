@@ -4,11 +4,7 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Default;
-
+import com.vaadin.cdi.NormalUIScoped;
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
@@ -17,7 +13,9 @@ import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.User;
 
-import com.vaadin.cdi.NormalUIScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Default;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

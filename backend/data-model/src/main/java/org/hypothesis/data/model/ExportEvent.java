@@ -4,19 +4,13 @@
  */
 package org.hypothesis.data.model;
 
-import java.util.Date;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
-
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 import org.hibernate.annotations.Synchronize;
 import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

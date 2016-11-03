@@ -1,10 +1,10 @@
 package org.hypothesis.data.interfaces;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.Token;
 import org.hypothesis.data.model.User;
+
+import java.io.Serializable;
 
 public interface TokenService extends Serializable {
 

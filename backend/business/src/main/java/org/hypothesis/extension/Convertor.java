@@ -4,13 +4,12 @@
  */
 package org.hypothesis.extension;
 
+import com.tilioteo.common.Strings;
+import org.hypothesis.interfaces.Extension;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import org.hypothesis.interfaces.Extension;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

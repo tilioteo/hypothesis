@@ -4,21 +4,19 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import com.vaadin.cdi.NormalViewScoped;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.cdi.UserPacks;
 import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.User;
 
-import com.vaadin.cdi.NormalViewScoped;
+import javax.inject.Inject;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

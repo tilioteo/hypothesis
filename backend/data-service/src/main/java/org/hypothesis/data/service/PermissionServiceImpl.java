@@ -4,27 +4,21 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.interfaces.PermissionService;
 import org.hypothesis.data.interfaces.UserService;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.GroupPermission;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.model.UserPermission;
+import org.hypothesis.data.model.*;
+
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -4,13 +4,12 @@
  */
 package org.hypothesis.ui.table;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.vaadin.ui.Table;
 import org.apache.commons.lang3.BooleanUtils;
 import org.hypothesis.data.model.FieldConstants;
 
-import com.vaadin.ui.Table;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

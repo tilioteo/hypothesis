@@ -4,13 +4,13 @@
  */
 package org.hypothesis.business;
 
+import org.hypothesis.data.interfaces.HasList;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-
-import org.hypothesis.data.interfaces.HasList;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

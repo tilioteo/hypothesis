@@ -1,10 +1,10 @@
 package org.hypothesis.data.interfaces;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.hypothesis.data.model.Group;
 import org.hypothesis.data.model.User;
+
+import java.io.Serializable;
+import java.util.List;
 
 public interface GroupService extends Serializable {
 

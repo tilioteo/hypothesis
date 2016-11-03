@@ -4,10 +4,10 @@
  */
 package org.hypothesis.builder;
 
-import java.io.Serializable;
-
 import org.hypothesis.business.TaskController;
 import org.hypothesis.data.DocumentReader;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

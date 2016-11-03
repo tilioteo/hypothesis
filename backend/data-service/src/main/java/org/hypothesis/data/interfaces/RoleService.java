@@ -1,9 +1,9 @@
 package org.hypothesis.data.interfaces;
 
+import org.hypothesis.data.model.Role;
+
 import java.io.Serializable;
 import java.util.List;
-
-import org.hypothesis.data.model.Role;
 
 public interface RoleService extends Serializable {
 

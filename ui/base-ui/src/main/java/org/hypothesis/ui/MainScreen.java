@@ -4,11 +4,10 @@
  */
 package org.hypothesis.ui;
 
-import org.hypothesis.interfaces.MainPresenter;
-
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.VerticalLayout;
+import org.hypothesis.interfaces.MainPresenter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

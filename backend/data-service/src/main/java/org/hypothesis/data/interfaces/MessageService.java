@@ -1,8 +1,8 @@
 package org.hypothesis.data.interfaces;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.model.Message;
+
+import java.io.Serializable;
 
 public interface MessageService extends Serializable {
 

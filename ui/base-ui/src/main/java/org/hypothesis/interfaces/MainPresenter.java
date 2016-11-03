@@ -4,10 +4,9 @@
  */
 package org.hypothesis.interfaces;
 
-import org.hypothesis.ui.MainScreen;
-
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import org.hypothesis.ui.MainScreen;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

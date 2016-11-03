@@ -4,15 +4,14 @@
  */
 package org.hypothesis.presenter;
 
-import javax.enterprise.event.Observes;
-
+import com.vaadin.ui.Component;
 import org.hypothesis.event.model.EventQueue;
 import org.hypothesis.event.model.EventWrapper;
 import org.hypothesis.event.model.FinishSlideEvent;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.ComponentEventCallback;
 
-import com.vaadin.ui.Component;
+import javax.enterprise.event.Observes;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

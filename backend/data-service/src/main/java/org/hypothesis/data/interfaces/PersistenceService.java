@@ -1,12 +1,8 @@
 package org.hypothesis.data.interfaces;
 
-import java.io.Serializable;
+import org.hypothesis.data.model.*;
 
-import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.data.model.Task;
+import java.io.Serializable;
 
 public interface PersistenceService extends Serializable {
 

@@ -4,10 +4,6 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.Date;
-
-import javax.enterprise.inject.Default;
-
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.interfaces.TokenService;
@@ -15,6 +11,9 @@ import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.Token;
 import org.hypothesis.data.model.User;
+
+import javax.enterprise.inject.Default;
+import java.util.Date;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

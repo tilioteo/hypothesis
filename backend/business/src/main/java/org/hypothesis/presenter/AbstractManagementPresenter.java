@@ -4,21 +4,14 @@
  */
 package org.hypothesis.presenter;
 
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Resource;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Table.ColumnGenerator;
 import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.ConfirmDialog.Listener;
-
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.Resource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -45,10 +38,6 @@ public abstract class AbstractManagementPresenter implements ManagementPresenter
 	protected abstract Button buildDeleteButton();
 
 	protected abstract Resource getExportResource();
-
-	@Override
-	public void enter(ViewChangeEvent event) {
-	}
 
 	protected Component buildTools() {
 		HorizontalLayout tools = new HorizontalLayout();

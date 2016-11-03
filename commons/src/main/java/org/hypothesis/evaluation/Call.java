@@ -4,10 +4,10 @@
  */
 package org.hypothesis.evaluation;
 
-import java.util.Map;
-
 import org.hypothesis.interfaces.Evaluable;
 import org.hypothesis.interfaces.HasActions;
+
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

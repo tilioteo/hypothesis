@@ -3,9 +3,8 @@
  */
 package org.hypothesis.ui.view;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
+import com.vaadin.cdi.CDIView;
+import com.vaadin.server.FontAwesome;
 import org.hypothesis.annotations.RolesAllowed;
 import org.hypothesis.annotations.Title;
 import org.hypothesis.cdi.UserPacks;
@@ -13,8 +12,8 @@ import org.hypothesis.interfaces.PacksPresenter;
 import org.hypothesis.interfaces.RoleType;
 import org.hypothesis.ui.MainUI;
 
-import com.vaadin.cdi.CDIView;
-import com.vaadin.server.FontAwesome;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  * @author kamil

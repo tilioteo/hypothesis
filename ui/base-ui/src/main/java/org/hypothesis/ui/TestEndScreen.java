@@ -4,8 +4,6 @@
  */
 package org.hypothesis.ui;
 
-import org.hypothesis.interfaces.Command;
-import org.hypothesis.interfaces.ProcessView;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -13,6 +11,8 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import org.hypothesis.interfaces.Command;
+import org.hypothesis.interfaces.ProcessView;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

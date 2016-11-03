@@ -4,18 +4,18 @@
  */
 package org.hypothesis.data;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
 import org.hypothesis.builder.DocumentImpl;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 import org.hypothesis.utility.XmlUtility;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

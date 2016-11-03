@@ -4,17 +4,13 @@
  */
 package org.hypothesis.data.service;
 
-import javax.enterprise.inject.Default;
-
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.interfaces.PersistenceService;
-import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.data.model.Task;
+import org.hypothesis.data.model.*;
+
+import javax.enterprise.inject.Default;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

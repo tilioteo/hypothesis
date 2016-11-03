@@ -1,14 +1,10 @@
 package org.hypothesis.data.interfaces;
 
+import org.hypothesis.data.model.*;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
-
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.GroupPermission;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.model.UserPermission;
 
 public interface PermissionService extends Serializable {
 

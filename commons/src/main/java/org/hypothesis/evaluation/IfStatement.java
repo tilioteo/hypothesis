@@ -4,12 +4,12 @@
  */
 package org.hypothesis.evaluation;
 
+import org.hypothesis.interfaces.Evaluable;
+import org.hypothesis.interfaces.HasVariables;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.hypothesis.interfaces.Evaluable;
-import org.hypothesis.interfaces.HasVariables;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

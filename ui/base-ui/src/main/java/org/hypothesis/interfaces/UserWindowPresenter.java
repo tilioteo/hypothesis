@@ -1,8 +1,8 @@
 package org.hypothesis.interfaces;
 
-import java.util.Collection;
-
 import org.hypothesis.data.model.User;
+
+import java.util.Collection;
 
 public interface UserWindowPresenter extends WindowPresenter {
 

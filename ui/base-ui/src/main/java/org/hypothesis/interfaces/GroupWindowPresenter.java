@@ -1,8 +1,8 @@
 package org.hypothesis.interfaces;
 
-import java.util.Collection;
-
 import org.hypothesis.data.model.Group;
+
+import java.util.Collection;
 
 public interface GroupWindowPresenter extends WindowPresenter {
 

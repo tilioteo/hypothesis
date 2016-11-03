@@ -4,19 +4,14 @@
  */
 package org.hypothesis.servlet;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-
+import com.vaadin.cdi.server.VaadinCDIServlet;
+import com.vaadin.server.*;
 import org.apache.log4j.Logger;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.context.LogUtil;
 
-import com.vaadin.cdi.server.VaadinCDIServlet;
-import com.vaadin.server.ServiceException;
-import com.vaadin.server.SessionDestroyEvent;
-import com.vaadin.server.SessionDestroyListener;
-import com.vaadin.server.SessionInitEvent;
-import com.vaadin.server.SessionInitListener;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -4,12 +4,6 @@
  */
 package org.hypothesis.business;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.data.DocumentReader;
@@ -19,6 +13,11 @@ import org.hypothesis.event.data.Message;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
+
+import javax.inject.Inject;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

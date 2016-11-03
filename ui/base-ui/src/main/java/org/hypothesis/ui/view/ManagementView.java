@@ -4,12 +4,11 @@
  */
 package org.hypothesis.ui.view;
 
-import org.hypothesis.interfaces.ManagementPresenter;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import org.hypothesis.interfaces.ManagementPresenter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -4,9 +4,9 @@
  */
 package org.hypothesis.event.model;
 
+import com.vaadin.server.ErrorHandler;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Status;
-import com.vaadin.server.ErrorHandler;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -4,19 +4,12 @@
  */
 package org.hypothesis.ui;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
+
 import java.text.NumberFormat;
 import java.util.Locale;
-
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

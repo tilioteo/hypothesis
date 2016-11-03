@@ -4,17 +4,16 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.enterprise.inject.Default;
-
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.interfaces.RoleService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Role;
 import org.hypothesis.interfaces.RoleType;
+
+import javax.enterprise.inject.Default;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

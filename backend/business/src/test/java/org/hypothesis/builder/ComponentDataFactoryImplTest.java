@@ -4,12 +4,12 @@
  */
 package org.hypothesis.builder;
 
-import static org.junit.Assert.assertEquals;
-
 import org.hypothesis.data.DocumentWriter;
 import org.hypothesis.data.XmlDocumentWriter;
 import org.hypothesis.event.data.ComponentData;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

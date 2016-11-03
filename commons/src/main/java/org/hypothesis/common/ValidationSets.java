@@ -4,9 +4,8 @@
  */
 package org.hypothesis.common;
 
-import org.hypothesis.interfaces.DocumentConstants;
-
 import com.tilioteo.common.collections.StringSet;
+import org.hypothesis.interfaces.DocumentConstants;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

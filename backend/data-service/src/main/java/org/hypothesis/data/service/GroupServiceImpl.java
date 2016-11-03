@@ -4,10 +4,6 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.List;
-
-import javax.enterprise.inject.Default;
-
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
@@ -16,6 +12,9 @@ import org.hypothesis.data.interfaces.GroupService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Group;
 import org.hypothesis.data.model.User;
+
+import javax.enterprise.inject.Default;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

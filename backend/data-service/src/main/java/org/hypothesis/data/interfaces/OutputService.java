@@ -1,8 +1,8 @@
 package org.hypothesis.data.interfaces;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.model.BranchOutput;
+
+import java.io.Serializable;
 
 public interface OutputService extends Serializable {
 

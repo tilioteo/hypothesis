@@ -4,9 +4,8 @@
  */
 package org.hypothesis.event.model;
 
-import org.hypothesis.event.model.FinishSlideEvent.Direction;
-
 import com.vaadin.server.ErrorHandler;
+import org.hypothesis.event.model.FinishSlideEvent.Direction;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

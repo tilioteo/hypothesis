@@ -3,18 +3,16 @@
  */
 package com.tilioteo.hypothesis.dom;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.tilioteo.hypothesis.entity.Slide;
 import org.apache.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import com.tilioteo.common.Strings;
-import com.tilioteo.hypothesis.entity.Slide;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Kamil Morong - Hypothesis

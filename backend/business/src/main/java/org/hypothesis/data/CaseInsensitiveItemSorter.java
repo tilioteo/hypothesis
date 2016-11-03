@@ -4,10 +4,10 @@
  */
 package org.hypothesis.data;
 
+import com.vaadin.data.util.DefaultItemSorter;
+
 import java.io.Serializable;
 import java.util.Comparator;
-
-import com.vaadin.data.util.DefaultItemSorter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

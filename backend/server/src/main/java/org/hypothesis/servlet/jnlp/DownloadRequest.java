@@ -35,13 +35,12 @@
  */
 package org.hypothesis.servlet.jnlp;
 
-import java.io.File;
-import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.log4j.Logger;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * The DownloadRequest incapsulates all the data in a request SQE: We need to

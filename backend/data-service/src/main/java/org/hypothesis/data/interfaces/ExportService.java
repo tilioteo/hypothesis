@@ -1,11 +1,11 @@
 package org.hypothesis.data.interfaces;
 
+import org.hypothesis.data.model.ExportEvent;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import org.hypothesis.data.model.ExportEvent;
 
 public interface ExportService extends Serializable {
 

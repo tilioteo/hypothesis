@@ -1,9 +1,9 @@
 package org.hypothesis.data.interfaces;
 
+import org.hypothesis.data.model.User;
+
 import java.io.Serializable;
 import java.util.List;
-
-import org.hypothesis.data.model.User;
 
 public interface UserService extends Serializable {
 

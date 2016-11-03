@@ -4,30 +4,16 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.enterprise.inject.Default;
-
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.interfaces.TestService;
-import org.hypothesis.data.model.Event;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.SlideOrder;
-import org.hypothesis.data.model.Status;
-import org.hypothesis.data.model.TableConstants;
-import org.hypothesis.data.model.Task;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.model.*;
+
+import javax.enterprise.inject.Default;
+import java.util.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

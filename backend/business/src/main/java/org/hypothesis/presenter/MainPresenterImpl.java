@@ -4,32 +4,23 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
+import com.vaadin.cdi.NormalUIScoped;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import org.hypothesis.interfaces.MainPresenter;
 import org.hypothesis.interfaces.MenuPresenter;
 import org.hypothesis.servlet.ServletUtil;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.menu.HypothesisMenu;
 
-import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

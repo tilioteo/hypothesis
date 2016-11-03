@@ -4,26 +4,19 @@
  */
 package org.hypothesis.ui.view;
 
-import java.util.Iterator;
-
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import org.hypothesis.interfaces.PacksPresenter;
 import org.hypothesis.slide.ui.Mask;
 import org.hypothesis.ui.PackPanel;
 import org.vaadin.jre.ui.DeployJava;
-import org.vaadin.jre.ui.DeployJava.JavaCheckedEvent;
 import org.vaadin.jre.ui.DeployJava.JavaCheckedListener;
 import org.vaadin.jre.ui.DeployJava.JavaInfoPanel;
 
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import java.util.Iterator;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -53,13 +46,7 @@ public abstract class PacksView extends HorizontalLayout implements View {
 	private String javaNotInstalledCaption = "javaNotInstalledCaption";
 	private String javaInstallLinkCaption = "javaInstallLinkCaption";
 
-	private final JavaCheckedListener javaCheckedListener = new JavaCheckedListener() {
-		@Override
-		public void javaChecked(JavaCheckedEvent event) {
-			updateJavaInstalled(event.getResult());
-		}
-
-	};
+	private final JavaCheckedListener javaCheckedListener = e -> updateJavaInstalled(e.getResult());
 
 	public PacksView() {
 		setSizeFull();

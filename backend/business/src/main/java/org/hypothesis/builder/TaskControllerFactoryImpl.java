@@ -4,8 +4,6 @@
  */
 package org.hypothesis.builder;
 
-import java.util.Objects;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.business.TaskController;
 import org.hypothesis.common.utility.DocumentUtility;
@@ -15,6 +13,8 @@ import org.hypothesis.evaluation.Node;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 import org.hypothesis.interfaces.Evaluator;
+
+import java.util.Objects;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

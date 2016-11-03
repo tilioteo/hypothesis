@@ -4,9 +4,8 @@
  */
 package org.hypothesis.ui.menu;
 
-import org.hypothesis.interfaces.MenuPresenter;
-
 import com.vaadin.ui.CustomComponent;
+import org.hypothesis.interfaces.MenuPresenter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

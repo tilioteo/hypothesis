@@ -4,11 +4,10 @@
  */
 package org.hypothesis.evaluation;
 
-import java.util.Map;
-
+import com.tilioteo.expressions.UnaryExpression;
 import org.hypothesis.interfaces.Evaluable;
 
-import com.tilioteo.expressions.UnaryExpression;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

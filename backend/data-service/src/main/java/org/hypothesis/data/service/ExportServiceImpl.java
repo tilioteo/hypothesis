@@ -4,12 +4,6 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.enterprise.inject.Default;
-
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
@@ -17,6 +11,11 @@ import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.interfaces.ExportService;
 import org.hypothesis.data.model.ExportEvent;
 import org.hypothesis.data.model.FieldConstants;
+
+import javax.enterprise.inject.Default;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

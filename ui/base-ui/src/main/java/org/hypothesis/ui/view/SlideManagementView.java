@@ -4,17 +4,6 @@
  */
 package org.hypothesis.ui.view;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.hypothesis.annotations.RolesAllowed;
-import org.hypothesis.annotations.Title;
-import org.hypothesis.interfaces.RoleType;
-import org.hypothesis.interfaces.SlideManagementPresenter;
-import org.hypothesis.ui.MainUI;
-import org.vaadin.aceeditor.AceEditor;
-import org.vaadin.aceeditor.AceMode;
-
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -23,6 +12,16 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import org.hypothesis.annotations.RolesAllowed;
+import org.hypothesis.annotations.Title;
+import org.hypothesis.interfaces.RoleType;
+import org.hypothesis.interfaces.SlideManagementPresenter;
+import org.hypothesis.ui.MainUI;
+import org.vaadin.aceeditor.AceEditor;
+import org.vaadin.aceeditor.AceMode;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

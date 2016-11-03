@@ -4,21 +4,20 @@
  */
 package org.hypothesis.ui.view;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.hypothesis.annotations.RolesAllowed;
-import org.hypothesis.annotations.Title;
-import org.hypothesis.interfaces.ExportPresenter;
-import org.hypothesis.interfaces.RoleType;
-import org.hypothesis.ui.MainUI;
-
 import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
+import org.hypothesis.annotations.RolesAllowed;
+import org.hypothesis.annotations.Title;
+import org.hypothesis.interfaces.ExportPresenter;
+import org.hypothesis.interfaces.RoleType;
+import org.hypothesis.ui.MainUI;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

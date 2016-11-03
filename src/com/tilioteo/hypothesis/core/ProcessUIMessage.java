@@ -3,10 +3,10 @@
  */
 package com.tilioteo.hypothesis.core;
 
-import java.io.Serializable;
-
 import elemental.json.Json;
 import elemental.json.JsonObject;
+
+import java.io.Serializable;
 
 /**
  * @author kamil

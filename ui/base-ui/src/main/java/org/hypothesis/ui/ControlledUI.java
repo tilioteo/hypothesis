@@ -4,13 +4,12 @@
  */
 package org.hypothesis.ui;
 
-import java.util.Locale;
-
-import org.hypothesis.interfaces.UIPresenter;
-
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
+import org.hypothesis.interfaces.UIPresenter;
+
+import java.util.Locale;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
