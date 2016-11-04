@@ -1,0 +1,37 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+	<persistence-unit name="org.hypothesis.data.service.jpa">
+		<description>Persistence Unit for Hypothesis</description>
+		<class>org.hypothesis.data.model.SlideTemplate</class>
+		<class>org.hypothesis.data.model.Slide</class>
+		<class>org.hypothesis.data.model.SlideOrder</class>
+		<class>org.hypothesis.data.model.Task</class>
+		<class>org.hypothesis.data.model.Branch</class>
+		<class>org.hypothesis.data.model.BranchOutput</class>
+		<class>org.hypothesis.data.model.Pack</class>
+		<class>org.hypothesis.data.model.BranchTrek</class>
+		<class>org.hypothesis.data.model.Event</class>
+		<class>org.hypothesis.data.model.ExportEvent</class>
+		<class>org.hypothesis.data.model.SimpleTest</class>
+		<class>org.hypothesis.data.model.Test</class>
+		<class>org.hypothesis.data.model.Token</class>
+		<class>org.hypothesis.data.model.User</class>
+		<class>org.hypothesis.data.model.Group</class>
+		<class>org.hypothesis.data.model.Role</class>
+		<class>org.hypothesis.data.model.UserPermission</class>
+		<class>org.hypothesis.data.model.GroupPermission</class>
+		<class>org.hypothesis.data.model.Message</class>
+
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://${hibernate.url}"/>
+			<property name="javax.persistence.jdbc.user" value="${hibernate.username}"/>
+			<property name="javax.persistence.jdbc.password" value="${hibernate.password}"/>
+			
+			<property name="hibernate.show_sql" value="${hibernate.show_sql}"/>
+			<property name="hibernate.hbm2ddl.auto" value="validate"/>
+		</properties>
+	</persistence-unit>
+</persistence>
