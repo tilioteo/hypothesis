@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.PermissionService;
 import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.*;
@@ -33,15 +32,18 @@ public class PermissionServiceImpl implements PermissionService {
 
 	private static final Logger log = Logger.getLogger(PermissionServiceImpl.class);
 
-	@Inject
-	private GenericDao<UserPermission, Long> userPermissionDao;
-	@Inject
-	private GenericDao<GroupPermission, Long> groupPermissionDao;
-	@Inject
-	private GenericDao<Pack, Long> packDao;
+	private final HibernateDao<UserPermission, Long> userPermissionDao;
+	private final HibernateDao<GroupPermission, Long> groupPermissionDao;
+	private final HibernateDao<Pack, Long> packDao;
 
 	@Inject
 	private UserService userService;
+
+	public PermissionServiceImpl() {
+		userPermissionDao = new HibernateDao<>(UserPermission.class);
+		groupPermissionDao = new HibernateDao<>(GroupPermission.class);
+		packDao = new HibernateDao<>(Pack.class);
+	}
 
 	/*
 	 * (non-Javadoc)

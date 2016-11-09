@@ -6,15 +6,12 @@ package org.hypothesis.data.service;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
-import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.RoleService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Role;
 import org.hypothesis.interfaces.RoleType;
 
 import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,16 +27,19 @@ public class RoleServiceImpl implements RoleService {
 
 	private static final Logger log = Logger.getLogger(RoleServiceImpl.class);
 
-	@Inject
-	private GenericDao<Role, Long> roleDao;
+	private final HibernateDao<Role, Long> roleDao;
 
 	public static final Role ROLE_SUPERUSER = initRoleByName(RoleType.SUPERUSER.name());
 	public static final Role ROLE_MANAGER = initRoleByName(RoleType.MANAGER.name());
 	public static final Role ROLE_USER = initRoleByName(RoleType.USER.name());
 
+	public RoleServiceImpl() {
+		roleDao = new HibernateDao<>(Role.class);
+	}
+
 	private static Role initRoleByName(String name) {
 		log.debug(String.format("initRoleByName: name = %s", name != null ? name : "NULL"));
-		//HibernateDao<Role, Long> roleDao = new HibernateDao<Role, Long>(Role.class);
+		HibernateDao<Role, Long> roleDao = new HibernateDao<Role, Long>(Role.class);
 		try {
 			roleDao.beginTransaction();
 			List<Role> roles = roleDao.findByCriteria(Restrictions.eq(FieldConstants.NAME, name).ignoreCase());

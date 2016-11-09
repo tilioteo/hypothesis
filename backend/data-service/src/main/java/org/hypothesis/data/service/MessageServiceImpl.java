@@ -5,12 +5,10 @@
 package org.hypothesis.data.service;
 
 import org.apache.log4j.Logger;
-import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.MessageService;
 import org.hypothesis.data.model.Message;
 
 import javax.enterprise.inject.Default;
-import javax.inject.Inject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -24,8 +22,11 @@ public class MessageServiceImpl implements MessageService {
 
 	private static final Logger log = Logger.getLogger(MessageServiceImpl.class);
 
-	@Inject
-	private GenericDao<Message, String> messageDao;
+	private final HibernateDao<Message, String> messageDao;
+
+	public MessageServiceImpl() {
+		messageDao = new HibernateDao<>(Message.class);
+	}
 
 	/*
 	 * (non-Javadoc)

@@ -5,12 +5,10 @@
 package org.hypothesis.data.service;
 
 import org.apache.log4j.Logger;
-import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.SlideService;
 import org.hypothesis.data.model.Slide;
 
 import javax.enterprise.inject.Default;
-import javax.inject.Inject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -24,8 +22,11 @@ public class SlideServiceImpl implements SlideService {
 
 	private static final Logger log = Logger.getLogger(SlideServiceImpl.class);
 
-	@Inject
-	private GenericDao<Slide, Long> slideDao;
+	private final HibernateDao<Slide, Long> slideDao;
+
+	public SlideServiceImpl() {
+		slideDao = new HibernateDao<Slide, Long>(Slide.class);
+	}
 
 	/*
 	 * (non-Javadoc)

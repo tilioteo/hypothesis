@@ -62,13 +62,5 @@ public interface GenericDao<T, ID extends Serializable> extends Serializable {
 	 * @param entity
 	 */
 	void makeTransient(T entity);
-	
-	T merge(T entity);
-	
-	void flush();
-	
-	void clear();
-	
-	<C> C getManager(Class<C> clazz);
 
 }

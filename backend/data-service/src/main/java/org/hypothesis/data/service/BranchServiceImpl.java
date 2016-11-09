@@ -7,14 +7,11 @@ package org.hypothesis.data.service;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.interfaces.BranchService;
-import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.model.Branch;
 import org.hypothesis.data.model.BranchTrek;
 import org.hypothesis.data.model.Pack;
 
 import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,11 +28,13 @@ public class BranchServiceImpl implements BranchService {
 
 	private static final Logger log = Logger.getLogger(BranchServiceImpl.class);
 
-	@Inject
-	private GenericDao<Branch, Long> branchDao;
-	
-	@Inject
-	private GenericDao<BranchTrek, Long> branchTrekDao;
+	private final HibernateDao<Branch, Long> branchDao;
+	private final HibernateDao<BranchTrek, Long> branchTrekDao;
+
+	public BranchServiceImpl() {
+		branchDao = new HibernateDao<>(Branch.class);
+		branchTrekDao = new HibernateDao<>(BranchTrek.class);
+	}
 
 	/*
 	 * (non-Javadoc)
