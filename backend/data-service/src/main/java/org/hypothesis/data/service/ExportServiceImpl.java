@@ -9,10 +9,13 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.interfaces.ExportService;
+import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.model.ExportEvent;
 import org.hypothesis.data.model.FieldConstants;
 
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -29,11 +32,8 @@ public class ExportServiceImpl implements ExportService {
 
 	private static final Logger log = Logger.getLogger(ExportServiceImpl.class);
 
-	private final HibernateDao<ExportEvent, Long> exportEventDao;
-
-	public ExportServiceImpl() {
-		exportEventDao = new HibernateDao<>(ExportEvent.class);
-	}
+	@Inject
+	private GenericDao<ExportEvent, Long> exportEventDao;
 
 	/*
 	 * (non-Javadoc)

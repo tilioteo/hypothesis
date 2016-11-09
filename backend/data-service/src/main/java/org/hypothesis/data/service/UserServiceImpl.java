@@ -9,12 +9,15 @@ import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.User;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import java.util.List;
 
 /**
@@ -30,12 +33,8 @@ public class UserServiceImpl implements UserService {
 
 	private static final Logger log = Logger.getLogger(UserServiceImpl.class);
 
-	private final HibernateDao<User, Long> userDao;
-
-	public UserServiceImpl() {
-		System.out.println("Construct " + getClass().getName());
-		userDao = new HibernateDao<>(User.class);
-	}
+	@Inject
+	private GenericDao<User, Long> userDao;
 
 	/*
 	 * (non-Javadoc)

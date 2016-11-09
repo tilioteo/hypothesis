@@ -6,6 +6,7 @@ package org.hypothesis.data.service;
 
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
+import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.TokenService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Pack;
@@ -13,6 +14,8 @@ import org.hypothesis.data.model.Token;
 import org.hypothesis.data.model.User;
 
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import java.util.Date;
 
 /**
@@ -29,11 +32,9 @@ public class TokenServiceImpl implements TokenService {
 
 	private static final int TOKEN_VALID_TIME = 120 * 1000; // 2 minutes
 
-	private final HibernateDao<Token, String> tokenDao;
+	@Inject
+	private GenericDao<Token, String> tokenDao;
 
-	public TokenServiceImpl() {
-		tokenDao = new HibernateDao<>(Token.class);
-	}
 
 	/*
 	 * (non-Javadoc)

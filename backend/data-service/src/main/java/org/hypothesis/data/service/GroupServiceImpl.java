@@ -8,12 +8,15 @@ import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
+import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.GroupService;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Group;
 import org.hypothesis.data.model.User;
 
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import java.util.List;
 
 /**
@@ -28,11 +31,8 @@ public class GroupServiceImpl implements GroupService {
 
 	private static final Logger log = Logger.getLogger(GroupServiceImpl.class);
 
-	private final HibernateDao<Group, Long> groupDao;
-
-	public GroupServiceImpl() {
-		groupDao = new HibernateDao<>(Group.class);
-	}
+	@Inject
+	private GenericDao<Group, Long> groupDao;
 
 	/*
 	 * (non-Javadoc)

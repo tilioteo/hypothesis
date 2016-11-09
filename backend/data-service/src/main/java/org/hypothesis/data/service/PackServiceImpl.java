@@ -5,10 +5,12 @@
 package org.hypothesis.data.service;
 
 import org.apache.log4j.Logger;
+import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.PackService;
 import org.hypothesis.data.model.Pack;
 
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -22,11 +24,8 @@ public class PackServiceImpl implements PackService {
 
 	private static final Logger log = Logger.getLogger(PackServiceImpl.class);
 
-	private final HibernateDao<Pack, Long> packDao;
-
-	public PackServiceImpl(HibernateDao<Pack, Long> packDao) {
-		this.packDao = packDao;
-	}
+	@Inject
+	private GenericDao<Pack, Long> packDao;
 
 	/*
 	 * (non-Javadoc)

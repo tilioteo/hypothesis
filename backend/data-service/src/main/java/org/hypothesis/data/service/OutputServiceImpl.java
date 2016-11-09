@@ -5,10 +5,12 @@
 package org.hypothesis.data.service;
 
 import org.apache.log4j.Logger;
+import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.OutputService;
 import org.hypothesis.data.model.BranchOutput;
 
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -22,11 +24,8 @@ public class OutputServiceImpl implements OutputService {
 
 	private static final Logger log = Logger.getLogger(OutputServiceImpl.class);
 
-	private final HibernateDao<BranchOutput, Long> branchOutputDao;
-
-	public OutputServiceImpl() {
-		branchOutputDao = new HibernateDao<BranchOutput, Long>(BranchOutput.class);
-	}
+	@Inject
+	private GenericDao<BranchOutput, Long> branchOutputDao;
 
 	/*
 	 * (non-Javadoc)

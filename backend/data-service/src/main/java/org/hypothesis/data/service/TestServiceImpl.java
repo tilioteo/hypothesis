@@ -9,10 +9,13 @@ import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hypothesis.data.interfaces.GenericDao;
 import org.hypothesis.data.interfaces.TestService;
 import org.hypothesis.data.model.*;
 
 import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import java.util.*;
 
 /**
@@ -27,15 +30,12 @@ public class TestServiceImpl implements TestService {
 
 	private static final Logger log = Logger.getLogger(TestServiceImpl.class);
 
-	private final HibernateDao<SimpleTest, Long> testDao;
-	private final HibernateDao<Event, Long> eventDao;
-	private final HibernateDao<SlideOrder, Long> slideOrderDao;
-
-	public TestServiceImpl() {
-		testDao = new HibernateDao<>(SimpleTest.class);
-		eventDao = new HibernateDao<>(Event.class);
-		slideOrderDao = new HibernateDao<>(SlideOrder.class);
-	}
+	@Inject
+	private GenericDao<SimpleTest, Long> testDao;
+	@Inject
+	private GenericDao<Event, Long> eventDao;
+	@Inject
+	private GenericDao<SlideOrder, Long> slideOrderDao;
 
 	/*
 	 * (non-Javadoc)
