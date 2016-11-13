@@ -28,6 +28,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.hypothesis.builder.SlideDataParser;
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.ExportEvent;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Pack;
@@ -42,6 +43,7 @@ import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
+import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.ExportPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.ControlledUI;
@@ -118,6 +120,8 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	private HorizontalLayout toolsLayout;
 	private ExportThread currentExport = null;
 	private ProgressBar exportProgressBar = null;
+	
+	private ThreadGroup threadGroup = new ThreadGroup("export-service");
 
 	public ExportPresenterImpl() {
 		permissionService = PermissionService.newInstance();
@@ -281,7 +285,15 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		currentExport = new ExportThread(bus, testIds);
+		ExportRunnable runnable = new ExportRunnable(bus, testIds);
+		runnable.setFinishCommand(new Command() {
+			@Override
+			public void execute() {
+				HibernateUtil.closeCurrent();
+			}
+		});
+		
+		currentExport = new ExportThread(threadGroup, runnable);
 		currentExport.start();
 
 		UI.getCurrent().setPollInterval(1000);
@@ -563,19 +575,25 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		return new ExportView(this);
 	}
-
-	private static class ExportThread extends Thread {
-
+	
+	private static class ExportRunnable implements Runnable {
+		
 		private volatile int progress;
 
-		final AtomicBoolean cancelPending = new AtomicBoolean(false);
-		final Collection<Long> testIds;
+		private final AtomicBoolean cancelPending = new AtomicBoolean(false);
+		private final Collection<Long> testIds;
 
 		private final MainEventBus bus;
 
-		public ExportThread(MainEventBus bus, final Collection<Long> testIds) {
+		private Command finishCommand = null;
+
+		public ExportRunnable(MainEventBus bus, final Collection<Long> testIds) {
 			this.bus = bus;
 			this.testIds = testIds;
+		}
+		
+		public synchronized void setFinishCommand(Command command) {
+			this.finishCommand = command;
 		}
 
 		@Override
@@ -604,12 +622,9 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 				});
 			}
 
+			Command.Executor.execute(finishCommand);
 		}
-
-		public void cancel() {
-			cancelPending.set(true);
-		}
-
+		
 		private StreamResource getExportResource() {
 
 			final InputStream inputStream = getExportFile();
@@ -1073,6 +1088,23 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 			return null;
 		}
+	}
+
+	private static class ExportThread extends Thread {
+		
+		private ExportRunnable runnable;
+		
+		public ExportThread(ThreadGroup threadGroup, ExportRunnable runnable) {
+			super(threadGroup, runnable);
+			this.runnable = runnable;
+		}
+
+		public void cancel() {
+			if (runnable != null) {
+				runnable.cancelPending.set(true);
+			}
+		}
+
 	}
 
 }

@@ -46,10 +46,11 @@ public class HibernateUtil {
 			VaadinSession.getCurrent().setAttribute(SessionMap.class, sessions);
 		}
 
-		Session session = sessions.get(Thread.currentThread());
+		String threadGroup = Thread.currentThread().getThreadGroup().getName();
+		Session session = sessions.get(threadGroup);
 		if (null == session) {
 			session = sessionFactory.openSession();
-			sessions.put(Thread.currentThread(), session);
+			sessions.put(threadGroup, session);
 		}
 		return session;
 	}
@@ -88,7 +89,8 @@ public class HibernateUtil {
 					configuration = new Configuration().configure(configFile);
 				}
 
-				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+						.applySettings(configuration.getProperties()).build();
 				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 			} catch (Throwable ex) {
 				// Make sure you log the exception, as it might be swallowed
@@ -170,17 +172,33 @@ public class HibernateUtil {
 			SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
 			if (sessions != null) {
 				for (Session session : sessions.values()) {
-					if (session.getTransaction().isActive()) {
-						session.getTransaction().commit();
-					}
-					session.flush();
-					session.close();
+					closeSession(session);
 				}
 				sessions.clear();
 			}
 			VaadinSession.getCurrent().setAttribute(SessionMap.class, null);
 		} catch (Throwable e) {
 			e.printStackTrace();
+		}
+	}
+
+	private static void closeSession(Session session) {
+		if (session != null && session.isOpen()) {
+			if (session.getTransaction().isActive()) {
+				session.getTransaction().commit();
+			}
+			session.flush();
+			session.close();
+		}
+	}
+
+	public static void closeCurrent() {
+		SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
+		if (sessions != null) {
+			String threadGroup = Thread.currentThread().getThreadGroup().getName();
+			Session session = sessions.get(threadGroup);
+			closeSession(session);
+			sessions.remove(threadGroup);
 		}
 	}
 }

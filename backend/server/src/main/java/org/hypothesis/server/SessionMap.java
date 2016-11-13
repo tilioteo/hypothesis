@@ -15,6 +15,6 @@ import org.hibernate.Session;
  *
  */
 @SuppressWarnings("serial")
-public class SessionMap extends HashMap<Thread, Session> {
+public class SessionMap extends HashMap<String, Session> {
 
 }

@@ -6,6 +6,7 @@ package org.hypothesis.data.service;
 
 import java.util.Date;
 
+import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.Branch;
 import org.hypothesis.data.model.BranchOutput;
 import org.hypothesis.data.model.Event;
@@ -39,6 +40,13 @@ public class AsynchronousService {
 		this.branchService = branchService;
 		this.taskService = taskService;
 		this.slideService = slideService;
+		
+		commandExecutor.setFinishCommand(new Command() {
+			@Override
+			public void execute() {
+				HibernateUtil.closeCurrent();
+			}
+		});
 	}
 
 	@SuppressWarnings("serial")
