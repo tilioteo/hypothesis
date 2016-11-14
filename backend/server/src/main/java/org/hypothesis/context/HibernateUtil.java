@@ -146,20 +146,6 @@ public final class HibernateUtil {
 		}
 	}
 
-	/*
-	 * public static void closeSession() { /*log.trace(
-	 * "Closing Hibernate Session."); Session session = threadLocal.get(); if
-	 * (session != null) { session.close(); } threadLocal.set(null);
-	 */
-	/*
-	 * final Session session = getSessionFactory().getCurrentSession();
-	 * 
-	 * commitTransaction(); session.flush();
-	 * 
-	 * if (session.isOpen()) { log.trace("Close opened Hibernate Session.");
-	 * session.close(); } }
-	 */
-
 	public static void shutdown() {
 		log.trace("Closing Hibernate SessionFactory.");
 		if (sessionFactory != null) {
@@ -178,9 +164,7 @@ public final class HibernateUtil {
 		try {
 			SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
 			if (sessions != null) {
-				for (Session session : sessions.values()) {
-					closeSession(session);
-				}
+				sessions.values().forEach(HibernateUtil::closeSession);
 				sessions.clear();
 			}
 			VaadinSession.getCurrent().setAttribute(SessionMap.class, null);
@@ -203,8 +187,7 @@ public final class HibernateUtil {
 		SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
 		if (sessions != null) {
 			String threadGroup = Thread.currentThread().getThreadGroup().getName();
-			Session session = sessions.get(threadGroup);
-			closeSession(session);
+			closeSession(sessions.get(threadGroup));
 			sessions.remove(threadGroup);
 		}
 	}
