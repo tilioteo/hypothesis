@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.interfaces.ExportService;
 import org.hypothesis.data.model.ExportEvent;
 import org.hypothesis.data.model.FieldConstants;
@@ -115,6 +116,11 @@ public class ExportServiceImpl implements ExportService {
 			exportEventDao.rollback();
 		}
 		return null;
+	}
+
+	@Override
+	public void releaseConnection() {
+		HibernateUtil.closeCurrent();		
 	}
 
 }
