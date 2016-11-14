@@ -4,12 +4,25 @@
  */
 package org.hypothesis.data.service;
 
-import org.hypothesis.data.interfaces.*;
-import org.hypothesis.data.model.*;
+import java.util.Date;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
-import java.util.Date;
+
+import org.hypothesis.context.HibernateUtil;
+import org.hypothesis.data.interfaces.AsynchronousService;
+import org.hypothesis.data.interfaces.BranchService;
+import org.hypothesis.data.interfaces.OutputService;
+import org.hypothesis.data.interfaces.SlideService;
+import org.hypothesis.data.interfaces.TaskService;
+import org.hypothesis.data.interfaces.TestService;
+import org.hypothesis.data.model.Branch;
+import org.hypothesis.data.model.BranchOutput;
+import org.hypothesis.data.model.Event;
+import org.hypothesis.data.model.SimpleTest;
+import org.hypothesis.data.model.Slide;
+import org.hypothesis.data.model.Status;
+import org.hypothesis.data.model.Task;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -33,6 +46,10 @@ public class AsynchronousServiceImpl implements AsynchronousService {
 	private OutputService outputService;
 
 	private final AsynchronousCommandExecutor commandExecutor = new AsynchronousCommandExecutor();
+
+	public AsynchronousServiceImpl() {
+		commandExecutor.setFinishCommand(HibernateUtil::closeCurrent);
+	}
 
 	/*
 	 * (non-Javadoc)

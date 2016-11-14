@@ -4,7 +4,11 @@
  */
 package org.hypothesis.context;
 
-import com.vaadin.server.VaadinSession;
+import java.io.File;
+import java.util.HashMap;
+
+import javax.servlet.ServletContext;
+
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,9 +16,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
-import javax.servlet.ServletContext;
-import java.io.File;
-import java.util.HashMap;
+import com.vaadin.server.VaadinSession;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -36,7 +38,8 @@ public final class HibernateUtil {
 	private HibernateUtil() {
 	}
 
-	private static class SessionMap extends HashMap<Thread, Session> {
+	@SuppressWarnings("serial")
+	private static class SessionMap extends HashMap<String, Session> {
 	}
 
 	/**
@@ -50,10 +53,11 @@ public final class HibernateUtil {
 			VaadinSession.getCurrent().setAttribute(HashMap.class, sessions);
 		}
 
-		Session session = sessions.get(Thread.currentThread());
+		String threadGroup = Thread.currentThread().getThreadGroup().getName();
+		Session session = sessions.get(threadGroup);
 		if (null == session) {
 			session = sessionFactory.openSession();
-			sessions.put(Thread.currentThread(), session);
+			sessions.put(threadGroup, session);
 		}
 		return session;
 	}
@@ -175,17 +179,33 @@ public final class HibernateUtil {
 			SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
 			if (sessions != null) {
 				for (Session session : sessions.values()) {
-					if (session.getTransaction().isActive()) {
-						session.getTransaction().commit();
-					}
-					session.flush();
-					session.close();
+					closeSession(session);
 				}
 				sessions.clear();
 			}
 			VaadinSession.getCurrent().setAttribute(SessionMap.class, null);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private static void closeSession(Session session) {
+		if (session != null && session.isOpen()) {
+			if (session.getTransaction().isActive()) {
+				session.getTransaction().commit();
+			}
+			session.flush();
+			session.close();
+		}
+	}
+
+	public static void closeCurrent() {
+		SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
+		if (sessions != null) {
+			String threadGroup = Thread.currentThread().getThreadGroup().getName();
+			Session session = sessions.get(threadGroup);
+			closeSession(session);
+			sessions.remove(threadGroup);
 		}
 	}
 }

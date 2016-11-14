@@ -1,13 +1,27 @@
 package org.hypothesis.presenter;
 
-import com.vaadin.server.Page;
-import com.vaadin.server.Resource;
-import com.vaadin.server.ResourceReference;
-import com.vaadin.server.StreamResource;
-import com.vaadin.ui.UI;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.hypothesis.builder.SlideDataParser;
 import org.hypothesis.common.IntSequence;
@@ -17,20 +31,20 @@ import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.ControlledUI;
 
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ResourceReference;
+import com.vaadin.server.StreamResource;
+import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
-public class ExportThreadedServiceImpl implements ExportThreadedService, Runnable {
+public class ExportThreadedServiceImpl implements ExportThreadedService {
 
 	static final Logger log = Logger.getLogger(ExportThreadedServiceImpl.class);
 
 	@Inject
 	private ExportService exportService;
-	
+
 	@Inject
 	private Event<MainUIEvent> mainEvent;
 
@@ -46,8 +60,9 @@ public class ExportThreadedServiceImpl implements ExportThreadedService, Runnabl
 
 	private final AtomicBoolean cancelPending = new AtomicBoolean(false);
 
-	@Override
-	public void run() {
+	private final ThreadGroup threadGroup = new ThreadGroup("export-service");
+
+	private final Runnable exportRunnable = () -> {
 		Resource resource = getExportResource();
 		ControlledUI ui = ControlledUI.getCurrent();
 		if (resource != null && ui != null) {
@@ -60,13 +75,15 @@ public class ExportThreadedServiceImpl implements ExportThreadedService, Runnabl
 		} else {
 			UI.getCurrent().access(() -> mainEvent.fire(new MainUIEvent.ExportErrorEvent()));
 		}
-	}
+		
+		exportService.releaseConnection();
+	};
 
 	@Override
 	public void exportTests(Collection<Long> testIds) {
 		this.testIds = testIds;
 
-		thread = new Thread(this);
+		thread = new Thread(threadGroup, exportRunnable);
 		thread.start();
 	}
 
@@ -74,7 +91,7 @@ public class ExportThreadedServiceImpl implements ExportThreadedService, Runnabl
 	 * Request requestCancel of export
 	 */
 	@Override
-	public void requestCancel() {
+	public synchronized void requestCancel() {
 		cancelPending.set(true);
 	}
 
