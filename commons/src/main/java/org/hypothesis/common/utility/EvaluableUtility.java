@@ -4,17 +4,32 @@
  */
 package org.hypothesis.common.utility;
 
-import com.tilioteo.common.Strings;
-import com.tilioteo.expressions.ExpressionFactory;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
-import org.hypothesis.evaluation.*;
+import org.hypothesis.evaluation.Call;
+import org.hypothesis.evaluation.Expression;
+import org.hypothesis.evaluation.IfStatement;
+import org.hypothesis.evaluation.IndexedExpression;
+import org.hypothesis.evaluation.SwitchStatement;
+import org.hypothesis.evaluation.WhileStatement;
 import org.hypothesis.interfaces.Action;
-import org.hypothesis.interfaces.*;
+import org.hypothesis.interfaces.DocumentConstants;
+import org.hypothesis.interfaces.Element;
+import org.hypothesis.interfaces.Evaluable;
+import org.hypothesis.interfaces.Evaluator;
+import org.hypothesis.interfaces.ReferenceCallback;
 import org.hypothesis.interfaces.Variable;
 
-import java.lang.reflect.Constructor;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.tilioteo.common.Strings;
+import com.tilioteo.expressions.ExpressionFactory;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -23,8 +38,9 @@ import java.util.stream.Collectors;
  *
  */
 public final class EvaluableUtility {
-	
-	private EvaluableUtility() {}
+
+	private EvaluableUtility() {
+	}
 
 	public static void createActions(Element element, Evaluator evaluator) {
 		DocumentUtility.getActionsElements(element).stream()
@@ -91,20 +107,16 @@ public final class EvaluableUtility {
 		return null;
 	}
 
-	public static Expression createExpression(Element element) {
-		if (element != null && element.getName().equals(DocumentConstants.EXPRESSION)) {
-			return new Expression(ExpressionFactory.parseString(DocumentUtility.getTrimmedText(element)));
-		}
-
-		return null;
+	public static Optional<Expression> createExpression(Optional<Element> element) {
+		return element.filter(f -> DocumentConstants.EXPRESSION.equals(f.getName()))
+				.map(m -> new Expression(ExpressionFactory.parseString(DocumentUtility.getTrimmedText(m))));
 	}
 
 	private static IfStatement createIfStatement(Element element, Evaluator evaluator) {
 		if (element != null && element.getName().equals(DocumentConstants.IF)) {
-			Element expressionElement = DocumentUtility.getExpressionElement(element);
 			Element trueElement = DocumentUtility.getTrueElement(element);
 			Element falseElement = DocumentUtility.getFalseElement(element);
-			Expression expression = createExpression(expressionElement);
+			Expression expression = createExpression(DocumentUtility.getExpressionElement(element));
 
 			if (expression != null) {
 				IfStatement statement = new IfStatement(evaluator, expression);

@@ -13,9 +13,11 @@ import java.io.File;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -74,21 +76,18 @@ public class XmlUtility implements Serializable {
 	 * @param name
 	 * @return
 	 */
-	public static Attribute findAttributeByName(Node node, String name) {
-		if (node != null && name.length() > 0) {
-			if (node instanceof Element) {
-				Element el = (Element) node;
-				return el.attribute(name);
-			}
+	public static Optional<Attribute> findAttributeByName(Node node, String name) {
+		if (node != null && name.length() > 0 && node instanceof Element) {
+			Element el = (Element) node;
+			return Optional.of(el.attribute(name));
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Element findElementByNameAndValue(boolean descendant, Element element, String name, String prefix,
-			String uri, final String attributeName, final String attributeValue) {
-		Element result = null;
+	public static Optional<Element> findElementByNameAndValue(boolean descendant, Element element, String name,
+			String prefix, String uri, final String attributeName, final String attributeValue) {
 		if (element != null) {
 			Map<String, String> namespaces = new HashMap<>();
 			if (StringUtils.isNotEmpty(prefix) && StringUtils.isNotEmpty(uri)) {
@@ -101,38 +100,25 @@ public class XmlUtility implements Serializable {
 				path.setNamespaceURIs(namespaces);
 			}
 
-			Stream<Element> stream = path.selectNodes(element).stream().filter(f -> f instanceof Element)
-					.map(m -> m);
+			Stream<Element> stream = path.selectNodes(element).stream().filter(f -> f instanceof Element).map(m -> m);
 
-			result = attributeName != null ? stream.filter(f -> {
+			return attributeName != null ? stream.filter(f -> {
 				Attribute attr = f.attribute(attributeName);
 				return attr != null && attr.getValue().equals(attributeValue);
-			}).findFirst().orElse(null) : stream.findFirst().orElse(null);
-
-			/*
-			 * for (Iterator<Node> i = nodes.iterator(); i.hasNext();) { Node
-			 * node = i.next();
-			 * 
-			 * if (node instanceof Element) { Element el = (Element) node;
-			 * 
-			 * if (attributeName != null) { Attribute attr =
-			 * el.attribute(attributeName); if (attr != null &&
-			 * attr.getValue().equals(attributeValue)) { result = el; break; } }
-			 * else { result = el; break; } } }
-			 */
+			}).findFirst() : stream.findFirst();
 		}
 
-		return result;
+		return Optional.empty();
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Node findFirstNodeByName(Node parent, String name) {
+	public static Optional<Node> findFirstNodeByName(Node parent, String name) {
 		if (parent != null && StringUtils.isNotBlank(name)) {
 			return ((List<Node>) parent.selectNodes(String.format(XmlUtility.DESCENDANT_FMT, name))).stream()
-					.filter(f -> f.getName().equals(name)).findFirst().orElse(null);
+					.filter(f -> f.getName().equals(name)).findFirst();
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -141,7 +127,7 @@ public class XmlUtility implements Serializable {
 			return parent.selectNodes("./*[starts-with(name(), '" + startName + "')]");
 		}
 
-		return null;
+		return Collections.emptyList();
 	}
 
 	public static Document readFile(File file) {

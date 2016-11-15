@@ -50,7 +50,7 @@ public class MessageManager implements Serializable {
 			if (DocumentUtility.isValidMessageDocument(document)) {
 				Message message = new Message(uid, userId);
 
-				List<Element> properties = DocumentUtility.getPropertyElements(document.root());
+				List<Element> properties = DocumentUtility.getMessagePropertyElements(document.root());
 
 				Method method = null;
 				try {

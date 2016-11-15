@@ -4,13 +4,17 @@
  */
 package org.hypothesis.builder;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
-
-import java.util.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -43,17 +47,16 @@ public final class DocumentFactory {
 
 						if (StringUtils.isNotEmpty(id)) {
 							attributes = new HashMap<>();
-						attributes.put(DocumentConstants.ID, id);
+							attributes.put(DocumentConstants.ID, id);
 							searchDescendants = true;
 						}
 
-						Element origElement = DocumentUtility.findElementByNameAndValue(root, name, attributes,
-								searchDescendants);
-						if (origElement != null) {
-							mergeElementAttributes(origElement, e);
-							e.children().forEach(i -> mergeBindingNodes(origElement, i));
-							}
-						}
+						DocumentUtility.findElementByNameAndValue(root, name, attributes, searchDescendants)
+								.ifPresent(el -> {
+									mergeElementAttributes(el, e);
+									e.children().forEach(i -> mergeBindingNodes(el, i));
+								});
+					}
 				});
 
 		return document;
@@ -61,24 +64,20 @@ public final class DocumentFactory {
 
 	private static void mergeElementAttributes(Element destination, Element source) {
 		source.attributes().entrySet().forEach(e -> destination.setAttribute(e.getKey(), e.getValue()));
-		}
+	}
 
 	private static void mergeBindingNodes(Element destinationElement, Element sourceSubElement) {
 		String name = sourceSubElement.getName();
 		String id = sourceSubElement.getAttribute(DocumentConstants.ID);
 
-		Element destinationSubElement;
+		Map<String, String> attributes = null;
 		if (StringUtils.isNotEmpty(id)) {
-			Map<String, String> attributes = new HashMap<>();
+			attributes = new HashMap<>();
 			attributes.put(DocumentConstants.ID, id);
-			destinationSubElement = DocumentUtility.findElementByNameAndValue(destinationElement, name, attributes,
-					false);
-		} else {
-			destinationSubElement = DocumentUtility.findElementByNameAndValue(destinationElement, name, null, false);
 		}
-		if (destinationSubElement == null) {
-			destinationSubElement = destinationElement.createChild(name);
-		}
+		Element destinationSubElement = DocumentUtility
+				.findElementByNameAndValue(destinationElement, name, attributes, false)
+				.orElse(destinationElement.createChild(name));
 
 		mergeElements(destinationSubElement, sourceSubElement);
 	}
@@ -110,9 +109,9 @@ public final class DocumentFactory {
 				if (StringUtils.isEmpty(id) && destSubElements.contains(destinationSubElement)) {
 					// if previously created element found then skip to avoid
 					// rewrite
-						destinationSubElement = null;
-					}
+					destinationSubElement = null;
 				}
+			}
 
 			if (destinationSubElement == null) {
 				destinationSubElement = destination.createChild(name);
@@ -120,7 +119,7 @@ public final class DocumentFactory {
 
 			mergeElements(destinationSubElement, e);
 		});
-		}
+	}
 
 	public static Document createEventDataDocument() {
 		Document document = new DocumentImpl();

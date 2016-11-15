@@ -4,20 +4,28 @@
  */
 package org.hypothesis.common.utility;
 
-import com.tilioteo.common.Strings;
-import com.tilioteo.common.collections.StringMap;
-import com.tilioteo.common.collections.StringSet;
-import com.vaadin.ui.Component;
-import org.apache.commons.lang3.StringUtils;
-import org.hypothesis.common.ValidationSets;
-import org.hypothesis.interfaces.*;
-
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hypothesis.common.ValidationSets;
+import org.hypothesis.interfaces.Action;
+import org.hypothesis.interfaces.Document;
+import org.hypothesis.interfaces.DocumentConstants;
+import org.hypothesis.interfaces.Element;
+import org.hypothesis.interfaces.HandlerCallback;
+import org.hypothesis.interfaces.SlidePresenter;
+
+import com.tilioteo.common.Strings;
+import com.tilioteo.common.collections.StringMap;
+import com.tilioteo.common.collections.StringSet;
+import com.vaadin.ui.Component;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -39,8 +47,8 @@ public final class DocumentUtility {
 	 * @param descendant
 	 * @return
 	 */
-	public static Element findElementByNameAndValue(Element element, String name, Map<String, String> attributes,
-			boolean descendant) {
+	public static Optional<Element> findElementByNameAndValue(Element element, String name,
+			Map<String, String> attributes, boolean descendant) {
 		if (element != null) {
 			List<Element> elements = element.children();
 
@@ -60,10 +68,10 @@ public final class DocumentUtility {
 							}
 						}
 						if (passed) {
-							return selected;
+							return Optional.ofNullable(selected);
 						}
 					} else {
-						return selected;
+						return Optional.ofNullable(selected);
 					}
 				} else if (descendant) {
 					return findElementByNameAndValue(selected, name, attributes, descendant);
@@ -71,7 +79,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	public static List<Element> findElementsByNameStarting(Element parent, String startName) {
@@ -134,36 +142,36 @@ public final class DocumentUtility {
 		return Collections.emptyList();
 	}
 
-	public static Element getExpressionElement(Element element) {
+	public static Optional<Element> getExpressionElement(Element element) {
 		if (element != null) {
-			return element.selectElement(DocumentConstants.EXPRESSION);
+			return Optional.ofNullable(element.selectElement(DocumentConstants.EXPRESSION));
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
-	public static Element getTrueElement(Element element) {
+	public static Optional<Element> getTrueElement(Element element) {
 		if (element != null) {
-			return element.selectElement(DocumentConstants.TRUE);
+			return Optional.ofNullable(element.selectElement(DocumentConstants.TRUE));
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
-	public static Element getFalseElement(Element element) {
+	public static Optional<Element> getFalseElement(Element element) {
 		if (element != null) {
-			return element.selectElement(DocumentConstants.FALSE);
+			return Optional.ofNullable(element.selectElement(DocumentConstants.FALSE));
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
-	public static Element getLoopElement(Element element) {
+	public static Optional<Element> getLoopElement(Element element) {
 		if (element != null) {
-			return element.selectElement(DocumentConstants.LOOP);
+			return Optional.ofNullable(element.selectElement(DocumentConstants.LOOP));
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	public static List<Element> getCaseElements(Element element) {
@@ -214,26 +222,26 @@ public final class DocumentUtility {
 		return Collections.emptyList();
 	}
 
-	public static Element getReferenceSubElement(Element element) {
+	public static Optional<Element> getReferenceSubElement(Element element) {
 		if (element != null) {
 			Element reference = element.selectElement(DocumentConstants.REFERENCE);
 			if (reference != null) {
-				return reference.firstChild();
+				return Optional.ofNullable(reference.firstChild());
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
-	public static Element getInstanceSubElement(Element element) {
+	public static Optional<Element> getInstanceSubElement(Element element) {
 		if (element != null) {
 			Element instance = element.selectElement(DocumentConstants.INSTANCE);
 			if (instance != null) {
-				return instance.firstChild();
+				return Optional.ofNullable(instance.firstChild());
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	public static List<Element> getInputValueElements(Element documentRoot) {
@@ -305,16 +313,10 @@ public final class DocumentUtility {
 		return getSubElementChildren(component, DocumentConstants.ITEMS, null);
 	}
 
-	public static List<Element> getComponentSources(Element component) {
-		if (component != null) {
-			Element element = component.selectElement(DocumentConstants.SOURCES);
-
-			if (element != null) {
-				return element.selectElements(DocumentConstants.SOURCE);
-			}
-		}
-
-		return Collections.emptyList();
+	public static List<Element> getComponentSources(Element element) {
+		return Optional.ofNullable(element).map(m -> m.selectElement(DocumentConstants.SOURCES))
+				.flatMap(m -> Optional.ofNullable(m.selectElements(DocumentConstants.SOURCE)))
+				.orElse(Collections.emptyList());
 	}
 
 	public static List<Element> getWindowsElements(Element documentRoot) {
@@ -333,197 +335,105 @@ public final class DocumentUtility {
 		return Collections.emptyList();
 	}
 
-	public static Element getViewportOrWindowRootElement(Element element) {
-		if (element != null) {
-			if (element.getName().equals(DocumentConstants.VIEWPORT)
-					|| element.getName().equals(DocumentConstants.WINDOW)) {
-				return element;
-			}
-
-			return element.children().stream().filter(f -> ValidationSets.VALID_VIEWPORT_CHILDREN.contains(f.getName()))
-					.findFirst().orElse(null);
-			// throw new ViewportNotValidElementFound(viewport);
-		}
-
-		return null;
+	public static Optional<Element> getViewportOrWindowRootElement(Element element) {
+		return Optional.ofNullable(element)
+				.flatMap(m -> Arrays.asList(DocumentConstants.VIEWPORT, DocumentConstants.WINDOW).contains(m.getName())
+						? Optional.of(m)
+						: m.children().stream()
+								.filter(f -> ValidationSets.VALID_VIEWPORT_CHILDREN.contains(f.getName())).findFirst());
 	}
 
-	public static Element getViewportInnerComponent(Element documentRoot) {
-		Element viewportRootElement = getVieportRootElement(documentRoot);
-
-		if (viewportRootElement != null) {
-			return viewportRootElement.children().stream()
-					.filter(f -> ValidationSets.VALID_VIEWPORT_CHILDREN.contains(f.getName())).findFirst().orElse(null);
-		}
-
-		return null;
+	public static Optional<Element> getViewportInnerComponent(Element documentRoot) {
+		return getVieportRootElement(documentRoot).flatMap(m -> m.children().stream()
+				.filter(f -> ValidationSets.VALID_VIEWPORT_CHILDREN.contains(f.getName())).findFirst());
 	}
 
-	public static Element getVieportRootElement(Element documentRoot) {
-		return getViewportOrWindowRootElement(getViewportElement(documentRoot));
+	public static Optional<Element> getVieportRootElement(Element documentRoot) {
+		return getViewportElement(documentRoot).flatMap(DocumentUtility::getViewportOrWindowRootElement);
 	}
 
-	private static Element getViewportElement(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return null;
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			Element element = findElementByNameAndValue(documentRoot, DocumentConstants.VIEWPORT, null, true);
-			if (element != null) {
-				return element;
-				// } else {
-				// throw new DocumentRootNoViewportException(documentRoot);
-			}
-		}
-
-		return null;
+	private static Optional<Element> getViewportElement(Element documentRoot) {
+		return Optional.ofNullable(documentRoot)
+				.filter(f -> ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(f.getName()))
+				.flatMap(m -> findElementByNameAndValue(m, DocumentConstants.VIEWPORT, null, true));
 	}
 
 	public static String getValidatorMessage(Element element, String defaultMessage) {
-		Element messageElement = getMessageElement(element);
-
-		if (messageElement != null) {
-			String message = getTrimmedText(messageElement);
-
-			if (Strings.isNullOrEmpty(message)) {
-				return defaultMessage;
-			}
-
-			return message;
-		}
-
-		return defaultMessage;
+		return getMessageElement(element).map(DocumentUtility::getTrimmedText).filter(StringUtils::isNotBlank)
+				.orElse(defaultMessage);
 	}
 
-	public static Element getMessageElement(Element element) {
-		if (element != null) {
-			return element.selectElement(DocumentConstants.MESSAGE);
-		}
-
-		return null;
+	public static Optional<Element> getMessageElement(Element element) {
+		return Optional.ofNullable(element).map(m -> m.selectElement(DocumentConstants.MESSAGE));
 	}
 
 	public static Double getNumberValidatorMinValue(Element element) {
-		Element subElement = getMinElement(element);
-
-		if (subElement != null) {
-			return Strings.toDouble(subElement.getAttribute(DocumentConstants.VALUE));
-		}
-
-		return null;
+		return getMinElement(element).map(m -> m.getAttribute(DocumentConstants.VALUE)).map(Strings::toDouble)
+				.orElse(null);
 	}
 
 	public static Double getNumberValidatorMaxValue(Element element) {
-		Element subElement = getMaxElement(element);
-
-		if (subElement != null) {
-			return Strings.toDouble(subElement.getAttribute(DocumentConstants.VALUE));
-		}
-
-		return null;
+		return getMaxElement(element).map(m -> m.getAttribute(DocumentConstants.VALUE)).map(Strings::toDouble)
+				.orElse(null);
 	}
 
-	public static Element getMinElement(Element element) {
-		if (element != null) {
-			return element.selectElement(DocumentConstants.MIN);
-		}
-
-		return null;
+	public static Optional<Element> getMinElement(Element element) {
+		return Optional.ofNullable(element.selectElement(DocumentConstants.MIN));
 	}
 
-	public static Element getMaxElement(Element element) {
-		if (element != null) {
-			return element.selectElement(DocumentConstants.MAX);
-		}
-
-		return null;
+	public static Optional<Element> getMaxElement(Element element) {
+		return Optional.ofNullable(element.selectElement(DocumentConstants.MAX));
 	}
 
 	public static Date getDateValidatorMinValue(Element element, String defaultFormat) {
-		Element subElement = getMinElement(element);
-		if (subElement != null) {
-			String format = subElement.getAttribute(DocumentConstants.FORMAT);
-
-			if (Strings.isNullOrEmpty(format)) {
-				format = defaultFormat;
-			}
-
-			return Strings.toDate(subElement.getAttribute(DocumentConstants.VALUE), format);
-		}
-
-		return null;
+		return getMinElement(
+				element).map(
+						m -> Strings
+								.toDate(m.getAttribute(DocumentConstants.VALUE),
+										StringUtils.isNotBlank(m.getAttribute(DocumentConstants.FORMAT))
+												? m.getAttribute(DocumentConstants.FORMAT) : defaultFormat))
+						.orElse(null);
 	}
 
 	public static Date getDateValidatorMaxValue(Element element, String defaultFormat) {
-		Element subElement = getMaxElement(element);
-		if (subElement != null) {
-			String format = subElement.getAttribute(DocumentConstants.FORMAT);
-
-			if (Strings.isNullOrEmpty(format)) {
-				format = defaultFormat;
-			}
-
-			return Strings.toDate(subElement.getAttribute(DocumentConstants.VALUE), format);
-		}
-
-		return null;
+		return getMaxElement(
+				element).map(
+						m -> Strings
+								.toDate(m.getAttribute(DocumentConstants.VALUE),
+										StringUtils.isNotBlank(m.getAttribute(DocumentConstants.FORMAT))
+												? m.getAttribute(DocumentConstants.FORMAT) : defaultFormat))
+						.orElse(null);
 	}
 
 	public static boolean isValidBranchDocument(Document document) {
-		return (document != null && document.root() != null
-				&& document.root().getName().equals(DocumentConstants.BRANCH));
+		return document != null && document.root() != null
+				&& document.root().getName().equals(DocumentConstants.BRANCH);
 	}
 
 	public static List<Element> getPathElements(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!DocumentConstants.BRANCH.equals(documentRoot.getName())) {
-				return Collections.emptyList();
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			return documentRoot.selectElements(DocumentConstants.PATH);
-		}
-
-		return Collections.emptyList();
+		return Optional.ofNullable(documentRoot).filter(f -> DocumentConstants.BRANCH.equals(f.getName()))
+				.flatMap(m -> Optional.ofNullable(m.selectElements(DocumentConstants.PATH)))
+				.orElse(Collections.emptyList());
 	}
 
-	public static Element getDefaultPathElement(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!DocumentConstants.BRANCH.equals(documentRoot.getName())) {
-				return null;
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			return DocumentUtility.findElementByNameAndValue(documentRoot, DocumentConstants.DEFAULT_PATH, null, true);
-		}
-
-		return null;
+	public static Optional<Element> getDefaultPathElement(Element documentRoot) {
+		return Optional.ofNullable(documentRoot).filter(f -> DocumentConstants.BRANCH.equals(f.getName()))
+				.flatMap(m -> findElementByNameAndValue(m, DocumentConstants.DEFAULT_PATH, null, true));
 	}
 
-	public static Element getBranchKeyElement(Element element) {
-		if (element != null) {
-			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.BRANCH_KEY, null, true);
-		}
-
-		return null;
+	public static Optional<Element> getBranchKeyElement(Element element) {
+		return Optional.ofNullable(element)
+				.flatMap(m -> DocumentUtility.findElementByNameAndValue(m, DocumentConstants.BRANCH_KEY, null, true));
 	}
 
-	public static Element getPatternElement(Element element) {
-		if (element != null) {
-			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.PATTERN, null, true);
-		}
-
-		return null;
+	public static Optional<Element> getPatternElement(Element element) {
+		return Optional.ofNullable(element)
+				.flatMap(m -> DocumentUtility.findElementByNameAndValue(m, DocumentConstants.PATTERN, null, true));
 	}
 
-	public static List<Element> getNickElements(Element patternElement) {
-		if (patternElement != null) {
-			return patternElement.selectElements(DocumentConstants.NICK);
-		}
-
-		return Collections.emptyList();
+	public static List<Element> getNickElements(Element element) {
+		return Optional.ofNullable(element).flatMap(m -> Optional.ofNullable(m.selectElements(DocumentConstants.NICK)))
+				.orElse(Collections.emptyList());
 	}
 
 	public static Long getSlideId(Element element) {
@@ -542,28 +452,18 @@ public final class DocumentUtility {
 	}
 
 	public static boolean isValidTaskDocument(Document document) {
-		return (document != null && document.root() != null
-				&& document.root().getName().equals(DocumentConstants.TASK));
+		return document != null && document.root() != null && document.root().getName().equals(DocumentConstants.TASK);
 	}
 
 	public static List<Element> getNodesElements(Element element) {
-		if (element != null) {
-			Element variable = element.selectElement(DocumentConstants.NODES);
-
-			if (variable != null) {
-				return variable.selectElements(DocumentConstants.NODE);
-			}
-		}
-
-		return Collections.emptyList();
+		return Optional.ofNullable(element).map(m -> m.selectElement(DocumentConstants.NODES))
+				.flatMap(m -> Optional.ofNullable(m.selectElements(DocumentConstants.NODE)))
+				.orElse(Collections.emptyList());
 	}
 
-	public static Element getEvaluateElement(Element element) {
-		if (element != null) {
-			return element.selectElement(DocumentConstants.EVALUATE);
-		}
-
-		return null;
+	public static Optional<Element> getEvaluateElement(Element element) {
+		return Optional.ofNullable(element)
+				.flatMap(m -> Optional.ofNullable(element.selectElement(DocumentConstants.EVALUATE)));
 	}
 
 	public static boolean isValidMessageDocument(Document document) {
@@ -571,20 +471,11 @@ public final class DocumentUtility {
 				&& document.root().getName().equals(DocumentConstants.MESSAGE);
 	}
 
-	public static List<Element> getPropertyElements(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!DocumentConstants.MESSAGE.equals(documentRoot.getName())) {
-				return Collections.emptyList();
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			Element element = documentRoot.selectElement(DocumentConstants.PROPERTIES);
-			if (element != null) {
-				return element.selectElements(DocumentConstants.PROPERTY);
-			}
-		}
-
-		return Collections.emptyList();
+	public static List<Element> getMessagePropertyElements(Element documentRoot) {
+		return Optional.ofNullable(documentRoot).filter(f -> DocumentConstants.MESSAGE.equals(f.getName()))
+				.map(m -> m.selectElement(DocumentConstants.PROPERTIES))
+				.flatMap(m -> Optional.ofNullable(m.selectElements(DocumentConstants.PROPERTY)))
+				.orElse(Collections.emptyList());
 	}
 
 	public static void iterateHandlers(Component component, Element element, SlidePresenter presenter,
