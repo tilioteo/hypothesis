@@ -104,7 +104,7 @@ public final class DocumentFactory {
 					attributes.put(DocumentConstants.ID, id);
 				}
 
-				destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes, false);
+				destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes, false).orElse(null);
 
 				if (StringUtils.isEmpty(id) && destSubElements.contains(destinationSubElement)) {
 					// if previously created element found then skip to avoid

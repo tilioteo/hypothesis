@@ -23,8 +23,6 @@ import org.hypothesis.interfaces.HandlerCallback;
 import org.hypothesis.interfaces.SlidePresenter;
 
 import com.tilioteo.common.Strings;
-import com.tilioteo.common.collections.StringMap;
-import com.tilioteo.common.collections.StringSet;
 import com.vaadin.ui.Component;
 
 /**
@@ -83,214 +81,134 @@ public final class DocumentUtility {
 	}
 
 	public static List<Element> findElementsByNameStarting(Element parent, String startName) {
-		if (parent != null && startName.length() > 0) {
-			return parent.children().stream().filter(f -> f.getName().startsWith(startName))
-					.collect(Collectors.toList());
-		}
-
-		return Collections.emptyList();
+		return Optional.ofNullable(parent)
+				.filter(f -> StringUtils.isNotBlank(startName)).map(m -> m.children().stream()
+						.filter(f -> f.getName().startsWith(startName)).collect(Collectors.toList()))
+				.orElse(Collections.emptyList());
 	}
 
-	public static String getTrimmedText(Element element) {
-		if (element != null && element.getText() != null) {
-			return element.getText().trim();
-		}
-
-		return null;
+	public static Optional<String> getTrimmedText(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getText()).map(m -> m.trim());
 	}
 
 	public static List<Element> getSubElementChildren(Element element, String subNodeName,
-			StringSet validElementNames) {
-		if (element != null && StringUtils.isNotEmpty(subNodeName)) {
-			Element subElement = element.selectElement(subNodeName);
-
-			if (subElement != null) {
-				return subElement.children().stream()
+			List<String> validElementNames) {
+		return Optional.ofNullable(element).filter(f -> StringUtils.isNotEmpty(subNodeName))
+				.map(m -> m.selectElement(subNodeName))
+				.map(m -> m.children().stream()
 						.filter(f -> null == validElementNames || validElementNames.contains(f.getName()))
-						.collect(Collectors.toList());
-			}
-		}
-
-		return Collections.emptyList();
+						.collect(Collectors.toList()))
+				.orElse(Collections.emptyList());
 	}
 
-	public static boolean isValidSlideDocument(Document doc) {
-		return doc != null && doc.root() != null && doc.root().getName().equals(DocumentConstants.SLIDE);
+	public static boolean isValidSlideDocument(Document document) {
+		return Optional.ofNullable(document).map(m -> m.root()).filter(f -> DocumentConstants.SLIDE.equals(f.getName()))
+				.isPresent();
 	}
 
-	public static String getId(Element element) {
-		return element.getAttribute(DocumentConstants.ID);
+	public static Optional<String> getId(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.ID));
 	}
 
-	public static String getCaption(Element element) {
-		return element.getAttribute(DocumentConstants.CAPTION);
+	public static Optional<String> getCaption(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.CAPTION));
 	}
 
 	public static List<Element> getActionsElements(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return Collections.emptyList();
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			Element element = documentRoot.selectElement(DocumentConstants.ACTIONS);
-			if (element != null) {
-				return element.selectElements(DocumentConstants.ACTION);
-			}
-		}
-
-		return Collections.emptyList();
+		return Optional.ofNullable(documentRoot)
+				.filter(f -> ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(f.getName()))
+				.map(m -> m.selectElement(DocumentConstants.ACTIONS))
+				.map(m -> m.selectElements(DocumentConstants.ACTION)).orElse(Collections.emptyList());
 	}
 
 	public static Optional<Element> getExpressionElement(Element element) {
-		if (element != null) {
-			return Optional.ofNullable(element.selectElement(DocumentConstants.EXPRESSION));
-		}
-
-		return Optional.empty();
+		return Optional.ofNullable(element).map(m -> m.selectElement(DocumentConstants.EXPRESSION));
 	}
 
 	public static Optional<Element> getTrueElement(Element element) {
-		if (element != null) {
-			return Optional.ofNullable(element.selectElement(DocumentConstants.TRUE));
-		}
-
-		return Optional.empty();
+		return Optional.ofNullable(element).map(m -> m.selectElement(DocumentConstants.TRUE));
 	}
 
 	public static Optional<Element> getFalseElement(Element element) {
-		if (element != null) {
-			return Optional.ofNullable(element.selectElement(DocumentConstants.FALSE));
-		}
-
-		return Optional.empty();
+		return Optional.ofNullable(element).map(m -> m.selectElement(DocumentConstants.FALSE));
 	}
 
 	public static Optional<Element> getLoopElement(Element element) {
-		if (element != null) {
-			return Optional.ofNullable(element.selectElement(DocumentConstants.LOOP));
-		}
-
-		return Optional.empty();
+		return Optional.ofNullable(element).map(m -> m.selectElement(DocumentConstants.LOOP));
 	}
 
 	public static List<Element> getCaseElements(Element element) {
 		return element.selectElements(DocumentConstants.CASE);
 	}
 
-	public static String getValue(Element element) {
-		return element.getAttribute(DocumentConstants.VALUE);
+	public static Optional<String> getValue(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.VALUE));
 	}
 
-	public static String getAction(Element element) {
-		return element.getAttribute(DocumentConstants.ACTION);
+	public static Optional<String> getAction(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.ACTION));
 	}
 
-	public static String getType(Element element) {
-		return element.getAttribute(DocumentConstants.TYPE);
+	public static Optional<String> getType(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.TYPE));
 	}
 
-	public static String getKey(Element element) {
-		return element.getAttribute(DocumentConstants.KEY);
+	public static Optional<String> getKey(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.KEY));
 	}
 
-	public static String getValues(Element element) {
-		return element.getAttribute(DocumentConstants.VALUES);
+	public static Optional<String> getValues(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.VALUES));
 	}
 
-	public static String getName(Element element) {
-		return element.getAttribute(DocumentConstants.NAME);
+	public static Optional<String> getName(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.NAME));
 	}
 
-	public static String getUid(Element element) {
-		return element.getAttribute(DocumentConstants.UID);
+	public static Optional<String> getUid(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.UID));
 	}
 
 	public static List<Element> getVariablesElements(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return Collections.emptyList();
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			Element element = documentRoot.selectElement(DocumentConstants.VARIABLES);
-			if (element != null) {
-				return element.selectElements(DocumentConstants.VARIABLE);
-			}
-		}
-
-		return Collections.emptyList();
+		return Optional.ofNullable(documentRoot)
+				.filter(f -> ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(f.getName()))
+				.map(m -> m.selectElement(DocumentConstants.VARIABLES))
+				.map(m -> m.selectElements(DocumentConstants.VARIABLE)).orElse(Collections.emptyList());
 	}
 
 	public static Optional<Element> getReferenceSubElement(Element element) {
-		if (element != null) {
-			Element reference = element.selectElement(DocumentConstants.REFERENCE);
-			if (reference != null) {
-				return Optional.ofNullable(reference.firstChild());
-			}
-		}
-
-		return Optional.empty();
+		return Optional.ofNullable(element).map(m -> m.selectElement(DocumentConstants.REFERENCE))
+				.map(m -> m.firstChild());
 	}
 
 	public static Optional<Element> getInstanceSubElement(Element element) {
-		if (element != null) {
-			Element instance = element.selectElement(DocumentConstants.INSTANCE);
-			if (instance != null) {
-				return Optional.ofNullable(instance.firstChild());
-			}
-		}
-
-		return Optional.empty();
+		return Optional.ofNullable(element).map(m -> m.selectElement(DocumentConstants.INSTANCE))
+				.map(m -> m.firstChild());
 	}
 
 	public static List<Element> getInputValueElements(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return Collections.emptyList();
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			return findElementsByNameStarting(documentRoot, DocumentConstants.INPUT_VALUE);
-		}
-
-		return Collections.emptyList();
+		return Optional.ofNullable(documentRoot)
+				.filter(f -> ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(f.getName()))
+				.map(m -> findElementsByNameStarting(m, DocumentConstants.INPUT_VALUE)).orElse(Collections.emptyList());
 	}
 
 	public static List<Element> getOutputValueElements(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return Collections.emptyList();
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			return findElementsByNameStarting(documentRoot, DocumentConstants.OUTPUT_VALUE);
-		}
-
-		return Collections.emptyList();
+		return Optional.ofNullable(documentRoot)
+				.filter(f -> ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(f.getName()))
+				.map(m -> findElementsByNameStarting(m, DocumentConstants.OUTPUT_VALUE))
+				.orElse(Collections.emptyList());
 	}
 
 	public static List<Element> getTimersElements(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return Collections.emptyList();
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			Element element = documentRoot.selectElement(DocumentConstants.TIMERS);
-			if (element != null) {
-				return element.selectElements(DocumentConstants.TIMER);
-			}
-		}
-
-		return Collections.emptyList();
+		return Optional.ofNullable(documentRoot)
+				.filter(f -> ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(f.getName()))
+				.map(m -> m.selectElement(DocumentConstants.TIMERS)).map(m -> m.selectElements(DocumentConstants.TIMER))
+				.orElse(Collections.emptyList());
 	}
 
-	public static StringMap getPropertyValueMap(Element component) {
-		StringMap map = new StringMap();
-		getComponentProperties(component).forEach(e -> map.put(e.getName(), e.getAttribute(DocumentConstants.VALUE)));
-
-		return map;
+	public static Map<String, String> getPropertyValueMap(Element component) {
+		return getComponentProperties(component).stream()
+				.collect(Collectors.toMap(k -> k.getName(), v -> v.getAttribute(DocumentConstants.VALUE)));
 	}
 
 	public static List<Element> getComponentValidators(Element field) {
@@ -301,7 +219,7 @@ public final class DocumentUtility {
 		return getSubElementChildren(component, DocumentConstants.PROPERTIES, null);
 	}
 
-	public static List<Element> getContainerComponents(Element container, StringSet valids) {
+	public static List<Element> getContainerComponents(Element container, List<String> valids) {
 		return getSubElementChildren(container, DocumentConstants.COMPONENTS, valids);
 	}
 
@@ -320,19 +238,10 @@ public final class DocumentUtility {
 	}
 
 	public static List<Element> getWindowsElements(Element documentRoot) {
-		if (documentRoot != null) {
-			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return Collections.emptyList();
-				// throw new NotValidDocumentRoot(documentRoot);
-			}
-
-			Element element = documentRoot.selectElement(DocumentConstants.WINDOWS);
-			if (element != null) {
-				return element.selectElements(DocumentConstants.WINDOW);
-			}
-		}
-
-		return Collections.emptyList();
+		return Optional.ofNullable(documentRoot)
+				.filter(f -> ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(f.getName()))
+				.map(m -> m.selectElement(DocumentConstants.WINDOWS))
+				.map(m -> m.selectElements(DocumentConstants.WINDOW)).orElse(Collections.emptyList());
 	}
 
 	public static Optional<Element> getViewportOrWindowRootElement(Element element) {
@@ -359,7 +268,7 @@ public final class DocumentUtility {
 	}
 
 	public static String getValidatorMessage(Element element, String defaultMessage) {
-		return getMessageElement(element).map(DocumentUtility::getTrimmedText).filter(StringUtils::isNotBlank)
+		return getMessageElement(element).flatMap(DocumentUtility::getTrimmedText).filter(StringUtils::isNotBlank)
 				.orElse(defaultMessage);
 	}
 
@@ -406,8 +315,8 @@ public final class DocumentUtility {
 	}
 
 	public static boolean isValidBranchDocument(Document document) {
-		return document != null && document.root() != null
-				&& document.root().getName().equals(DocumentConstants.BRANCH);
+		return Optional.ofNullable(document).map(m -> m.root())
+				.filter(f -> DocumentConstants.BRANCH.equals(f.getName())).isPresent();
 	}
 
 	public static List<Element> getPathElements(Element documentRoot) {
@@ -436,23 +345,21 @@ public final class DocumentUtility {
 				.orElse(Collections.emptyList());
 	}
 
-	public static Long getSlideId(Element element) {
-		if (element != null) {
-			String idString = element.getAttribute(DocumentConstants.SLIDE_ID);
-			if (StringUtils.isNotEmpty(idString)) {
-				try {
-					return Long.parseLong(idString);
-				} catch (NumberFormatException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		return null;
+	public static Optional<Long> getSlideId(Element element) {
+		return Optional.ofNullable(element).map(m -> m.getAttribute(DocumentConstants.SLIDE_ID))
+				.filter(StringUtils::isNotEmpty).map(m -> {
+					try {
+						return Long.parseLong(m);
+					} catch (NumberFormatException e) {
+						e.printStackTrace();
+						return null;
+					}
+				});
 	}
 
 	public static boolean isValidTaskDocument(Document document) {
-		return document != null && document.root() != null && document.root().getName().equals(DocumentConstants.TASK);
+		return Optional.ofNullable(document).map(m -> m.root()).filter(f -> DocumentConstants.TASK.equals(f.getName()))
+				.isPresent();
 	}
 
 	public static List<Element> getNodesElements(Element element) {
@@ -467,8 +374,8 @@ public final class DocumentUtility {
 	}
 
 	public static boolean isValidMessageDocument(Document document) {
-		return document != null && document.root() != null
-				&& document.root().getName().equals(DocumentConstants.MESSAGE);
+		return Optional.ofNullable(document).map(m -> m.root())
+				.filter(f -> DocumentConstants.MESSAGE.equals(f.getName())).isPresent();
 	}
 
 	public static List<Element> getMessagePropertyElements(Element documentRoot) {
@@ -484,7 +391,7 @@ public final class DocumentUtility {
 			String name = e.getName();
 			String actionId = null;
 
-			final Action anonymousAction = EvaluableUtility.createAnonymousAction(e, presenter);
+			final Action anonymousAction = EvaluableUtility.createAnonymousAction(e, presenter).orElse(null);
 			if (anonymousAction != null) {
 				actionId = anonymousAction.getId();
 				presenter.setAction(actionId, anonymousAction);

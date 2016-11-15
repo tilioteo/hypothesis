@@ -139,21 +139,16 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private void createTimers(Element rootElement, SlideContainerPresenter presenter) {
-		DocumentUtility.getTimersElements(rootElement).forEach(e -> {
-			String id = DocumentUtility.getId(e);
-			if (StringUtils.isNotEmpty(id)) {
-
-				Timer timer = createTimer(e, presenter);
-				presenter.setTimer(id, timer);
-			}
-		});
+		DocumentUtility.getTimersElements(rootElement)
+				.forEach(e -> DocumentUtility.getId(e).filter(StringUtils::isNotEmpty).ifPresent(i -> {
+					Timer timer = createTimer(e, presenter);
+					presenter.setTimer(i, timer);
+				}));
 	}
 
 	private Timer createTimer(Element element, SlideContainerPresenter presenter) {
-		StringMap properties = DocumentUtility.getPropertyValueMap(element);
-
 		Timer component = new Timer();
-		SlideComponentUtility.setTimerProperties(component, element, properties);
+		SlideComponentUtility.setTimerProperties(component, element, DocumentUtility.getPropertyValueMap(element));
 		addTimerHandlers(component, element, presenter);
 
 		return component;

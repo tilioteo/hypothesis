@@ -44,188 +44,135 @@ public final class EvaluableUtility {
 
 	public static void createActions(Element element, Evaluator evaluator) {
 		DocumentUtility.getActionsElements(element).stream()
-				.filter(f -> StringUtils.isNotEmpty(DocumentUtility.getId(f))).map(m -> createAction(m, evaluator))
-				.filter(Objects::nonNull).forEach(e -> evaluator.setAction(e.getId(), e));
+				.filter(f -> StringUtils.isNotEmpty(DocumentUtility.getId(f).orElse(null)))
+				.map(m -> createAction(m, evaluator).orElse(null)).filter(Objects::nonNull)
+				.forEach(e -> evaluator.setAction(e.getId(), e));
 	}
 
-	private static Action createAction(Element element, Evaluator evaluator) {
-		if (element != null) {
-			String id = DocumentUtility.getId(element);
-			return createAction(element, id, evaluator);
-		}
-
-		return null;
+	private static Optional<Action> createAction(Element element, Evaluator evaluator) {
+		return Optional.ofNullable(element).flatMap(DocumentUtility::getId)
+				.flatMap(m -> createAction(element, m, evaluator));
 	}
 
-	public static Action createAnonymousAction(Element element, Evaluator evaluator) {
-		if (element != null) {
-			String id = UUID.randomUUID().toString();
-			return createInnerAction(element, id, evaluator);
-		}
-
-		return null;
+	public static Optional<Action> createAnonymousAction(Element element, Evaluator evaluator) {
+		return Optional.ofNullable(element).flatMap(m -> createInnerAction(m, UUID.randomUUID().toString(), evaluator));
 	}
 
-	private static Action createAction(Element element, String id, Evaluator evaluator) {
-		if (element.getName().equals(DocumentConstants.ACTION)) {
-			return createInnerAction(element, id, evaluator);
-		}
-
-		return null;
+	private static Optional<Action> createAction(Element element, String id, Evaluator evaluator) {
+		return Optional.ofNullable(element).filter(f -> DocumentConstants.ACTION.equals(f.getName()))
+				.flatMap(m -> createInnerAction(m, id, evaluator));
 	}
 
-	private static Action createInnerAction(Element element, String id, Evaluator evaluator) {
-		if (element != null && StringUtils.isNotEmpty(id)) {
+	private static Optional<Action> createInnerAction(Element element, String id, Evaluator evaluator) {
+		return Optional.ofNullable(element).filter(f -> StringUtils.isNotEmpty(id)).map(fm -> {
 			org.hypothesis.evaluation.Action action = new org.hypothesis.evaluation.Action(evaluator, id);
-			element.children().stream().map(m -> createEvaluable(m, evaluator)).filter(Objects::nonNull)
+			fm.children().stream().map(m -> createEvaluable(m, evaluator).orElse(null)).filter(Objects::nonNull)
 					.forEach(action::add);
-			createActionOutputValues(action, element);
-
-			return action;
-		}
-
-		return null;
+			return createActionOutputValues(action, fm);
+		});
 	}
 
-	public static Evaluable createEvaluable(Element element, Evaluator evaluator) {
-		if (element != null) {
-			String name = element.getName();
-
-			if (name.equals(DocumentConstants.EXPRESSION)) {
-				return createExpression(element);
-			} else if (name.equals(DocumentConstants.IF)) {
-				return createIfStatement(element, evaluator);
-			} else if (name.equals(DocumentConstants.WHILE)) {
-				return createWhileStatement(element, evaluator);
-			} else if (name.equals(DocumentConstants.SWITCH)) {
-				return createSwitchStatement(element, evaluator);
-			} else if (name.equals(DocumentConstants.CALL)) {
-				return createCall(element, evaluator);
+	public static Optional<Evaluable> createEvaluable(Element element, Evaluator evaluator) {
+		return Optional.ofNullable(element).map(m -> m.getName()).map(m -> {
+			if (m.equals(DocumentConstants.EXPRESSION)) {
+				return createExpression(element).orElse(null);
+			} else if (m.equals(DocumentConstants.IF)) {
+				return createIfStatement(element, evaluator).orElse(null);
+			} else if (m.equals(DocumentConstants.WHILE)) {
+				return createWhileStatement(element, evaluator).orElse(null);
+			} else if (m.equals(DocumentConstants.SWITCH)) {
+				return createSwitchStatement(element, evaluator).orElse(null);
+			} else if (m.equals(DocumentConstants.CALL)) {
+				return createCall(element, evaluator).orElse(null);
 			}
-		}
-
-		return null;
+			return null;
+		});
 	}
 
-	public static Optional<Expression> createExpression(Optional<Element> element) {
-		return element.filter(f -> DocumentConstants.EXPRESSION.equals(f.getName()))
-				.map(m -> new Expression(ExpressionFactory.parseString(DocumentUtility.getTrimmedText(m))));
+	public static Optional<Expression> createExpression(Element element) {
+		return Optional.ofNullable(element).filter(f -> DocumentConstants.EXPRESSION.equals(f.getName())).flatMap(
+				m -> DocumentUtility.getTrimmedText(m).map(ExpressionFactory::parseString).map(Expression::new));
 	}
 
-	private static IfStatement createIfStatement(Element element, Evaluator evaluator) {
-		if (element != null && element.getName().equals(DocumentConstants.IF)) {
-			Element trueElement = DocumentUtility.getTrueElement(element);
-			Element falseElement = DocumentUtility.getFalseElement(element);
-			Expression expression = createExpression(DocumentUtility.getExpressionElement(element));
+	private static Optional<IfStatement> createIfStatement(Element element, Evaluator evaluator) {
+		return Optional.ofNullable(element).filter(f -> DocumentConstants.IF.equals(f.getName()))
+				.flatMap(m -> createExpression(DocumentUtility.getExpressionElement(m).orElse(null))).map(m -> {
+					IfStatement statement = new IfStatement(evaluator, m);
+					for (int i = 0; i < 2; ++i) {
+						List<Element> elements = i == 0
+								? DocumentUtility.getTrueElement(element).map(mm -> mm.children()).orElse(null)
+								: DocumentUtility.getFalseElement(element).map(mm -> mm.children()).orElse(null);
 
-			if (expression != null) {
-				IfStatement statement = new IfStatement(evaluator, expression);
-
-				for (int i = 0; i < 2; ++i) {
-					List<Element> elements = i == 0 ? trueElement != null ? trueElement.children() : null
-							: falseElement != null ? falseElement.children() : null;
-
-					if (elements != null) {
-						final int index = i;
-						elements.stream().map(m -> createEvaluable(m, evaluator)).filter(Objects::nonNull)
-								.forEach(e -> {
-									if (index == 0)
-										statement.addTrueEvaluable(e);
-									else
-										statement.addFalseEvaluable(e);
-								});
+						if (elements != null) {
+							final int index = i;
+							elements.stream().map(mm -> createEvaluable(mm, evaluator).orElse(null))
+									.filter(Objects::nonNull).forEach(e -> {
+										if (index == 0)
+											statement.addTrueEvaluable(e);
+										else
+											statement.addFalseEvaluable(e);
+									});
+						}
 					}
-				}
-
-				return statement;
-			}
-		}
-
-		return null;
-
+					return statement;
+				});
 	}
 
-	private static WhileStatement createWhileStatement(Element element, Evaluator evaluator) {
-		if (element != null && element.getName().equals(DocumentConstants.WHILE)) {
-			Element expressionElement = DocumentUtility.getExpressionElement(element);
-			Element loopElement = DocumentUtility.getLoopElement(element);
-			Expression expression = createExpression(expressionElement);
-
-			if (expression != null) {
-				WhileStatement statement = new WhileStatement(evaluator, expression);
-				loopElement.children().stream().map(m -> createEvaluable(m, evaluator)).filter(Objects::nonNull)
-						.forEach(statement::addEvaluable);
-
-				return statement;
-			}
-		}
-
-		return null;
+	private static Optional<WhileStatement> createWhileStatement(Element element, Evaluator evaluator) {
+		return Optional.ofNullable(element).filter(f -> DocumentConstants.WHILE.equals(f.getName()))
+				.flatMap(m -> createExpression(DocumentUtility.getExpressionElement(m).orElse(null))).map(m -> {
+					WhileStatement statement = new WhileStatement(evaluator, m);
+					DocumentUtility.getLoopElement(element).ifPresent(
+							el -> el.children().stream().map(mm -> createEvaluable(mm, evaluator).orElse(null))
+									.filter(Objects::nonNull).forEach(statement::addEvaluable));
+					return statement;
+				});
 	}
 
-	private static SwitchStatement createSwitchStatement(Element element, Evaluator evaluator) {
-		if (element != null && element.getName().equals(DocumentConstants.SWITCH)) {
-			Element expressionElement = DocumentUtility.getExpressionElement(element);
-
-			Expression expression = createExpression(expressionElement);
-
-			if (expression != null) {
-				SwitchStatement statement = new SwitchStatement(evaluator, expression);
-				DocumentUtility.getCaseElements(element)
-						.forEach(e -> e.children().stream().map(m -> createEvaluable(m, evaluator))
-								.filter(Objects::nonNull)
-								.forEach(i -> statement.addCaseEvaluable(DocumentUtility.getValue(e), i)));
-
-				return statement;
-			}
-		}
-
-		return null;
+	private static Optional<SwitchStatement> createSwitchStatement(Element element, Evaluator evaluator) {
+		return Optional.ofNullable(element).filter(f -> DocumentConstants.SWITCH.equals(f.getName()))
+				.flatMap(m -> createExpression(DocumentUtility.getExpressionElement(m).orElse(null))).map(m -> {
+					SwitchStatement statement = new SwitchStatement(evaluator, m);
+					DocumentUtility.getCaseElements(element).forEach(e -> e.children().stream()
+							.map(mm -> createEvaluable(mm, evaluator).orElse(null)).filter(Objects::nonNull)
+							.forEach(i -> statement.addCaseEvaluable(DocumentUtility.getValue(e).orElse(null), i)));
+					return statement;
+				});
 	}
 
-	private static Call createCall(Element element, Evaluator evaluator) {
-		if (element != null && element.getName().equals(DocumentConstants.CALL)) {
-			String actionId = DocumentUtility.getAction(element);
-			if (StringUtils.isNotEmpty(actionId)) {
-				return new Call(evaluator, actionId);
-			}
-		}
-
-		return null;
+	private static Optional<Call> createCall(Element element, Evaluator evaluator) {
+		return Optional.ofNullable(element).filter(f -> DocumentConstants.CALL.equals(f.getName()))
+				.flatMap(DocumentUtility::getAction).map(m -> new Call(evaluator, m));
 	}
 
-	private static void createActionOutputValues(Action action, Element element) {
-		List<Element> outputElements = DocumentUtility.findElementsByNameStarting(element,
-				DocumentConstants.OUTPUT_VALUE);
-
-		outputElements.stream().map(m -> createValueExpression(m, DocumentConstants.OUTPUT_VALUE))
+	private static Action createActionOutputValues(Action action, Element element) {
+		DocumentUtility.findElementsByNameStarting(element, DocumentConstants.OUTPUT_VALUE).stream()
+				.map(m -> createValueExpression(m, DocumentConstants.OUTPUT_VALUE).orElse(null))
 				.filter(Objects::nonNull).forEach(e -> action.getOutputs().put(e.getIndex(), e));
+		return action;
 	}
 
-	public static IndexedExpression createValueExpression(Element element, String prefix) {
-		String indexString = element.getName().replace(prefix, "");
-
-		if (indexString.isEmpty()) {
-			indexString = "1";
-		}
-
-		try {
-			int index = Integer.parseInt(indexString);
-			Expression expression = createExpression(DocumentUtility.getExpressionElement(element));
-
-			if (expression != null) {
-				return new IndexedExpression(index, expression);
+	public static Optional<IndexedExpression> createValueExpression(Element element, String prefix) {
+		return Optional.ofNullable(element).flatMap(m -> {
+			String indexString = m.getName().replace(prefix, "");
+			if (indexString.isEmpty()) {
+				indexString = "1";
 			}
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		}
 
-		return null;
+			try {
+				int index = Integer.parseInt(indexString);
+				return DocumentUtility.getExpressionElement(m).flatMap(EvaluableUtility::createExpression)
+						.map(mm -> new IndexedExpression(index, mm));
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			return null;
+		});
 	}
 
 	public static void createVariables(Element element, Evaluator evaluator, ReferenceCallback callback) {
 		DocumentUtility.getVariablesElements(element).stream()
-				.filter(f -> StringUtils.isNotBlank(DocumentUtility.getId(f)))
+				.filter(f -> StringUtils.isNotBlank(DocumentUtility.getId(f).orElse(null)))
 				.map(m -> createVariable(m, evaluator, callback)).filter(Objects::nonNull)
 				.forEach(e -> evaluator.getVariables().put(e.getName(), e));
 	}

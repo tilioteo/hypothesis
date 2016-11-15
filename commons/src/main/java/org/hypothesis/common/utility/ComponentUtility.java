@@ -4,7 +4,6 @@
  */
 package org.hypothesis.common.utility;
 
-import com.tilioteo.common.collections.StringMap;
 import com.vaadin.ui.*;
 import org.hypothesis.interfaces.AlignmentWrapper;
 import org.hypothesis.interfaces.ComponentEventCallback;
@@ -12,6 +11,7 @@ import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -32,7 +32,7 @@ public final class ComponentUtility {
 	 * @param stringMap
 	 * @param alignmentWrapper
 	 */
-	public static void setCommonProperties(Component component, Element element, StringMap stringMap,
+	public static void setCommonProperties(Component component, Element element, Map<String, String> stringMap,
 			AlignmentWrapper alignmentWrapper) {
 		// store component id
 		if (component instanceof AbstractComponent)
@@ -50,7 +50,7 @@ public final class ComponentUtility {
 		setWrappedAlignment(stringMap, alignmentWrapper);
 	}
 
-	private static void setStyle(Component component, StringMap properties) {
+	private static void setStyle(Component component, Map<String, String> properties) {
 		if (component instanceof AbstractComponent) {
 			String style = properties.get(DocumentConstants.STYLE);
 			if (style != null) {
@@ -59,7 +59,7 @@ public final class ComponentUtility {
 		}
 	}
 
-	private static void setCaption(Component component, StringMap properties) {
+	private static void setCaption(Component component, Map<String, String> properties) {
 		if (component instanceof AbstractComponent) {
 			String caption = properties.get(DocumentConstants.CAPTION);
 			if (caption != null) {
@@ -92,7 +92,7 @@ public final class ComponentUtility {
 		}
 	}
 
-	private static void setWrappedAlignment(StringMap properties, AlignmentWrapper alignmentWrapper) {
+	private static void setWrappedAlignment(Map<String, String> properties, AlignmentWrapper alignmentWrapper) {
 		if (alignmentWrapper != null) {
 			String align = properties.get(DocumentConstants.ALIGNMENT);
 			Alignment alignment = stringToAlignment(align);
@@ -136,7 +136,7 @@ public final class ComponentUtility {
 	 * @param alignmentWrapper
 	 */
 	@SuppressWarnings("rawtypes")
-	public static void setCommonFieldProperties(AbstractField component, Element element, StringMap stringMap,
+	public static void setCommonFieldProperties(AbstractField component, Element element, Map<String, String> stringMap,
 			AlignmentWrapper alignmentWrapper) {
 		setCommonProperties(component, element, stringMap, alignmentWrapper);
 
@@ -152,13 +152,13 @@ public final class ComponentUtility {
 	 * @param stringMap
 	 * @param alignmentWrapper
 	 */
-	public static void setCommonLayoutProperties(AbstractOrderedLayout component, Element element, StringMap stringMap,
+	public static void setCommonLayoutProperties(AbstractOrderedLayout component, Element element, Map<String, String> stringMap,
 			AlignmentWrapper alignmentWrapper) {
 		setCommonProperties(component, element, stringMap, alignmentWrapper);
 		setLayoutSpacing(component, stringMap);
 	}
 
-	private static void setLayoutSpacing(AbstractOrderedLayout component, StringMap properties) {
+	private static void setLayoutSpacing(AbstractOrderedLayout component, Map<String, String> properties) {
 		// TODO how to handle with spacing value?
 		// int value = stringMap.getInteger(SlideXmlConstants.SPACING, -1);
 		// if (value > 0)

@@ -15,6 +15,7 @@ import org.hypothesis.interfaces.Element;
 import org.hypothesis.interfaces.Evaluator;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -55,24 +56,18 @@ public class TaskControllerFactoryImpl implements TaskControllerFactory {
 	}
 
 	private void createNodes(Element rootElement, TaskController controller) {
-		DocumentUtility.getNodesElements(rootElement).stream().map(m -> createNode(m, controller))
+		DocumentUtility.getNodesElements(rootElement).stream().map(m -> createNode(m, controller).orElse(null))
 				.filter(Objects::nonNull).forEach(e -> controller.addNode(e.getSlideId(), e));
 	}
 
-	private Node createNode(Element element, Evaluator evaluator) {
-		Long slideId = DocumentUtility.getSlideId(element);
-		if (null == slideId) {
-			return null;
-		}
-
-		Node node = new Node(evaluator, slideId);
-		Element evaluateElement = DocumentUtility.getEvaluateElement(element);
-
-		if (evaluateElement != null) {
-			evaluateElement.children().stream().map(m -> EvaluableUtility.createEvaluable(m, evaluator))
-					.filter(Objects::nonNull).forEach(node::add);
-				}
-		return node;
+	private Optional<Node> createNode(Element element, Evaluator evaluator) {
+		return Optional.ofNullable(element).map(DocumentUtility::getSlideId).map(m -> {
+			Node node = new Node(evaluator, m);
+			DocumentUtility.getEvaluateElement(element)
+					.ifPresent(e -> e.children().stream().map(mm -> EvaluableUtility.createEvaluable(mm, evaluator))
+							.filter(Objects::nonNull).forEach(node::add));
+			return node;
+		});
 	}
 
 }

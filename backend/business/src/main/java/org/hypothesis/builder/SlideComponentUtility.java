@@ -4,14 +4,18 @@
  */
 package org.hypothesis.builder;
 
-import com.tilioteo.common.collections.StringMap;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractMedia;
+
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.ComponentUtility;
+import org.hypothesis.common.utility.ConversionUtility;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.interfaces.AlignmentWrapper;
 import org.hypothesis.interfaces.DocumentConstants;
@@ -34,7 +38,7 @@ public final class SlideComponentUtility {
 	private SlideComponentUtility() {
 	}
 
-	private static Orientation getOrientation(StringMap properties, Orientation defaultValue) {
+	private static Orientation getOrientation(Map<String, String> properties, Orientation defaultValue) {
 		String value = properties.get(DocumentConstants.ORIENTATION);
 
 		if (value != null) {
@@ -47,7 +51,7 @@ public final class SlideComponentUtility {
 		return defaultValue;
 	}
 
-	private static LabelPosition getLabelPosition(StringMap properties, LabelPosition defaultValue) {
+	private static LabelPosition getLabelPosition(Map<String, String> properties, LabelPosition defaultValue) {
 		String value = properties.get(DocumentConstants.LABEL_POSITION);
 
 		if (value != null) {
@@ -64,7 +68,7 @@ public final class SlideComponentUtility {
 		return defaultValue;
 	}
 
-	private static Direction getTimerDirection(StringMap properties, Direction defaultValue) {
+	private static Direction getTimerDirection(Map<String, String> properties, Direction defaultValue) {
 		String value = properties.get(DocumentConstants.DIRECTION);
 
 		if (value != null) {
@@ -78,20 +82,20 @@ public final class SlideComponentUtility {
 		return defaultValue;
 	}
 
-	public static void setPanelProperties(Panel panel, Element element, StringMap properties,
+	public static void setPanelProperties(Panel panel, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(panel, element, properties, alignmentWrapper);
 
 		// set Panel specific properties
 		// defaults to true
-		boolean border = properties.getBoolean(DocumentConstants.BORDER, true);
+		boolean border = ConversionUtility.getBooleanOrDefault(properties.get(DocumentConstants.BORDER), true);
 		if (!border) {
 			panel.addStyleName("borderless");
 		}
 	}
 
 	public static void setComponentPanelProperties(MultipleComponentPanel<? extends AbstractComponent> component,
-			Element element, StringMap stringMap, AlignmentWrapper alignmentWrapper) {
+			Element element, Map<String, String> stringMap, AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(component, element, stringMap, alignmentWrapper);
 
 		Orientation orientation = getOrientation(stringMap, Orientation.Horizontal);
@@ -101,14 +105,14 @@ public final class SlideComponentUtility {
 		setChildrenStyle(component, stringMap);
 	}
 
-	public static void setImageProperties(Image image, Element element, StringMap properties,
+	public static void setImageProperties(Image image, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(image, element, properties, alignmentWrapper);
 
 		image.setSource(new ExternalResource(properties.get(DocumentConstants.URL, "")));
 	}
 
-	public static void setVideoProperties(Video video, Element element, StringMap properties,
+	public static void setVideoProperties(Video video, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(video, element, properties, alignmentWrapper);
 
@@ -118,7 +122,7 @@ public final class SlideComponentUtility {
 		video.setAltText("Your browser doesn't support video element.");
 	}
 
-	public static void setAudioProperties(Audio audio, Element element, StringMap properties,
+	public static void setAudioProperties(Audio audio, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(audio, element, properties, alignmentWrapper);
 
@@ -138,7 +142,7 @@ public final class SlideComponentUtility {
 	}
 
 	private static void setChildrenSize(MultipleComponentPanel<? extends AbstractComponent> component,
-			StringMap stringMap) {
+			Map<String, String> stringMap) {
 		setChildrenWidth(component, stringMap.getDimension(DocumentConstants.CHILD_WIDTH));
 		setChildrenHeight(component, stringMap.getDimension(DocumentConstants.CHILD_HEIGHT));
 		if (component != null) {
@@ -147,7 +151,7 @@ public final class SlideComponentUtility {
 	}
 
 	private static void setChildrenStyle(MultipleComponentPanel<? extends AbstractComponent> component,
-			StringMap stringMap) {
+			Map<String, String> stringMap) {
 		String style = stringMap.get(DocumentConstants.CHILD_STYLE);
 		if (component != null && style != null) {
 			component.setChildrenStyle(style);
@@ -169,7 +173,7 @@ public final class SlideComponentUtility {
 		}
 	}
 
-	public static void setButtonProperties(Button component, Element element, StringMap properties,
+	public static void setButtonProperties(Button component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(component, element, properties, alignmentWrapper);
 
@@ -177,14 +181,14 @@ public final class SlideComponentUtility {
 		// TODO in future set dynamic css
 	}
 
-	public static void setButtonPanelProperties(ButtonPanel component, Element element, StringMap properties,
+	public static void setButtonPanelProperties(ButtonPanel component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		component.setCaptions(properties.getStringArray(DocumentConstants.CAPTIONS));
 
 		setComponentPanelProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setSelectPanelProperties(SelectPanel component, Element element, StringMap properties,
+	public static void setSelectPanelProperties(SelectPanel component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		component.setCaptions(properties.getStringArray(DocumentConstants.CAPTIONS));
 
@@ -195,27 +199,27 @@ public final class SlideComponentUtility {
 		component.setLabelPosition(getLabelPosition(properties, LabelPosition.Right));
 	}
 
-	public static void setTextFieldProperties(TextField component, Element element, StringMap properties,
+	public static void setTextFieldProperties(TextField component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonFieldProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setTextAreaProperties(TextArea component, Element element, StringMap properties,
+	public static void setTextAreaProperties(TextArea component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonFieldProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setDateFieldProperties(DateField component, Element element, StringMap properties,
+	public static void setDateFieldProperties(DateField component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonFieldProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setComboBoxProperties(ComboBox component, Element element, StringMap properties,
+	public static void setComboBoxProperties(ComboBox component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonFieldProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setTimerLabelProperties(TimerLabel component, Element element, StringMap properties,
+	public static void setTimerLabelProperties(TimerLabel component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		setLabelProperties(component, element, properties, alignmentWrapper);
 
@@ -223,18 +227,18 @@ public final class SlideComponentUtility {
 		component.setTimeFormat(properties.get(DocumentConstants.TIME_FORMAT, TimerLabel.DEAFAULT_TIME_FORMAT));
 	}
 
-	public static void setLabelProperties(Label component, Element element, StringMap properties,
+	public static void setLabelProperties(Label component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setTimerProperties(Timer component, Element element, StringMap properties) {
+	public static void setTimerProperties(Timer component, Element element, Map<String, String> properties) {
 		component.setData(DocumentUtility.getId(element));
 		component.setTime(properties.getInteger(DocumentConstants.TIME, 0));
 		component.setDirection(getTimerDirection(properties, Direction.UP));
 	}
 
-	public static void setWindowProperties(Window component, Element element, StringMap properties,
+	public static void setWindowProperties(Window component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(component, element, properties, alignmentWrapper);
 
