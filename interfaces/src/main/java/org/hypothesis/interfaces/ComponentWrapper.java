@@ -20,5 +20,9 @@ public interface ComponentWrapper extends Serializable {
 	Component getComponent();
 
 	Alignment getAlignment();
+	
+	default boolean hasComponent() {
+		return getComponent() != null;
+	}
 
 }

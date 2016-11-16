@@ -4,19 +4,17 @@
  */
 package org.hypothesis.builder;
 
-import com.tilioteo.common.Strings;
-import com.tilioteo.common.collections.StringMap;
 import com.vaadin.data.Validatable;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ShortcutUtility;
-import org.hypothesis.business.ShortcutUtility.ShortcutKeys;
 import org.hypothesis.common.AlignmentWrapperImpl;
 import org.hypothesis.common.ComponentWrapperImpl;
 import org.hypothesis.common.ValidationSets;
 import org.hypothesis.common.utility.ComponentUtility;
+import org.hypothesis.common.utility.ConversionUtility;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
@@ -47,6 +45,7 @@ import org.vaadin.special.ui.SelectButton;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -128,13 +127,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 	private void createInputExpressions(Element rootElement, SlideContainerPresenter presenter) {
 		DocumentUtility.getInputValueElements(rootElement).stream()
-				.map(m -> EvaluableUtility.createValueExpression(m, DocumentConstants.INPUT_VALUE))
+				.map(m -> EvaluableUtility.createValueExpression(m, DocumentConstants.INPUT_VALUE).orElse(null))
 				.filter(Objects::nonNull).forEach(e -> presenter.setInputExpression(e.getIndex(), e));
 	}
 
 	private void createOutputExpressions(Element rootElement, SlideContainerPresenter presenter) {
 		DocumentUtility.getOutputValueElements(rootElement).stream()
-				.map(m -> EvaluableUtility.createValueExpression(m, DocumentConstants.OUTPUT_VALUE))
+				.map(m -> EvaluableUtility.createValueExpression(m, DocumentConstants.OUTPUT_VALUE).orElse(null))
 				.filter(Objects::nonNull).forEach(e -> presenter.setOutputExpression(e.getIndex(), e));
 	}
 
@@ -167,7 +166,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						a, c -> c.setProperty(ComponentDataConstants.PROP_TIME, e.getTime(), DocumentConstants.TIME)));
 
 			} else if (DocumentConstants.UPDATE.equals(n)) {
-				Integer interval = Strings.toInteger(el.getAttribute(DocumentConstants.INTERVAL));
+				Integer interval = ConversionUtility.getInteger(el.getAttribute(DocumentConstants.INTERVAL));
 				if (interval != null) {
 					timer.addUpdateListener(interval, e -> presenter.handleEvent(timer, DocumentConstants.TIMER,
 							ProcessEventTypes.TimerUpdate, a,
@@ -178,21 +177,16 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private void createWindows(Element rootElement, SlideContainerPresenter presenter) {
-		DocumentUtility.getWindowsElements(rootElement).forEach(e -> {
-			String id = DocumentUtility.getId(e);
-			if (StringUtils.isNotEmpty(id)) {
-				Element element = DocumentUtility.getViewportOrWindowRootElement(e);
-
-				if (element != null) {
-					Window window = createWindow(element, presenter);
-					presenter.setWindow(id, window);
-				}
-			}
-		});
+		DocumentUtility.getWindowsElements(rootElement)
+				.forEach(e -> DocumentUtility.getId(e).filter(StringUtils::isNotEmpty)
+						.ifPresent(i -> DocumentUtility.getViewportOrWindowRootElement(e).ifPresent(el -> {
+							Window window = createWindow(el, presenter);
+							presenter.setWindow(i, window);
+						})));
 	}
 
 	private Window createWindow(Element element, SlideContainerPresenter presenter) {
-		StringMap properties = DocumentUtility.getPropertyValueMap(element);
+		Map<String, String> properties = DocumentUtility.getPropertyValueMap(element);
 
 		Window component = new Window();
 		SlideComponentUtility.setWindowProperties(component, element, properties, new AlignmentWrapperImpl());
@@ -240,11 +234,9 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private void createViewport(Element rootElement, SlideContainerPresenter presenter) {
-		Element componentElement = DocumentUtility.getViewportInnerComponent(rootElement);
-		ComponentWrapper componentWrapper = createComponentFromElement(componentElement, presenter);
-
-		SlideContainer container = createSlideContainer(presenter, componentWrapper.getComponent());
-		addViewportHandlers(container, rootElement, presenter);
+		DocumentUtility.getViewportInnerComponent(rootElement).map(m -> createComponentFromElement(m, presenter))
+				.filter(ComponentWrapper::hasComponent).map(m -> createSlideContainer(presenter, m.getComponent()))
+				.ifPresent(e -> addViewportHandlers(e, rootElement, presenter));
 	}
 
 	private SlideContainer createSlideContainer(SlideContainerPresenter presenter, Component component) {
@@ -267,25 +259,21 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				pr.addViewportFinishListener(e -> pr.handleEvent(container, DocumentConstants.SLIDE, null, a,
 						ComponentEventCallback::empty));
 			} else if (DocumentConstants.SHORTCUT.equals(n)) {
-				String key = DocumentUtility.getKey(h);
-				ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);
-				if (shortcutKeys != null) {
-					KeyAction keyAction = new KeyAction(shortcutKeys.getKeyCode(), shortcutKeys.getModifiers());
-					final String shortcut = keyAction.toString();
-
-					keyAction.addKeypressListener(e -> pr.handleEvent(container, DocumentConstants.SLIDE,
-							ProcessEventTypes.ShortcutKey, a, c -> {
-								c.setTimestamp(e.getServerDatetime());
-								c.setClientTimestamp(e.getClientDatetime());
-								c.setProperty(ComponentDataConstants.PROP_SHORTCUT_KEY, shortcut,
-										ComponentDataConstants.ELEM_SHORTCUT_KEY);
-							}));
-					pr.addKeyAction(keyAction);
-				}
+				DocumentUtility.getKey(h).map(ShortcutUtility::parseShortcut)
+						.map(m -> new KeyAction(m.getKeyCode(), m.getModifiers())).ifPresent(i -> {
+							final String shortcut = i.toString();
+							i.addKeypressListener(e -> pr.handleEvent(container, DocumentConstants.SLIDE,
+									ProcessEventTypes.ShortcutKey, a, c -> {
+										c.setTimestamp(e.getServerDatetime());
+										c.setClientTimestamp(e.getClientDatetime());
+										c.setProperty(ComponentDataConstants.PROP_SHORTCUT_KEY, shortcut,
+												ComponentDataConstants.ELEM_SHORTCUT_KEY);
+									}));
+							pr.addKeyAction(i);
+						});
 			} else if (DocumentConstants.MESSAGE.equals(n)) {
-				String uid = DocumentUtility.getUid(h);
-				if (StringUtils.isNotEmpty(uid)) {
-					pr.addMessageListener(uid, e -> {
+				DocumentUtility.getUid(h).filter(StringUtils::isNotEmpty).ifPresent(i -> {
+					pr.addMessageListener(i, e -> {
 						final MessageEvent messageEvent = (MessageEvent) e;
 						presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.Message, a, c -> {
 							c.setProperty(ComponentDataConstants.PROP_MESSAGE, messageEvent.getMessage());
@@ -293,7 +281,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 									ComponentDataConstants.ELEM_MESSAGE_UID);
 						});
 					});
-				}
+				});
 			}
 		});
 
@@ -301,13 +289,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 	private ComponentWrapper createComponentFromElement(Element element, SlideContainerPresenter presenter) {
 		if (element != null) {
-			String id = DocumentUtility.getId(element);
-
 			String name = element.getName();
 
-			Component component = null;
+			final Component component;
 
-			StringMap properties = DocumentUtility.getPropertyValueMap(element);
+			Map<String, String> properties = DocumentUtility.getPropertyValueMap(element);
 			AlignmentWrapper alignmentWrapper = new AlignmentWrapperImpl();
 
 			if (name.equals(DocumentConstants.VERTICAL_LAYOUT))
@@ -344,11 +330,12 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				component = createTimerLabel(element, properties, alignmentWrapper, presenter);
 			else if (name.equals(DocumentConstants.LABEL))
 				component = createLabel(element, properties, alignmentWrapper, presenter);
+			else
+				component = null;
 
+			// FIXME: is plugin component registered somewhere?
 			if (component != null) {
-				if (id != null) {
-					presenter.setComponent(id, component);
-				}
+				DocumentUtility.getId(element).ifPresent(e -> presenter.setComponent(e, component));
 
 				return new ComponentWrapperImpl(component, alignmentWrapper.getAlignment());
 			} else {
@@ -359,7 +346,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return null;
 	}
 
-	private VerticalLayout createVerticalLayout(Element element, StringMap properties,
+	private VerticalLayout createVerticalLayout(Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		VerticalLayout component = new VerticalLayout();
 		ComponentUtility.setCommonLayoutProperties(component, element, properties, alignmentWrapper);
@@ -388,7 +375,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				});
 	}
 
-	private HorizontalLayout createHorizontalLayout(Element element, StringMap properties,
+	private HorizontalLayout createHorizontalLayout(Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		HorizontalLayout component = new HorizontalLayout();
 		ComponentUtility.setCommonLayoutProperties(component, element, properties, alignmentWrapper);
@@ -417,8 +404,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				});
 	}
 
-	private FormLayout createFormLayout(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private FormLayout createFormLayout(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		FormLayout component = new FormLayout();
 		ComponentUtility.setCommonLayoutProperties(component, element, properties, alignmentWrapper);
 		addFormLayoutComponents(component, element, presenter);
@@ -438,7 +425,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				});
 	}
 
-	private Panel createPanel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Panel createPanel(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Panel component = new Panel();
 		SlideComponentUtility.setPanelProperties(component, element, properties, alignmentWrapper);
@@ -467,7 +454,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private Image createImage(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Image createImage(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Image component = new Image();
 		SlideComponentUtility.setImageProperties(component, element, properties, alignmentWrapper);
@@ -499,7 +486,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private Video createVideo(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Video createVideo(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Video component = new Video();
 		SlideComponentUtility.setVideoProperties(component, element, properties, alignmentWrapper);
@@ -540,7 +527,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private Audio createAudio(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Audio createAudio(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Audio component = new Audio();
 		SlideComponentUtility.setAudioProperties(component, element, properties, alignmentWrapper);
@@ -577,7 +564,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private Button createButton(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Button createButton(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Button component = new Button();
 		SlideComponentUtility.setButtonProperties(component, element, properties, alignmentWrapper);
@@ -598,8 +585,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private ButtonPanel createButtonPanel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private ButtonPanel createButtonPanel(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		ButtonPanel component = new ButtonPanel();
 		SlideComponentUtility.setButtonPanelProperties(component, element, properties, alignmentWrapper);
 		addButtonPanelHandlers(component, element, presenter);
@@ -628,8 +615,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private SelectPanel createSelectPanel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private SelectPanel createSelectPanel(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		SelectPanel component = new SelectPanel();
 		SlideComponentUtility.setSelectPanelProperties(component, element, properties, alignmentWrapper);
 		addSelectPanelHandlers(component, element, presenter);
@@ -701,8 +688,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private TextField createTextField(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private TextField createTextField(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		TextField component = new TextField();
 		SlideComponentUtility.setTextFieldProperties(component, element, properties, alignmentWrapper);
 		addTextFieldValidators(component, element);
@@ -729,7 +716,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private TextArea createTextArea(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private TextArea createTextArea(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		TextArea component = new TextArea();
 		SlideComponentUtility.setTextAreaProperties(component, element, properties, alignmentWrapper);
@@ -738,8 +725,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	private DateField createDateField(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private DateField createDateField(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		DateField component = new DateField();
 		SlideComponentUtility.setDateFieldProperties(component, element, properties, alignmentWrapper);
 		addDateFieldValidators(component, element);
@@ -763,7 +750,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 	}
 
-	private ComboBox createComboBox(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private ComboBox createComboBox(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		ComboBox component = new ComboBox();
 		SlideComponentUtility.setComboBoxProperties(component, element, properties, alignmentWrapper);
@@ -775,14 +762,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 	private void addComboBoxItems(ComboBox component, Element element) {
 		DocumentUtility.getComponentItems(element).stream().forEach(e -> {
-			String value = DocumentUtility.getValue(e);
-			if (StringUtils.isNotEmpty(value)) {
-				component.addItem(value);
-
-				String caption = DocumentUtility.getCaption(e);
-				if (StringUtils.isNotEmpty(caption))
-					component.setItemCaption(value, caption);
-			}
+			DocumentUtility.getValue(e).filter(StringUtils::isNotEmpty).ifPresent(i -> {
+				component.addItem(i);
+				DocumentUtility.getCaption(e).filter(StringUtils::isNotEmpty)
+						.ifPresent(c -> component.setItemCaption(e, c));
+			});
 		});
 
 		component.setImmediate(true);
@@ -796,8 +780,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private TimerLabel createTimerLabel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private TimerLabel createTimerLabel(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		TimerLabel component = new TimerLabel();
 		SlideComponentUtility.setTimerLabelProperties(component, element, properties, alignmentWrapper);
 
@@ -809,7 +793,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	private Label createLabel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Label createLabel(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Label component = new Label();
 		SlideComponentUtility.setLabelProperties(component, element, properties, alignmentWrapper);

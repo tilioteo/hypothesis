@@ -62,33 +62,13 @@ public class MessageManager implements Serializable {
 				if (method != null) {
 					method.setAccessible(true);
 
-						final Method finalMethod = method;
-						properties.stream().filter(f -> StringUtils.isNotBlank(DocumentUtility.getName(f))
-								&& StringUtils.isNotBlank(DocumentUtility.getType(f))).forEach(e -> {
-									String name = DocumentUtility.getName(e);
-									String type = DocumentUtility.getType(e);
-
-									Class<?> clazz = null;
-									if (DocumentConstants.INTEGER.equalsIgnoreCase(type)) {
-										clazz = Integer.class;
-									} else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type)) {
-										clazz = Boolean.class;
-									} else if (DocumentConstants.FLOAT.equalsIgnoreCase(type)) {
-										clazz = Double.class;
-									} else if (DocumentConstants.STRING.equalsIgnoreCase(type)) {
-										clazz = String.class;
-									}
-									if (clazz != null) {
-										try {
-											// invoking method
-											// message.setPropertyDefinition(name,
-											// clazz);
-											finalMethod.invoke(message, name, clazz);
-										} catch (Exception ex) {
-											ex.printStackTrace();
-										}
-									}
-								});
+					final Method finalMethod = method;
+					properties.stream()
+							.filter(f -> StringUtils.isNotBlank(DocumentUtility.getName(f).orElse(null))
+									&& StringUtils.isNotBlank(DocumentUtility.getType(f).orElse(null)))
+							.forEach(e -> DocumentUtility.getName(e).ifPresent(
+									n -> DocumentUtility.getType(e).map(this::getClassFromType).ifPresent(c -> {
+									})));
 				}
 
 				return message;
@@ -96,5 +76,32 @@ public class MessageManager implements Serializable {
 		}
 
 		return null;
+
+	}
+
+	private Class<?> getClassFromType(String type) {
+		switch (type.toLowerCase()) {
+		case DocumentConstants.INTEGER:
+			return Integer.class;
+		case DocumentConstants.BOOLEAN:
+			return Boolean.class;
+		case DocumentConstants.FLOAT:
+			return Double.class;
+		case DocumentConstants.STRING:
+			return String.class;
+		default:
+			return null;
+		}
+	}
+	
+	private void tryInvokeMethod(Method method, String message, String name, Class<?> clazz) {
+		try {
+			// invoking method
+			// message.setPropertyDefinition(name,
+			// clazz);
+			method.invoke(message, name, clazz);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }

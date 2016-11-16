@@ -109,7 +109,8 @@ public final class SlideComponentUtility {
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(image, element, properties, alignmentWrapper);
 
-		image.setSource(new ExternalResource(properties.get(DocumentConstants.URL, "")));
+		image.setSource(
+				new ExternalResource(ConversionUtility.getStringOrDefault(properties.get(DocumentConstants.URL), "")));
 	}
 
 	public static void setVideoProperties(Video video, Element element, Map<String, String> properties,
@@ -142,17 +143,17 @@ public final class SlideComponentUtility {
 	}
 
 	private static void setChildrenSize(MultipleComponentPanel<? extends AbstractComponent> component,
-			Map<String, String> stringMap) {
-		setChildrenWidth(component, stringMap.getDimension(DocumentConstants.CHILD_WIDTH));
-		setChildrenHeight(component, stringMap.getDimension(DocumentConstants.CHILD_HEIGHT));
+			Map<String, String> properties) {
+		setChildrenWidth(component, ConversionUtility.getDimension(properties.get(DocumentConstants.CHILD_WIDTH)));
+		setChildrenHeight(component, ConversionUtility.getDimension(properties.get(DocumentConstants.CHILD_HEIGHT)));
 		if (component != null) {
 			component.updateContent();
 		}
 	}
 
 	private static void setChildrenStyle(MultipleComponentPanel<? extends AbstractComponent> component,
-			Map<String, String> stringMap) {
-		String style = stringMap.get(DocumentConstants.CHILD_STYLE);
+			Map<String, String> properties) {
+		String style = properties.get(DocumentConstants.CHILD_STYLE);
 		if (component != null && style != null) {
 			component.setChildrenStyle(style);
 			component.updateContent();
@@ -224,7 +225,8 @@ public final class SlideComponentUtility {
 		setLabelProperties(component, element, properties, alignmentWrapper);
 
 		// TimerLabel specific properties
-		component.setTimeFormat(properties.get(DocumentConstants.TIME_FORMAT, TimerLabel.DEAFAULT_TIME_FORMAT));
+		component.setTimeFormat(ConversionUtility.getStringOrDefault(properties.get(DocumentConstants.TIME_FORMAT),
+				TimerLabel.DEAFAULT_TIME_FORMAT));
 	}
 
 	public static void setLabelProperties(Label component, Element element, Map<String, String> properties,
@@ -233,8 +235,8 @@ public final class SlideComponentUtility {
 	}
 
 	public static void setTimerProperties(Timer component, Element element, Map<String, String> properties) {
-		component.setData(DocumentUtility.getId(element));
-		component.setTime(properties.getInteger(DocumentConstants.TIME, 0));
+		DocumentUtility.getId(element).ifPresent(component::setData);
+		component.setTime(ConversionUtility.getIntegerOrDefault(properties.get(DocumentConstants.TIME), 0));
 		component.setDirection(getTimerDirection(properties, Direction.UP));
 	}
 
