@@ -9,8 +9,8 @@ import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractMedia;
 
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -184,19 +184,27 @@ public final class SlideComponentUtility {
 
 	public static void setButtonPanelProperties(ButtonPanel component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
-		component.setCaptions(properties.getStringArray(DocumentConstants.CAPTIONS));
+		component.setCaptions(Arrays
+				.stream(properties.getOrDefault(DocumentConstants.CAPTIONS, "")
+						.split(DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN))
+				.map(m -> StringUtils.strip(m, DocumentConstants.STR_QUOTE)).toArray(s -> new String[s]));
 
 		setComponentPanelProperties(component, element, properties, alignmentWrapper);
 	}
 
 	public static void setSelectPanelProperties(SelectPanel component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
-		component.setCaptions(properties.getStringArray(DocumentConstants.CAPTIONS));
+
+		component.setCaptions(Arrays
+				.stream(properties.getOrDefault(DocumentConstants.CAPTIONS, "")
+						.split(DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN))
+				.map(m -> StringUtils.strip(m, DocumentConstants.STR_QUOTE)).toArray(s -> new String[s]));
 
 		setComponentPanelProperties(component, element, properties, alignmentWrapper);
 
 		// set SelectPanel specific properties
-		component.setMultiSelect(properties.getBoolean(DocumentConstants.MULTI_SELECT, false));
+		component.setMultiSelect(
+				ConversionUtility.getBooleanOrDefault(properties.get(DocumentConstants.MULTI_SELECT), false));
 		component.setLabelPosition(getLabelPosition(properties, LabelPosition.Right));
 	}
 

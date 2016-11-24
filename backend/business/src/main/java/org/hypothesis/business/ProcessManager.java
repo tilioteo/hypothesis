@@ -4,6 +4,7 @@
  */
 package org.hypothesis.business;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hypothesis.data.interfaces.*;
 import org.hypothesis.data.model.*;
@@ -18,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -44,6 +46,7 @@ public class ProcessManager implements Serializable {
 
 	@Inject
 	private PermissionService permissionService;
+
 	@Inject
 	private OutputService outputService;
 
@@ -75,15 +78,9 @@ public class ProcessManager implements Serializable {
 	}
 
 	private Event createEvent(AbstractProcessEvent event) {
-		if (event != null && event.getName() != null) {
-			ProcessEventType processEvent = ProcessEventTypes.get(event.getName());
-
-			if (processEvent != null) {
-				return new Event(processEvent.getId(), event.getName(), event.getTimestamp());
-			}
-		}
-
-		return null;
+		return Optional.ofNullable(event).filter(f -> StringUtils.isNotEmpty(f.getName()))
+				.map(m -> ProcessEventTypes.get(event.getName()))
+				.map(m -> new Event(m.getId(), event.getName(), event.getTimestamp())).orElse(null);
 	}
 
 	private boolean checkUserPack(User user, Pack pack) {

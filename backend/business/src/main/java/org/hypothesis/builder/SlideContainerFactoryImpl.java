@@ -4,9 +4,12 @@
  */
 package org.hypothesis.builder;
 
-import com.vaadin.data.Validatable;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ShortcutUtility;
@@ -22,31 +25,49 @@ import org.hypothesis.event.data.ComponentDataConstants;
 import org.hypothesis.event.model.MessageEvent;
 import org.hypothesis.event.model.ProcessEventTypes;
 import org.hypothesis.extension.PluginManager;
-import org.hypothesis.interfaces.*;
+import org.hypothesis.interfaces.AlignmentWrapper;
+import org.hypothesis.interfaces.ComponentEventCallback;
+import org.hypothesis.interfaces.ComponentWrapper;
+import org.hypothesis.interfaces.Document;
+import org.hypothesis.interfaces.DocumentConstants;
+import org.hypothesis.interfaces.Element;
+import org.hypothesis.interfaces.SlideComponentPlugin;
+import org.hypothesis.interfaces.SlidePresenter;
 import org.hypothesis.presenter.SlideContainerPresenter;
 import org.hypothesis.slide.ui.Audio;
 import org.hypothesis.slide.ui.Button;
-import org.hypothesis.slide.ui.*;
+import org.hypothesis.slide.ui.ButtonPanel;
 import org.hypothesis.slide.ui.ComboBox;
 import org.hypothesis.slide.ui.DateField;
 import org.hypothesis.slide.ui.HorizontalLayout;
 import org.hypothesis.slide.ui.Image;
 import org.hypothesis.slide.ui.Label;
 import org.hypothesis.slide.ui.Panel;
+import org.hypothesis.slide.ui.SelectPanel;
 import org.hypothesis.slide.ui.TextArea;
 import org.hypothesis.slide.ui.TextField;
+import org.hypothesis.slide.ui.Timer;
+import org.hypothesis.slide.ui.TimerLabel;
 import org.hypothesis.slide.ui.VerticalLayout;
 import org.hypothesis.slide.ui.Video;
 import org.hypothesis.slide.ui.Window;
 import org.hypothesis.ui.SlideContainer;
-import org.vaadin.special.data.*;
+import org.vaadin.special.data.DateRangeValidator;
+import org.vaadin.special.data.EmptyValidator;
+import org.vaadin.special.data.IntegerValidator;
+import org.vaadin.special.data.NumberRangeValidator;
+import org.vaadin.special.data.NumberValidator;
+import org.vaadin.special.data.SelectPanelEmptyValidator;
 import org.vaadin.special.ui.KeyAction;
 import org.vaadin.special.ui.SelectButton;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import com.vaadin.data.Validatable;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Layout;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -107,20 +128,23 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		createWindows(rootElement, presenter);
 		createViewport(rootElement, presenter);
 
-		EvaluableUtility.createVariables(rootElement, presenter, (name, id, eval) -> {
-			if (StringUtils.isNotEmpty(id) && eval instanceof SlideContainerPresenter) {
-				SlideContainerPresenter pres = (SlideContainerPresenter) eval;
+		EvaluableUtility.createVariables(rootElement, presenter, (name, id, eval) ->
+					Optional.ofNullable(name).filter(
+						f -> StringUtils.isNotEmpty(id) && eval instanceof SlideContainerPresenter)
+						.map(m -> {
+							SlideContainerPresenter pres = (SlideContainerPresenter) eval;
 
-				if (DocumentConstants.COMPONENT.equals(name)) {
-					return pres.getComponent(id);
-				} else if (DocumentConstants.TIMER.equals(name)) {
-					return pres.getTimer(id);
-				} else if (DocumentConstants.WINDOW.equals(name)) {
-					return pres.getWindow(id);
-				}
-			}
-			return null;
-		});
+							switch (m) {
+							case DocumentConstants.COMPONENT:
+								return pres.getComponent(id);
+							case DocumentConstants.TIMER:
+								return pres.getTimer(id);
+							case DocumentConstants.WINDOW:
+								return pres.getWindow(id);
+							default:
+								return null;
+							}
+						}));
 
 		return presenter.getSlideContainer();
 	}

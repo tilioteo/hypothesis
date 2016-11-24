@@ -28,7 +28,6 @@ import org.hypothesis.interfaces.Evaluator;
 import org.hypothesis.interfaces.ReferenceCallback;
 import org.hypothesis.interfaces.Variable;
 
-import com.tilioteo.common.Strings;
 import com.tilioteo.expressions.ExpressionFactory;
 
 /**
@@ -178,76 +177,65 @@ public final class EvaluableUtility {
 	}
 
 	private static Variable<?> createVariable(Element element, Evaluator evaluator, ReferenceCallback callback) {
-		if (element.getName().equals(DocumentConstants.VARIABLE)) {
-			String id = DocumentUtility.getId(element);
-			String type = DocumentUtility.getType(element);
-			String value = DocumentUtility.getValue(element);
-			String values = DocumentUtility.getValues(element);
-			Variable<?> variable = null;
+		return Optional.ofNullable(element).filter(f -> DocumentConstants.VARIABLE.equals(f.getName()))
+				.map(m -> DocumentUtility.getId(m).orElse(null))
+				.map(id -> DocumentUtility.getType(element).map(type -> {
+					String value = DocumentUtility.getValue(element).orElse(null);
+					String values = DocumentUtility.getValues(element).orElse(null);
+					Variable<?> variable = null;
 
-			if (DocumentConstants.OBJECT.equalsIgnoreCase(type)) {
-				variable = new org.hypothesis.evaluation.Variable<Object>(id);
-				Element reference = DocumentUtility.getReferenceSubElement(element);
-				if (callback != null && reference != null) {
-					String referenceId = DocumentUtility.getId(reference);
-					String referenceName = reference.getName();
-
-					Object referencedObject = callback.getReference(referenceName, referenceId, evaluator);
-					if (referencedObject != null) {
-						variable.setRawValue(referencedObject);
-					}
-				} else {
-					Element instance = DocumentUtility.getInstanceSubElement(element);
-					if (instance != null) {
-						if (instance.getName().equals(DocumentConstants.CLASS)) {
-							String className = DocumentUtility.getName(instance);
-							if (StringUtils.isNotEmpty(className)) {
-								try {
-									Class<?> clazz = Class.forName(className);
-									Constructor<?> ctor = clazz.getConstructor();
-									Object object = ctor.newInstance();
-									if (object != null) {
-										variable.setRawValue(object);
-									}
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
+					if (DocumentConstants.OBJECT.equalsIgnoreCase(type)) {
+						variable = new org.hypothesis.evaluation.Variable<Object>(id);
+						final Variable<?> finalVariable = variable;
+						Element reference = DocumentUtility.getReferenceSubElement(element).orElse(null);
+						if (callback != null && reference != null) {
+							DocumentUtility.getId(reference)
+									.flatMap(m -> callback.getReference(reference.getName(), m, evaluator))
+									.ifPresent(variable::setRawValue);
+						} else {
+							DocumentUtility.getInstanceSubElement(element)
+									.filter(f -> DocumentConstants.CLASS.equals(f.getName()))
+									.flatMap(DocumentUtility::getName).filter(StringUtils::isNotEmpty).ifPresent(e -> {
+										try {
+											Class<?> clazz = Class.forName(e);
+											Constructor<?> ctor = clazz.getConstructor();
+											Object object = ctor.newInstance();
+											if (object != null) {
+												finalVariable.setRawValue(object);
+											}
+										} catch (Exception ex) {
+											ex.printStackTrace();
+										}
+									});
 						}
+					} else if (DocumentConstants.INTEGER.equalsIgnoreCase(type)) {
+						variable = new org.hypothesis.evaluation.Variable<>(id, ConversionUtility.getInteger(value));
+					} else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type)) {
+						variable = new org.hypothesis.evaluation.Variable<>(id, ConversionUtility.getBoolean(value));
+					} else if (DocumentConstants.FLOAT.equalsIgnoreCase(type)) {
+						variable = new org.hypothesis.evaluation.Variable<>(id, ConversionUtility.getDouble(value));
+					} else if (DocumentConstants.STRING.equalsIgnoreCase(type)) {
+						variable = new org.hypothesis.evaluation.Variable<>(id, value);
+					} else if (DocumentConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
+						variable = new org.hypothesis.evaluation.Variable<>(id);
+						variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA))
+								.map(Integer::parseInt).collect(Collectors.toCollection(ArrayList::new)));
+					} else if (DocumentConstants.FLOAT_ARRAY.equalsIgnoreCase(type)) {
+						variable = new org.hypothesis.evaluation.Variable<>(id);
+						variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA))
+								.map(Double::parseDouble).collect(Collectors.toCollection(ArrayList::new)));
+					} else if (DocumentConstants.STRING_ARRAY.equalsIgnoreCase(type)) {
+						variable = new org.hypothesis.evaluation.Variable<>(id);
+						variable.setRawValue(
+								Arrays.stream(values.split(DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN))
+										.map(m -> StringUtils.strip(m, DocumentConstants.STR_QUOTE))
+										.collect(Collectors.toCollection(ArrayList::new)));
+					} else if (DocumentConstants.OBJECT_ARRAY.equalsIgnoreCase(type)) {
+						variable = new org.hypothesis.evaluation.Variable<>(id);
+						variable.setRawValue(new ArrayList<>());
 					}
-				}
-			} else if (DocumentConstants.INTEGER.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<>(id, Strings.toInteger(value));
-			else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<>(id, Boolean.parseBoolean(value));
-			else if (DocumentConstants.FLOAT.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<>(id, Strings.toDouble(value));
-			else if (DocumentConstants.STRING.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<>(id, value);
-
-			else if (DocumentConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
-				variable = new org.hypothesis.evaluation.Variable<>(id);
-				variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA))
-						.map(Integer::parseInt).collect(Collectors.toCollection(ArrayList::new)));
-			} else if (DocumentConstants.FLOAT_ARRAY.equalsIgnoreCase(type)) {
-				variable = new org.hypothesis.evaluation.Variable<>(id);
-				variable.setRawValue(Arrays.stream(StringUtils.split(values, DocumentConstants.STR_COMMA))
-						.map(Double::parseDouble).collect(Collectors.toCollection(ArrayList::new)));
-			} else if (DocumentConstants.STRING_ARRAY.equalsIgnoreCase(type)) {
-				variable = new org.hypothesis.evaluation.Variable<>(id);
-				variable.setRawValue(Arrays.stream(values.split(DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN))
-						.map(m -> StringUtils.strip(m, DocumentConstants.STR_QUOTE))
-						.collect(Collectors.toCollection(ArrayList::new)));
-			} else if (DocumentConstants.OBJECT_ARRAY.equalsIgnoreCase(type)) {
-				variable = new org.hypothesis.evaluation.Variable<>(id);
-				variable.setRawValue(new ArrayList<>());
-			}
-
-			return variable;
-		} else
-			return null;
+					return variable;
+				}).orElse(null)).orElse(null);
 	}
-
-	// private
 
 }

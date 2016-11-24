@@ -10,7 +10,6 @@ import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.data.interfaces.MessageService;
 import org.hypothesis.event.data.Message;
-import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
 
@@ -18,6 +17,7 @@ import javax.inject.Inject;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -43,40 +43,34 @@ public class MessageManager implements Serializable {
 	 * @return new message object or null when message definition not found
 	 */
 	public Message createMessage(String uid, Long userId) {
-		org.hypothesis.data.model.Message entity = messageService.findMessageByUid(uid);
+		return Optional.ofNullable(messageService.findMessageByUid(uid)).map(m -> reader.readString(m.getData()))
+				.filter(DocumentUtility::isValidMessageDocument).map(m -> {
+					final Message message = new Message(uid, userId);
 
-		if (entity != null) {
-			Document document = reader.readString(entity.getData());
-			if (DocumentUtility.isValidMessageDocument(document)) {
-				Message message = new Message(uid, userId);
+					List<Element> properties = DocumentUtility.getMessagePropertyElements(m.root());
 
-				List<Element> properties = DocumentUtility.getMessagePropertyElements(document.root());
+					Method method = null;
+					try {
+						method = message.getClass().getDeclaredMethod("setPropertyDefinition", String.class,
+								Class.class);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 
-				Method method = null;
-				try {
-					method = message.getClass().getDeclaredMethod("setPropertyDefinition", String.class, Class.class);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+					if (method != null) {
+						method.setAccessible(true);
 
-				if (method != null) {
-					method.setAccessible(true);
+						final Method finalMethod = method;
+						properties.stream()
+								.filter(f -> StringUtils.isNotBlank(DocumentUtility.getName(f).orElse(null))
+										&& StringUtils.isNotBlank(DocumentUtility.getType(f).orElse(null)))
+								.forEach(e -> DocumentUtility.getName(e)
+										.ifPresent(n -> DocumentUtility.getType(e).map(this::getClassFromType)
+												.ifPresent(c -> tryInvokeMethod(finalMethod, message, n, c))));
+					}
 
-					final Method finalMethod = method;
-					properties.stream()
-							.filter(f -> StringUtils.isNotBlank(DocumentUtility.getName(f).orElse(null))
-									&& StringUtils.isNotBlank(DocumentUtility.getType(f).orElse(null)))
-							.forEach(e -> DocumentUtility.getName(e).ifPresent(
-									n -> DocumentUtility.getType(e).map(this::getClassFromType).ifPresent(c -> {
-									})));
-				}
-
-				return message;
-			}
-		}
-
-		return null;
-
+					return message;
+				}).orElse(null);
 	}
 
 	private Class<?> getClassFromType(String type) {
@@ -93,12 +87,11 @@ public class MessageManager implements Serializable {
 			return null;
 		}
 	}
-	
-	private void tryInvokeMethod(Method method, String message, String name, Class<?> clazz) {
+
+	private void tryInvokeMethod(Method method, Message message, String name, Class<?> clazz) {
 		try {
 			// invoking method
-			// message.setPropertyDefinition(name,
-			// clazz);
+			// message.setPropertyDefinition(name, clazz);
 			method.invoke(message, name, clazz);
 		} catch (Exception ex) {
 			ex.printStackTrace();

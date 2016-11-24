@@ -61,10 +61,11 @@ public class TaskControllerFactoryImpl implements TaskControllerFactory {
 	}
 
 	private Optional<Node> createNode(Element element, Evaluator evaluator) {
-		return Optional.ofNullable(element).map(DocumentUtility::getSlideId).map(m -> {
+		return Optional.ofNullable(element).map(m -> DocumentUtility.getSlideId(m).orElse(null)).map(m -> {
 			Node node = new Node(evaluator, m);
 			DocumentUtility.getEvaluateElement(element)
-					.ifPresent(e -> e.children().stream().map(mm -> EvaluableUtility.createEvaluable(mm, evaluator))
+					.ifPresent(e -> e.children().stream()
+							.map(mm -> EvaluableUtility.createEvaluable(mm, evaluator).orElse(null))
 							.filter(Objects::nonNull).forEach(node::add));
 			return node;
 		});

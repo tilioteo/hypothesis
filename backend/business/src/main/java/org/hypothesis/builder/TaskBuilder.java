@@ -37,9 +37,7 @@ public final class TaskBuilder implements Serializable {
 		TaskControllerFactory factory = new TaskControllerFactoryImpl();
 
 		if (entity != null && reader != null) {
-			TaskController controller = factory.buildTaskController(entity.getData(), reader);
-
-			return controller;
+			return factory.buildTaskController(entity.getData(), reader);
 		}
 
 		return null;

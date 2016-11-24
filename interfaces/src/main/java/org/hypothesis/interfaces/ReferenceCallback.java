@@ -5,6 +5,7 @@
 package org.hypothesis.interfaces;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -15,6 +16,6 @@ import java.io.Serializable;
 @FunctionalInterface
 public interface ReferenceCallback extends Serializable {
 
-	Object getReference(String name, String id, Evaluator evaluator);
+	Optional<Object> getReference(String name, String id, Evaluator evaluator);
 
 }

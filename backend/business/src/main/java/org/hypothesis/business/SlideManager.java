@@ -106,7 +106,7 @@ public class SlideManager extends ListManager<Task, Slide> {
 
 		container.getPresenter().getOutputs().entrySet().stream().filter(f -> f.getValue().getValue() != null)
 				.forEach(e -> nextInputValues.put(e.getKey(), e));
-			}
+	}
 
 	private void setInputValues() {
 		container.getPresenter().getInputs().values().stream()
@@ -128,7 +128,7 @@ public class SlideManager extends ListManager<Task, Slide> {
 						}
 					}
 				});
-				}
+	}
 
 	/**
 	 * Do some work on finish slide

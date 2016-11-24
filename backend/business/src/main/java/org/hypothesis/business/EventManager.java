@@ -4,9 +4,10 @@
  */
 package org.hypothesis.business;
 
-import com.tilioteo.common.Strings;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
+
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.data.ComponentDataConstants;
@@ -66,7 +67,7 @@ public class EventManager {
 		ComponentData data = createComponentData(event);
 		event.setData(data);
 
-		if (!(Strings.isNullOrEmpty(typeName) || Strings.isNullOrEmpty(eventName))) {
+		if (StringUtils.isNotBlank(typeName) && StringUtils.isNotBlank(eventName)) {
 			presenter.fireEvent(event);
 		}
 
