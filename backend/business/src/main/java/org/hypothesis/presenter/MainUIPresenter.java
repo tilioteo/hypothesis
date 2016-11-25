@@ -26,6 +26,8 @@ import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.navigator.HypothesisViewType;
 import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
+import org.hypothesis.ui.view.PublicPacksView;
+import org.hypothesis.ui.view.UserPacksView;
 import org.hypothesis.utility.ViewUtility;
 
 import javax.annotation.PostConstruct;
@@ -144,9 +146,9 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 				ui.getNavigator().navigateTo(viewName);
 			} else {
 				if (!User.GUEST.equals(user)) {
-					ui.getNavigator().navigateTo(HypothesisViewType.PACKS.getViewName());
+					ui.getNavigator().navigateTo(ViewUtility.getViewPathFromCDIAnnotation(UserPacksView.class));
 				} else {
-					ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
+					ui.getNavigator().navigateTo(ViewUtility.getViewPathFromCDIAnnotation(PublicPacksView.class));
 				}
 			}
 		} else {
@@ -156,12 +158,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 	}
 
 	private boolean userCanAccessView(User user, String viewName) {
-		HypothesisViewType viewType = HypothesisViewType.getByViewName(viewName);
-		if (viewType != null) {
-			return viewType.isAllowed(user.getRoles());
-		}
-
-		return false;
+		return ViewUtility.isUserViewAllowed(viewClass);
 	}
 
 	private String getViewName() {

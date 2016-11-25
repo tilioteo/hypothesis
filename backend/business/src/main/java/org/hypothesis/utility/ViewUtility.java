@@ -43,5 +43,16 @@ public final class ViewUtility {
 		return user != null && rolesAllowed != null
 				&& RoleUtility.isAnyRoleAllowed(Arrays.asList(rolesAllowed.value()), user.getRoles());
 	}
+	
+	public static String getViewPathFromCDIAnnotation(Class<? extends View> viewClass) {
+		if (viewClass != null) {
+			CDIView cdiView = viewClass.getAnnotation(CDIView.class);
+			if (cdiView != null) {
+				return cdiView.value();
+			}
+		}
+		
+		return null;
+	}
 
 }
