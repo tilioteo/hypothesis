@@ -37,7 +37,7 @@ public class PluginManager implements Serializable {
 
 	private Set<SlideComponentPlugin> componentPlugins = new HashSet<>();
 	private Map<String, SlideComponentPlugin> namespacePluginMap = new HashMap<>();
-	private Map<String, Set<String>> namespaceElementMap = new HashMap<>();
+	private Map<String, List<String>> namespaceElementMap = new HashMap<>();
 	private Set<Class<? extends Plugin>> registeredClasses = new HashSet<>();
 
 	protected PluginManager() {
@@ -158,7 +158,7 @@ public class PluginManager implements Serializable {
 				namespacePluginMap.put(namespace, plugin);
 
 				if (namespaceElementMap.containsKey(namespace)) {
-					Set<String> elements = namespaceElementMap.get(namespace);
+					List<String> elements = namespaceElementMap.get(namespace);
 					elements.addAll(plugin.getElements());
 				} else {
 					namespaceElementMap.put(namespace, plugin.getElements());
@@ -200,7 +200,7 @@ public class PluginManager implements Serializable {
 		SlideComponentPlugin componentPlugin = namespacePluginMap.get(namespace);
 
 		if (componentPlugin != null) {
-			Set<String> elements = namespaceElementMap.get(namespace);
+			List<String> elements = namespaceElementMap.get(namespace);
 			if (elements.contains(elementName)) {
 				return componentPlugin;
 			}

@@ -4,8 +4,8 @@
  */
 package org.hypothesis.interfaces;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -30,13 +30,13 @@ public interface SlideComponentPlugin extends Plugin {
 	/**
 	 * XML root elements of components provided by plugin.
 	 * 
-	 * @return Set of element names
+	 * @return List of element names
 	 */
-	Set<String> getElements();
+	List<String> getElements();
 
-	Set<String> getEventTypes();
+	List<String> getEventTypes();
 
-	Map<String, Set<ValidParentGroup>> getElementParentGroups();
+	Map<String, List<ValidParentGroup>> getElementParentGroups();
 
 	ComponentWrapper createComponentFromElement(Element element, SlidePresenter presenter);
 }

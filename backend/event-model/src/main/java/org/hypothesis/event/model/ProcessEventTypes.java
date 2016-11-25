@@ -5,8 +5,8 @@
 package org.hypothesis.event.model;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -140,7 +140,7 @@ public final class ProcessEventTypes {
 		}
 	}
 
-	public static void registerPluginEvents(Set<String> names) {
+	public static void registerPluginEvents(List<String> names) {
 		// increase next event id to begin in thousands
 		nextId = (Math.round(Math.floor(nextId / 1000)) + 1) * 1000 - 1;
 
