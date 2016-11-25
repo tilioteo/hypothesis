@@ -25,9 +25,10 @@ public class XmlDocumentWriterTest {
 		XmlDocumentWriter writer = new XmlDocumentWriter();
 
 		Document doc = reader.readString(XmlTestUtility.getSampleReaderXmlString());
+		String txt = XmlTestUtility.getSampleWriterString();
 		String str = writer.writeString(doc);
 
-		assertEquals("", str);
+		assertEquals(txt, str);
 	}
 
 }

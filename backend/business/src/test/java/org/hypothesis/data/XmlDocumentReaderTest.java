@@ -25,7 +25,8 @@ public class XmlDocumentReaderTest {
 		String txt = XmlTestUtility.getSampleReaderString();
 		Document doc = reader.readString(XmlTestUtility.getSampleReaderXmlString());
 		
-		assertEquals(txt, doc.toString());
+		String str = doc.toString();
+		assertEquals(txt, str);
 	}
 
 }
