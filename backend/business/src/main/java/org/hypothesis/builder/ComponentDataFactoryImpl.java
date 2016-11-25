@@ -52,6 +52,10 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			element.setAttribute(DocumentConstants.ID, data.getId());
 		}
 
+		if (StringUtils.isNotEmpty(data.getEventName())) {
+			element.setAttribute(DocumentConstants.NAME, data.getEventName());
+		}
+
 		if (StringUtils.isNotEmpty(data.getSender().getCaption())) {
 			element.setText(data.getSender().getCaption());
 		}

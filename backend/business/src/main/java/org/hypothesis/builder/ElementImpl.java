@@ -293,10 +293,10 @@ public class ElementImpl implements Element {
 		StringBuilder builder = new StringBuilder();
 		builder.append(StringUtils.rightPad("", ident, '\t'));
 
-		builder.append("<" + name + ":" + text + "(");
+		builder.append("<" + name + ":" + (text != null ? text : "") + "(");
 
 		if (!attributes.isEmpty()) {
-			builder.append(attributes.entrySet().stream().map(e -> e.getValue()).collect(Collectors.joining(",")));
+			builder.append(attributes.entrySet().stream().map(e -> String.format("%s=%s", e.getKey(), e.getValue())).collect(Collectors.joining(",")));
 			}
 		builder.append(")[");
 

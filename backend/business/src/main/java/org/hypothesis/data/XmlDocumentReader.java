@@ -68,6 +68,7 @@ public class XmlDocumentReader implements DocumentReader {
 				sb.append(Arrays.stream(url.getPath().split("/")).filter(StringUtils::isNotBlank)
 						.collect(Collectors.joining(Document.NAMESPACE_SEPARATOR)));
 
+				sb.append(Document.NAMESPACE_SEPARATOR);
 				sb.append(element.getName());
 
 				return sb.toString();
