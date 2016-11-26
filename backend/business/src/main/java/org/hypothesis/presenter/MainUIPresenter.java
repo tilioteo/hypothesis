@@ -4,9 +4,11 @@
  */
 package org.hypothesis.presenter;
 
+import com.vaadin.cdi.CDIView;
 import com.vaadin.cdi.CDIViewProvider;
 import com.vaadin.cdi.UIScoped;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
@@ -23,18 +25,23 @@ import org.hypothesis.event.interfaces.MainUIEvent.*;
 import org.hypothesis.interfaces.LoginPresenter;
 import org.hypothesis.interfaces.MainPresenter;
 import org.hypothesis.interfaces.UIPresenter;
-import org.hypothesis.navigator.HypothesisViewType;
 import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.view.PublicPacksView;
 import org.hypothesis.ui.view.UserPacksView;
+import org.hypothesis.utility.BeanUtility;
 import org.hypothesis.utility.ViewUtility;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -65,6 +72,9 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 	@Inject
 	private Event<MainUIEvent> mainEvent;
 
+	@Inject
+	private BeanManager beanManager;
+
 	private MainScreen mainScreen = null;
 	private LoginScreen loginScreen = null;
 
@@ -91,8 +101,6 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 		if (null == mainScreen) {
 			mainScreen = mainPresenter.createScreen();
 			initNavigator(mainScreen);
-
-			// new HypothesisNavigator(mainScreen.getContent());
 		}
 
 		return mainScreen;
@@ -106,7 +114,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 
 			@Override
 			public boolean beforeViewChange(final ViewChangeEvent event) {
-				return ViewUtility.isUserViewAllowed(event.getNewView().getClass());
+				return ViewUtility.isUserViewAllowed(event.getNewView().getClass(), SessionManager.getLoggedUser());
 			}
 
 			@Override
@@ -157,8 +165,15 @@ public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter 
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean userCanAccessView(User user, String viewName) {
-		return ViewUtility.isUserViewAllowed(viewClass);
+		Set<Bean<?>> allViews = beanManager.getBeans(View.class, new AnnotationLiteral<Any>() {
+		});
+
+		return allViews.stream()
+				.filter(ViewUtility.filterCDIViewsForMainUI
+						.and(f -> BeanUtility.getAnnotation(f, CDIView.class).value().equals(viewName)))
+				.anyMatch(b -> ViewUtility.isUserViewAllowed((Class<? extends View>) b.getClass(), user));
 	}
 
 	private String getViewName() {
