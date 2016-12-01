@@ -4,23 +4,20 @@
  */
 package org.hypothesis.builder;
 
-import java.util.List;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hypothesis.business.BranchController;
+import org.hypothesis.common.IntSequence;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
-import org.hypothesis.evaluation.AbstractBasePath;
-import org.hypothesis.evaluation.DefaultPath;
-import org.hypothesis.evaluation.Expression;
-import org.hypothesis.evaluation.Formula;
-import org.hypothesis.evaluation.Nick;
-import org.hypothesis.evaluation.Path;
-import org.hypothesis.evaluation.Pattern;
+import org.hypothesis.evaluation.*;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -54,38 +51,27 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 		BranchController controller = new BranchController();
 
 		createPaths(document.root(), controller);
-		
+
 		return controller;
 	}
 
 	private void createPaths(Element rootElement, BranchController controller) {
-		List<Element> paths = DocumentUtility.getPathElements(rootElement);
-		AbstractBasePath path;
+		DocumentUtility.getPathElements(rootElement).stream().map(this::createAbstractBasePath).filter(Objects::nonNull)
+				.forEach(controller::addPath);
 
-		if (paths != null) {
-			for (Element pathElement : paths) {
-				path = createAbstractBasePath(pathElement);
-				if (path != null)
-					controller.addPath(path);
-			}
-		}
-
-		Element defaultPathElement = DocumentUtility.getDefaultPathElement(rootElement);
-		path = createAbstractBasePath(defaultPathElement);
-		if (path != null)
-			controller.addPath(path);
+		DocumentUtility.getDefaultPathElement(rootElement).map(this::createAbstractBasePath)
+				.ifPresent(controller::addPath);
 	}
 
 	private AbstractBasePath createAbstractBasePath(Element pathElement) {
-		if (pathElement != null) {
-			if (DocumentConstants.PATH.equals(pathElement.getName())) {
-				return createPath(pathElement);
-			} else if (DocumentConstants.DEFAULT_PATH.equals(pathElement.getName())) {
-				return createDefaultPath(pathElement);
+		return Optional.ofNullable(pathElement).map(m -> {
+			if (DocumentConstants.PATH.equals(m.getName())) {
+				return createPath(m);
+			} else if (DocumentConstants.DEFAULT_PATH.equals(m.getName())) {
+				return createDefaultPath(m);
 			}
-		}
-
-		return null;
+			return null;
+		}).orElse(null);
 	}
 
 	private Path createPath(Element pathElement) {
@@ -103,44 +89,32 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 	}
 
 	private void setBranchKey(DefaultPath path, Element pathElement) {
-		Element branchKeyElement = DocumentUtility.getBranchKeyElement(pathElement);
-		path.setBranchKey(DocumentUtility.getTrimmedText(branchKeyElement));
+		DocumentUtility.getBranchKeyElement(pathElement).flatMap(DocumentUtility::getTrimmedText)
+				.filter(StringUtils::isNotEmpty).ifPresent(path::setBranchKey);
 	}
 
 	private Formula createFormula(Element element) {
-		if (element != null) {
-			Element subElement = DocumentUtility.getPatternElement(element);
-			if (subElement != null)
-				return createPattern(subElement);
-		}
-
-		return null;
+		return DocumentUtility.getPatternElement(element).map(this::createPattern).orElse(null);
 	}
 
 	private Pattern createPattern(Element subElement) {
 		Pattern pattern = new Pattern();
-		List<Element> nicks = DocumentUtility.getNickElements(subElement);
 
-		if (nicks != null) {
-			int i = 0;
-			for (Element nickElement : nicks) {
-				Nick nick = createNick(nickElement);
-				pattern.addNick(++i, nick);
-			}
-		}
+		final IntSequence seq = new IntSequence(0);
+		DocumentUtility.getNickElements(subElement).stream().map(this::createNick).filter(Objects::nonNull)
+				.forEach(e -> pattern.addNick(seq.next(), e));
 
 		return pattern;
 	}
 
 	private Nick createNick(Element nickElement) {
-		Long slideId = DocumentUtility.getSlideId(nickElement);
-		Nick nick = new Nick(slideId);
-
-		Element expressionElement = DocumentUtility.getExpressionElement(nickElement);
-		Expression expression = EvaluableUtility.createExpression(expressionElement);
-		nick.setExpression(expression);
-
-		return nick;
+		return DocumentUtility.getSlideId(nickElement).map(Nick::new).map(m -> {
+			return DocumentUtility.getExpressionElement(nickElement).flatMap(EvaluableUtility::createExpression)
+					.map(mm -> {
+						m.setExpression(mm);
+						return m;
+					}).orElse(null);
+		}).orElse(null);
 	}
 
 }

@@ -4,11 +4,10 @@
  */
 package org.hypothesis.slide.ui;
 
-import org.hypothesis.slide.shared.ui.mask.MaskClientRpc;
-import org.hypothesis.slide.shared.ui.mask.MaskState;
-
 import com.vaadin.server.AbstractExtension;
 import com.vaadin.ui.AbstractComponent;
+import org.hypothesis.slide.shared.ui.mask.MaskClientRpc;
+import org.hypothesis.slide.shared.ui.mask.MaskState;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -4,24 +4,15 @@
  */
 package org.hypothesis.data.model;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -99,39 +90,25 @@ public final class SlideOrder extends SerializableIdObject {
 	}
 
 	@Transient
-	public final List<Integer> getOrder() {
+	public List<Integer> getOrder() {
 		LinkedList<Integer> list = new LinkedList<>();
 
 		if (data != null) {
-			String[] strings = data.split(",");
-
-			for (String string : strings) {
-				Integer item = Integer.getInteger(string);
-				if (item != null) {
-					list.add(item);
+			Arrays.stream(data.split(",")).map(m -> {
+				try {
+					return (Integer) Integer.parseInt(m);
+				} catch (NumberFormatException ex) {
+					return null;
 				}
-			}
+			}).filter(Objects::nonNull).forEach(list::add);
 		}
 
 		return list;
 	}
 
-	public final void setOrder(List<Integer> list) {
+	public void setOrder(List<Integer> list) {
 		if (list != null) {
-			StringBuilder builder = new StringBuilder();
-			boolean first = true;
-			for (Integer item : list) {
-				if (item != null) {
-					if (first) {
-						first = false;
-					} else {
-						builder.append(",");
-					}
-					builder.append(item);
-				}
-			}
-			data = builder.toString();
-
+			data = list.stream().map(m -> m.toString()).collect(Collectors.joining(","));
 		} else {
 			data = null;
 		}

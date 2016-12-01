@@ -4,9 +4,9 @@
  */
 package org.hypothesis.interfaces;
 
-import java.io.Serializable;
-
 import com.vaadin.ui.Alignment;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -8,14 +8,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -23,7 +22,7 @@ import com.tilioteo.common.Strings;
  *         Hypothesis
  *
  */
-public class DocumentFactory {
+public final class DocumentFactory {
 
 	private DocumentFactory() {
 	}
@@ -33,77 +32,52 @@ public class DocumentFactory {
 		Element root = document.createRoot(DocumentConstants.SLIDE);
 
 		// copy template
-		List<Element> templateElements = template.root().children();
-		for (Element element : templateElements) {
-			root.createChild(element);
-		}
+		template.root().children().forEach(root::createChild);
 
 		// bind slide content
 		Element element = content.root().selectElement(DocumentConstants.BINDINGS);
-		List<Element> elements = element.selectElements(DocumentConstants.BIND);
+		element.selectElements(DocumentConstants.BIND).stream().map(m -> m.firstChild()).filter(Objects::nonNull)
+				.forEach(e -> {
+					String name = e.getName();
+					String id = e.getAttribute(DocumentConstants.ID);
 
-		for (Element bindElement : elements) {
-			Element bindContent = bindElement.firstChild();
+					if (StringUtils.isNotEmpty(name)) {
+						Map<String, String> attributes = null;
+						boolean searchDescendants = false;
 
-			if (bindContent != null) {
-				String name = bindContent.getName();
-				String id = bindContent.getAttribute(DocumentConstants.ID);
-
-				if (!Strings.isNullOrEmpty(name)) {
-					if (!Strings.isNullOrEmpty(id)) {
-						HashMap<String, String> attributes = new HashMap<>();
-						attributes.put(DocumentConstants.ID, id);
-
-						Element origElement = DocumentUtility.findElementByNameAndValue(root, name, attributes, true);
-						if (origElement != null) {
-							mergeElementAttributes(origElement, bindContent);
-							List<Element> bindNodes = bindContent.children();
-
-							for (Element bindNode : bindNodes) {
-								mergeBindingNodes(origElement, bindNode);
-							}
+						if (StringUtils.isNotEmpty(id)) {
+							attributes = new HashMap<>();
+							attributes.put(DocumentConstants.ID, id);
+							searchDescendants = true;
 						}
-					} else {
-						Element origElement = DocumentUtility.findElementByNameAndValue(root, name, null, false);
-						if (origElement != null) {
-							mergeElementAttributes(origElement, bindContent);
-							List<Element> bindNodes = bindContent.children();
 
-							for (Element bindNode : bindNodes) {
-								mergeBindingNodes(origElement, bindNode);
-							}
-						}
+						DocumentUtility.findElementByNameAndValue(root, name, attributes, searchDescendants)
+								.ifPresent(el -> {
+									mergeElementAttributes(el, e);
+									e.children().forEach(i -> mergeBindingNodes(el, i));
+								});
 					}
-				}
-			}
-		}
+				});
 
 		return document;
 	}
 
 	private static void mergeElementAttributes(Element destination, Element source) {
-		Map<String, String> sourceAttributes = source.attributes();
-		for (Entry<String, String> entry : sourceAttributes.entrySet()) {
-			destination.setAttribute(entry.getKey(), entry.getValue());
-		}
+		source.attributes().entrySet().forEach(e -> destination.setAttribute(e.getKey(), e.getValue()));
 	}
 
 	private static void mergeBindingNodes(Element destinationElement, Element sourceSubElement) {
 		String name = sourceSubElement.getName();
 		String id = sourceSubElement.getAttribute(DocumentConstants.ID);
 
-		Element destinationSubElement;
-		if (!Strings.isNullOrEmpty(id)) {
-			HashMap<String, String> attributes = new HashMap<>();
+		Map<String, String> attributes = null;
+		if (StringUtils.isNotEmpty(id)) {
+			attributes = new HashMap<>();
 			attributes.put(DocumentConstants.ID, id);
-			destinationSubElement = DocumentUtility.findElementByNameAndValue(destinationElement, name, attributes,
-					false);
-		} else {
-			destinationSubElement = DocumentUtility.findElementByNameAndValue(destinationElement, name, null, false);
 		}
-		if (destinationSubElement == null) {
-			destinationSubElement = destinationElement.createChild(name);
-		}
+		Element destinationSubElement = DocumentUtility
+				.findElementByNameAndValue(destinationElement, name, attributes, false)
+				.orElse(destinationElement.createChild(name));
 
 		mergeElements(destinationSubElement, sourceSubElement);
 	}
@@ -117,26 +91,25 @@ public class DocumentFactory {
 
 		boolean destSubEmpty = destSubElements.isEmpty();
 
-		List<Element> sourceSubElements = source.children();
-		for (Element sourceSubElement : sourceSubElements) {
-			String name = sourceSubElement.getName();
-			String id = sourceSubElement.getAttribute(DocumentConstants.ID);
+		source.children().forEach(e -> {
+			String name = e.getName();
+			String id = e.getAttribute(DocumentConstants.ID);
 
 			Element destinationSubElement = null;
 
 			if (!destSubEmpty) {
-				if (!Strings.isNullOrEmpty(id)) {
-					HashMap<String, String> attributes = new HashMap<>();
+				Map<String, String> attributes = null;
+				if (StringUtils.isNotEmpty(id)) {
+					attributes = new HashMap<>();
 					attributes.put(DocumentConstants.ID, id);
-					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes,
-							false);
-				} else {
-					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, null, false);
+				}
+
+				destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes, false).orElse(null);
+
+				if (StringUtils.isEmpty(id) && destSubElements.contains(destinationSubElement)) {
 					// if previously created element found then skip to avoid
 					// rewrite
-					if (destSubElements.contains(destinationSubElement)) {
-						destinationSubElement = null;
-					}
+					destinationSubElement = null;
 				}
 			}
 
@@ -144,8 +117,8 @@ public class DocumentFactory {
 				destinationSubElement = destination.createChild(name);
 			}
 
-			mergeElements(destinationSubElement, sourceSubElement);
-		}
+			mergeElements(destinationSubElement, e);
+		});
 	}
 
 	public static Document createEventDataDocument() {

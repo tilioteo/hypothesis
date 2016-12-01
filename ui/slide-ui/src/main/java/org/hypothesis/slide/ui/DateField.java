@@ -4,11 +4,11 @@
  */
 package org.hypothesis.slide.ui;
 
-import java.util.Date;
-
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Field;
 import org.hypothesis.slide.ui.annotations.FieldType;
+
+import java.util.Date;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

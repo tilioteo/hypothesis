@@ -4,33 +4,45 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.Date;
-import java.util.UUID;
-
-import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.UserService;
-import org.hypothesis.event.interfaces.MainUIEvent.GuestAccessRequestedEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.InvalidLoginEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.InvalidUserPermissionEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.UserLoggedOutEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.UserLoginRequestedEvent;
-import org.hypothesis.eventbus.HasMainEventBus;
-import org.hypothesis.eventbus.MainEventBus;
-import org.hypothesis.interfaces.LoginPresenter;
-import org.hypothesis.interfaces.MainPresenter;
-import org.hypothesis.navigator.HypothesisNavigator;
-import org.hypothesis.navigator.HypothesisViewType;
-import org.hypothesis.ui.LoginScreen;
-import org.hypothesis.ui.MainScreen;
-import org.hypothesis.ui.MainUI;
-
-import com.tilioteo.common.Strings;
+import com.vaadin.cdi.CDIView;
+import com.vaadin.cdi.CDIViewProvider;
+import com.vaadin.cdi.UIScoped;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.UI;
+import org.apache.commons.lang3.StringUtils;
+import org.hypothesis.business.SessionManager;
+import org.hypothesis.cdi.Main;
+import org.hypothesis.data.interfaces.UserService;
+import org.hypothesis.data.model.User;
+import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.event.interfaces.MainUIEvent.*;
+import org.hypothesis.interfaces.LoginPresenter;
+import org.hypothesis.interfaces.MainPresenter;
+import org.hypothesis.interfaces.UIPresenter;
+import org.hypothesis.ui.LoginScreen;
+import org.hypothesis.ui.MainScreen;
+import org.hypothesis.ui.view.PublicPacksView;
+import org.hypothesis.ui.view.UserPacksView;
+import org.hypothesis.utility.BeanUtility;
+import org.hypothesis.utility.ViewUtility;
 
-import net.engio.mbassy.listener.Handler;
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.util.AnnotationLiteral;
+import javax.inject.Inject;
+import java.util.Date;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -39,34 +51,38 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class MainUIPresenter extends AbstractUIPresenter implements HasMainEventBus {
+@Main
+@UIScoped
+public class MainUIPresenter extends AbstractUIPresenter implements UIPresenter {
 
-	private final MainUI ui;
+	private UI ui;
+
+	@Inject
+	private CDIViewProvider viewProvider;
+
+	@Inject
+	private LoginPresenter loginPresenter;
+
+	@Inject
+	private MainPresenter mainPresenter;
+
+	@Inject
+	private UserService userService;
+
+	@Inject
+	private Event<MainUIEvent> mainEvent;
+
+	@Inject
+	private BeanManager beanManager;
+
 	private MainScreen mainScreen = null;
 	private LoginScreen loginScreen = null;
-
-	private final MainEventBus bus;
 
 	private String uid;
 	// private String pid = null;
 
-	private final LoginPresenter loginPresenter;
-	private final MainPresenter mainPresenter;
-
-	private UserService userService;
-
-	/**
-	 * Construct with ui
-	 * 
-	 * @param ui
-	 */
-	public MainUIPresenter(MainUI ui) {
-		this.ui = ui;
-
-		bus = MainEventBus.createInstance(this);
-
-		loginPresenter = new LoginPresenterImpl(bus);
-		mainPresenter = new MainPresenterImpl(bus);
+	public MainUIPresenter() {
+		System.out.println("Construct " + getClass().getName());
 	}
 
 	@Override
@@ -76,8 +92,6 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		uid = UUID.randomUUID().toString().replaceAll("-", "");
 		SessionManager.setMainUID(uid);
 
-		userService = UserService.newInstance();
-
 		// pid = request.getParameter("pid");
 
 		updateUIContent();
@@ -86,10 +100,30 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	private MainScreen getMainView() {
 		if (null == mainScreen) {
 			mainScreen = mainPresenter.createScreen();
-			new HypothesisNavigator(bus, mainScreen.getContent());
+			initNavigator(mainScreen);
 		}
 
 		return mainScreen;
+	}
+
+	private void initNavigator(ComponentContainer container) {
+		Navigator navigator = new Navigator(ui, mainScreen.getContent());
+		navigator.addProvider(viewProvider);
+
+		navigator.addViewChangeListener(new ViewChangeListener() {
+
+			@Override
+			public boolean beforeViewChange(final ViewChangeEvent event) {
+				return ViewUtility.isUserViewAllowed(event.getNewView().getClass(), SessionManager.getLoggedUser());
+			}
+
+			@Override
+			public void afterViewChange(final ViewChangeEvent event) {
+				// Appropriate events get fired after the view is changed.
+				mainEvent.fire(new PostViewChangeEvent(event.getViewName()));
+			}
+		});
+
 	}
 
 	private LoginScreen getLoginScreen() {
@@ -116,13 +150,13 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 			String viewName = getViewName();
 
-			if (!Strings.isNullOrEmpty(viewName) && userCanAccessView(user, viewName)) {
+			if (StringUtils.isNotEmpty(viewName) && userCanAccessView(user, viewName)) {
 				ui.getNavigator().navigateTo(viewName);
 			} else {
 				if (!User.GUEST.equals(user)) {
-					ui.getNavigator().navigateTo(HypothesisViewType.PACKS.getViewName());
+					ui.getNavigator().navigateTo(ViewUtility.getViewPathFromCDIAnnotation(UserPacksView.class));
 				} else {
-					ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
+					ui.getNavigator().navigateTo(ViewUtility.getViewPathFromCDIAnnotation(PublicPacksView.class));
 				}
 			}
 		} else {
@@ -131,18 +165,20 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean userCanAccessView(User user, String viewName) {
-		HypothesisViewType viewType = HypothesisViewType.getByViewName(viewName);
-		if (viewType != null) {
-			return viewType.isAllowed(user.getRoles());
-		}
+		Set<Bean<?>> allViews = beanManager.getBeans(View.class, new AnnotationLiteral<Any>() {
+		});
 
-		return false;
+		return allViews.stream()
+				.filter(ViewUtility.filterCDIViewsForMainUI
+						.and(f -> BeanUtility.getAnnotation(f, CDIView.class).value().equals(viewName)))
+				.anyMatch(b -> ViewUtility.isUserViewAllowed((Class<? extends View>) b.getClass(), user));
 	}
 
 	private String getViewName() {
 		String fragment = Page.getCurrent().getUriFragment();
-		if (!Strings.isNullOrEmpty(fragment) && fragment.startsWith("!")) {
+		if (StringUtils.isNotEmpty(fragment) && fragment.startsWith("!")) {
 			fragment = fragment.substring(1);
 			int l = fragment.lastIndexOf('/');
 			if (l > 0) {
@@ -178,8 +214,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void userLoginRequested(final UserLoginRequestedEvent event) {
+	public void userLoginRequested(@Observes final UserLoginRequestedEvent event) {
 		User user = userService.findByUsernamePassword(event.getUserName(), event.getPassword());
 
 		if (user != null) {
@@ -188,10 +223,10 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 				setUser(user);
 				updateUIContent();
 			} else {
-				bus.post(new InvalidUserPermissionEvent());
+				mainEvent.fire(new InvalidUserPermissionEvent());
 			}
 		} else {
-			bus.post(new InvalidLoginEvent());
+			mainEvent.fire(new InvalidLoginEvent());
 		}
 	}
 
@@ -200,8 +235,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void guestAccessRequested(final GuestAccessRequestedEvent event) {
+	public void guestAccessRequested(@Observes final GuestAccessRequestedEvent event) {
 		setUser(User.GUEST);
 
 		updateUIContent();
@@ -212,8 +246,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void userLoggedOut(final UserLoggedOutEvent event) {
+	public void userLoggedOut(@Observes final UserLoggedOutEvent event) {
 		// When the user logs out, current VaadinSession gets closed and the
 		// page gets reloaded on the login screen. Do notice the this doesn't
 		// invalidate the current HttpSession.
@@ -225,7 +258,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	@Override
 	public void close() {
-		MainEventBus.destroyInstance(this);
+		// nop
 	}
 
 	@Override
@@ -234,27 +267,13 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	}
 
 	@Override
-	public void attach() {
-		if (bus != null) {
-			bus.register(this);
-		}
+	public void setUI(UI ui) {
+		this.ui = ui;
 	}
 
-	@Override
-	public void detach() {
-		if (bus != null) {
-			bus.unregister(this);
-		}
-	}
-
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		// nop
-	}
-
-	@Override
-	public MainEventBus getMainEventBus() {
-		return bus;
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
 	}
 
 }

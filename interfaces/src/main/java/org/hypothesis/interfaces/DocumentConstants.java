@@ -132,6 +132,7 @@ public interface DocumentConstants {
 	String FIELD = "Field";
 
 	String EVENT_DATA = "EventData";
+	String SLIDE_OUTPUT = "SlideOutput"; // used?
 	String SOURCES = "Sources";
 	String SOURCE = "Source";
 	String SELECTED = "Selected";
@@ -152,8 +153,13 @@ public interface DocumentConstants {
 	String NODE = "Node";
 	String EVALUATE = "Evaluate";
 
-	String STR_COMMA = ",";
-	String STR_QUOTED_STRING_SPLIT_PATTERN = "['']";
 	String STR_DATE_FORMAT = "yyyy-MM-dd";
+
+	String STR_COMMA = ",";
+	String STR_QUOTE = "'";
+	String STR_DOUBLEQUOTE = "\"";
+	String STR_QUOTED_STRING_SPLIT_PATTERN = "\\s*,\\s*(?=([^']*'[^']*')*[^']*$)"; 
+	// '[^'\\]*(?:\\.[^'\\]*)*'
+	String STR_DOUBLEQUOTED_STRING_SPLIT_PATTERN = "\\s*,\\s*(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 
 }

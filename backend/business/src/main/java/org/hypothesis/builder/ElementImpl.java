@@ -4,16 +4,12 @@
  */
 package org.hypothesis.builder;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -47,15 +43,9 @@ public class ElementImpl implements Element {
 	protected ElementImpl(Element element) {
 		setName(element.getName());
 		this.text = element.getText();
-
-		for (Entry<String, String> entry : element.attributes().entrySet()) {
-			this.attributes.put(entry.getKey(), entry.getValue());
+		element.attributes().entrySet().forEach(e -> attributes.put(e.getKey(), e.getValue()));
+		element.children().forEach(this::createChild);
 		}
-		Iterator<Element> iterator = element.iterator();
-		while (iterator.hasNext()) {
-			createChild((ElementImpl) iterator.next());
-		}
-	}
 
 	@Override
 	public String getName() {
@@ -301,41 +291,26 @@ public class ElementImpl implements Element {
 	@Override
 	public String toString(boolean detailed, int ident) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < ident; ++i) {
-			builder.append("\t");
-		}
+		builder.append(StringUtils.rightPad("", ident, '\t'));
 
-		builder.append("<" + name + ":" + text + "(");
+		builder.append("<" + name + ":" + (text != null ? text : "") + "(");
 
 		if (!attributes.isEmpty()) {
-			String str = "";
-			for (Entry<String, String> entry : attributes.entrySet()) {
-				str += entry.toString() + ",";
+			builder.append(attributes.entrySet().stream().map(e -> String.format("%s=%s", e.getKey(), e.getValue())).collect(Collectors.joining(",")));
 			}
-			builder.append(str.substring(0, str.length() - 1));
-		}
 		builder.append(")[");
 
 		if (!children.isEmpty()) {
-			String str = "";
-
 			if (!detailed) {
-				for (Element element : children) {
-					str += element.getName() + ",";
-				}
-				builder.append(str.substring(0, str.length() - 1));
+				builder.append(children.stream().map(e -> e.getName()).collect(Collectors.joining(",")));
 			} else {
 				builder.append("\n");
-
-				for (Element element : children) {
-					builder.append(element.toString(detailed, ident + 1));
+				builder.append(
+						children.stream().map(e -> e.toString(detailed, ident + 1)).collect(Collectors.joining("\n")));
 					builder.append("\n");
 				}
-			}
 
-			for (int i = 0; i < ident; ++i) {
-				builder.append("\t");
-			}
+			builder.append(StringUtils.rightPad("", ident, '\t'));
 
 		}
 		builder.append("]>");

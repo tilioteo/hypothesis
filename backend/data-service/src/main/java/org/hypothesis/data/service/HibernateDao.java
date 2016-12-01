@@ -4,14 +4,15 @@
  */
 package org.hypothesis.data.service;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.hibernate.Criteria;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hypothesis.context.HibernateUtil;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -62,9 +63,7 @@ public class HibernateDao<T, ID extends Serializable> extends AbstractDao<T, ID>
 	@SuppressWarnings("unchecked")
 	public List<T> findByCriteria(Criterion... criterion) {
 		Criteria crit = getSession().createCriteria(getPersistentClass());
-		for (Criterion c : criterion) {
-			crit.add(c);
-		}
+		Arrays.stream(criterion).forEach(crit::add);
 		return crit.list();
 	}
 

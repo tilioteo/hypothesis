@@ -4,8 +4,6 @@
  */
 package org.hypothesis.builder;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.business.TaskController;
 import org.hypothesis.common.utility.DocumentUtility;
@@ -14,8 +12,10 @@ import org.hypothesis.data.DocumentReader;
 import org.hypothesis.evaluation.Node;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
-import org.hypothesis.interfaces.Evaluable;
 import org.hypothesis.interfaces.Evaluator;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -56,37 +56,19 @@ public class TaskControllerFactoryImpl implements TaskControllerFactory {
 	}
 
 	private void createNodes(Element rootElement, TaskController controller) {
-		List<Element> nodes = DocumentUtility.getNodesElements(rootElement);
-
-		if (nodes != null) {
-			for (Element nodeElement : nodes) {
-				Node node = createNode(nodeElement, controller);
-				if (node != null)
-					controller.addNode(node.getSlideId(), node);
-			}
-		}
+		DocumentUtility.getNodesElements(rootElement).stream().map(m -> createNode(m, controller).orElse(null))
+				.filter(Objects::nonNull).forEach(e -> controller.addNode(e.getSlideId(), e));
 	}
 
-	private Node createNode(Element element, Evaluator evaluator) {
-		Long slideId = DocumentUtility.getSlideId(element);
-		if (null == slideId) {
-			return null;
-		}
-
-		Node node = new Node(evaluator, slideId);
-		Element evaluateElement = DocumentUtility.getEvaluateElement(element);
-
-		if (evaluateElement != null) {
-			List<Element> evaluables = evaluateElement.children();
-
-			for (Element evaluableElement : evaluables) {
-				Evaluable evaluable = EvaluableUtility.createEvaluable(evaluableElement, evaluator);
-				if (evaluable != null) {
-					node.add(evaluable);
-				}
-			}
-		}
-		return node;
+	private Optional<Node> createNode(Element element, Evaluator evaluator) {
+		return Optional.ofNullable(element).map(m -> DocumentUtility.getSlideId(m).orElse(null)).map(m -> {
+			Node node = new Node(evaluator, m);
+			DocumentUtility.getEvaluateElement(element)
+					.ifPresent(e -> e.children().stream()
+							.map(mm -> EvaluableUtility.createEvaluable(mm, evaluator).orElse(null))
+							.filter(Objects::nonNull).forEach(node::add));
+			return node;
+		});
 	}
 
 }

@@ -12,7 +12,10 @@ import com.vaadin.server.VaadinSession;
  *         Hypothesis
  *
  */
-public class SessionUtils {
+public final class SessionUtils {
+
+	private SessionUtils() {
+	}
 
 	public static <T> void setAttribute(Class<T> type, T value) {
 		VaadinSession session = VaadinSession.getCurrent();

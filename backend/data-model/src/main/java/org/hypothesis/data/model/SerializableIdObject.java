@@ -4,9 +4,9 @@
  */
 package org.hypothesis.data.model;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.interfaces.HasId;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

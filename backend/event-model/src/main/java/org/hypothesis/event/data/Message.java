@@ -4,15 +4,15 @@
  */
 package org.hypothesis.event.data;
 
+import elemental.json.Json;
+import elemental.json.JsonObject;
+
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import elemental.json.Json;
-import elemental.json.JsonObject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -204,7 +204,7 @@ public class Message implements Serializable {
 		return json.toJson();
 	}
 
-	public static final Message fromJson(String string) {
+	public static Message fromJson(String string) {
 		JsonObject json = null;
 		try {
 			json = Json.parse(string);

@@ -4,11 +4,10 @@
  */
 package org.hypothesis.ui;
 
-import org.hypothesis.interfaces.LoginPresenter;
-
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
+import org.hypothesis.interfaces.LoginPresenter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -29,20 +28,6 @@ public class LoginScreen extends VerticalLayout {
 		Component loginForm = presenter.buildLoginForm();
 		addComponent(loginForm);
 		setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
-	}
-
-	@Override
-	public void attach() {
-		super.attach();
-
-		presenter.attach();
-	}
-
-	@Override
-	public void detach() {
-		presenter.detach();
-
-		super.detach();
 	}
 
 	public void refresh() {

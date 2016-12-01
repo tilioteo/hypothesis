@@ -1,4 +1,4 @@
-root=<SlideTemplate:null(UID=A79ACF72-629A-41C8-8A08-642BCA76CBC0)[
+root=<SlideTemplate:(UID=A79ACF72-629A-41C8-8A08-642BCA76CBC0)[
 	<Viewport:()[
 		<VerticalLayout:(Id=ct001)[
 			<Properties:()[

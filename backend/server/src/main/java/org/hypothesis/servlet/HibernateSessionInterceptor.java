@@ -4,19 +4,13 @@
  */
 package org.hypothesis.servlet;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import org.apache.log4j.Logger;
 import org.hibernate.StaleObjectStateException;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.context.LogUtil;
+
+import javax.servlet.*;
+import java.io.IOException;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

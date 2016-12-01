@@ -4,10 +4,10 @@
  */
 package org.hypothesis.interfaces;
 
-import java.io.Serializable;
-
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -20,5 +20,9 @@ public interface ComponentWrapper extends Serializable {
 	Component getComponent();
 
 	Alignment getAlignment();
+	
+	default boolean hasComponent() {
+		return getComponent() != null;
+	}
 
 }

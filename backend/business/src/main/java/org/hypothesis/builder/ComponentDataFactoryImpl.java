@@ -4,36 +4,26 @@
  */
 package org.hypothesis.builder;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
-
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractTextField;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.util.ISO9075;
 import org.hypothesis.business.ObjectConstants;
 import org.hypothesis.data.DocumentWriter;
 import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.model.ActionEvent;
-import org.hypothesis.interfaces.Document;
-import org.hypothesis.interfaces.DocumentConstants;
-import org.hypothesis.interfaces.Element;
-import org.hypothesis.interfaces.ExchangeVariable;
-import org.hypothesis.interfaces.SlidePresenter;
-import org.hypothesis.interfaces.Variable;
+import org.hypothesis.interfaces.*;
 import org.hypothesis.slide.ui.ComboBox;
 import org.hypothesis.slide.ui.DateField;
 import org.hypothesis.slide.ui.SelectPanel;
 import org.hypothesis.slide.ui.annotations.FieldType;
-import org.vaadin.special.ui.SelectButton;
 
-import com.tilioteo.common.Strings;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractTextField;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -58,31 +48,28 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		Element element = root.createChild(DocumentConstants.SOURCE);
 		element.setAttribute(DocumentConstants.TYPE, data.getTypeName());
 
-		if (!Strings.isNullOrEmpty(data.getId())) {
+		if (StringUtils.isNotEmpty(data.getId())) {
 			element.setAttribute(DocumentConstants.ID, data.getId());
 		}
 
-		if (!Strings.isNullOrEmpty(data.getEventName())) {
+		if (StringUtils.isNotEmpty(data.getEventName())) {
 			element.setAttribute(DocumentConstants.NAME, data.getEventName());
 		}
 
-		if (!Strings.isNullOrEmpty(data.getSender().getCaption())) {
+		if (StringUtils.isNotEmpty(data.getSender().getCaption())) {
 			element.setText(data.getSender().getCaption());
 		}
 	}
 
 	private void addEventData(Element root, ComponentData data) {
 		// get fields for this class only
-		Field[] fields = data.getClass().getDeclaredFields();
-
-		for (Field field : fields) {
-			if (!Modifier.isStatic(field.getModifiers())) {
-				ElementPath elementPath = field.getAnnotation(ElementPath.class);
-				if (elementPath != null && !Strings.isNullOrEmpty(elementPath.value())) {
-					field.setAccessible(true);
+		List<Field> fields = Arrays.asList(data.getClass().getDeclaredFields());
+		fields.stream().filter(f -> !Modifier.isStatic(f.getModifiers()) && f.isAnnotationPresent(ElementPath.class)
+				&& StringUtils.isNotEmpty(f.getAnnotation(ElementPath.class).value())).forEach(e -> {
+					e.setAccessible(true);
 					try {
-						if (field.get(data) != null) {
-							String value = field.get(data).toString();
+						if (e.get(data) != null) {
+							String value = e.get(data).toString();
 							/*
 							 * if
 							 * (Double.class.isAssignableFrom(field.getType())
@@ -94,11 +81,11 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 							 * doubleValue); } catch(NumberFormatException e) {}
 							 * }
 							 */
-
-							String name = elementPath.value();
+							String name = e.getAnnotation(ElementPath.class).value();
 
 							Element baseElement = ensureSubElement(root, DocumentConstants.SOURCE);
 
+							// FIXME use regexp Pattern and Matcher
 							String[] elementNames = name.split("/");
 							boolean isAttribute = false;
 							String attributeName = null;
@@ -131,16 +118,14 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 							if (!isAttribute) {
 								baseElement.setText(value);
-							} else if (!Strings.isNullOrEmpty(attributeName)) {
+							} else if (StringUtils.isNotEmpty(attributeName)) {
 								baseElement.setAttribute(attributeName, value);
 							}
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-				}
-			}
-		}
+				});
 	}
 
 	private String formatXmlName(String name) {
@@ -175,21 +160,17 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		}
 	}
 
+	// FIXME copy-paste code of addOutputs
 	private void addActionOutputs(Element root, ActionEvent event) {
 		Map<Integer, ExchangeVariable> outputs = event.getAction().getOutputs();
 
 		if (!outputs.isEmpty()) {
 			Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
-			for (ExchangeVariable output : outputs.values()) {
-				String indexString = Integer.toString(output.getIndex());
-				Object value = output.getValue();
-
-				if (value != null) {
-					Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
-					outputValueElement.setAttribute(DocumentConstants.INDEX, indexString);
-					writeOutputValue(outputValueElement, value);
-				}
-			}
+			outputs.entrySet().stream().filter(f -> f.getValue().getValue() != null).forEach(e -> {
+				Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
+				outputValueElement.setAttribute(DocumentConstants.INDEX, Integer.toString(e.getValue().getIndex()));
+				writeOutputValue(outputValueElement, e.getValue().getValue());
+			});
 		}
 	}
 
@@ -210,36 +191,33 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		element.setAttribute(DocumentConstants.TYPE, DocumentConstants.SLIDE);
 		String id = presenter.getSlideId();
 
-		if (!Strings.isNullOrEmpty(id)) {
+		if (StringUtils.isNotEmpty(id)) {
 			element.setAttribute(DocumentConstants.ID, id);
 		}
 
 	}
 
+	// FIXME copy-paste similar code to addVariables
 	private void addFields(Element root, SlidePresenter presenter) {
 		Map<String, org.hypothesis.interfaces.Field> fields = presenter.getFields();
 
 		if (!fields.isEmpty()) {
 			Element element = root.createChild(DocumentConstants.FIELDS);
-
-			for (org.hypothesis.interfaces.Field field : fields.values()) {
-				if (field instanceof AbstractComponent) {
-					writeFieldData(element, (AbstractComponent) field);
-				}
-			}
+			fields.values().stream().filter(f -> f instanceof AbstractComponent)
+					.forEach(e -> writeFieldData(element, (AbstractComponent) e));
 		}
 	}
 
 	private void writeFieldData(Element element, AbstractComponent field) {
 		String fieldType = getFieldType(field);
-		if (!Strings.isNullOrEmpty(fieldType)) {
+		if (StringUtils.isNotEmpty(fieldType)) {
 			Element fieldElement = element.createChild(DocumentConstants.FIELD);
 			fieldElement.setAttribute(DocumentConstants.TYPE, fieldType);
 			fieldElement.setAttribute(DocumentConstants.ID, (String) field.getData());
 
 			Element captionElement = fieldElement.createChild(DocumentConstants.CAPTION);
 			String caption = field.getCaption();
-			if (!Strings.isNullOrEmpty(caption)) {
+			if (StringUtils.isNotEmpty(caption)) {
 				captionElement.setText(caption);
 			}
 
@@ -267,7 +245,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 	// TODO make it better way
 	private void writeValue(Element element, AbstractComponent field) {
-		Element valueElement = element.createChild(DocumentConstants.VALUE);
+		final Element valueElement = element.createChild(DocumentConstants.VALUE);
 
 		if (field instanceof ComboBox) {
 			ComboBox comboBox = (ComboBox) field;
@@ -281,66 +259,59 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 			if (dateField.getValue() != null) {
 				Date date = dateField.getValue();
-				SimpleDateFormat format = new SimpleDateFormat(DocumentConstants.STR_DATE_FORMAT);
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 				valueElement.setText(format.format(date));
 			}
 		} else if (field instanceof SelectPanel) {
 			SelectPanel selectPanel = (SelectPanel) field;
 
-			Collection<SelectButton> selectedButtons = selectPanel.getSelectedButtons();
-			if (!selectedButtons.isEmpty()) {
-				for (SelectButton selected : selectedButtons) {
-					if (null == valueElement) {
-						valueElement = element.createChild(DocumentConstants.VALUE);
-					}
-					valueElement.setAttribute(DocumentConstants.ID,
-							String.format("%d", selectPanel.getChildIndex(selected) + 1));
-					valueElement.setText(selected.getCaption());
-					valueElement = null;
-				}
-			}
+			selectPanel.getSelectedButtons().forEach(e -> {
+				Element currentElement = valueElement != null ? valueElement
+						: element.createChild(DocumentConstants.VALUE);
+				currentElement.setAttribute(DocumentConstants.ID,
+						String.format("%d", selectPanel.getChildIndex(e) + 1));
+				currentElement.setText(e.getCaption());
+			});
 		} else if (field instanceof AbstractTextField) {
 			valueElement.setText(((AbstractTextField) field).getValue());
 		}
 	}
 
+	// FIXME copy-paste similar code to addFields
 	private void addVariables(Element root, SlidePresenter presenter) {
 		Map<String, Variable<?>> variables = presenter.getVariables();
 
 		if (!variables.isEmpty()) {
 			Element element = root.createChild(DocumentConstants.VARIABLES);
-
-			for (Variable<?> variable : variables.values()) {
-				String name = variable.getName();
-				if (!(name.equals(ObjectConstants.COMPONENT_DATA) || name.equals(ObjectConstants.NAVIGATOR)
-						|| name.equals(ObjectConstants.DOCUMENT))) {
-					writeVariableData(element, variable);
-				}
-			}
+			variables.values().stream().filter(f -> {
+				String name = f.getName();
+				return !(name.equals(ObjectConstants.COMPONENT_DATA) || name.equals(ObjectConstants.NAVIGATOR)
+						|| name.equals(ObjectConstants.DOCUMENT));
+			}).forEach(e -> writeVariableData(element, e));
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	// FIXME similar code to writeOutputValue
 	private void writeVariableData(Element element, Variable<?> variable) {
 		Class<?> type = variable.getType();
 		String typeName = DocumentConstants.OBJECT;
-		StringBuilder valueString = new StringBuilder();
+		String valueString = "";
 
 		if (type.equals(Integer.class)) {
 			typeName = DocumentConstants.INTEGER;
-			valueString.append(variable.getStringValue());
+			valueString = variable.getStringValue();
 
 		} else if (type.equals(Double.class)) {
 			typeName = DocumentConstants.FLOAT;
-			valueString.append(variable.getStringValue());
+			valueString = variable.getStringValue();
 
 		} else if (type.equals(Boolean.class)) {
 			typeName = DocumentConstants.BOOLEAN;
-			valueString.append(variable.getStringValue());
+			valueString = variable.getStringValue();
 
 		} else if (type.equals(String.class)) {
 			typeName = DocumentConstants.STRING;
-			valueString.append(variable.getStringValue());
+			valueString = variable.getStringValue();
 
 		} else if (type.equals(Object.class)) {
 			Object value = variable.getValue();
@@ -348,46 +319,22 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			if (value != null && value.getClass() == ArrayList.class) {
 				typeName = DocumentConstants.OBJECT_ARRAY;
 
-				ArrayList<?> array = (ArrayList<?>) value;
-				if (!array.isEmpty()) {
-					Object testItem = null;
-					for (int i = 0; i < array.size(); ++i) {
-						testItem = array.get(i);
-						if (testItem != null) {
-							break;
-						}
-					}
+				List<?> array = (List<?>) value;
+				Object testItem = array.stream().filter(f -> f != null).findFirst().orElseGet(null);
 
-					if (testItem != null) {
-						Class<?> itemType = testItem.getClass();
+				if (testItem != null) {
+					Class<?> itemType = testItem.getClass();
+					valueString = array.stream().map(String::valueOf)
+							.collect(Collectors.joining(DocumentConstants.STR_COMMA));
 
-						if (itemType.equals(Integer.class)) {
-							for (Integer item : (ArrayList<Integer>) value) {
-								if (valueString.length() > 0) {
-									valueString.append(DocumentConstants.STR_COMMA);
-								}
-								valueString.append(item.toString());
-							}
-							typeName = DocumentConstants.INTEGER_ARRAY;
+					if (itemType.equals(Integer.class)) {
+						typeName = DocumentConstants.INTEGER_ARRAY;
 
-						} else if (itemType.equals(Double.class)) {
-							for (Double item : (ArrayList<Double>) value) {
-								if (valueString.length() > 0) {
-									valueString.append(DocumentConstants.STR_COMMA);
-								}
-								valueString.append(item.toString());
-							}
-							typeName = DocumentConstants.FLOAT_ARRAY;
+					} else if (itemType.equals(Double.class)) {
+						typeName = DocumentConstants.FLOAT_ARRAY;
 
-						} else if (itemType.equals(String.class)) {
-							for (String item : (ArrayList<String>) value) {
-								if (valueString.length() > 0) {
-									valueString.append(DocumentConstants.STR_COMMA);
-								}
-								valueString.append(item);
-							}
-							typeName = DocumentConstants.STRING_ARRAY;
-						}
+					} else if (itemType.equals(String.class)) {
+						typeName = DocumentConstants.STRING_ARRAY;
 					}
 				}
 			}
@@ -397,30 +344,25 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			Element variableElement = element.createChild(DocumentConstants.VARIABLE);
 			variableElement.setAttribute(DocumentConstants.ID, variable.getName());
 			variableElement.setAttribute(DocumentConstants.TYPE, typeName);
-			variableElement.setText(valueString.toString());
+			variableElement.setText(valueString);
 		}
 	}
 
+	// FIXME copy-paste code of addActionOutputs
 	private void addOutputs(Element root, SlidePresenter presenter) {
 		Map<Integer, ExchangeVariable> outputs = presenter.getOutputs();
 
 		if (!outputs.isEmpty()) {
 			Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
-
-			for (ExchangeVariable output : outputs.values()) {
-				String indexString = Integer.toString(output.getIndex());
-				Object value = output.getValue();
-
-				if (value != null) {
-					Element outputElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
-					outputElement.setAttribute(DocumentConstants.INDEX, indexString);
-					writeOutputValue(outputElement, value);
-				}
-			}
+			outputs.entrySet().stream().filter(f -> f.getValue().getValue() != null).forEach(e -> {
+				Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
+				outputValueElement.setAttribute(DocumentConstants.INDEX, Integer.toString(e.getValue().getIndex()));
+				writeOutputValue(outputValueElement, e.getValue().getValue());
+			});
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	// FIXME similar code to writeVariableData
 	private void writeOutputValue(Element element, Object value) {
 		Class<?> type;
 		if (value instanceof com.tilioteo.expressions.Variable) {
@@ -434,7 +376,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		if (type == double.class || type == float.class || type.isAssignableFrom(Double.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT);
 			// use Locale.ROOT for locale neutral formating of decimals
-			element.setText(String.format(Locale.ROOT, "%g", (Double) value));
+			element.setText(String.format(Locale.ROOT, "%g", ((Double) value).doubleValue()));
 		} else if (type == byte.class || type == int.class || type == short.class
 				|| type.isAssignableFrom(Integer.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER);
@@ -449,40 +391,23 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.STRING);
 			element.setText((String) value);
 		} else if (type == ArrayList.class) {
-			ArrayList<?> array = (ArrayList<?>) value;
-			if (!array.isEmpty()) {
-				Class<?> itemType = array.get(0).getClass();
-				StringBuilder stringBuilder = new StringBuilder();
+			List<?> array = (List<?>) value;
+			Object testItem = array.stream().filter(f -> f != null).findFirst().orElseGet(null);
+
+			if (testItem != null) {
+				Class<?> itemType = testItem.getClass();
+
+				element.setText(
+						array.stream().map(String::valueOf).collect(Collectors.joining(DocumentConstants.STR_COMMA)));
 
 				if (itemType.equals(Integer.class)) {
-					for (Integer item : (ArrayList<Integer>) value) {
-						if (stringBuilder.length() > 0) {
-							stringBuilder.append(DocumentConstants.STR_COMMA);
-						}
-						stringBuilder.append(item.toString());
-					}
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER_ARRAY);
-					element.setText(stringBuilder.toString());
 
 				} else if (itemType.equals(Double.class)) {
-					for (Double item : (ArrayList<Double>) value) {
-						if (stringBuilder.length() > 0) {
-							stringBuilder.append(DocumentConstants.STR_COMMA);
-						}
-						stringBuilder.append(item.toString());
-					}
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT_ARRAY);
-					element.setText(stringBuilder.toString());
 
 				} else if (itemType.equals(String.class)) {
-					for (String item : (ArrayList<String>) value) {
-						if (stringBuilder.length() > 0) {
-							stringBuilder.append(DocumentConstants.STR_COMMA);
-						}
-						stringBuilder.append(item);
-					}
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.STRING_ARRAY);
-					element.setText(stringBuilder.toString());
 
 				} else {
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.OBJECT_ARRAY);

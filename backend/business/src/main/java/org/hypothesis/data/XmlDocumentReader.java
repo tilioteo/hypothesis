@@ -4,15 +4,18 @@
  */
 package org.hypothesis.data;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
 import org.hypothesis.builder.DocumentImpl;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 import org.hypothesis.utility.XmlUtility;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -55,24 +58,20 @@ public class XmlDocumentReader implements DocumentReader {
 
 				String[] parts = url.getHost().split("\\.");
 
-				StringBuilder namespaceBuilder = new StringBuilder();
+				StringBuilder sb = new StringBuilder();
 
 				for (int i = parts.length - 1; i >= 0; --i) {
-					namespaceBuilder.append(parts[i]);
-					namespaceBuilder.append(Document.NAMESPACE_SEPARATOR);
+					sb.append(parts[i]);
+					sb.append(Document.NAMESPACE_SEPARATOR);
 				}
 
-				parts = url.getPath().split("/");
-				for (int i = 0; i < parts.length; ++i) {
-					if (!parts[i].isEmpty()) {
-						namespaceBuilder.append(parts[i]);
-						namespaceBuilder.append(Document.NAMESPACE_SEPARATOR);
-					}
-				}
+				sb.append(Arrays.stream(url.getPath().split("/")).filter(StringUtils::isNotBlank)
+						.collect(Collectors.joining(Document.NAMESPACE_SEPARATOR)));
 
-				namespaceBuilder.append(element.getName());
+				sb.append(Document.NAMESPACE_SEPARATOR);
+				sb.append(element.getName());
 
-				return namespaceBuilder.toString();
+				return sb.toString();
 
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -87,29 +86,21 @@ public class XmlDocumentReader implements DocumentReader {
 	private void copyElement(org.dom4j.Element xmlElement, Element element) {
 		copyAttributes(xmlElement, element);
 
-		List<org.dom4j.Element> xmlElements = xmlElement.elements();
-
-		for (org.dom4j.Element xmlSourceElement : xmlElements) {
+		((List<org.dom4j.Element>) xmlElement.elements()).forEach(e -> {
 			String text;
-			if (xmlSourceElement.isTextOnly()) {
-				text = xmlSourceElement.getText();
+			if (e.isTextOnly()) {
+				text = e.getText();
 			} else {
-				text = xmlSourceElement.getTextTrim();
+				text = e.getTextTrim();
 			}
 
-			Element destElement = element.createChild(composeName(xmlSourceElement), text);
-
-			copyElement(xmlSourceElement, destElement);
+			copyElement(e, element.createChild(composeName(e), text));
+		});
 		}
-	}
 
 	@SuppressWarnings("unchecked")
 	private void copyAttributes(org.dom4j.Element xmlElement, Element element) {
-		List<Attribute> xmlAttributes = xmlElement.attributes();
-
-		for (Attribute xmlAttribute : xmlAttributes) {
-			element.setAttribute(xmlAttribute.getName(), xmlAttribute.getValue());
+		((List<Attribute>) xmlElement.attributes()).forEach(e -> element.setAttribute(e.getName(), e.getValue()));
 		}
-	}
 
 }

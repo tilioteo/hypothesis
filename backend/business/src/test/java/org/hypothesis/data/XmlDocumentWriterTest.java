@@ -30,9 +30,8 @@ public class XmlDocumentWriterTest {
 
 		String orig = XmlTestUtility.getSampleReaderXmlString();
 		Document doc = reader.readString(orig);
-		String str = writer.writeString(doc);
-
 		String txt = XmlTestUtility.getSampleWriterString();
+		String str = writer.writeString(doc);
 
 		/*
 		//@formatter:off

@@ -4,11 +4,11 @@
  */
 package org.hypothesis.builder;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.ui.SlideContainer;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

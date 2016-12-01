@@ -5,7 +5,8 @@
 package org.hypothesis.event.model;
 
 import java.util.HashMap;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -13,11 +14,11 @@ import java.util.Set;
  *         Hypothesis
  *
  */
-public class ProcessEventTypes {
+public final class ProcessEventTypes {
 
 	private static long nextId = 0;
 
-	private static final HashMap<String, ProcessEventType> events = new HashMap<>();
+	private static final Map<String, ProcessEventType> events = new HashMap<>();
 
 	public static final String Null = null;// "";
 
@@ -66,6 +67,9 @@ public class ProcessEventTypes {
 	public static final String SlideShow = "SLIDE_SHOW";
 	public static final String ShortcutKey = "SHORTCUT_KEY";
 	public static final String Message = "MESSAGE";
+
+	private ProcessEventTypes() {
+	}
 
 	static {
 		registerEvent(StartTest); // 1
@@ -136,13 +140,11 @@ public class ProcessEventTypes {
 		}
 	}
 
-	public static void registerPluginEvents(Set<String> names) {
+	public static void registerPluginEvents(List<String> names) {
 		// increase next event id to begin in thousands
 		nextId = (Math.round(Math.floor(nextId / 1000)) + 1) * 1000 - 1;
 
-		for (String name : names) {
-			registerEvent(name);
-		}
+		names.forEach(ProcessEventTypes::registerEvent);
 	}
 
 }

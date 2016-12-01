@@ -4,25 +4,13 @@
  */
 package org.hypothesis.data.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -105,11 +93,11 @@ public final class Group extends SerializableIdObject {
 		this.users = set;
 	}
 
-	public final void addUser(User user) {
+	public void addUser(User user) {
 		getUsers().add(user);
 	}
 
-	public final void removeUser(User user) {
+	public void removeUser(User user) {
 		getUsers().remove(user);
 	}
 

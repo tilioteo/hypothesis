@@ -35,7 +35,8 @@
  */
 package org.hypothesis.servlet;
 
-import java.io.IOException;
+import org.apache.log4j.Logger;
+import org.hypothesis.servlet.jnlp.*;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -43,15 +44,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.hypothesis.servlet.jnlp.DownloadRequest;
-import org.hypothesis.servlet.jnlp.DownloadResponse;
-import org.hypothesis.servlet.jnlp.ErrorResponseException;
-import org.hypothesis.servlet.jnlp.JarDiffHandler;
-import org.hypothesis.servlet.jnlp.JnlpFileHandler;
-import org.hypothesis.servlet.jnlp.JnlpResource;
-import org.hypothesis.servlet.jnlp.PathRemapper;
+import java.io.IOException;
 
 /**
  * This Servlet class is an implementation of JNLP Specification's Download

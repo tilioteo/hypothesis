@@ -4,20 +4,14 @@
  */
 package org.hypothesis.slide.client.ui;
 
-import java.util.Date;
-
-import org.vaadin.special.client.Timer.StartEvent;
-import org.vaadin.special.client.Timer.StartEventHandler;
-import org.vaadin.special.client.Timer.StopEvent;
-import org.vaadin.special.client.Timer.StopEventHandler;
-import org.vaadin.special.client.Timer.UpdateEvent;
-import org.vaadin.special.client.Timer.UpdateEventHandler;
-import org.vaadin.special.client.ui.VTimer;
-import org.vaadin.special.client.ui.timer.TimerConnector;
-
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Label;
 import com.vaadin.shared.Connector;
+import org.vaadin.special.client.Timer.*;
+import org.vaadin.special.client.ui.VTimer;
+import org.vaadin.special.client.ui.timer.TimerConnector;
+
+import java.util.Date;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

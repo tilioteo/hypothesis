@@ -4,10 +4,7 @@
  */
 package org.hypothesis.business;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import com.vaadin.ui.Component;
 import org.apache.log4j.Logger;
 import org.hypothesis.builder.ComponentDataBuilder;
 import org.hypothesis.builder.SlideBuilder;
@@ -24,7 +21,8 @@ import org.hypothesis.event.model.ComponentEvent;
 import org.hypothesis.interfaces.ExchangeVariable;
 import org.hypothesis.ui.SlideContainer;
 
-import com.vaadin.ui.Component;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -106,24 +104,17 @@ public class SlideManager extends ListManager<Task, Slide> {
 	private void saveOutputValuesForNext() {
 		nextInputValues.clear();
 
-		Map<Integer, ExchangeVariable> map = container.getPresenter().getOutputs();
-		for (Entry<Integer, ExchangeVariable> entry : map.entrySet()) {
-			ExchangeVariable outputValueExpression = entry.getValue();
-			Object value = outputValueExpression.getValue();
-			if (value != null) {
-				nextInputValues.put(entry.getKey(), value);
-			}
-		}
+		container.getPresenter().getOutputs().entrySet().stream().filter(f -> f.getValue().getValue() != null)
+				.forEach(e -> nextInputValues.put(e.getKey(), e));
 	}
 
 	private void setInputValues() {
-		Map<Integer, ExchangeVariable> map = container.getPresenter().getInputs();
-		for (ExchangeVariable inputValueExpression : map.values()) {
-			if (inputValueExpression != null && inputValueExpression instanceof IndexedExpression) {
-				IndexedExpression inputExpression = (IndexedExpression) inputValueExpression;
-				if (inputExpression.getExpression() != null) {
-					int index = inputExpression.getIndex();
-					String name = inputExpression.getExpression().getSimpleVariableName();
+		container.getPresenter().getInputs().values().stream()
+				.filter(f -> f != null && f instanceof IndexedExpression
+						&& ((IndexedExpression) f).getExpression() != null)
+				.map(m -> (IndexedExpression) m).forEach(e -> {
+					int index = e.getIndex();
+					String name = e.getExpression().getSimpleVariableName();
 					Object value = nextInputValues.get(index);
 					if (name != null && value != null) {
 						org.hypothesis.interfaces.Variable<?> variable = container.getPresenter().getVariables()
@@ -136,9 +127,7 @@ public class SlideManager extends ListManager<Task, Slide> {
 							container.getPresenter().getVariables().put(name, variable);
 						}
 					}
-				}
-			}
-		}
+				});
 	}
 
 	/**

@@ -4,16 +4,16 @@
  */
 package org.hypothesis.builder;
 
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-
+import com.vaadin.ui.Button;
 import org.hypothesis.business.ComponentDataPojoGenerator;
 import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.data.ComponentDataConstants;
 import org.hypothesis.utility.ComponentDataUtility;
 
-import com.vaadin.ui.Button;
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -21,11 +21,14 @@ import com.vaadin.ui.Button;
  *         Hypothesis
  *
  */
-public class ComponentDataTestUtility {
+public final class ComponentDataTestUtility {
+
+	private ComponentDataTestUtility() {
+	}
 
 	public static ComponentData createTestComponentData(String id, String typeName, String eventName) {
-		HashMap<String, Class<?>> properties = new HashMap<>();
-		HashMap<String, Annotation> annotations = new HashMap<>();
+		Map<String, Class<?>> properties = new HashMap<>();
+		Map<String, Annotation> annotations = new HashMap<>();
 
 		properties.put("stringValue", String.class);
 		properties.put("integerValue", Integer.class);

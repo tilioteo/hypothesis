@@ -4,11 +4,10 @@
  */
 package org.hypothesis.server;
 
-import java.util.Locale;
+import org.hypothesis.resource.context.MessageSource;
+import org.hypothesis.resource.context.support.ReloadableResourceBundleMessageSource;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.MessageSource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import java.util.Locale;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -16,17 +15,21 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
  *         Hypothesis
  *
  */
-public class Messages {
+public final class Messages {
 
 	private static MessageSource messageSource = null;
 	private static Locale locale = Locale.ENGLISH;
 
-	public static void initMessageSource(ApplicationContext applicationContext) {
-		messageSource = applicationContext.getBean(ReloadableResourceBundleMessageSource.class);
+	private Messages() {
 	}
 
-	public static void initMessageSource(ApplicationContext applicationContext, Locale locale) {
-		initMessageSource(applicationContext);
+	private static void initMessageSource() {
+		messageSource = new ReloadableResourceBundleMessageSource();
+		((ReloadableResourceBundleMessageSource) messageSource).setBasename("classpath:org/hypothesis/server/messages");
+	}
+
+	public static void initMessageSource(Locale locale) {
+		initMessageSource();
 		setLocale(locale);
 	}
 

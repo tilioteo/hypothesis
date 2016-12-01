@@ -4,18 +4,24 @@
  */
 package org.hypothesis.ui;
 
-import org.hypothesis.interfaces.Command;
-import org.vaadin.jouni.animator.AnimatorProxy;
-import org.vaadin.jouni.animator.AnimatorProxy.AnimationEvent;
-import org.vaadin.jouni.animator.shared.AnimType;
-
 import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
+import com.vaadin.cdi.CDIUI;
+import com.vaadin.cdi.URLMapping;
 import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
+import org.hypothesis.cdi.Process;
+import org.hypothesis.interfaces.Command;
+import org.hypothesis.interfaces.Detachable;
+import org.hypothesis.interfaces.UIPresenter;
+import org.vaadin.jouni.animator.AnimatorProxy;
+import org.vaadin.jouni.animator.shared.AnimType;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -27,11 +33,38 @@ import com.vaadin.ui.CssLayout;
 @Theme("hypothesis")
 @PreserveOnRefresh
 @Push(value = PushMode.MANUAL)
+@CDIUI("process")
+@URLMapping("process")
 public class ProcessUI extends HypothesisUI {
 
 	private boolean requestClose = false;
 
 	private final CssLayout clearLayout = new CssLayout();
+
+	@Inject
+	@Process
+	private UIPresenter presenter;
+
+	public ProcessUI() {
+		System.out.println("Construct ProcessUI");
+	}
+
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
+
+		setPresenter(presenter);
+		presenter.setUI(this);
+	}
+
+	@Override
+	public void detach() {
+		if (presenter instanceof Detachable) {
+			((Detachable) presenter).detach();
+		}
+
+		super.detach();
+	}
 
 	public void showErrorDialog(ErrorDialog dialog) {
 		dialog.show(this);
@@ -47,13 +80,10 @@ public class ProcessUI extends HypothesisUI {
 		Component content = getContent();
 		if (animate && content instanceof ComponentContainer) {
 			AnimatorProxy animator = new AnimatorProxy();
-			animator.addListener(new AnimatorProxy.AnimationListener() {
-				@Override
-				public void onAnimation(AnimationEvent event) {
-					setContent(clearLayout);
-					Command.Executor.execute(nextCommand);
-				}
-			});
+			animator.addListener((AnimatorProxy.AnimationListener) e -> {
+                setContent(clearLayout);
+                Command.Executor.execute(nextCommand);
+            });
 			((ComponentContainer) content).addComponent(animator);
 			animator.animate(content, AnimType.FADE_OUT).setDuration(300).setDelay(0);
 		} else {

@@ -4,8 +4,6 @@
  */
 package org.hypothesis.business;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.builder.TaskBuilder;
 import org.hypothesis.data.DocumentReader;
@@ -14,6 +12,8 @@ import org.hypothesis.data.model.Branch;
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.Task;
 import org.hypothesis.interfaces.ExchangeVariable;
+
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

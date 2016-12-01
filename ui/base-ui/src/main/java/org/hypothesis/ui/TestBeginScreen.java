@@ -4,23 +4,16 @@
  */
 package org.hypothesis.ui;
 
-import org.vaadin.button.ui.FullscreenButton;
-import org.vaadin.special.shared.ui.timer.TimerState.Direction;
-import org.vaadin.special.ui.Timer.StopEvent;
-
+import com.vaadin.ui.*;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.themes.ValoTheme;
 import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.ProcessView;
 import org.hypothesis.slide.ui.Timer;
 import org.hypothesis.slide.ui.TimerLabel;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import org.vaadin.button.ui.FullscreenButton;
+import org.vaadin.special.shared.ui.timer.TimerState.Direction;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -122,12 +115,7 @@ public class TestBeginScreen extends VerticalLayout implements ProcessView, Clic
 		Timer timer = new Timer();
 		timer.setDirection(Direction.DOWN);
 
-		timer.addStopListener(new Timer.StopListener() {
-			@Override
-			public void stop(StopEvent event) {
-				nextCommand();
-			}
-		});
+		timer.addStopListener(e -> nextCommand());
 
 		TimerLabel timerLabel = new TimerLabel();
 		timerLabel.setTimer(timer);

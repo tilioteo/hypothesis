@@ -4,24 +4,21 @@
  */
 package org.hypothesis.utility;
 
+import org.apache.commons.lang3.StringUtils;
+import org.dom4j.*;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
+
 import java.io.File;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.DocumentFactory;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.XPath;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-
-import com.tilioteo.common.Strings;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -43,10 +40,7 @@ public class XmlUtility implements Serializable {
 	@SuppressWarnings("unchecked")
 	public static void clearAllChilds(Node parent) {
 		if (parent != null) {
-			for (Iterator<Node> i = parent.selectNodes("").iterator(); i.hasNext();) {
-				Node node = i.next();
-				node.detach();
-			}
+			((List<Node>) parent.selectNodes("")).forEach(e -> e.detach());
 		}
 	}
 
@@ -82,69 +76,49 @@ public class XmlUtility implements Serializable {
 	 * @param name
 	 * @return
 	 */
-	public static Attribute findAttributeByName(Node node, String name) {
-		if (node != null && name.length() > 0) {
-			if (node instanceof Element) {
-				Element el = (Element) node;
-				return el.attribute(name);
-			}
+	public static Optional<Attribute> findAttributeByName(Node node, String name) {
+		if (node != null && name.length() > 0 && node instanceof Element) {
+			Element el = (Element) node;
+			return Optional.of(el.attribute(name));
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Element findElementByNameAndValue(boolean descendant, Element element, String name, String prefix,
-			String uri, String attributeName, String attributeValue) {
-		Element result = null;
+	public static Optional<Element> findElementByNameAndValue(boolean descendant, Element element, String name,
+			String prefix, String uri, final String attributeName, final String attributeValue) {
 		if (element != null) {
-			HashMap<String, String> namespaces = new HashMap<>();
-			if (!Strings.isNullOrEmpty(prefix) && !Strings.isNullOrEmpty(uri)) {
+			Map<String, String> namespaces = new HashMap<>();
+			if (StringUtils.isNotEmpty(prefix) && StringUtils.isNotEmpty(uri)) {
 				name = String.format("%s:%s", prefix, name);
 				namespaces.put(prefix, uri);
 			}
 
-			XPath path = element.createXPath(descendant ? String.format(DESCENDANT_FMT, name) : name);
+			XPath path = element.createXPath(descendant ? String.format(XmlUtility.DESCENDANT_FMT, name) : name);
 			if (namespaces.size() > 0) {
 				path.setNamespaceURIs(namespaces);
 			}
 
-			List<Node> nodes = path.selectNodes(element);
-			for (Iterator<Node> i = nodes.iterator(); i.hasNext();) {
-				Node node = i.next();
+			Stream<Element> stream = path.selectNodes(element).stream().filter(f -> f instanceof Element).map(m -> m);
 
-				if (node instanceof Element) {
-					Element el = (Element) node;
-
-					if (attributeName != null) {
-						Attribute attr = el.attribute(attributeName);
-						if (attr != null && attr.getValue().equals(attributeValue)) {
-							result = el;
-							break;
-						}
-					} else {
-						result = el;
-						break;
-					}
-				}
-			}
+			return attributeName != null ? stream.filter(f -> {
+				Attribute attr = f.attribute(attributeName);
+				return attr != null && attr.getValue().equals(attributeValue);
+			}).findFirst() : stream.findFirst();
 		}
 
-		return result;
+		return Optional.empty();
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Node findFirstNodeByName(Node parent, String name) {
-		if (parent != null && name.length() > 0) {
-			for (Iterator<Node> i = parent.selectNodes(String.format(DESCENDANT_FMT, name)).iterator(); i.hasNext();) {
-				Node node = i.next();
-
-				if (node.getName().equals(name))
-					return node;
-			}
+	public static Optional<Node> findFirstNodeByName(Node parent, String name) {
+		if (parent != null && StringUtils.isNotBlank(name)) {
+			return ((List<Node>) parent.selectNodes(String.format(XmlUtility.DESCENDANT_FMT, name))).stream()
+					.filter(f -> f.getName().equals(name)).findFirst();
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -153,10 +127,10 @@ public class XmlUtility implements Serializable {
 			return parent.selectNodes("./*[starts-with(name(), '" + startName + "')]");
 		}
 
-		return null;
+		return Collections.emptyList();
 	}
 
-	public static Document readFile(final File file) {
+	public static Document readFile(File file) {
 		if (file.exists()) {
 			try {
 				SAXReader reader = new SAXReader();
@@ -170,7 +144,7 @@ public class XmlUtility implements Serializable {
 		return null;
 	}
 
-	public static Document readString(final String xmlString) {
+	public static Document readString(String xmlString) {
 		if (xmlString != null && xmlString.length() > 0) {
 			try {
 				StringReader stringReader = new StringReader(xmlString);
@@ -187,7 +161,7 @@ public class XmlUtility implements Serializable {
 		return null;
 	}
 
-	public static String writeString(final Document doc) {
+	public static String writeString(Document doc) {
 		String string = null;
 		if (doc != null) {
 			try {

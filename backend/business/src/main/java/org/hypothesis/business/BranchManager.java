@@ -4,17 +4,17 @@
  */
 package org.hypothesis.business;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.builder.BranchBuilder;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.BranchMap;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.interfaces.ExchangeVariable;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -68,9 +68,7 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	 *            map of indexed output variables
 	 */
 	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
-		if (controller != null) {
-			controller.addSlideOutputs(slide, outputValues);
-		}
+		Optional.ofNullable(controller).ifPresent(e -> e.addSlideOutputs(slide, outputValues));
 	}
 
 	/**
@@ -80,27 +78,16 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	 * @param branchMap
 	 * @return the next branch or null if map is empty or nothing found.
 	 */
-	public Branch getNextBranch(BranchMap branchMap) {
-		if (branchMap != null && controller != null) {
-			String key = controller.getNextBranchKey();
-
-			Branch branch = branchMap.get(key);
-
-			if (branch != null) {
-				find(branch);
-				return current();
-			}
-		}
-
-		return null;
+	public Branch getNextBranch(Map<String, Branch> branchMap) {
+		return Optional.ofNullable(branchMap).filter(f -> controller != null).map(m -> controller.getNextBranchKey())
+				.map(branchMap::get).map(m -> {
+					find(m);
+					return current();
+				}).orElse(null);
 	}
 
 	public String getSerializedData() {
-		if (controller != null) {
-			return controller.getNextKey();
-		}
-
-		return null;
+		return Optional.ofNullable(controller).map(m -> m.getNextKey()).orElse(null);
 	}
 
 }

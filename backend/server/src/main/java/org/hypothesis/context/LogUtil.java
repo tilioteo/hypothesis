@@ -4,10 +4,10 @@
  */
 package org.hypothesis.context;
 
-import javax.servlet.ServletContext;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
+
+import javax.servlet.ServletContext;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -15,13 +15,16 @@ import org.apache.log4j.xml.DOMConfigurator;
  *         Hypothesis
  *
  */
-public class LogUtil {
+public final class LogUtil {
 
 	public static final String CONTEXT_PARAM_LOG4J_CONFIG_LOCATION = "log4jConfigLocation";
 
 	private static final Logger log = Logger.getLogger(LogUtil.class);
 
 	private static boolean initialized = false;
+
+	private LogUtil() {
+	}
 
 	public static void initLogging(ServletContext servletContext) {
 		if (!initialized) {

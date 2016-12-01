@@ -4,15 +4,10 @@
  */
 package org.hypothesis.data;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 import org.hypothesis.utility.XmlUtility;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -20,7 +15,7 @@ import com.tilioteo.common.Strings;
  *         Hypothesis
  *
  *         Writer implementation for XML structured data
-*/
+ */
 @SuppressWarnings("serial")
 public class XmlDocumentWriter implements DocumentWriter {
 
@@ -41,23 +36,17 @@ public class XmlDocumentWriter implements DocumentWriter {
 	private void copyElement(Element element, org.dom4j.Element xmlElement) {
 		copyAttributes(element, xmlElement);
 
-		List<Element> elements = element.children();
-
-		for (Element sourceElement : elements) {
-			org.dom4j.Element destXmlElement = xmlElement.addElement(sourceElement.getName());
-			if (!Strings.isNullOrEmpty(sourceElement.getText())) {
-				destXmlElement.addText(sourceElement.getText());
+		element.children().forEach(e -> {
+			org.dom4j.Element destXmlElement = xmlElement.addElement(e.getName());
+			if (StringUtils.isNotEmpty(e.getText())) {
+				destXmlElement.addText(e.getText());
 			}
-			copyElement(sourceElement, destXmlElement);
+			copyElement(e, destXmlElement);
+		});
 		}
-	}
 
 	private void copyAttributes(Element element, org.dom4j.Element xmlElement) {
-		Map<String, String> attributes = element.attributes();
-
-		for (Entry<String, String> entry : attributes.entrySet()) {
-			xmlElement.addAttribute(entry.getKey(), entry.getValue());
+		element.attributes().entrySet().forEach(e -> xmlElement.addAttribute(e.getKey(), e.getValue()));
 		}
-	}
 
 }

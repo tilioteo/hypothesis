@@ -4,18 +4,17 @@
  */
 package org.hypothesis.business;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-
 import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.utility.ReflectionUtility;
 import org.junit.Test;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -32,8 +31,8 @@ public class ComponentDataPojoGeneratorTest {
 	 */
 	@Test
 	public void testGenerate() {
-		HashMap<String, Class<?>> properties = new HashMap<>();
-		HashMap<String, Annotation> annotations = new HashMap<>();
+		Map<String, Class<?>> properties = new HashMap<>();
+		Map<String, Annotation> annotations = new HashMap<>();
 
 		properties.put("stringValue", String.class);
 		properties.put("integerValue", Integer.class);

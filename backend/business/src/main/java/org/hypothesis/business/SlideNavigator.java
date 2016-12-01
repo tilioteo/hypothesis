@@ -4,12 +4,12 @@
  */
 package org.hypothesis.business;
 
-import java.io.Serializable;
-
 import org.hypothesis.event.data.Message;
 import org.hypothesis.event.model.FinishSlideEvent;
 import org.hypothesis.event.model.FinishSlideEvent.Direction;
 import org.hypothesis.presenter.SlideContainerPresenter;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -20,6 +20,7 @@ import org.hypothesis.presenter.SlideContainerPresenter;
 @SuppressWarnings("serial")
 public class SlideNavigator implements Serializable {
 
+	// TODO inject
 	private SlideContainerPresenter presenter;
 
 	/**

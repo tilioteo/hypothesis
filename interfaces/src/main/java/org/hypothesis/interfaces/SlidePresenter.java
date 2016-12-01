@@ -4,13 +4,13 @@
  */
 package org.hypothesis.interfaces;
 
-import java.util.Map;
-
 import com.vaadin.server.Extension;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.UI;
+
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

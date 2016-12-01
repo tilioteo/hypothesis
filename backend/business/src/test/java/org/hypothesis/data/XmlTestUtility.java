@@ -3,17 +3,20 @@
  */
 package org.hypothesis.data;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.dom4j.Document;
 import org.hypothesis.utility.XmlUtility;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * @author morongk
  *
  */
-public class XmlTestUtility {
+public final class XmlTestUtility {
+
+	private XmlTestUtility() {
+	}
 	
 	public static String getSampleReaderXmlString() {
 		try {

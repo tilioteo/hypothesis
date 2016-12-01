@@ -4,12 +4,12 @@
  */
 package org.hypothesis.event.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
+import org.hypothesis.interfaces.MessageEventListener;
 
 import javax.swing.event.EventListenerList;
-
-import org.hypothesis.interfaces.MessageEventListener;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -20,7 +20,7 @@ import org.hypothesis.interfaces.MessageEventListener;
 @SuppressWarnings("serial")
 public class MessageEventManager implements Serializable {
 
-	private final HashMap<String, EventListenerList> listenersMap = new HashMap<>();
+	private final Map<String, EventListenerList> listenersMap = new HashMap<>();
 	private boolean enabled = false;
 
 	public final void addListener(String uid, MessageEventListener eventListener) {

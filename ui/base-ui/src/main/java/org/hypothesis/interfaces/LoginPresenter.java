@@ -4,9 +4,8 @@
  */
 package org.hypothesis.interfaces;
 
-import org.hypothesis.ui.LoginScreen;
-
 import com.vaadin.ui.Component;
+import org.hypothesis.ui.LoginScreen;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

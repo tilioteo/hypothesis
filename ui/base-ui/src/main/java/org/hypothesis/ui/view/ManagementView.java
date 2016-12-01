@@ -4,12 +4,11 @@
  */
 package org.hypothesis.ui.view;
 
-import org.hypothesis.interfaces.ManagementPresenter;
-
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import org.hypothesis.interfaces.ManagementPresenter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -18,21 +17,29 @@ import com.vaadin.ui.VerticalLayout;
  *
  */
 @SuppressWarnings({ "serial" })
-public class ManagementView extends VerticalLayout implements View {
+public abstract class ManagementView extends VerticalLayout implements View {
 
-	private final ManagementPresenter presenter;
+	private ManagementPresenter presenter;
 
-	public ManagementView(ManagementPresenter presenter) {
-		this.presenter = presenter;
-
+	public ManagementView() {
 		setSizeFull();
 		setMargin(true);
 		setSpacing(true);
+	}
+
+	private void buildContent() {
+		removeAllComponents();
 
 		addComponent(presenter.buildHeader());
 		Table table = presenter.buildTable();
 		addComponent(table);
 		setExpandRatio(table, 1);
+	}
+
+	protected void setPresenter(ManagementPresenter presenter) {
+		this.presenter = presenter;
+
+		buildContent();
 	}
 
 	@Override

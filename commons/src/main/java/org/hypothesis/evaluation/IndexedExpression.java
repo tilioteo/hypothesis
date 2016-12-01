@@ -4,9 +4,9 @@
  */
 package org.hypothesis.evaluation;
 
-import java.util.Map;
-
 import org.hypothesis.interfaces.ExchangeVariable;
+
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

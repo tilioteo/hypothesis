@@ -4,9 +4,9 @@
  */
 package org.hypothesis.data.service;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.interfaces.GenericDao;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

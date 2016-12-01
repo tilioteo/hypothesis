@@ -10,17 +10,28 @@
 	<parent>
 		<groupId>org.hypothesis</groupId>
 		<artifactId>hypothesis-backend</artifactId>
-		<version>${project.version}</version>
+		<version>${hypothesis.version}</version>
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<version>1.0.0.Final</version>
 		</dependency>
 
 		<dependency>
@@ -29,13 +40,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>resource</artifactId>
+			<version>${resource.version}</version>
 		</dependency>
 
 		<dependency>
@@ -46,6 +53,21 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-cdi</artifactId>
 		</dependency>
 
 		<dependency>

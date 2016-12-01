@@ -4,11 +4,11 @@
  */
 package org.hypothesis.builder;
 
-import java.io.Serializable;
-
 import org.hypothesis.business.TaskController;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.model.Task;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -17,7 +17,7 @@ import org.hypothesis.data.model.Task;
  *
  */
 @SuppressWarnings("serial")
-public class TaskBuilder implements Serializable {
+public final class TaskBuilder implements Serializable {
 
 	private TaskBuilder() {
 	}
@@ -37,9 +37,7 @@ public class TaskBuilder implements Serializable {
 		TaskControllerFactory factory = new TaskControllerFactoryImpl();
 
 		if (entity != null && reader != null) {
-			TaskController controller = factory.buildTaskController(entity.getData(), reader);
-
-			return controller;
+			return factory.buildTaskController(entity.getData(), reader);
 		}
 
 		return null;

@@ -4,16 +4,7 @@
  */
 package org.hypothesis.extension;
 
-import java.io.File;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -21,10 +12,13 @@ import org.hypothesis.common.ValidationSets;
 import org.hypothesis.event.model.ProcessEventTypes;
 import org.hypothesis.interfaces.Plugin;
 import org.hypothesis.interfaces.SlideComponentPlugin;
-import org.hypothesis.interfaces.SlideComponentPlugin.ValidParentGroup;
 import org.hypothesis.utility.XmlUtility;
 
-import com.tilioteo.common.Strings;
+import java.io.File;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -41,10 +35,10 @@ public class PluginManager implements Serializable {
 
 	private static PluginManager instance = null;
 
-	private HashSet<SlideComponentPlugin> componentPlugins = new HashSet<>();
-	private HashMap<String, SlideComponentPlugin> namespacePluginMap = new HashMap<>();
-	private HashMap<String, Set<String>> namespaceElementMap = new HashMap<>();
-	private HashSet<Class<? extends Plugin>> registeredClasses = new HashSet<>();
+	private Set<SlideComponentPlugin> componentPlugins = new HashSet<>();
+	private Map<String, SlideComponentPlugin> namespacePluginMap = new HashMap<>();
+	private Map<String, List<String>> namespaceElementMap = new HashMap<>();
+	private Set<Class<? extends Plugin>> registeredClasses = new HashSet<>();
 
 	protected PluginManager() {
 	}
@@ -64,6 +58,7 @@ public class PluginManager implements Serializable {
 
 	/**
 	 * Read xml configuration and initialize plugins
+	 * 
 	 * @param file
 	 */
 	public void initializeFromFile(File file) {
@@ -82,11 +77,7 @@ public class PluginManager implements Serializable {
 	private void initializeFromDocument(Document document) {
 		Element root = document.getRootElement();
 		if ("hypothesis-plugin-configuration".equals(root.getName())) {
-			List<Element> plugins = getPluginElements(root);
-
-			for (Element plugin : plugins) {
-				registerPluginFromElement(plugin);
-			}
+			getPluginElements(root).forEach(this::registerPluginFromElement);
 		} else {
 			log.error("Not valid plugin configuration file.");
 		}
@@ -101,7 +92,7 @@ public class PluginManager implements Serializable {
 		Element classElement = getClassElement(element);
 		if (classElement != null) {
 			String className = classElement.getTextTrim();
-			if (!Strings.isNullOrEmpty(className)) {
+			if (StringUtils.isNotEmpty(className)) {
 				registerPluginClassName(className);
 			}
 		}
@@ -167,20 +158,17 @@ public class PluginManager implements Serializable {
 				namespacePluginMap.put(namespace, plugin);
 
 				if (namespaceElementMap.containsKey(namespace)) {
-					Set<String> elements = namespaceElementMap.get(namespace);
+					List<String> elements = namespaceElementMap.get(namespace);
 					elements.addAll(plugin.getElements());
 				} else {
 					namespaceElementMap.put(namespace, plugin.getElements());
 				}
 
-				Map<String, Set<ValidParentGroup>> elementParentGroups = plugin.getElementParentGroups();
-				for (String elementName : elementParentGroups.keySet()) {
-					String fullElementName = namespace + org.hypothesis.interfaces.Document.NAMESPACE_SEPARATOR
-							+ elementName;
-					Set<ValidParentGroup> parentGroups = elementParentGroups.get(elementName);
-
-					for (ValidParentGroup parentGroup : parentGroups) {
-						switch (parentGroup) {
+				plugin.getElementParentGroups().entrySet().forEach(e -> {
+					final String fullElementName = namespace + org.hypothesis.interfaces.Document.NAMESPACE_SEPARATOR
+							+ e.getKey();
+					e.getValue().forEach(i -> {
+						switch (i) {
 						case CONTAINER:
 							ValidationSets.VALID_CONTAINER_CHILDREN.add(fullElementName);
 							break;
@@ -190,9 +178,11 @@ public class PluginManager implements Serializable {
 						case VIEWPORT:
 							ValidationSets.VALID_VIEWPORT_CHILDREN.add(fullElementName);
 							break;
+						default:
+							break;
 						}
-					}
-				}
+					});
+				});
 
 				ProcessEventTypes.registerPluginEvents(plugin.getEventTypes());
 
@@ -210,7 +200,7 @@ public class PluginManager implements Serializable {
 		SlideComponentPlugin componentPlugin = namespacePluginMap.get(namespace);
 
 		if (componentPlugin != null) {
-			Set<String> elements = namespaceElementMap.get(namespace);
+			List<String> elements = namespaceElementMap.get(namespace);
 			if (elements.contains(elementName)) {
 				return componentPlugin;
 			}

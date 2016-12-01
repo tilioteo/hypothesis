@@ -12,9 +12,13 @@ import java.io.Serializable;
  *         Hypothesis
  *
  */
+@FunctionalInterface
 public interface Command extends Serializable {
 
 	final class Executor {
+
+		private Executor() {
+		}
 
 		public static void execute(Command command) {
 			if (command != null) {

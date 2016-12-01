@@ -4,10 +4,9 @@
  */
 package org.hypothesis.common;
 
-import org.hypothesis.interfaces.ComponentWrapper;
-
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import org.hypothesis.interfaces.ComponentWrapper;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

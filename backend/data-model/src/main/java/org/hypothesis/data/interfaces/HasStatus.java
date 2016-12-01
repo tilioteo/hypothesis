@@ -4,9 +4,9 @@
  */
 package org.hypothesis.data.interfaces;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.model.Status;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
