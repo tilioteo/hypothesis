@@ -108,13 +108,11 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 	}
 
 	private Nick createNick(Element nickElement) {
-		return DocumentUtility.getSlideId(nickElement).map(Nick::new).map(m -> {
-			return DocumentUtility.getExpressionElement(nickElement).flatMap(EvaluableUtility::createExpression)
-					.map(mm -> {
-						m.setExpression(mm);
-						return m;
-					}).orElse(null);
-		}).orElse(null);
+		return DocumentUtility.getSlideId(nickElement).map(Nick::new).map(m -> DocumentUtility
+				.getExpressionElement(nickElement).flatMap(EvaluableUtility::createExpression).map(mm -> {
+					m.setExpression(mm);
+					return m;
+				}).orElse(null)).orElse(null);
 	}
 
 }

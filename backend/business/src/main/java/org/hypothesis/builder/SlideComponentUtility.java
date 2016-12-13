@@ -109,8 +109,7 @@ public final class SlideComponentUtility {
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(image, element, properties, alignmentWrapper);
 
-		image.setSource(
-				new ExternalResource(ConversionUtility.getStringOrDefault(properties.get(DocumentConstants.URL), "")));
+		image.setSource(new ExternalResource(properties.getOrDefault(DocumentConstants.URL, "")));
 	}
 
 	public static void setVideoProperties(Video video, Element element, Map<String, String> properties,
@@ -233,8 +232,8 @@ public final class SlideComponentUtility {
 		setLabelProperties(component, element, properties, alignmentWrapper);
 
 		// TimerLabel specific properties
-		component.setTimeFormat(ConversionUtility.getStringOrDefault(properties.get(DocumentConstants.TIME_FORMAT),
-				TimerLabel.DEAFAULT_TIME_FORMAT));
+		component
+				.setTimeFormat(properties.getOrDefault(DocumentConstants.TIME_FORMAT, TimerLabel.DEAFAULT_TIME_FORMAT));
 	}
 
 	public static void setLabelProperties(Label component, Element element, Map<String, String> properties,

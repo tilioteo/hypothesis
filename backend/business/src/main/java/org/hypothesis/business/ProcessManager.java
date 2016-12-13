@@ -15,6 +15,8 @@ import org.hypothesis.server.Messages;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -445,7 +447,7 @@ public class ProcessManager implements Serializable {
 	 * 
 	 * @param test
 	 */
-	public void processTest(SimpleTest test) {
+	public void processTest(@NotNull SimpleTest test) {
 		log.debug(String.format("processTest: %s", test != null ? test.getId() : "NULL"));
 		if (!testProcessing) {
 			testProcessing = true;

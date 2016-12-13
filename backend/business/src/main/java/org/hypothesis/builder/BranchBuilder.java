@@ -10,6 +10,8 @@ import org.hypothesis.data.model.Branch;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -32,7 +34,7 @@ public final class BranchBuilder implements Serializable {
 	 *         some parameter is null or entity data is empty or data cannot be
 	 *         parsed by reader.
 	 */
-	public static BranchController buildBranchController(Branch entity, DocumentReader reader) {
+	public static BranchController buildBranchController(@NotNull Branch entity, @NotNull DocumentReader reader) {
 
 		BranchControllerFactory factory = new BranchControllerFactoryImpl();
 

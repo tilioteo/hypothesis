@@ -48,7 +48,6 @@ public class ExportThreadedServiceImpl implements ExportThreadedService {
 	@Inject
 	private Event<MainUIEvent> mainEvent;
 
-	@SuppressWarnings("serial")
 	private static class CancelledException extends Exception {
 	}
 

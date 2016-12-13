@@ -10,8 +10,6 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
-import org.hypothesis.event.annotations.ElementPath;
-
 import java.util.Arrays;
 import java.util.Map;
 

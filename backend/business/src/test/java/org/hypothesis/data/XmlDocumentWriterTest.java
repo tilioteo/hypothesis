@@ -7,10 +7,6 @@ import static org.junit.Assert.*;
 
 import org.hypothesis.interfaces.Document;
 import org.junit.Test;
-import org.xmlunit.builder.DiffBuilder;
-import org.xmlunit.diff.DefaultNodeMatcher;
-import org.xmlunit.diff.Diff;
-import org.xmlunit.diff.ElementSelectors;
 
 /**
  * @author morongk

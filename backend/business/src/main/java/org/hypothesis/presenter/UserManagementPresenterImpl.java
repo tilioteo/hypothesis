@@ -326,7 +326,8 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 
 		table.addItemClickListener(e -> {
             if (e.isDoubleClick()) {
-                User user = ((BeanItem<User>) e.getItem()).getBean();
+                @SuppressWarnings("unchecked")
+				User user = ((BeanItem<User>) e.getItem()).getBean();
                 userWindowPresenter.showWindow(user);
             }
         });

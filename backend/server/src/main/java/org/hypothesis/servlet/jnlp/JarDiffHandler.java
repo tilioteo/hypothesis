@@ -216,20 +216,26 @@ public class JarDiffHandler {
 				delete = true;
 		} finally {
 			try {
-				in.close();
-				in = null;
+				if (in != null) {
+					in.close();
+					in = null;
+				}
 			} catch (IOException ioe) {
 				System.err.println("Got exception while downloading resource: " + ioe);
 			}
 			try {
-				out.close();
-				out = null;
+				if (out != null) {
+					out.close();
+					out = null;
+				}
 			} catch (IOException ioe) {
 				System.err.println("Got exception while downloading resource: " + ioe);
 			}
 
 			if (delete) {
-				file.delete();
+				if (file != null) {
+					file.delete();
+				}
 			}
 		}
 		return ret;
