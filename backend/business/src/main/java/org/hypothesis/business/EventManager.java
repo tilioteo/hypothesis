@@ -31,7 +31,6 @@ import java.util.Set;
  */
 public class EventManager {
 
-	// TODO may be injected
 	private SlideContainerPresenter presenter;
 
 	/**

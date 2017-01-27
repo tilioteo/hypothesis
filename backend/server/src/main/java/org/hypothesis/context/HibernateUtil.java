@@ -50,7 +50,7 @@ public final class HibernateUtil {
 		SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
 		if (null == sessions) {
 			sessions = new SessionMap();
-			VaadinSession.getCurrent().setAttribute(HashMap.class, sessions);
+			VaadinSession.getCurrent().setAttribute(SessionMap.class, sessions);
 		}
 
 		String threadGroup = Thread.currentThread().getThreadGroup().getName();

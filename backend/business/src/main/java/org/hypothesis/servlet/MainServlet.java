@@ -21,13 +21,7 @@ import javax.servlet.annotation.WebServlet;
 @WebServlet(
 		value = "/*",
 		asyncSupported = true,
-		name = "main-servlet",
-		initParams = {
-				@WebInitParam(
-						name = Constants.SERVLET_PARAMETER_UI_PROVIDER,
-						value = "com.vaadin.cdi.CDIUIProvider")
-		}
-)
+		name = "main-servlet")
 @VaadinServletConfiguration(
 		productionMode = false,
 		ui = MainUI.class,

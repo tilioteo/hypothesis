@@ -65,6 +65,7 @@ public class TokenServiceImpl implements TokenService {
 	@Override
 	public Token findTokenByUid(String uid) {
 		log.debug("findTokenByUid");
+		Token token = null;
 		try {
 			// first purge invalid tokens and then find token by uid
 			Date date = new Date();
@@ -81,21 +82,26 @@ public class TokenServiceImpl implements TokenService {
 
 		try {
 			tokenDao.beginTransaction();
-			Token token = tokenDao.findById(uid, true);
-
-			if (token != null) {
-				// remove from database
-				tokenDao.makeTransient(token);
-			}
-
+			token = tokenDao.findById(uid, true);
 			tokenDao.commit();
-
-			return token;
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			tokenDao.rollback();
-			return null;
 		}
+
+		if (token != null) {
+			// remove from database
+			try {
+				tokenDao.beginTransaction();
+				tokenDao.makeTransient(token);
+				tokenDao.commit();
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				tokenDao.rollback();
+			}
+		}
+		
+		return token;
 	}
 
 	private boolean persistToken(Token token) {
@@ -104,6 +110,7 @@ public class TokenServiceImpl implements TokenService {
 			tokenDao.beginTransaction();
 			tokenDao.makePersistent(token);
 			tokenDao.commit();
+			tokenDao.flush();
 
 			return true;
 		} catch (Exception e) {

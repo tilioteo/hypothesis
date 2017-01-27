@@ -4,11 +4,13 @@
  */
 package org.hypothesis.presenter;
 
-import com.vaadin.cdi.NormalViewScoped;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Notification.Type;
-import org.hypothesis.builder.SlideContainerFactoryDeferred;
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
+import org.hypothesis.builder.SlideContainerFactory;
+import org.hypothesis.cdi.Deferred;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.event.model.ActionEvent;
@@ -23,9 +25,16 @@ import org.vaadin.alump.fancylayouts.gwt.client.shared.FancyNotificationsState.P
 import org.vaadin.johan.Toolbox;
 import org.vaadin.johan.Toolbox.ORIENTATION;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
+import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -42,33 +51,24 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter {
 
 	private SlideContainer container;
 
-	private final SlideContainerFactoryDeferred factory;
+	@Inject
+	@Deferred
+	private SlideContainerFactory factory;
 
 	private Mask mask;
 	private final FancyNotifications notifications = new FancyNotifications();
-
-	public SlideManagementPresenterImpl() {
-		System.out.println("Construct " + getClass().getName());
-		factory = new SlideContainerFactoryDeferred();
-	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
 		// nop
 	}
 
-	/*
-	 * @Override public View createView() {
-	 * 
-	 * return new SlideManagementView(); }
-	 */
-
 	@Override
 	public void showSlide(String template, String content) {
 		notifications.setCloseTimeout(5000);
 		notifications.setPosition(Position.BOTTOM_RIGHT);
 
-		container = factory.buildSlideContainer(template, content, reader);
+		container = factory.createSlideContainer(template, content, reader);
 		if (container != null) {
 			container.getPresenter().buildDone();
 
@@ -92,9 +92,9 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter {
 			HorizontalLayout hl = new HorizontalLayout();
 			hl.setSpacing(true);
 			Button startButton = new Button("Start slide", e -> {
-                e.getButton().setEnabled(false);
-                startClicked();
-            });
+				e.getButton().setEnabled(false);
+				startClicked();
+			});
 			hl.addComponent(startButton);
 
 			CssLayout tlLayout = new CssLayout(toolbox);

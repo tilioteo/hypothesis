@@ -6,6 +6,8 @@ import java.io.Serializable;
 
 public interface PersistenceService extends Serializable {
 
+	User merge(User entity);
+	
 	Pack merge(Pack entity);
 
 	Branch merge(Branch entity);

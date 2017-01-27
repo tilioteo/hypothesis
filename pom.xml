@@ -42,7 +42,7 @@
 		<slf4j.version>1.7.13</slf4j.version>
 		<annotation-api.version>1.3</annotation-api.version>
 		<cdi-api.version>1.2</cdi-api.version>
-		<vaadin-cdi.version>1.0.3</vaadin-cdi.version>
+		<vaadin-cdi.version>1.0.3.1</vaadin-cdi.version>
 		<jboss.weld.version>2.4.0.Final</jboss.weld.version>
 	</properties>
 

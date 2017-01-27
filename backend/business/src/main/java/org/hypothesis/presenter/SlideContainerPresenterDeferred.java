@@ -5,12 +5,15 @@
 package org.hypothesis.presenter;
 
 import com.vaadin.ui.Component;
+
+import org.hypothesis.event.interfaces.ProcessEvent;
 import org.hypothesis.event.model.EventQueue;
 import org.hypothesis.event.model.EventWrapper;
 import org.hypothesis.event.model.FinishSlideEvent;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.ComponentEventCallback;
 
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 
 /**
@@ -31,8 +34,8 @@ public class SlideContainerPresenterDeferred extends SlideContainerPresenter {
 	 * @param eventQueue
 	 * @param bus
 	 */
-	public SlideContainerPresenterDeferred(EventQueue eventQueue) {
-		super();
+	public SlideContainerPresenterDeferred(Event<ProcessEvent> event, EventQueue eventQueue) {
+		super(event);
 
 		this.eventQueue = eventQueue;
 	}

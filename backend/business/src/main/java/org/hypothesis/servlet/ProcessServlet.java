@@ -21,14 +21,7 @@ import javax.servlet.annotation.WebServlet;
 @WebServlet(
 		value = "/process/*",
 		asyncSupported = true,
-		name = "process-servlet",
-		initParams = {
-				@WebInitParam(
-						name = Constants.SERVLET_PARAMETER_UI_PROVIDER,
-						value = "org.hypothesis.provider.ProcessUIProvider")
-						//value = "com.vaadin.cdi.CDIUIProvider")
-		}
-)
+		name = "process-servlet")
 @VaadinServletConfiguration(
 		productionMode = false,
 		ui = ProcessUI.class,

@@ -20,7 +20,6 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class SlideDocument implements Serializable {
 
-	// TODO inject
 	private SlideContainerPresenter presenter;
 
 	/**

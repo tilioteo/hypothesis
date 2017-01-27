@@ -4,6 +4,7 @@
  */
 package org.hypothesis.builder;
 
+import org.hypothesis.builder.impl.ComponentDataFactoryImpl;
 import org.hypothesis.data.DocumentWriter;
 import org.hypothesis.data.XmlDocumentWriter;
 import org.hypothesis.event.data.ComponentData;
@@ -21,7 +22,7 @@ public class ComponentDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link org.hypothesis.builder.ComponentDataFactoryImpl#buildComponentData(org.hypothesis.event.data.ComponentData, org.hypothesis.data.DocumentWriter)}
+	 * {@link org.hypothesis.builder.impl.ComponentDataFactoryImpl#buildComponentData(org.hypothesis.event.data.ComponentData, org.hypothesis.data.DocumentWriter)}
 	 * .
 	 */
 	@Test
@@ -40,7 +41,7 @@ public class ComponentDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link org.hypothesis.builder.ComponentDataFactoryImpl#buildActionData(org.hypothesis.event.model.ActionEvent, org.hypothesis.data.DocumentWriter)}
+	 * {@link org.hypothesis.builder.impl.ComponentDataFactoryImpl#buildActionData(org.hypothesis.event.model.ActionEvent, org.hypothesis.data.DocumentWriter)}
 	 * .
 	 */
 	@Test
@@ -50,7 +51,7 @@ public class ComponentDataFactoryImplTest {
 
 	/**
 	 * Test method for
-	 * {@link org.hypothesis.builder.ComponentDataFactoryImpl#buildSlideContainerData(org.hypothesis.interfaces.SlidePresenter, org.hypothesis.data.DocumentWriter)}
+	 * {@link org.hypothesis.builder.impl.ComponentDataFactoryImpl#buildSlideContainerData(org.hypothesis.interfaces.SlidePresenter, org.hypothesis.data.DocumentWriter)}
 	 * .
 	 */
 	@Test

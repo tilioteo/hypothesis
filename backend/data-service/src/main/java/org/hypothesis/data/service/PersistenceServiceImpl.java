@@ -24,6 +24,26 @@ public class PersistenceServiceImpl implements PersistenceService {
 
 	private static final Logger log = Logger.getLogger(PersistenceServiceImpl.class);
 
+	@Override
+	public User merge(User entity) {
+		log.debug(String.format("merge(user id = %s)", entity != null ? entity.getId() : "NULL"));
+		if (entity != null) {
+			try {
+				HibernateUtil.beginTransaction();
+				User user = (User) HibernateUtil.getSession().merge(entity);
+				Hibernate.initialize(user.getGroups());
+				Hibernate.initialize(user.getRoles());
+				HibernateUtil.commitTransaction();
+
+				return user;
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				HibernateUtil.rollbackTransaction();
+			}
+		}
+		return null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

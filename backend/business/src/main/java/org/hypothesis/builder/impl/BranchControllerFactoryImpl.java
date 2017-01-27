@@ -2,22 +2,32 @@
  * Apache Licence Version 2.0
  * Please read the LICENCE file
  */
-package org.hypothesis.builder;
+package org.hypothesis.builder.impl;
+
+import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.hypothesis.builder.BranchControllerFactory;
 import org.hypothesis.business.BranchController;
+import org.hypothesis.business.impl.BranchControllerImpl;
 import org.hypothesis.common.IntSequence;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
-import org.hypothesis.evaluation.*;
+import org.hypothesis.data.model.Branch;
+import org.hypothesis.evaluation.AbstractBasePath;
+import org.hypothesis.evaluation.DefaultPath;
+import org.hypothesis.evaluation.Formula;
+import org.hypothesis.evaluation.Nick;
+import org.hypothesis.evaluation.Path;
+import org.hypothesis.evaluation.Pattern;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
 
-import java.util.Objects;
-import java.util.Optional;
+import com.vaadin.cdi.UIScoped;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -26,29 +36,31 @@ import java.util.Optional;
  *
  */
 @SuppressWarnings("serial")
+@UIScoped
 public class BranchControllerFactoryImpl implements BranchControllerFactory {
 
 	private static Logger log = Logger.getLogger(BranchControllerFactoryImpl.class);
 
 	@Override
-	public BranchController buildBranchController(String data, DocumentReader reader) {
+	public BranchController createController(Branch entity, DocumentReader reader) {
+		if (Objects.nonNull(entity) && StringUtils.isNotBlank(entity.getData())) {
+			Document document = reader.readString(entity.getData());
 
-		Document document = reader.readString(data);
+			if (null == document) {
+				log.warn("Branch document is NULL");
+				return null;
+			}
 
-		if (null == document) {
-			log.warn("Branch document is NULL");
-			return null;
-		}
-
-		if (DocumentUtility.isValidBranchDocument(document)) {
-			return buildBranchController(document);
+			if (DocumentUtility.isValidBranchDocument(document)) {
+				return createBranchController(document);
+			}
 		}
 
 		return null;
 	}
 
-	private BranchController buildBranchController(Document document) {
-		BranchController controller = new BranchController();
+	private BranchController createBranchController(Document document) {
+		BranchController controller = new BranchControllerImpl();
 
 		createPaths(document.root(), controller);
 

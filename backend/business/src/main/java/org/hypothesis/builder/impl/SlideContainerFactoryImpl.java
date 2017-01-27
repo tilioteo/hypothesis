@@ -2,7 +2,7 @@
  * Apache Licence Version 2.0
  * Please read the LICENCE file
  */
-package org.hypothesis.builder;
+package org.hypothesis.builder.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -10,8 +10,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.hypothesis.builder.DocumentFactory;
+import org.hypothesis.builder.SlideContainerFactory;
+import org.hypothesis.builder.ValidatorCallback;
 import org.hypothesis.business.ShortcutUtility;
 import org.hypothesis.common.AlignmentWrapperImpl;
 import org.hypothesis.common.ComponentWrapperImpl;
@@ -21,7 +27,9 @@ import org.hypothesis.common.utility.ConversionUtility;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
+import org.hypothesis.data.model.Slide;
 import org.hypothesis.event.data.ComponentDataConstants;
+import org.hypothesis.event.interfaces.ProcessEvent;
 import org.hypothesis.event.model.MessageEvent;
 import org.hypothesis.event.model.ProcessEventTypes;
 import org.hypothesis.extension.PluginManager;
@@ -61,6 +69,7 @@ import org.vaadin.special.data.SelectPanelEmptyValidator;
 import org.vaadin.special.ui.KeyAction;
 import org.vaadin.special.ui.SelectButton;
 
+import com.vaadin.cdi.UIScoped;
 import com.vaadin.data.Validatable;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractComponent;
@@ -76,13 +85,33 @@ import com.vaadin.ui.Layout;
  *
  */
 @SuppressWarnings("serial")
+@UIScoped
 public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 	private static Logger log = Logger.getLogger(SlideContainerFactoryImpl.class);
 
-	@Override
-	public SlideContainer buildSlideContainer(String template, String content, DocumentReader reader) {
+	@Inject
+	private DocumentFactory documentFactory;
+	
+	@Inject
+	protected Event<ProcessEvent> procEvent;
 
+	@Override
+	public SlideContainer createSlideContainer(Slide entity, DocumentReader reader) {
+		if (Objects.nonNull(entity) && Objects.nonNull(reader)) {
+
+			SlideContainer container = createSlideContainer(entity.getTemplateXmlData(), entity.getData(), reader);
+			if (container != null) {
+				container.setData(entity.getId());
+			}
+			return container;
+		}
+
+		return null;
+	}
+
+	@Override
+	public SlideContainer createSlideContainer(String template, String content, DocumentReader reader) {
 		Document templateDocument = reader.readString(template);
 		Document contentDocument = reader.readString(content);
 
@@ -98,7 +127,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		}
 
 		try {
-			Document document = DocumentFactory.mergeSlideDocument(templateDocument, contentDocument);
+			Document document = documentFactory.mergeSlideDocument(templateDocument, contentDocument);
 
 			if (DocumentUtility.isValidSlideDocument(document)) {
 				return buildSlideContainer(document);
@@ -111,7 +140,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	protected SlideContainerPresenter createSlideContainerPresenter() {
-		return new SlideContainerPresenter();
+		return new SlideContainerPresenter(procEvent);
 	}
 
 	private SlideContainer buildSlideContainer(Document document) {
@@ -128,23 +157,25 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		createWindows(rootElement, presenter);
 		createViewport(rootElement, presenter);
 
-		EvaluableUtility.createVariables(rootElement, presenter, (name, id, eval) ->
-					Optional.ofNullable(name).filter(
-						f -> StringUtils.isNotEmpty(id) && eval instanceof SlideContainerPresenter)
-						.map(m -> {
-							SlideContainerPresenter pres = (SlideContainerPresenter) eval;
+		EvaluableUtility
+				.createVariables(rootElement, presenter,
+						(name, id,
+								eval) -> Optional.ofNullable(name).filter(
+										f -> StringUtils.isNotEmpty(id) && eval instanceof SlideContainerPresenter)
+										.map(m -> {
+											SlideContainerPresenter pres = (SlideContainerPresenter) eval;
 
-							switch (m) {
-							case DocumentConstants.COMPONENT:
-								return pres.getComponent(id);
-							case DocumentConstants.TIMER:
-								return pres.getTimer(id);
-							case DocumentConstants.WINDOW:
-								return pres.getWindow(id);
-							default:
-								return null;
-							}
-						}));
+											switch (m) {
+											case DocumentConstants.COMPONENT:
+												return pres.getComponent(id);
+											case DocumentConstants.TIMER:
+												return pres.getTimer(id);
+											case DocumentConstants.WINDOW:
+												return pres.getWindow(id);
+											default:
+												return null;
+											}
+										}));
 
 		return presenter.getSlideContainer();
 	}

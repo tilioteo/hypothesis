@@ -4,15 +4,9 @@
  */
 package org.hypothesis.ui;
 
-import com.vaadin.annotations.PreserveOnRefresh;
-import com.vaadin.annotations.Push;
-import com.vaadin.annotations.Theme;
-import com.vaadin.cdi.CDIUI;
-import com.vaadin.cdi.URLMapping;
-import com.vaadin.shared.communication.PushMode;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.CssLayout;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import org.hypothesis.cdi.Process;
 import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.Detachable;
@@ -20,8 +14,14 @@ import org.hypothesis.interfaces.UIPresenter;
 import org.vaadin.jouni.animator.AnimatorProxy;
 import org.vaadin.jouni.animator.shared.AnimType;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import com.vaadin.annotations.PreserveOnRefresh;
+import com.vaadin.annotations.Push;
+import com.vaadin.annotations.Theme;
+import com.vaadin.cdi.CDIUI;
+import com.vaadin.shared.communication.PushMode;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -34,7 +34,6 @@ import javax.inject.Inject;
 @PreserveOnRefresh
 @Push(value = PushMode.MANUAL)
 @CDIUI("process")
-@URLMapping("process")
 public class ProcessUI extends HypothesisUI {
 
 	private boolean requestClose = false;
@@ -45,14 +44,8 @@ public class ProcessUI extends HypothesisUI {
 	@Process
 	private UIPresenter presenter;
 
-	public ProcessUI() {
-		System.out.println("Construct ProcessUI");
-	}
-
 	@PostConstruct
 	public void postConstruct() {
-		System.out.println("PostConstruct " + getClass().getName());
-
 		setPresenter(presenter);
 		presenter.setUI(this);
 	}

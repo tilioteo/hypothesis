@@ -2,8 +2,9 @@
  * Apache Licence Version 2.0
  * Please read the LICENCE file
  */
-package org.hypothesis.builder;
+package org.hypothesis.builder.impl;
 
+import org.hypothesis.cdi.Deferred;
 import org.hypothesis.event.model.EventQueue;
 import org.hypothesis.presenter.SlideContainerPresenter;
 import org.hypothesis.presenter.SlideContainerPresenterDeferred;
@@ -15,6 +16,7 @@ import org.hypothesis.presenter.SlideContainerPresenterDeferred;
  *
  */
 @SuppressWarnings("serial")
+@Deferred
 public class SlideContainerFactoryDeferred extends SlideContainerFactoryImpl {
 
 	private final EventQueue queue = new EventQueue();
@@ -22,7 +24,7 @@ public class SlideContainerFactoryDeferred extends SlideContainerFactoryImpl {
 	@Override
 	protected SlideContainerPresenter createSlideContainerPresenter() {
 
-		return new SlideContainerPresenterDeferred(queue);
+		return new SlideContainerPresenterDeferred(procEvent, queue);
 	}
 
 	public EventQueue getEventQueue() {

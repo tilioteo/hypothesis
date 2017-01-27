@@ -8,6 +8,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
+import org.hypothesis.data.interfaces.HasData;
 import org.hypothesis.data.interfaces.HasList;
 
 import javax.persistence.*;
@@ -23,7 +24,7 @@ import java.util.List;
 @Entity
 @Table(name = TableConstants.BRANCH_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Branch extends SerializableIdObject implements HasList<Task> {
+public final class Branch extends SerializableIdObject implements HasList<Task>, HasData<String> {
 
 	/**
 	 * 
@@ -60,6 +61,7 @@ public final class Branch extends SerializableIdObject implements HasList<Task> 
 		this.note = note;
 	}
 
+	@Override
 	@Column(name = FieldConstants.XML_DATA, nullable = false)
 	@Type(type = "text")
 	public String getData() {

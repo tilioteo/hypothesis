@@ -29,14 +29,8 @@ public class MainUI extends HypothesisUI {
 	@Main
 	private UIPresenter presenter; 
 	
-	public MainUI() {
-		System.out.println("Construct " + getClass().getName());
-	}
-	
 	@PostConstruct
 	public void postConstruct() {
-		System.out.println("PostConstruct " + getClass().getName());
-		
 		setPresenter(presenter);
 		presenter.setUI(this);
 	}

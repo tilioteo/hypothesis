@@ -4,12 +4,11 @@
  */
 package org.hypothesis.presenter;
 
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.JavaScript;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ProcessManager;
 import org.hypothesis.cdi.Process;
@@ -18,8 +17,17 @@ import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Token;
 import org.hypothesis.event.interfaces.ProcessEvent;
 import org.hypothesis.event.interfaces.ProcessViewEvent.ProcessViewEndEvent;
-import org.hypothesis.event.model.*;
+import org.hypothesis.event.model.AbstractNotificationEvent;
+import org.hypothesis.event.model.AfterFinishSlideEvent;
+import org.hypothesis.event.model.AfterPrepareTestEvent;
+import org.hypothesis.event.model.AfterRenderContentEvent;
+import org.hypothesis.event.model.CloseTestEvent;
+import org.hypothesis.event.model.ErrorNotificationEvent;
 import org.hypothesis.event.model.FinishSlideEvent.Direction;
+import org.hypothesis.event.model.FinishTestEvent;
+import org.hypothesis.event.model.NextSlideEvent;
+import org.hypothesis.event.model.PriorSlideEvent;
+import org.hypothesis.event.model.RenderContentEvent;
 import org.hypothesis.interfaces.Detachable;
 import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.Messages;
@@ -28,10 +36,13 @@ import org.hypothesis.ui.ProcessUI;
 import org.hypothesis.ui.TestBeginScreen;
 import org.hypothesis.ui.TestEndScreen;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+import com.vaadin.cdi.UIScoped;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -41,6 +52,7 @@ import javax.inject.Inject;
  */
 @SuppressWarnings("serial")
 @Process
+@UIScoped
 public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresenter, Detachable {
 
 	public static final String FULLSCREEN_PARAMETER = "fs";

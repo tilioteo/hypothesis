@@ -4,10 +4,11 @@
  */
 package org.hypothesis.builder;
 
-import org.hypothesis.data.DocumentReader;
-import org.hypothesis.ui.SlideContainer;
-
 import java.io.Serializable;
+
+import org.hypothesis.data.DocumentReader;
+import org.hypothesis.data.model.Slide;
+import org.hypothesis.ui.SlideContainer;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -17,6 +18,8 @@ import java.io.Serializable;
  */
 public interface SlideContainerFactory extends Serializable {
 
-	SlideContainer buildSlideContainer(String template, String content, DocumentReader reader);
+	SlideContainer createSlideContainer(Slide entity, DocumentReader reader);
+
+	SlideContainer createSlideContainer(String template, String content, DocumentReader reader);
 
 }

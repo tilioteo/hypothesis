@@ -4,21 +4,40 @@
  */
 package org.hypothesis.presenter;
 
-import com.vaadin.server.Extension;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.communication.PushMode;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HasComponents;
-import com.vaadin.ui.UI;
-import org.hypothesis.business.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
+import org.hypothesis.business.EventManager;
+import org.hypothesis.business.MessageManager;
+import org.hypothesis.business.ObjectConstants;
+import org.hypothesis.business.SlideDocument;
+import org.hypothesis.business.SlideNavigator;
+import org.hypothesis.business.impl.MessageManagerImpl;
 import org.hypothesis.evaluation.AbstractBaseAction;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.data.Message;
 import org.hypothesis.event.interfaces.ProcessEvent;
-import org.hypothesis.event.model.*;
-import org.hypothesis.interfaces.*;
+import org.hypothesis.event.model.ActionEvent;
+import org.hypothesis.event.model.MessageEvent;
+import org.hypothesis.event.model.MessageEventManager;
+import org.hypothesis.event.model.ViewportEvent;
+import org.hypothesis.event.model.ViewportEventManager;
+import org.hypothesis.interfaces.Action;
+import org.hypothesis.interfaces.Command;
+import org.hypothesis.interfaces.ComponentEventCallback;
+import org.hypothesis.interfaces.Evaluator;
+import org.hypothesis.interfaces.ExchangeVariable;
+import org.hypothesis.interfaces.Field;
+import org.hypothesis.interfaces.MessageEventListener;
+import org.hypothesis.interfaces.SlidePresenter;
+import org.hypothesis.interfaces.Variable;
+import org.hypothesis.interfaces.ViewportEventListener;
 import org.hypothesis.servlet.BroadcastService;
 import org.hypothesis.servlet.BroadcastService.BroadcastListener;
 import org.hypothesis.slide.ui.Window;
@@ -27,12 +46,13 @@ import org.hypothesis.ui.SlideContainer;
 import org.vaadin.special.ui.KeyAction;
 import org.vaadin.special.ui.Timer;
 
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.vaadin.server.Extension;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.communication.PushMode;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HasComponents;
+import com.vaadin.ui.UI;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -70,15 +90,15 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	private Long userId = null;
 
-	@Inject
 	private Event<ProcessEvent> procEvent;
 
 	/**
 	 * Constructor
 	 */
-	public SlideContainerPresenter() {
+	public SlideContainerPresenter(Event<ProcessEvent> event) {
+		this.procEvent = event;
 		eventManager = new EventManager(this);
-		messageManager = new MessageManager();
+		messageManager = new MessageManagerImpl();
 	}
 
 	/**
@@ -414,15 +434,15 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 				if (null == userId || null == receiverId || receiverId.equals(userId)) {
 					// ok - receive this message
 					ui.access(() -> {
-                        fireEvent(new MessageEvent(message));
-                        if (PushMode.MANUAL == ui.getPushConfiguration().getPushMode()) {
-                            try {
-                                ui.push();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
+						fireEvent(new MessageEvent(message));
+						if (PushMode.MANUAL == ui.getPushConfiguration().getPushMode()) {
+							try {
+								ui.push();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
 				}
 			}
 		}

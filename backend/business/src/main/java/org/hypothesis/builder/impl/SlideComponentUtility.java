@@ -2,7 +2,7 @@
  * Apache Licence Version 2.0
  * Please read the LICENCE file
  */
-package org.hypothesis.builder;
+package org.hypothesis.builder.impl;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;

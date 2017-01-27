@@ -6,7 +6,7 @@ package org.hypothesis.data;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Attribute;
-import org.hypothesis.builder.DocumentImpl;
+import org.hypothesis.builder.impl.DocumentImpl;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 import org.hypothesis.utility.XmlUtility;

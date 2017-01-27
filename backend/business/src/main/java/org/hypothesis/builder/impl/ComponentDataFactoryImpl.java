@@ -2,28 +2,46 @@
  * Apache Licence Version 2.0
  * Please read the LICENCE file
  */
-package org.hypothesis.builder;
+package org.hypothesis.builder.impl;
 
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractTextField;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.util.ISO9075;
+import org.apache.log4j.Logger;
+import org.hypothesis.builder.ComponentDataFactory;
+import org.hypothesis.builder.DocumentFactory;
 import org.hypothesis.business.ObjectConstants;
 import org.hypothesis.data.DocumentWriter;
 import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.model.ActionEvent;
-import org.hypothesis.interfaces.*;
+import org.hypothesis.interfaces.Document;
+import org.hypothesis.interfaces.DocumentConstants;
+import org.hypothesis.interfaces.Element;
+import org.hypothesis.interfaces.ExchangeVariable;
+import org.hypothesis.interfaces.SlidePresenter;
+import org.hypothesis.interfaces.Variable;
 import org.hypothesis.slide.ui.ComboBox;
 import org.hypothesis.slide.ui.DateField;
 import org.hypothesis.slide.ui.SelectPanel;
 import org.hypothesis.slide.ui.annotations.FieldType;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.vaadin.cdi.UIScoped;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractTextField;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -32,16 +50,26 @@ import java.util.stream.Collectors;
  *
  */
 @SuppressWarnings("serial")
+@UIScoped
 public class ComponentDataFactoryImpl implements ComponentDataFactory {
+
+	private static Logger log = Logger.getLogger(ComponentDataFactoryImpl.class);
+
+	@Inject
+	private DocumentFactory documentFactory;
 
 	@Override
 	public String buildComponentData(ComponentData data, DocumentWriter writer) {
-		Document document = DocumentFactory.createEventDataDocument();
+		if (Objects.nonNull(data) && Objects.nonNull(writer)) {
+			Document document = documentFactory.createEventDataDocument();
 
-		addEventHeader(document.root(), data);
-		addEventData(document.root(), data);
+			addEventHeader(document.root(), data);
+			addEventData(document.root(), data);
 
-		return writer.writeString(document);
+			return writer.writeString(document);
+		}
+
+		return null;
 	}
 
 	private void addEventHeader(Element root, ComponentData data) {
@@ -143,12 +171,16 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 	@Override
 	public String buildActionData(ActionEvent event, DocumentWriter writer) {
-		Document document = DocumentFactory.createEventDataDocument();
+		if (Objects.nonNull(event) && Objects.nonNull(writer)) {
+			Document document = documentFactory.createEventDataDocument();
 
-		addActionEventHeader(document.root(), event);
-		addActionOutputs(document.root(), event);
+			addActionEventHeader(document.root(), event);
+			addActionOutputs(document.root(), event);
 
-		return writer.writeString(document);
+			return writer.writeString(document);
+		}
+
+		return null;
 	}
 
 	private void addActionEventHeader(Element root, ActionEvent event) {
@@ -176,14 +208,18 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 	@Override
 	public String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer) {
-		Document document = DocumentFactory.createEventDataDocument();
+		if (Objects.nonNull(presenter) && Objects.nonNull(writer)) {
+			Document document = documentFactory.createEventDataDocument();
 
-		addSlideContainerEventHeader(document.root(), presenter);
-		addFields(document.root(), presenter);
-		addVariables(document.root(), presenter);
-		addOutputs(document.root(), presenter);
+			addSlideContainerEventHeader(document.root(), presenter);
+			addFields(document.root(), presenter);
+			addVariables(document.root(), presenter);
+			addOutputs(document.root(), presenter);
 
-		return writer.writeString(document);
+			return writer.writeString(document);
+		}
+
+		return null;
 	}
 
 	private void addSlideContainerEventHeader(Element root, SlidePresenter presenter) {

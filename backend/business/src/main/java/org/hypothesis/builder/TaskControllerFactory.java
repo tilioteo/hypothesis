@@ -5,9 +5,7 @@
 package org.hypothesis.builder;
 
 import org.hypothesis.business.TaskController;
-import org.hypothesis.data.DocumentReader;
-
-import java.io.Serializable;
+import org.hypothesis.data.model.Task;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -15,18 +13,6 @@ import java.io.Serializable;
  *         Hypothesis
  *
  */
-public interface TaskControllerFactory extends Serializable {
-
-	/**
-	 * Create new entity controller from string definition parsed by proper
-	 * reader implementation
-	 * 
-	 * @param data
-	 *            string definition of entity controller
-	 * @param reader
-	 *            implementation of reader knowing data structure
-	 * @return new instance or null when inconsistent parameters provided
-	 */
-	public TaskController buildTaskController(String data, DocumentReader reader);
+public interface TaskControllerFactory extends ControllerFactory<Task, TaskController> {
 
 }
