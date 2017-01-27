@@ -23,9 +23,11 @@ public class XmlDocumentReaderTest {
 		XmlDocumentReader reader = new XmlDocumentReader();
 		
 		String txt = XmlTestUtility.getSampleReaderString();
+		System.out.println(txt);
 		Document doc = reader.readString(XmlTestUtility.getSampleReaderXmlString());
 		
 		String str = doc.toString();
+		System.out.println(str);
 		assertEquals(txt, str);
 	}
 
