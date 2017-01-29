@@ -4,12 +4,23 @@
  */
 package org.hypothesis.builder.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -19,6 +30,13 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("serial")
 public class ElementImpl implements Element {
+
+	private static final DateTimeFormatter DATE_TIME_FORMAT;
+	static {
+		DATE_TIME_FORMAT = new DateTimeFormatterBuilder().parseCaseInsensitive()
+				.append(DateTimeFormatter.ISO_LOCAL_DATE).appendLiteral(' ').append(DateTimeFormatter.ISO_LOCAL_TIME)
+				.toFormatter();
+	}
 
 	private String name;
 	private String namespace;
@@ -45,7 +63,7 @@ public class ElementImpl implements Element {
 		this.text = element.getText();
 		element.attributes().entrySet().forEach(e -> attributes.put(e.getKey(), e.getValue()));
 		element.children().forEach(this::createChild);
-		}
+	}
 
 	@Override
 	public String getName() {
@@ -85,6 +103,11 @@ public class ElementImpl implements Element {
 	}
 
 	@Override
+	public String getTextTrim() {
+		return text != null ? text.trim() : null;
+	}
+
+	@Override
 	public ElementImpl parent() {
 		return parent;
 	}
@@ -100,8 +123,118 @@ public class ElementImpl implements Element {
 	}
 
 	@Override
+	public void setAttribute(String name, int value) {
+		setAttribute(name, String.valueOf(value));
+	}
+
+	@Override
+	public void setAttribute(String name, double value) {
+		setAttribute(name, String.valueOf(value));
+	}
+
+	@Override
+	public void setAttribute(String name, long value) {
+		setAttribute(name, String.valueOf(value));
+	}
+
+	@Override
+	public void setAttribute(String name, LocalDate value) {
+		setAttribute(name, value != null ? value.toString() : null);
+	}
+
+	@Override
+	public void setAttribute(String name, LocalTime value) {
+		setAttribute(name, value != null ? value.toString() : null);
+	}
+
+	@Override
+	public void setAttribute(String name, LocalDateTime value) {
+		setAttribute(name, value != null ? value.format(DATE_TIME_FORMAT) : null);
+	}
+
+	@Override
 	public String getAttribute(String name) {
 		return attributes.get(name);
+	}
+
+	@Override
+	public Integer getAttributeAsInteger(String name) {
+		String value = getAttribute(name);
+		if (value != null && !value.trim().isEmpty()) {
+			try {
+				return Integer.valueOf(value);
+			} catch (NumberFormatException e) {
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Double getAttributeAsDouble(String name) {
+		String value = getAttribute(name);
+		if (value != null) {
+			try {
+				return Double.valueOf(value);
+			} catch (NumberFormatException e) {
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Long getAttributeAsLong(String name) {
+		String value = getAttribute(name);
+		if (value != null && !value.trim().isEmpty()) {
+			try {
+				return Long.valueOf(value);
+			} catch (NumberFormatException e) {
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public LocalDate getAttributeAsDate(String name) {
+		String value = getAttribute(name);
+		if (value != null && !value.trim().isEmpty()) {
+			try {
+				return LocalDate.parse(value);
+			} catch (DateTimeParseException e) {
+			}
+			try {
+				return LocalDateTime.parse(value, DATE_TIME_FORMAT).toLocalDate();
+			} catch (DateTimeParseException e) {
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public LocalTime getAttributeAsTime(String name) {
+		String value = getAttribute(name);
+		if (value != null && !value.trim().isEmpty()) {
+			try {
+				return LocalTime.parse(value);
+			} catch (DateTimeParseException e) {
+			}
+			try {
+				return LocalDateTime.parse(value, DATE_TIME_FORMAT).toLocalTime();
+			} catch (DateTimeParseException e) {
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public LocalDateTime getAttributeAsDateTime(String name) {
+		String value = getAttribute(name);
+		if (value != null && !value.trim().isEmpty()) {
+			try {
+				return LocalDateTime.parse(value, DATE_TIME_FORMAT);
+			} catch (DateTimeParseException e) {
+			}
+		}
+		return null;
 	}
 
 	@Override
@@ -296,8 +429,9 @@ public class ElementImpl implements Element {
 		builder.append("<" + name + ":" + (text != null ? text : "") + "(");
 
 		if (!attributes.isEmpty()) {
-			builder.append(attributes.entrySet().stream().map(e -> String.format("%s=%s", e.getKey(), e.getValue())).collect(Collectors.joining(",")));
-			}
+			builder.append(attributes.entrySet().stream().map(e -> String.format("%s=%s", e.getKey(), e.getValue()))
+					.collect(Collectors.joining(",")));
+		}
 		builder.append(")[");
 
 		if (!children.isEmpty()) {
@@ -307,8 +441,8 @@ public class ElementImpl implements Element {
 				builder.append("\n");
 				builder.append(
 						children.stream().map(e -> e.toString(detailed, ident + 1)).collect(Collectors.joining("\n")));
-					builder.append("\n");
-				}
+				builder.append("\n");
+			}
 
 			builder.append(StringUtils.rightPad("", ident, '\t'));
 

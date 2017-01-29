@@ -4,6 +4,50 @@
  */
 package org.hypothesis.presenter;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.hypothesis.business.SessionManager;
+import org.hypothesis.data.CaseInsensitiveItemSorter;
+import org.hypothesis.data.interfaces.GroupService;
+import org.hypothesis.data.interfaces.PermissionService;
+import org.hypothesis.data.interfaces.UserService;
+import org.hypothesis.data.model.FieldConstants;
+import org.hypothesis.data.model.Group;
+import org.hypothesis.data.model.Pack;
+import org.hypothesis.data.model.Role;
+import org.hypothesis.data.model.User;
+import org.hypothesis.data.service.RoleServiceImpl;
+import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.interfaces.UserManagementPresenter;
+import org.hypothesis.interfaces.UserWindowPresenter;
+import org.hypothesis.server.Messages;
+import org.vaadin.dialogs.ConfirmDialog;
+
 import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
@@ -14,37 +58,16 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.hypothesis.business.SessionManager;
-import org.hypothesis.common.IntSequence;
-import org.hypothesis.data.CaseInsensitiveItemSorter;
-import org.hypothesis.data.interfaces.GroupService;
-import org.hypothesis.data.interfaces.PermissionService;
-import org.hypothesis.data.interfaces.UserService;
-import org.hypothesis.data.model.*;
-import org.hypothesis.data.service.RoleServiceImpl;
-import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.interfaces.UserManagementPresenter;
-import org.hypothesis.interfaces.UserWindowPresenter;
-import org.hypothesis.server.Messages;
-import org.vaadin.dialogs.ConfirmDialog;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -94,14 +117,14 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		final Button addButton = new Button(Messages.getString("Caption.Button.Add"));
 		addButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 		addButton.addClickListener(e -> {
-            User user = SessionManager.getLoggedUser();
+			User user = SessionManager.getLoggedUser();
 
-            if (!user.hasRole(RoleServiceImpl.ROLE_SUPERUSER) && groupService.findOwnerGroups(user).isEmpty()) {
-                Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
-            } else {
-                userWindowPresenter.showWindow();
-            }
-        });
+			if (!user.hasRole(RoleServiceImpl.ROLE_SUPERUSER) && groupService.findOwnerGroups(user).isEmpty()) {
+				Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
+			} else {
+				userWindowPresenter.showWindow();
+			}
+		});
 
 		return addButton;
 	}
@@ -117,9 +140,9 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		selectionType.select(Messages.getString("Caption.Item.Selected"));
 
 		selectionType.addValueChangeListener(e -> {
-            allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-            mainEvent.fire(new MainUIEvent.UserSelectionChangedEvent());
-        });
+			allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
+			mainEvent.fire(new MainUIEvent.UserSelectionChangedEvent());
+		});
 
 		return selectionType;
 	}
@@ -129,14 +152,14 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		Button updateButton = new Button(Messages.getString("Caption.Button.Update"));
 		updateButton.setClickShortcut(KeyCode.ENTER);
 		updateButton.addClickListener(e -> {
-            Collection<User> users = getSelectedUsers();
+			Collection<User> users = getSelectedUsers();
 
-            if (users.size() == 1) {
-                userWindowPresenter.showWindow(users.iterator().next());
-            } else {
-                userWindowPresenter.showWindow(users);
-            }
-        });
+			if (users.size() == 1) {
+				userWindowPresenter.showWindow(users.iterator().next());
+			} else {
+				userWindowPresenter.showWindow(users);
+			}
+		});
 		return updateButton;
 	}
 
@@ -145,14 +168,14 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		Button deleteButton = new Button(Messages.getString("Caption.Button.Delete"));
 		deleteButton.addStyleName(ValoTheme.BUTTON_DANGER);
 		deleteButton.addClickListener(e -> {
-            String question = allSelected ? Messages.getString("Caption.Confirm.User.DeleteAll")
-                    : Messages.getString("Caption.Confirm.User.DeleteSelected");
+			String question = allSelected ? Messages.getString("Caption.Confirm.User.DeleteAll")
+					: Messages.getString("Caption.Confirm.User.DeleteSelected");
 
-            deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
-                    Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
-                    Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
-                    UserManagementPresenterImpl.this);
-        });
+			deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
+					Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
+					Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
+					UserManagementPresenterImpl.this);
+		});
 		return deleteButton;
 	}
 
@@ -171,8 +194,8 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 
 			Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.UserSheetName"));
 
-			final IntSequence seq = new IntSequence();
-			Row row = sheet.createRow(seq.next());
+			final AtomicInteger seq = new AtomicInteger(0);
+			Row row = sheet.createRow(seq.incrementAndGet());
 			sheet.createFreezePane(0, 1);
 
 			row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
@@ -180,7 +203,7 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 			row.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Password"));
 
 			getSelectedUsers().forEach(e -> {
-				Row r = sheet.createRow(seq.next());
+				Row r = sheet.createRow(seq.intValue());
 				r.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(e.getId());
 				r.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(e.getUsername());
 				r.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(e.getPassword());
@@ -325,11 +348,11 @@ public class UserManagementPresenterImpl extends AbstractManagementPresenter imp
 		table.addValueChangeListener(e -> mainEvent.fire(new MainUIEvent.UserSelectionChangedEvent()));
 
 		table.addItemClickListener(e -> {
-            if (e.isDoubleClick()) {
-                User user = ((BeanItem<User>) e.getItem()).getBean();
-                userWindowPresenter.showWindow(user);
-            }
-        });
+			if (e.isDoubleClick()) {
+				User user = ((BeanItem<User>) e.getItem()).getBean();
+				userWindowPresenter.showWindow(user);
+			}
+		});
 
 		return table;
 	}

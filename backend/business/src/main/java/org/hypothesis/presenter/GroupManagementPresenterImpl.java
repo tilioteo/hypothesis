@@ -4,22 +4,31 @@
  */
 package org.hypothesis.presenter;
 
-import com.vaadin.cdi.NormalViewScoped;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.Resource;
-import com.vaadin.server.StreamResource;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.themes.ValoTheme;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.hypothesis.business.SessionManager;
-import org.hypothesis.common.IntSequence;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.interfaces.GroupService;
 import org.hypothesis.data.interfaces.PermissionService;
@@ -34,13 +43,23 @@ import org.hypothesis.interfaces.GroupWindowPresenter;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Resource;
+import com.vaadin.server.StreamResource;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -99,8 +118,8 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		selectionType.select(Messages.getString("Caption.Item.Selected"));
 
 		selectionType.addValueChangeListener(e -> {
-				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				mainEvent.fire(new MainUIEvent.GroupSelectionChangedEvent());
+			allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
+			mainEvent.fire(new MainUIEvent.GroupSelectionChangedEvent());
 		});
 
 		return selectionType;
@@ -111,13 +130,13 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		Button updateButton = new Button(Messages.getString("Caption.Button.Update"));
 		updateButton.setClickShortcut(KeyCode.ENTER);
 		updateButton.addClickListener(e -> {
-				Collection<Group> groups = getSelectedGroups();
+			Collection<Group> groups = getSelectedGroups();
 
-				if (groups.size() == 1) {
-					groupWindowPresenter.showWindow(groups.iterator().next());
-				} else {
-					groupWindowPresenter.showWindow(groups);
-				}
+			if (groups.size() == 1) {
+				groupWindowPresenter.showWindow(groups.iterator().next());
+			} else {
+				groupWindowPresenter.showWindow(groups);
+			}
 		});
 		return updateButton;
 	}
@@ -127,13 +146,13 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 		Button deleteButton = new Button(Messages.getString("Caption.Button.Delete"));
 		deleteButton.addStyleName(ValoTheme.BUTTON_DANGER);
 		deleteButton.addClickListener(e -> {
-				String question = allSelected ? Messages.getString("Caption.Confirm.Group.DeleteAll")
-						: Messages.getString("Caption.Confirm.Group.DeleteSelected");
+			String question = allSelected ? Messages.getString("Caption.Confirm.Group.DeleteAll")
+					: Messages.getString("Caption.Confirm.Group.DeleteSelected");
 
-				deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
-						Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
-						Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
-						GroupManagementPresenterImpl.this);
+			deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
+					Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
+					Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
+					GroupManagementPresenterImpl.this);
 		});
 		return deleteButton;
 	}
@@ -152,15 +171,15 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 
 			Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.GroupSheetName"));
 
-			final IntSequence seq = new IntSequence();
-			Row row = sheet.createRow(seq.next());
+			final AtomicInteger seq = new AtomicInteger(0);
+			Row row = sheet.createRow(seq.incrementAndGet());
 			sheet.createFreezePane(0, 1);
 
 			row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
 			row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
 
 			getSelectedGroups().forEach(e -> {
-				Row r = sheet.createRow(seq.next());
+				Row r = sheet.createRow(seq.incrementAndGet());
 				r.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(e.getId());
 				r.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(e.getName());
 			});
@@ -213,7 +232,7 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 	private Collection<Group> getSelectedGroups() {
 		return getSelectedGroupIds().stream().map(m -> ((BeanItem<Group>) table.getItem(m)).getBean())
 				.collect(Collectors.toSet());
-		}
+	}
 
 	@Override
 	public Table buildTable() {
@@ -257,10 +276,10 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 
 		table.addItemClickListener(e -> {
 			if (e.isDoubleClick()) {
-			@SuppressWarnings("unchecked")
+				@SuppressWarnings("unchecked")
 				Group group = ((BeanItem<Group>) e.getItem()).getBean();
-					groupWindowPresenter.showWindow(group);
-				}
+				groupWindowPresenter.showWindow(group);
+			}
 		});
 
 		return table;

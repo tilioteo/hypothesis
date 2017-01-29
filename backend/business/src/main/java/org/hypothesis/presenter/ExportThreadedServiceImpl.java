@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -23,8 +24,10 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.hypothesis.builder.SlideDataParser;
-import org.hypothesis.common.IntSequence;
+import org.hypothesis.builder.SlideDataReader;
+import org.hypothesis.builder.SlideDataReader.FieldWrapper;
+import org.hypothesis.data.DocumentReader;
+import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.data.interfaces.ExportService;
 import org.hypothesis.data.model.ExportEvent;
 import org.hypothesis.event.interfaces.MainUIEvent;
@@ -46,9 +49,13 @@ public class ExportThreadedServiceImpl implements ExportThreadedService {
 	private ExportService exportService;
 
 	@Inject
+	private SlideDataReader slideDataReader;
+
+	@Inject
 	private Event<MainUIEvent> mainEvent;
 
-	@SuppressWarnings("serial")
+	private DocumentReader reader = new XmlDocumentReader();
+
 	private static class CancelledException extends Exception {
 	}
 
@@ -75,7 +82,7 @@ public class ExportThreadedServiceImpl implements ExportThreadedService {
 		} else {
 			UI.getCurrent().access(() -> mainEvent.fire(new MainUIEvent.ExportErrorEvent()));
 		}
-		
+
 		exportService.releaseConnection();
 	};
 
@@ -191,7 +198,7 @@ public class ExportThreadedServiceImpl implements ExportThreadedService {
 		Map<Long, Integer> slideCountMap = new HashMap<>();
 
 		int outputValueCol = 23;
-		final IntSequence colSeq = new IntSequence(outputValueCol + 10 - 1);
+		final AtomicInteger colSeq = new AtomicInteger(outputValueCol + 10 - 1);
 
 		int rowNr = 1;
 		int branchOrder = 0;
@@ -346,20 +353,20 @@ public class ExportThreadedServiceImpl implements ExportThreadedService {
 			createStringCell(row, 22, xmlData);
 
 			if (slideId != null && xmlData != null) {
-				final IntSequence seq = new IntSequence(outputValueCol);
+				final AtomicInteger seq = new AtomicInteger(outputValueCol);
 
 				if ("FINISH_SLIDE".equalsIgnoreCase(eventName) || "ACTION".equalsIgnoreCase(eventName)) {
 					// write output properties
-					SlideDataParser.parseOutputValues(xmlData).forEach(e -> {
+					slideDataReader.getOutputValues(xmlData, reader).forEach(e -> {
 						if (e != null) {
-							createStringCell(row, seq.current(), e);
+							createStringCell(row, seq.get(), e);
 						}
-						seq.next();
+						seq.incrementAndGet();
 					});
 				}
 
 				if ("FINISH_SLIDE".equalsIgnoreCase(eventName)) {
-					SlideDataParser.FieldWrapper wrapper = SlideDataParser.parseFields(xmlData);
+					FieldWrapper wrapper = slideDataReader.getFields(xmlData, reader);
 					Map<String, String> fieldCaptions = wrapper.getFieldCaptionMap();
 					Map<String, String> fieldValues = wrapper.getFieldValueMap();
 					Map<String, Map<String, String>> fieldValueCaptions = wrapper.getFieldValueCaptionMap();
@@ -370,7 +377,7 @@ public class ExportThreadedServiceImpl implements ExportThreadedService {
 						if (fieldColumnMap.containsKey(fieldName)) {
 							colNr = fieldColumnMap.get(fieldName);
 						} else {
-							colNr = colSeq.next();
+							colNr = colSeq.incrementAndGet();
 							fieldColumnMap.put(fieldName, colNr);
 							String fieldCaption = fieldCaptions.get(fieldName);
 							if (fieldCaption != null) {
@@ -491,44 +498,44 @@ public class ExportThreadedServiceImpl implements ExportThreadedService {
 	private void createLegendSheet(SXSSFWorkbook workbook, Map<String, String> fieldCaptionMap,
 			Map<String, Map<String, String>> fieldValueCaptionMap) {
 		final Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.LegendSheetName"));
-		final IntSequence seq = new IntSequence();
+		final AtomicInteger seq = new AtomicInteger(0);
 		if (!fieldCaptionMap.isEmpty()) {
-			Row row = sheet.createRow(seq.next());
+			Row row = sheet.createRow(seq.incrementAndGet());
 			createStringCell(row, 0, Messages.getString("Caption.Export.UserColumns"));
 
-			row = sheet.createRow(seq.next());
+			row = sheet.createRow(seq.incrementAndGet());
 			createStringCell(row, 0, Messages.getString("Caption.Export.ColumnName"));
 			createStringCell(row, 1, Messages.getString("Caption.Export.ColumnDescription"));
 
 			fieldCaptionMap.entrySet().forEach(e -> {
-				Row r = sheet.createRow(seq.next());
+				Row r = sheet.createRow(seq.incrementAndGet());
 				createStringCell(r, 0, e.getKey());
 				createStringCell(r, 1, fieldCaptionMap.get(e.getKey()));
 			});
 
-			seq.next();
+			seq.incrementAndGet();
 		}
 
 		if (!fieldValueCaptionMap.isEmpty()) {
-			Row row = sheet.createRow(seq.next());
+			Row row = sheet.createRow(seq.incrementAndGet());
 			createStringCell(row, 0, Messages.getString("Caption.Export.UserColumnValues"));
 
 			fieldValueCaptionMap.entrySet().forEach(e -> {
-				Row r = sheet.createRow(seq.next());
+				Row r = sheet.createRow(seq.incrementAndGet());
 				createStringCell(r, 0, Messages.getString("Caption.Export.ColumnName"));
 				createStringCell(r, 1, e.getKey());
 
-				r = sheet.createRow(seq.next());
+				r = sheet.createRow(seq.incrementAndGet());
 				createStringCell(r, 0, Messages.getString("Caption.Export.UserValue"));
 				createStringCell(r, 1, Messages.getString("Caption.Export.UserValueDescription"));
 
 				final Map<String, String> valueCaptions = e.getValue();
 				valueCaptions.entrySet().forEach(i -> {
-					Row rr = sheet.createRow(seq.next());
+					Row rr = sheet.createRow(seq.incrementAndGet());
 					createStringCell(rr, 0, i.getValue());
 					createStringCell(rr, 1, valueCaptions.get(i.getValue()));
 				});
-				seq.next();
+				seq.incrementAndGet();
 			});
 		}
 		sheet.autoSizeColumn(0);
