@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -73,10 +75,12 @@ import com.vaadin.cdi.UIScoped;
 import com.vaadin.data.Validatable;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.SingleComponentContainer;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -92,7 +96,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 	@Inject
 	private DocumentFactory documentFactory;
-	
+
 	@Inject
 	protected Event<ProcessEvent> procEvent;
 
@@ -251,24 +255,9 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	// FIXME similar to addHorizontalLayoutComponents and
-	// addVerticalLayoutComponents
-	// FIXME copy-paste code of addPanelComponents
 	private void addWindowComponents(Window container, Element element, SlideContainerPresenter presenter) {
 		List<Element> elements = DocumentUtility.getContainerComponents(element, ValidationSets.VALID_WINDOW_CHILDREN);
-		elements.stream().map(m -> createComponentFromElement(m, presenter)).filter(Objects::nonNull).forEach(e -> {
-			Component component = e.getComponent();
-
-			if (elements.size() == 1 && component instanceof Layout) {
-				container.setContent((Layout) component);
-			} else {
-				GridLayout gridLayout = new GridLayout(1, 1);
-				gridLayout.setSizeFull();
-				container.setContent(gridLayout);
-				gridLayout.addComponent(component);
-				gridLayout.setComponentAlignment(component, e.getAlignment());
-			}
-		});
+		addContainerComponents(container, elements, presenter);
 	}
 
 	private void addWindowHandlers(Window component, Element element, SlideContainerPresenter presenter) {
@@ -410,9 +399,15 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	// FIXME very close to addHorizontalLayoutComponents
 	private void addVerticalLayoutComponents(VerticalLayout container, Element element,
 			SlideContainerPresenter presenter) {
+		addOrderedLayoutComponents(container, element, presenter, container::getHeightUnits, container::getHeight,
+				container::setHeight);
+	}
+
+	private void addOrderedLayoutComponents(AbstractOrderedLayout container, Element element,
+			SlideContainerPresenter presenter, Supplier<Unit> unitsGetter, Supplier<Float> sizeGetter,
+			Consumer<String> sizeSetter) {
 		DocumentUtility.getContainerComponents(element, ValidationSets.VALID_CONTAINER_CHILDREN).stream()
 				.map(m -> createComponentFromElement(m, presenter)).filter(Objects::nonNull).forEach(e -> {
 					Component component = e.getComponent();
@@ -420,13 +415,15 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					container.addComponent(component);
 					container.setComponentAlignment(component, e.getAlignment());
 
-					float ratio = 1.0f;
-					if (component.getHeightUnits() == Unit.PERCENTAGE) {
-						ratio = component.getHeight() / 100;
-						component.setHeight("100%");
-					}
+					if (Objects.nonNull(unitsGetter) && Objects.nonNull(sizeGetter) && Objects.nonNull(sizeSetter)) {
+						float ratio = 1.0f;
+						if (unitsGetter.get() == Unit.PERCENTAGE) {
+							ratio = sizeGetter.get() / 100;
+							sizeSetter.accept("100%");
+						}
 
-					container.setExpandRatio(component, ratio);
+						container.setExpandRatio(component, ratio);
+					}
 				});
 	}
 
@@ -439,24 +436,10 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	// FIXME very close to addVerticalLayoutComponents
 	private void addHorizontalLayoutComponents(HorizontalLayout container, Element element,
 			SlideContainerPresenter presenter) {
-		DocumentUtility.getContainerComponents(element, ValidationSets.VALID_CONTAINER_CHILDREN).stream()
-				.map(m -> createComponentFromElement(m, presenter)).filter(Objects::nonNull).forEach(e -> {
-					Component component = e.getComponent();
-
-					container.addComponent(component);
-					container.setComponentAlignment(component, e.getAlignment());
-
-					float ratio = 1.0f;
-					if (component.getWidthUnits() == Unit.PERCENTAGE) {
-						ratio = component.getWidth() / 100;
-						component.setWidth("100%");
-					}
-
-					container.setExpandRatio(component, ratio);
-				});
+		addOrderedLayoutComponents(container, element, presenter, container::getWidthUnits, container::getWidth,
+				container::setWidth);
 	}
 
 	private FormLayout createFormLayout(Element element, Map<String, String> properties,
@@ -468,16 +451,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	// FIXME similar to addHorizontalLayoutComponents and
-	// addVerticalLayoutComponents
 	private void addFormLayoutComponents(FormLayout container, Element element, SlideContainerPresenter presenter) {
-		DocumentUtility.getContainerComponents(element, ValidationSets.VALID_CONTAINER_CHILDREN).stream()
-				.map(m -> createComponentFromElement(m, presenter)).filter(Objects::nonNull).forEach(e -> {
-					Component component = e.getComponent();
-
-					container.addComponent(component);
-					container.setComponentAlignment(component, e.getAlignment());
-				});
+		addOrderedLayoutComponents(container, element, presenter, null, null, null);
 	}
 
 	private Panel createPanel(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
@@ -489,11 +464,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	// FIXME copy-paste code of addWindowComponents
 	private void addPanelComponents(Panel container, Element element, SlideContainerPresenter presenter) {
 		List<Element> elements = DocumentUtility.getContainerComponents(element,
 				ValidationSets.VALID_CONTAINER_CHILDREN);
+		addContainerComponents(container, elements, presenter);
+	}
 
+	private void addContainerComponents(SingleComponentContainer container, List<Element> elements,
+			SlideContainerPresenter presenter) {
 		elements.stream().map(m -> createComponentFromElement(m, presenter)).filter(Objects::nonNull).forEach(e -> {
 			Component component = e.getComponent();
 

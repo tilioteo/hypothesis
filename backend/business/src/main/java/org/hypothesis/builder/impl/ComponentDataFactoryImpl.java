@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -98,17 +99,6 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 					try {
 						if (e.get(data) != null) {
 							String value = e.get(data).toString();
-							/*
-							 * if
-							 * (Double.class.isAssignableFrom(field.getType())
-							 * || Float.class.isAssignableFrom(field.getType()))
-							 * {
-							 * 
-							 * try { Double doubleValue = Double.valueOf(value);
-							 * value = String.format(Locale.ROOT, "%g",
-							 * doubleValue); } catch(NumberFormatException e) {}
-							 * }
-							 */
 							String name = e.getAnnotation(ElementPath.class).value();
 
 							Element baseElement = ensureSubElement(root, DocumentConstants.SOURCE);
@@ -161,12 +151,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 	}
 
 	private Element ensureSubElement(Element baseElement, String name) {
-		Element element = baseElement.selectElement(name);
-		if (null == element) {
-			element = baseElement.createChild(name);
-		}
-
-		return element;
+		return Optional.ofNullable(baseElement.selectElement(name)).orElse(baseElement.createChild(name));
 	}
 
 	@Override
@@ -187,20 +172,21 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		Element element = root.createChild(DocumentConstants.SOURCE);
 		element.setAttribute(DocumentConstants.TYPE, DocumentConstants.ACTION);
 
-		if (event.getAction() != null && event.getAction().getId() != null) {
+		if (Objects.nonNull(event.getAction()) && Objects.nonNull(event.getAction().getId())) {
 			element.setAttribute(DocumentConstants.ID, event.getAction().getId());
 		}
 	}
 
-	// FIXME copy-paste code of addOutputs
 	private void addActionOutputs(Element root, ActionEvent event) {
-		Map<Integer, ExchangeVariable> outputs = event.getAction().getOutputs();
+		writeExchangeVariables(root, event.getAction().getOutputs());
+	}
 
-		if (!outputs.isEmpty()) {
-			Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
-			outputs.entrySet().stream().filter(f -> f.getValue().getValue() != null).forEach(e -> {
-				Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
-				outputValueElement.setAttribute(DocumentConstants.INDEX, Integer.toString(e.getValue().getIndex()));
+	private void writeExchangeVariables(Element element, Map<Integer, ExchangeVariable> vars) {
+		if (!vars.isEmpty()) {
+			Element subElement = element.createChild(DocumentConstants.OUTPUT_VALUES);
+			vars.entrySet().stream().filter(f -> Objects.nonNull(f.getValue().getValue())).forEach(e -> {
+				Element outputValueElement = subElement.createChild(DocumentConstants.OUTPUT_VALUE);
+				outputValueElement.setAttribute(DocumentConstants.INDEX, e.getValue().getIndex());
 				writeOutputValue(outputValueElement, e.getValue().getValue());
 			});
 		}
@@ -233,7 +219,6 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 	}
 
-	// FIXME copy-paste similar code to addVariables
 	private void addFields(Element root, SlidePresenter presenter) {
 		Map<String, org.hypothesis.interfaces.Field> fields = presenter.getFields();
 
@@ -264,7 +249,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 	private String getFieldType(AbstractComponent field) {
 		FieldType fieldType = field.getClass().getAnnotation(FieldType.class);
 
-		return fieldType != null ? fieldType.value() : null;
+		return Objects.nonNull(fieldType) ? fieldType.value() : null;
 
 		/*
 		 * if (field instanceof ComboBox) { return DocumentConstants.COMBOBOX; }
@@ -304,8 +289,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			selectPanel.getSelectedButtons().forEach(e -> {
 				Element currentElement = valueElement != null ? valueElement
 						: element.createChild(DocumentConstants.VALUE);
-				currentElement.setAttribute(DocumentConstants.ID,
-						String.format("%d", selectPanel.getChildIndex(e) + 1));
+				currentElement.setAttribute(DocumentConstants.ID, selectPanel.getChildIndex(e) + 1);
 				currentElement.setText(e.getCaption());
 			});
 		} else if (field instanceof AbstractTextField) {
@@ -313,7 +297,6 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		}
 	}
 
-	// FIXME copy-paste similar code to addFields
 	private void addVariables(Element root, SlidePresenter presenter) {
 		Map<String, Variable<?>> variables = presenter.getVariables();
 
@@ -356,9 +339,9 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 				typeName = DocumentConstants.OBJECT_ARRAY;
 
 				List<?> array = (List<?>) value;
-				Object testItem = array.stream().filter(f -> f != null).findFirst().orElseGet(null);
+				Object testItem = array.stream().filter(Objects::nonNull).findFirst().orElse(null);
 
-				if (testItem != null) {
+				if (Objects.nonNull(testItem)) {
 					Class<?> itemType = testItem.getClass();
 					valueString = array.stream().map(String::valueOf)
 							.collect(Collectors.joining(DocumentConstants.STR_COMMA));
@@ -384,18 +367,8 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		}
 	}
 
-	// FIXME copy-paste code of addActionOutputs
 	private void addOutputs(Element root, SlidePresenter presenter) {
-		Map<Integer, ExchangeVariable> outputs = presenter.getOutputs();
-
-		if (!outputs.isEmpty()) {
-			Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
-			outputs.entrySet().stream().filter(f -> f.getValue().getValue() != null).forEach(e -> {
-				Element outputValueElement = element.createChild(DocumentConstants.OUTPUT_VALUE);
-				outputValueElement.setAttribute(DocumentConstants.INDEX, Integer.toString(e.getValue().getIndex()));
-				writeOutputValue(outputValueElement, e.getValue().getValue());
-			});
-		}
+		writeExchangeVariables(root, presenter.getOutputs());
 	}
 
 	// FIXME similar code to writeVariableData
@@ -409,6 +382,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			type = value.getClass();
 		}
 
+		// FIXME use ClassUtils to check compatible types
 		if (type == double.class || type == float.class || type.isAssignableFrom(Double.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT);
 			// use Locale.ROOT for locale neutral formating of decimals
