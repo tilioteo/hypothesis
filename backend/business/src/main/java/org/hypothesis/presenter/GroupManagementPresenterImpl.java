@@ -9,9 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -293,11 +291,8 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 			group = groupService.merge(group);
 
 			Set<User> users = group.getUsers();
-			// FIXME sort in stream
-			List<String> sortedUsers = new ArrayList<>();
-			users.stream().map(User::getUsername).forEach(sortedUsers::add);
+			List<String> sortedUsers = users.stream().map(User::getUsername).sorted().collect(Collectors.toList());
 
-			Collections.sort(sortedUsers);
 			Label usersLabel = new Label();
 
 			usersLabel.setDescription(sortedUsers.stream().collect(Collectors.joining("<br/>")));
@@ -314,26 +309,23 @@ public class GroupManagementPresenterImpl extends AbstractManagementPresenter im
 			Group group = ((BeanItem<Group>) source.getItem(itemId)).getBean();
 
 			Set<Pack> packs = permissionService.getGroupPacks(group);
-			List<String> sortedPacks = new ArrayList<>();
-			List<String> sortedPackDescs = new ArrayList<>();
-			packs.forEach(e -> {
-				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", e.getName(), e.getId()));
-				sortedPackDescs.add(
-						Messages.getString("Caption.Item.PackDescription", e.getName(), e.getId(), e.getDescription()));
-			});
-			Collections.sort(sortedPacks);
-			Collections.sort(sortedPackDescs);
 
 			StringBuilder descriptionBuilder = new StringBuilder();
 			descriptionBuilder.append("<ul>");
-			descriptionBuilder.append(sortedPackDescs.stream().collect(Collectors.joining("", "<li>", "</li>")));
+			descriptionBuilder
+					.append(packs
+							.stream().map(e -> Messages.getString("Caption.Item.PackDescription", e.getName(),
+									e.getId(), e.getDescription()))
+							.sorted().collect(Collectors.joining("", "<li>", "</li>")));
 			descriptionBuilder.append("</ul>");
 
 			Label packsLabel = new Label();
 			packsLabel.setDescription(descriptionBuilder.toString());
 
 			if (packs.size() < 5) {
-				packsLabel.setValue(sortedPacks.stream().collect(Collectors.joining(", ")));
+				packsLabel.setValue(
+						packs.stream().map(e -> Messages.getString("Caption.Item.PackLabel", e.getName(), e.getId()))
+								.sorted().collect(Collectors.joining(", ")));
 			} else {
 				packsLabel.setValue(Messages.getString("Caption.Label.MultiplePacks", packs.size()));
 			}
