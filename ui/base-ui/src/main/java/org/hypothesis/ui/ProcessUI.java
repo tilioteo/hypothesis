@@ -11,6 +11,7 @@ import org.hypothesis.cdi.Process;
 import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.Detachable;
 import org.hypothesis.interfaces.UIPresenter;
+import org.hypothesis.ui.view.DefaultProcessView;
 import org.vaadin.jouni.animator.AnimatorProxy;
 import org.vaadin.jouni.animator.shared.AnimType;
 
@@ -70,23 +71,23 @@ public class ProcessUI extends HypothesisUI {
 		removeAllTimers();
 		removeAllShortcutKeys();
 
-		Component content = getContent();
+		Component content = getViewContent();
 		if (animate && content instanceof ComponentContainer) {
 			AnimatorProxy animator = new AnimatorProxy();
 			animator.addListener((AnimatorProxy.AnimationListener) e -> {
-                setContent(clearLayout);
-                Command.Executor.execute(nextCommand);
-            });
+				setViewContent(clearLayout);
+				Command.Executor.execute(nextCommand);
+			});
 			((ComponentContainer) content).addComponent(animator);
 			animator.animate(content, AnimType.FADE_OUT).setDuration(300).setDelay(0);
 		} else {
-			setContent(clearLayout);
+			setViewContent(clearLayout);
 			Command.Executor.execute(nextCommand);
 		}
 	}
 
 	public void setSlideContent(Component component) {
-		setContent(component);
+		setViewContent(component);
 
 		focus();
 	}
@@ -114,4 +115,22 @@ public class ProcessUI extends HypothesisUI {
 						+ (visible ? 9999 : 0) + "\"}");
 	}
 
+	private void setViewContent(Component component) {
+		if (getNavigator().getCurrentView() instanceof DefaultProcessView) {
+			DefaultProcessView view = (DefaultProcessView) getNavigator().getCurrentView();
+			view.removeAllComponents();
+			view.addComponent(component);
+		}
+	}
+
+	private Component getViewContent() {
+		if (getNavigator().getCurrentView() instanceof DefaultProcessView) {
+			DefaultProcessView view = (DefaultProcessView) getNavigator().getCurrentView();
+			if (view.getComponentCount() == 1) {
+				return view.getComponent(0);
+			}
+		}
+
+		return null;
+	}
 }
