@@ -4,16 +4,21 @@
  */
 package org.hypothesis.business;
 
-import javassist.*;
+import java.util.Arrays;
+import java.util.Map;
+
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtField;
+import javassist.CtMethod;
+import javassist.LoaderClassPath;
+import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.StringMemberValue;
-import org.hypothesis.event.annotations.ElementPath;
-
-import java.util.Arrays;
-import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

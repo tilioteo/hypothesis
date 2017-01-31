@@ -4,12 +4,11 @@
  */
 package org.hypothesis.servlet;
 
-import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.server.Constants;
+import javax.servlet.annotation.WebServlet;
+
 import org.hypothesis.ui.MainUI;
 
-import javax.servlet.annotation.WebInitParam;
-import javax.servlet.annotation.WebServlet;
+import com.vaadin.annotations.VaadinServletConfiguration;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
 import org.hypothesis.business.EventManager;
 import org.hypothesis.business.MessageManager;
