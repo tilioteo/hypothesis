@@ -13,6 +13,7 @@ import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
 import org.apache.log4j.Logger;
+import org.hypothesis.business.ExportThreadedService;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.interfaces.PermissionService;
 import org.hypothesis.data.interfaces.TestService;
