@@ -42,8 +42,6 @@ public class SlideManagementView extends HorizontalLayout implements View {
 	private AceEditor editor2;
 
 	public SlideManagementView() {
-		System.out.println("Construct " + getClass().getName());
-
 		setSizeFull();
 	}
 
@@ -115,8 +113,6 @@ public class SlideManagementView extends HorizontalLayout implements View {
 
 	@PostConstruct
 	public void postConstruct() {
-		System.out.println("PostConstruct " + getClass().getName());
-
 		buildContent();
 	}
 }

@@ -27,14 +27,8 @@ public class UserManagementView extends ManagementView {
 	@Inject
 	private UserManagementPresenter presenter;
 
-	public UserManagementView() {
-		System.out.println("Construct " + getClass().getName());
-	}
-
 	@PostConstruct
 	public void postConstruct() {
-		System.out.println("PostConstruct " + getClass().getName());
-
 		setPresenter(presenter);
 	}
 }

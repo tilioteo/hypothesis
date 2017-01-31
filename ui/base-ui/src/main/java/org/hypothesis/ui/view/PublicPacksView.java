@@ -29,14 +29,8 @@ public class PublicPacksView extends PacksView {
 	@PublicPacks
 	private PacksPresenter presenter;
 
-	public PublicPacksView() {
-		System.out.println("Construct " + getClass().getName());
-	}
-
 	@PostConstruct
 	public void postConstruct() {
-		System.out.println("PostConstruct " + getClass().getName());
-
 		setPresenter(presenter);
 		presenter.setView(this);
 	}

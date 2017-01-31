@@ -35,8 +35,6 @@ public class ExportView extends VerticalLayout implements View {
 	private ExportPresenter presenter;
 
 	public ExportView() {
-		System.out.println("Construct " + getClass().getName());
-
 		setSizeFull();
 		setMargin(true);
 		setSpacing(true);
@@ -58,8 +56,6 @@ public class ExportView extends VerticalLayout implements View {
 
 	@PostConstruct
 	public void postConstruct() {
-		System.out.println("PostConstruct " + getClass().getName());
-
 		buildContent();
 	}
 }

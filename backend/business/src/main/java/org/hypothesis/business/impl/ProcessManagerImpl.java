@@ -22,7 +22,6 @@ import org.hypothesis.business.TaskManager;
 import org.hypothesis.data.interfaces.AsynchronousService;
 import org.hypothesis.data.interfaces.BranchService;
 import org.hypothesis.data.interfaces.HasStatus;
-import org.hypothesis.data.interfaces.OutputService;
 import org.hypothesis.data.interfaces.PermissionService;
 import org.hypothesis.data.interfaces.PersistenceService;
 import org.hypothesis.data.interfaces.TestService;
@@ -95,9 +94,6 @@ public class ProcessManagerImpl implements Serializable, ProcessManager {
 
 	@Inject
 	private PermissionService permissionService;
-
-	@Inject
-	private OutputService outputService;
 
 	@Inject
 	private AsynchronousService asynchronousService;
@@ -492,11 +488,8 @@ public class ProcessManagerImpl implements Serializable, ProcessManager {
 
 			currentTest = test;
 
-			currentPack = persistenceService.merge(test.getPack()); // null
-																	// value is
-																	// checked
-																	// in parent
-																	// method
+			// null value is checked in parent method
+			currentPack = persistenceService.merge(test.getPack());
 
 			branchManager.setListFromParent(currentPack);
 			currentBranch = persistenceService.merge(branchManager.current());
