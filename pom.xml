@@ -10,7 +10,8 @@
 	<name>hypothesis-parent</name>
 
 	<properties>
-		<hypothesis.version>1.5.4-1</hypothesis.version>
+		<hypothesis.version>1.5.5</hypothesis.version>
+
 		<vaadin.version>7.6.8</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<jetty.plugin.version>9.2.3.v20140905</jetty.plugin.version>
@@ -22,11 +23,12 @@
 		<dom4j.version>1.6.1</dom4j.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<log4j.version>1.2.17</log4j.version>
+		<validation-api.version>1.1.0.Final</validation-api.version>
 		<hibernate.version>4.3.11.Final</hibernate.version>
-		<postgresql.version>9.4-1206-jdbc41</postgresql.version>
+		<postgresql.version>9.4.1210</postgresql.version>
 		<spring.version>4.2.1.RELEASE</spring.version>
 		<mbassador.version>1.2.1</mbassador.version>
-		<special.components.version>0.9.5</special.components.version>
+		<special.components.version>0.9.6</special.components.version>
 		<vbuttons.version>0.9.1</vbuttons.version>
 		<client.jre.controls.version>0.9.1</client.jre.controls.version>
 		<poi.version>3.13</poi.version>
@@ -181,6 +183,12 @@
 				<groupId>jaxen</groupId>
 				<artifactId>jaxen</artifactId>
 				<version>${jaxen.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${validation-api.version}</version>
 			</dependency>
 
 			<dependency>
