@@ -44,5 +44,6 @@
 		<mapping class="org.hypothesis.data.model.UserPermission" />
 		<mapping class="org.hypothesis.data.model.GroupPermission" />
 		<mapping class="org.hypothesis.data.model.Message" />
+		<mapping class="org.hypothesis.data.model.Score" />
 	</session-factory>
 </hibernate-configuration>
