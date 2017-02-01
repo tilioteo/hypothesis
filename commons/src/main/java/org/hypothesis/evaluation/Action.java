@@ -22,6 +22,7 @@ import java.util.Map;
 public class Action extends AbstractBaseAction {
 
 	private final Map<Integer, ExchangeVariable> outputValues = new HashMap<>();
+	private final Map<Integer, ExchangeVariable> scores = new HashMap<>();
 	private final List<Evaluable> evaluables = new ArrayList<>();
 
 	/**
@@ -77,5 +78,17 @@ public class Action extends AbstractBaseAction {
 		}
 
 		return outputValues;
+	}
+
+	@Override
+	public Map<Integer, ExchangeVariable> getScores() {
+		Map<String, org.hypothesis.interfaces.Variable<?>> variables = getVariables();
+		if (variables != null) {
+			for (ExchangeVariable score : scores.values()) {
+				score.setVariables(variables);
+			}
+		}
+
+		return scores;
 	}
 }

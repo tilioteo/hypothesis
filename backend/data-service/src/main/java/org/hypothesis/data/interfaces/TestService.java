@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.hypothesis.data.model.Event;
 import org.hypothesis.data.model.Pack;
+import org.hypothesis.data.model.Score;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.SlideOrder;
 import org.hypothesis.data.model.Status;
@@ -33,6 +34,8 @@ public interface TestService extends EntityService<SimpleTest, Long> {
 	void updateTest(SimpleTest test);
 
 	void saveEvent(Event event, SimpleTest test);
+
+	void saveScore(Score score, SimpleTest test);
 
 	SlideOrder findTaskSlideOrder(SimpleTest test, Task task);
 

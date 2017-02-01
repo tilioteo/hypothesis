@@ -18,4 +18,6 @@ public interface DocumentFactory {
 
 	Document createEventDataDocument();
 
+	Document createScoreDataDocument();
+
 }

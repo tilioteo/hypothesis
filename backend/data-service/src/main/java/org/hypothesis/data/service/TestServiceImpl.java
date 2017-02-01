@@ -29,11 +29,13 @@ public class TestServiceImpl implements TestService {
 
 	private final HibernateDao<SimpleTest, Long> testDao;
 	private final HibernateDao<Event, Long> eventDao;
+	private final HibernateDao<Score, Long> scoreDao;
 	private final HibernateDao<SlideOrder, Long> slideOrderDao;
 
 	public TestServiceImpl() {
 		testDao = new HibernateDao<>(SimpleTest.class);
 		eventDao = new HibernateDao<>(Event.class);
+		scoreDao = new HibernateDao<>(Score.class);
 		slideOrderDao = new HibernateDao<>(SlideOrder.class);
 	}
 
@@ -317,6 +319,56 @@ public class TestServiceImpl implements TestService {
 				slideOrderDao.rollback();
 			}
 		}
+	}
+
+	public void saveScore(Score score, SimpleTest test) {
+		if (score != null && test != null) {
+			log.debug(String.format("saveScore, test id = %s, score id = %s",
+					test.getId() != null ? test.getId() : "NULL", score.getId() != null ? score.getId() : "NULL"));
+
+			try {
+				scoreDao.beginTransaction();
+				scoreDao.makePersistent(score);
+				scoreDao.flush();
+
+				int rank = getLastTestScoreRank(test);
+				saveTestScoreJoin(test, score, ++rank);
+
+				scoreDao.commit();
+				log.debug("score save finished");
+			} catch (Throwable e) {
+				log.error(e.getMessage());
+				eventDao.rollback();
+			}
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private int getLastTestScoreRank(SimpleTest test) {
+		log.debug("getLastTestScoreRank");
+		SQLQuery query = testDao.getSession()
+				.createSQLQuery("SELECT max(" + FieldConstants.RANK + ") FROM " + TableConstants.TEST_SCORE_TABLE
+						+ " WHERE " + FieldConstants.TEST_ID + "=:testId GROUP BY " + FieldConstants.TEST_ID);
+		query.setParameter("testId", test.getId());
+		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+		List results = query.list();
+
+		if (results.size() > 0) {
+			return (Integer) ((HashMap<?, ?>) results.get(0)).get("max");
+		}
+
+		return 0;
+	}
+
+	private void saveTestScoreJoin(SimpleTest test, Score score, int rank) {
+		log.debug("saveTestScoreJoin");
+		SQLQuery query = testDao.getSession()
+				.createSQLQuery("INSERT INTO " + TableConstants.TEST_SCORE_TABLE + " (" + FieldConstants.TEST_ID + ","
+						+ FieldConstants.SCORE_ID + "," + FieldConstants.RANK + ") VALUES (:testId,:scoreId,:rank)");
+		query.setParameter("testId", test.getId());
+		query.setParameter("scoreId", score.getId());
+		query.setParameter("rank", rank);
+		query.executeUpdate();
 	}
 
 }

@@ -32,7 +32,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = TableConstants.SCORE_TABLE)
 @Access(AccessType.PROPERTY)
-public class Score extends SerializableIdObject {
+public class Score extends SerializableEntity<Long> {
 
 	/**
 	 * 
@@ -78,10 +78,10 @@ public class Score extends SerializableIdObject {
 		super();
 	}
 
-	public Score(Date datetime, String data) {
+	public Score(String name, Date datetime) {
 		this();
+		this.name = name;
 		this.timeStamp = datetime != null ? datetime.getTime() : null;
-		this.data = data;
 	}
 
 	@Override

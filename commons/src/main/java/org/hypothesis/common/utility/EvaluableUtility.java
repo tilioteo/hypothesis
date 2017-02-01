@@ -67,7 +67,9 @@ public final class EvaluableUtility {
 			org.hypothesis.evaluation.Action action = new org.hypothesis.evaluation.Action(evaluator, id);
 			fm.children().stream().map(m -> createEvaluable(m, evaluator).orElse(null)).filter(Objects::nonNull)
 					.forEach(action::add);
-			return createActionOutputValues(action, fm);
+			createActionOutputValues(action, fm);
+			createActionScores(action, fm);
+			return action;
 		});
 	}
 
@@ -144,11 +146,10 @@ public final class EvaluableUtility {
 				.flatMap(DocumentUtility::getAction).map(m -> new Call(evaluator, m));
 	}
 
-	private static Action createActionOutputValues(Action action, Element element) {
+	private static void createActionOutputValues(Action action, Element element) {
 		DocumentUtility.findElementsByNameStarting(element, DocumentConstants.OUTPUT_VALUE).stream()
 				.map(m -> createValueExpression(m, DocumentConstants.OUTPUT_VALUE).orElse(null))
 				.filter(Objects::nonNull).forEach(e -> action.getOutputs().put(e.getIndex(), e));
-		return action;
 	}
 
 	public static Optional<IndexedExpression> createValueExpression(Element element, String prefix) {
@@ -162,6 +163,25 @@ public final class EvaluableUtility {
 				int index = Integer.parseInt(indexString);
 				return DocumentUtility.getExpressionElement(m).flatMap(EvaluableUtility::createExpression)
 						.map(mm -> new IndexedExpression(index, mm));
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			return null;
+		});
+	}
+
+	private static void createActionScores(Action action, Element element) {
+		DocumentUtility.getScoresElements(element).stream().map(m -> createScoreExpression(m).orElse(null))
+				.filter(Objects::nonNull).forEach(e -> action.getOutputs().put(e.getIndex(), e));
+	}
+
+	public static Optional<IndexedExpression> createScoreExpression(Element element) {
+		return Optional.ofNullable(element).flatMap(m -> {
+			String id = DocumentUtility.getId(m).orElse(null);
+			try {
+				int index = Integer.parseInt(id);
+				DocumentUtility.getExpressionElement(m).flatMap(EvaluableUtility::createExpression)
+						.map(mn -> new IndexedExpression(index, mn));
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			}
