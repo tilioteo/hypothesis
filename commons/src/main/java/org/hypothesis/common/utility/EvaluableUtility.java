@@ -86,6 +86,7 @@ public class EvaluableUtility {
 					action.add(evaluable);
 			}
 			createActionOutputValues(action, element);
+			createActionScores(action, element);
 
 			return action;
 		}
@@ -235,12 +236,42 @@ public class EvaluableUtility {
 		}
 	}
 
+	private static void createActionScores(Action action, Element element) {
+		List<Element> scoreElements = DocumentUtility.getScoresElements(element);
+
+		if (scoreElements != null) {
+			for (Element scoreElement : scoreElements) {
+				IndexedExpression scoreValue = createScoreExpression(scoreElement);
+				if (scoreValue != null) {
+					action.getOutputs().put(scoreValue.getIndex(), scoreValue);
+				}
+			}
+		}
+	}
+
 	public static IndexedExpression createValueExpression(Element element, String prefix) {
 		String indexString = element.getName().replace(prefix, "");
 
 		if (indexString.isEmpty()) {
 			indexString = "1";
 		}
+
+		try {
+			int index = Integer.parseInt(indexString);
+			Expression expression = createExpression(DocumentUtility.getExpressionElement(element));
+
+			if (expression != null) {
+				return new IndexedExpression(index, expression);
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static IndexedExpression createScoreExpression(Element element) {
+		String indexString = DocumentUtility.getId(element);
 
 		try {
 			int index = Integer.parseInt(indexString);

@@ -78,10 +78,10 @@ public class Score extends SerializableIdObject {
 		super();
 	}
 
-	public Score(Date datetime, String data) {
+	public Score(String name, Date datetime) {
 		this();
+		this.name = name;
 		this.timeStamp = datetime != null ? datetime.getTime() : null;
-		this.data = data;
 	}
 
 	@Override

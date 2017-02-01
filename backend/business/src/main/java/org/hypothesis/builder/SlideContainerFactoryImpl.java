@@ -134,6 +134,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 		createInputExpressions(rootElement, presenter);
 		createOutputExpressions(rootElement, presenter);
+		createScoreExpressions(rootElement, presenter);
 
 		createWindows(rootElement, presenter);
 		createViewport(rootElement, presenter);
@@ -182,6 +183,19 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						DocumentConstants.OUTPUT_VALUE);
 				if (indexedExpression != null) {
 					presenter.setOutputExpression(indexedExpression.getIndex(), indexedExpression);
+				}
+			}
+		}
+	}
+
+	private void createScoreExpressions(Element rootElement, SlideContainerPresenter presenter) {
+		List<Element> scoreElements = DocumentUtility.getScoresElements(rootElement);
+
+		if (scoreElements != null) {
+			for (Element scoreElement : scoreElements) {
+				IndexedExpression indexedExpression = EvaluableUtility.createScoreExpression(scoreElement);
+				if (indexedExpression != null) {
+					presenter.setScoreExpression(indexedExpression.getIndex(), indexedExpression);
 				}
 			}
 		}

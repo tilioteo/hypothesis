@@ -18,6 +18,7 @@ import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.Task;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.evaluation.Variable;
+import org.hypothesis.event.data.ScoreData;
 import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.event.model.ComponentEvent;
 import org.hypothesis.interfaces.ExchangeVariable;
@@ -174,12 +175,24 @@ public class SlideManager extends ListManager<Task, Slide> {
 		return null;
 	}
 
+	public Map<Integer, ExchangeVariable> getScores() {
+		if (container != null) {
+			return container.getPresenter().getScores();
+		}
+
+		return null;
+	}
+
 	public String getActionData(ActionEvent event) {
 		return ComponentDataBuilder.buildActionData(event, writer);
 	}
 
 	public String getComponentData(ComponentEvent componentEvent) {
 		return ComponentDataBuilder.buildComponentData(componentEvent.getData(), writer);
+	}
+
+	public String getScoreData(ScoreData data) {
+		return ComponentDataBuilder.buildScoreData(data, writer);
 	}
 
 }

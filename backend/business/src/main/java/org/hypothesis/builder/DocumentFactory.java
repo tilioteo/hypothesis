@@ -152,4 +152,11 @@ public class DocumentFactory {
 		return document;
 	}
 
+	public static Document createScoreDataDocument() {
+		Document document = new DocumentImpl();
+		document.createRoot(DocumentConstants.SCORE_DATA);
+
+		return document;
+	}
+
 }

@@ -32,6 +32,8 @@ public interface SlidePresenter extends Evaluator {
 
 	Map<Integer, ExchangeVariable> getOutputs();
 
+	Map<Integer, ExchangeVariable> getScores();
+
 	Map<String, Variable<?>> getVariables();
 
 	Map<String, Field> getFields();

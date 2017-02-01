@@ -226,6 +226,15 @@ public final class DocumentUtility {
 		return null;
 	}
 
+	public static List<Element> getScoresElements(Element root) {
+		Element element = root.selectElement(DocumentConstants.SCORES);
+		if (element != null) {
+			return element.selectElements(DocumentConstants.SCORE);
+		}
+
+		return null;
+	}
+
 	public static Element getReferenceSubElement(Element element) {
 		if (element != null) {
 			Element reference = element.selectElement(DocumentConstants.REFERENCE);
@@ -527,8 +536,7 @@ public final class DocumentUtility {
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
-			return DocumentUtility.findElementByNameAndValue(documentRoot, DocumentConstants.DEFAULT_PATH,
-					null, true);
+			return DocumentUtility.findElementByNameAndValue(documentRoot, DocumentConstants.DEFAULT_PATH, null, true);
 		}
 
 		return null;
@@ -536,8 +544,7 @@ public final class DocumentUtility {
 
 	public static Element getBranchKeyElement(Element element) {
 		if (element != null) {
-			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.BRANCH_KEY, null,
-					true);
+			return DocumentUtility.findElementByNameAndValue(element, DocumentConstants.BRANCH_KEY, null, true);
 		}
 
 		return null;
@@ -636,7 +643,8 @@ public final class DocumentUtility {
 				}
 
 				if (!Strings.isNullOrEmpty(actionId) && !Strings.isNullOrEmpty(name)) {
-					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction, presenter);
+					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction,
+							presenter);
 				}
 			}
 		}

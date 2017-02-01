@@ -29,6 +29,8 @@ public interface DocumentConstants {
 	String INPUT_VALUE = "InputValue";
 	String OUTPUT_VALUES = "OutputValues";
 	String OUTPUT_VALUE = "OutputValue";
+	String SCORES = "Scores";
+	String SCORE = "Score";
 	String COMPONENTS = "Components";
 	String COMPONENT = "Component";
 	String BINDINGS = "Bindings";
@@ -135,6 +137,7 @@ public interface DocumentConstants {
 	String FIELD = "Field";
 
 	String EVENT_DATA = "EventData";
+	String SCORE_DATA = "ScoreData";
 	String SLIDE_OUTPUT = "SlideOutput"; // used?
 	String SOURCES = "Sources";
 	String SOURCE = "Source";
