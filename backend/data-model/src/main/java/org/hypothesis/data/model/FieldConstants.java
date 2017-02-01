@@ -44,6 +44,7 @@ public interface FieldConstants {
 	String TEST_ID = "test_id";
 	String SLIDE_TEMPLATE_UID = "slide_template_uid";
 	String EVENT_ID = "event_id";
+	String SCORE_ID = "score_id";
 	String PRODUCTION = "production";
 	String CREATED = "created";
 	String STARTED = "started";
