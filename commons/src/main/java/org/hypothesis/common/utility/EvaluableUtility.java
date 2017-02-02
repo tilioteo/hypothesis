@@ -243,7 +243,7 @@ public class EvaluableUtility {
 			for (Element scoreElement : scoreElements) {
 				IndexedExpression scoreValue = createScoreExpression(scoreElement);
 				if (scoreValue != null) {
-					action.getOutputs().put(scoreValue.getIndex(), scoreValue);
+					action.getScores().put(scoreValue.getIndex(), scoreValue);
 				}
 			}
 		}
