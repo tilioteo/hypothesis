@@ -298,7 +298,7 @@ public class TestService implements Serializable {
 				log.debug("score save finished");
 			} catch (Throwable e) {
 				log.error(e.getMessage());
-				eventDao.rollback();
+				scoreDao.rollback();
 			}
 		}
 	}
