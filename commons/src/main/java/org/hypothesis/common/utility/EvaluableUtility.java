@@ -177,9 +177,9 @@ public final class EvaluableUtility {
 
 	public static Optional<IndexedExpression> createScoreExpression(Element element) {
 		return Optional.ofNullable(element).flatMap(m -> {
-			String id = DocumentUtility.getId(m).orElse(null);
+			String indexString = m.getAttribute(DocumentConstants.ID);
 			try {
-				int index = Integer.parseInt(id);
+				int index = Integer.parseInt(indexString);
 				DocumentUtility.getExpressionElement(m).flatMap(EvaluableUtility::createExpression)
 						.map(mn -> new IndexedExpression(index, mn));
 			} catch (NumberFormatException e) {

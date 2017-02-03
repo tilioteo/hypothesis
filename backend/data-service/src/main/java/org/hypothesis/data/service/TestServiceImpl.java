@@ -353,7 +353,7 @@ public class TestServiceImpl implements TestService {
 		query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
 		List results = query.list();
 
-		if (results.size() > 0) {
+		if (!results.isEmpty()) {
 			return (Integer) ((HashMap<?, ?>) results.get(0)).get("max");
 		}
 
