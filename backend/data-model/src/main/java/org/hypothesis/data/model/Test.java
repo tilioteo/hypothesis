@@ -102,6 +102,11 @@ public class Test extends SerializableIdObject {
 	 */
 	private List<Event> events = new LinkedList<>();
 
+	/**
+	 * list of scores in running test
+	 */
+	private List<Score> scores = new LinkedList<>();
+
 	protected Test() {
 		super();
 	}
@@ -276,6 +281,19 @@ public class Test extends SerializableIdObject {
 
 	public final void removeEvent(Event event) {
 		getEvents().remove(event);
+	}
+
+	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = TableConstants.TEST_SCORE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.SCORE_ID) )
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@OrderColumn(name = FieldConstants.RANK)
+	public List<Score> getScores() {
+		return scores;
+	}
+
+	protected void setScores(List<Score> list) {
+		this.scores = list;
 	}
 
 	@Override

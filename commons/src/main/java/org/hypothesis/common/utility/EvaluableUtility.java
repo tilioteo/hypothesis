@@ -271,7 +271,7 @@ public class EvaluableUtility {
 	}
 
 	public static IndexedExpression createScoreExpression(Element element) {
-		String indexString = DocumentUtility.getId(element);
+		String indexString = element.getAttribute(DocumentConstants.INDEX);
 
 		try {
 			int index = Integer.parseInt(indexString);
