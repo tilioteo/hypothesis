@@ -1,10 +1,17 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.business;
 
 import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * Created by kamil on 02.11.16.
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
  */
 public interface ExportThreadedService extends Serializable {
 

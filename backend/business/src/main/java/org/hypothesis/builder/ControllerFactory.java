@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.builder;
 
@@ -9,7 +10,9 @@ import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.interfaces.HasData;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public interface ControllerFactory<E extends HasData<?>, C extends Controller> extends Serializable {

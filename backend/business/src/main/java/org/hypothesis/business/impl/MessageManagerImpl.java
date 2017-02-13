@@ -39,7 +39,7 @@ public class MessageManagerImpl implements Serializable, MessageManager {
 	 */
 	@Override
 	public Message createMessage(String uid, Long userId) {
-		return Optional.ofNullable(messageService.findMessageByUid(uid)).map(m -> reader.readString(m.getData()))
+		return Optional.ofNullable(messageService.findById(uid)).map(m -> reader.readString(m.getData()))
 				.filter(DocumentUtility::isValidMessageDocument).map(m -> {
 					final Message message = new Message(uid, userId);
 

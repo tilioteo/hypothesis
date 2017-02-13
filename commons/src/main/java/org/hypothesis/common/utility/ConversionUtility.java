@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.common.utility;
 
@@ -10,7 +11,9 @@ import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @author morongk
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public class ConversionUtility {

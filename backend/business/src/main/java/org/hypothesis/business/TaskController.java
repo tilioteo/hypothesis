@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.business;
 
 import java.util.Map;
@@ -9,6 +13,12 @@ import org.hypothesis.evaluation.Node;
 import org.hypothesis.interfaces.Evaluator;
 import org.hypothesis.interfaces.ExchangeVariable;
 
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
 public interface TaskController extends Controller, Evaluator {
 
 	/**

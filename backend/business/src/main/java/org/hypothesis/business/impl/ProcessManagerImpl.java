@@ -441,8 +441,8 @@ public class ProcessManagerImpl implements Serializable, ProcessManager {
 	 *            observed event class object
 	 */
 	public void processPrepareTest(@Observes PrepareTestEvent event) {
-		log.debug(String.format("processPrepareTest: token uid = %s",
-				event.getToken() != null ? event.getToken().getUid() : "NULL"));
+		log.debug(String.format("processPrepareTest: token id = %s",
+				event.getToken() != null ? event.getToken().getId() : "NULL"));
 		Token token = event.getToken();
 
 		SimpleTest test = testService.getUnattendedTest(persistenceService.merge(token.getUser()),

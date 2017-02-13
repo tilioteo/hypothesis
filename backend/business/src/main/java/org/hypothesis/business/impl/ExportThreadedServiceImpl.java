@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.business.impl;
 
 import java.io.File;
@@ -41,6 +45,12 @@ import com.vaadin.server.ResourceReference;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.UI;
 
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
 @SuppressWarnings("serial")
 public class ExportThreadedServiceImpl implements ExportThreadedService {
 

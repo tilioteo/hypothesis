@@ -1,7 +1,8 @@
-package org.hypothesis.utility;
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
+package org.hypothesis.utility;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.event.data.ComponentData;
@@ -9,7 +10,9 @@ import org.hypothesis.event.data.ComponentData;
 import java.lang.reflect.Field;
 
 /**
- * @author Kamil Morong
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public final class ComponentDataUtility {

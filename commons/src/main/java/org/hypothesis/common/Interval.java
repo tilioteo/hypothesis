@@ -1,10 +1,13 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.common;
 
 /**
- * @author morongk
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public class Interval<T extends Comparable<T>> {

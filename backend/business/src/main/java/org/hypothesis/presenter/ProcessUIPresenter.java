@@ -157,7 +157,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements UIPresent
 	}
 
 	private void followToken(String tokenUid) {
-		Token token = tokenService.findTokenByUid(tokenUid);
+		Token token = tokenService.findById(tokenUid);
 		processManager.setAutoSlideShow(false);
 		// TODO maybe in the future send broadcast message to main view
 		/*

@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.builder.impl;
 
@@ -20,7 +21,9 @@ import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
 
 /**
- * @author morongk
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")

@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.business;
 
 import java.util.Map;
@@ -7,6 +11,12 @@ import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.Task;
 import org.hypothesis.interfaces.ExchangeVariable;
 
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
 public interface TaskManager {
 
 	Task current();

@@ -1,5 +1,6 @@
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
 package org.hypothesis.utility;
 
@@ -18,7 +19,9 @@ import com.vaadin.cdi.CDIView;
 import com.vaadin.navigator.View;
 
 /**
- * @author kamil
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 public final class ViewUtility {

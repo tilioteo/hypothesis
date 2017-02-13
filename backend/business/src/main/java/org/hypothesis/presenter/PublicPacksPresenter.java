@@ -4,16 +4,13 @@
  */
 package org.hypothesis.presenter;
 
-import com.vaadin.cdi.NormalViewScoped;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Component;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.cdi.PublicPacks;
 import org.hypothesis.data.interfaces.PermissionService;
@@ -31,16 +28,22 @@ import org.vaadin.button.ui.OpenPopupButton;
 import org.vaadin.button.ui.OpenPopupButton.WindowClosedListener;
 import org.vaadin.jre.ui.DeployJava;
 
-import javax.inject.Inject;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.vaadin.cdi.NormalViewScoped;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
- *         <p>
+ * 
  *         Hypothesis
+ *
  */
 @SuppressWarnings("serial")
 @PublicPacks
@@ -84,7 +87,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 
                     if (token != null) {
                         featuredStart = new Date();
-                        DeployJava.get(view.getUI()).launchJavaWebStart(constructStartJnlp(token.getUid()));
+                        DeployJava.get(view.getUI()).launchJavaWebStart(constructStartJnlp(token.getId()));
                     }
                 }
             }
@@ -121,7 +124,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 
                         if (token != null) {
                             view.mask();
-                            ((OpenPopupButton) button).setUrl(constructStartUrl(token.getUid(), false));
+                            ((OpenPopupButton) button).setUrl(constructStartUrl(token.getId(), false));
                             testStarted = true;
                         }
                     }

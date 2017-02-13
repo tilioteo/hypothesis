@@ -1,3 +1,7 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.data.interfaces;
 
 import org.hypothesis.data.model.*;
@@ -6,6 +10,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
 public interface PermissionService extends Serializable {
 
 	GroupPermission addGroupPermission(GroupPermission groupPermission);

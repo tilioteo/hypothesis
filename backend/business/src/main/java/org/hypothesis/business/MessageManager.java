@@ -1,7 +1,17 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.business;
 
 import org.hypothesis.event.data.Message;
 
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
 public interface MessageManager {
 
 	/**
