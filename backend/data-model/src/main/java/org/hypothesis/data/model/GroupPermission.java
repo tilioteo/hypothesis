@@ -4,10 +4,21 @@
  */
 package org.hypothesis.data.model;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
-import javax.persistence.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -22,7 +33,7 @@ import javax.persistence.*;
 @Table(name = TableConstants.GROUP_PERMISSION_TABLE, uniqueConstraints = {
 		@UniqueConstraint(columnNames = { FieldConstants.GROUP_ID, FieldConstants.PACK_ID }) })
 @Access(AccessType.PROPERTY)
-public final class GroupPermission extends SerializableIdObject {
+public final class GroupPermission extends SerializableEntity<Long> {
 
 	/**
 	 * 

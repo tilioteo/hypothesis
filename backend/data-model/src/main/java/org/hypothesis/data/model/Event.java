@@ -4,10 +4,23 @@
  */
 package org.hypothesis.data.model;
 
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -21,7 +34,7 @@ import java.util.Date;
 @Entity
 @Table(name = TableConstants.EVENT_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Event extends SerializableIdObject {
+public final class Event extends SerializableEntity<Long> {
 
 	/**
 	 * 

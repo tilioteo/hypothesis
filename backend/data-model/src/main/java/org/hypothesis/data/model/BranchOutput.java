@@ -4,9 +4,19 @@
  */
 package org.hypothesis.data.model;
 
-import org.hibernate.annotations.Type;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
-import javax.persistence.*;
+import org.hibernate.annotations.Type;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -17,7 +27,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = TableConstants.BRANCH_OUTPUT_TABLE)
 @Access(AccessType.PROPERTY)
-public final class BranchOutput extends SerializableIdObject {
+public final class BranchOutput extends SerializableEntity<Long> {
 
 	/**
 	 * 

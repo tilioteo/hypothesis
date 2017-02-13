@@ -34,7 +34,7 @@ public class PackServiceImpl implements PackService {
 	 * @see org.hypothesis.data.service.PackService#findPackById(java.lang.Long)
 	 */
 	@Override
-	public Pack findPackById(Long id) {
+	public Pack findById(Long id) {
 		log.debug(String.format("findPackById: id = %s", id != null ? id : "null"));
 		try {
 			packDao.beginTransaction();

@@ -7,13 +7,11 @@ package org.hypothesis.data.interfaces;
 import java.io.Serializable;
 
 /**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
+ * @author morongk
  *
  */
-public interface HasUid<T> extends Serializable {
-
-	T getUid();
+public interface EntityService<T extends HasId<ID>, ID> extends Serializable {
+	
+	T findById(ID id);
 
 }

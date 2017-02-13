@@ -1,12 +1,21 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.data.interfaces;
+
+import java.util.List;
 
 import org.hypothesis.data.model.Group;
 import org.hypothesis.data.model.User;
 
-import java.io.Serializable;
-import java.util.List;
-
-public interface GroupService extends Serializable {
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
+public interface GroupService extends EntityService<Group, Long> {
 
 	Group merge(Group group);
 
@@ -17,8 +26,6 @@ public interface GroupService extends Serializable {
 	void delete(Group group);
 
 	List<Group> findAll();
-
-	Group find(long id);
 
 	List<Group> findOwnerGroups(User owner);
 

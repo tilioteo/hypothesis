@@ -4,13 +4,25 @@
  */
 package org.hypothesis.data.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -21,7 +33,7 @@ import java.util.Set;
 @Entity
 @Table(name = TableConstants.GROUP_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Group extends SerializableIdObject {
+public final class Group extends SerializableEntity<Long> {
 
 	/**
 	 * 
@@ -82,7 +94,7 @@ public final class Group extends SerializableIdObject {
 											 * , cascade = {CascadeType.PERSIST,
 											 * CascadeType.MERGE }
 											 */)
-	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.GROUP_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.USER_ID) )
+	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.GROUP_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.USER_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	public Set<User> getUsers() {

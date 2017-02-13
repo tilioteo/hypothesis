@@ -4,14 +4,30 @@
  */
 package org.hypothesis.data.model;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -22,7 +38,7 @@ import java.util.List;
 @Entity
 @Table(name = TableConstants.TEST_TABLE)
 @Access(AccessType.PROPERTY)
-public class Test extends SerializableIdObject {
+public class Test extends SerializableEntity<Long> {
 	/**
 	 * 
 	 */
@@ -240,7 +256,7 @@ public class Test extends SerializableIdObject {
 	}
 
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.EVENT_ID) )
+	@JoinTable(name = TableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.EVENT_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = FieldConstants.RANK)

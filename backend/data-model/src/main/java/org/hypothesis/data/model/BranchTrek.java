@@ -4,9 +4,20 @@
  */
 package org.hypothesis.data.model;
 
-import org.hibernate.annotations.Index;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
-import javax.persistence.*;
+import org.hibernate.annotations.Index;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -23,7 +34,7 @@ import javax.persistence.*;
 @org.hibernate.annotations.Table(appliesTo = TableConstants.BRANCH_TREK_TABLE, indexes = {
 		@Index(name = "IX_PACK_BRANCH", columnNames = { FieldConstants.PACK_ID, FieldConstants.BRANCH_ID }) })
 @Access(AccessType.PROPERTY)
-public final class BranchTrek extends SerializableIdObject {
+public final class BranchTrek extends SerializableEntity<Long> {
 	/**
 	 * 
 	 */

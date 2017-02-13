@@ -4,9 +4,20 @@
  */
 package org.hypothesis.data.model;
 
-import org.hibernate.annotations.Type;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import javax.persistence.*;
+import org.hibernate.annotations.Type;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -17,7 +28,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = TableConstants.SLIDE_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Slide extends SerializableIdObject {
+public final class Slide extends SerializableEntity<Long> {
 
 	/**
 	 * 
@@ -94,8 +105,8 @@ public final class Slide extends SerializableIdObject {
 	 * @return
 	 */
 	@Transient
-	public String getTemplateUid() {
-		return getTemplate() != null ? getTemplate().getUid() : null;
+	public String getTemplateId() {
+		return getTemplate() != null ? getTemplate().getId() : null;
 	}
 
 	/**

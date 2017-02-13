@@ -36,7 +36,7 @@ public class MessageServiceImpl implements MessageService {
 	 * String)
 	 */
 	@Override
-	public Message findMessageByUid(String uid) {
+	public Message findById(String uid) {
 		log.debug(String.format("findMessageByUid: uid = %s", uid != null ? uid : "null"));
 		try {
 			messageDao.beginTransaction();

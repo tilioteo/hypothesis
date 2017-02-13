@@ -1,11 +1,11 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.data.interfaces;
 
 import org.hypothesis.data.model.Message;
 
-import java.io.Serializable;
-
-public interface MessageService extends Serializable {
-
-	Message findMessageByUid(String uid);
+public interface MessageService extends EntityService<Message, String> {
 
 }

@@ -1,15 +1,28 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.data.interfaces;
 
-import org.hypothesis.data.model.*;
-
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-public interface TestService extends Serializable {
+import org.hypothesis.data.model.Event;
+import org.hypothesis.data.model.Pack;
+import org.hypothesis.data.model.SimpleTest;
+import org.hypothesis.data.model.SlideOrder;
+import org.hypothesis.data.model.Status;
+import org.hypothesis.data.model.Task;
+import org.hypothesis.data.model.User;
 
-	SimpleTest findById(Long id);
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
+public interface TestService extends EntityService<SimpleTest, Long> {
 
 	List<SimpleTest> findTestsBy(User user, Pack pack, Status... statuses);
 

@@ -1,11 +1,20 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
 package org.hypothesis.data.interfaces;
+
+import java.util.List;
 
 import org.hypothesis.data.model.User;
 
-import java.io.Serializable;
-import java.util.List;
-
-public interface UserService extends Serializable {
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
+public interface UserService extends EntityService<User, Long> {
 
 	User merge(User user);
 
@@ -20,8 +29,6 @@ public interface UserService extends Serializable {
 	List<User> findAll();
 
 	List<User> findOwnerUsers(User owner);
-
-	User find(long id);
 
 	User findByUsername(String username);
 

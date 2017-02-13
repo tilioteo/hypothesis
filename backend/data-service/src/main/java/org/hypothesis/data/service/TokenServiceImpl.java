@@ -63,7 +63,7 @@ public class TokenServiceImpl implements TokenService {
 	 * org.hypothesis.data.service.TokenService#findTokenByUid(java.lang.String)
 	 */
 	@Override
-	public Token findTokenByUid(String uid) {
+	public Token findById(String uid) {
 		log.debug("findTokenByUid");
 		Token token = null;
 		try {

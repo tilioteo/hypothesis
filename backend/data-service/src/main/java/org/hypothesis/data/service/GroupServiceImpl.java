@@ -151,11 +151,11 @@ public class GroupServiceImpl implements GroupService {
 	 * @see org.hypothesis.data.service.GroupService#find(long)
 	 */
 	@Override
-	public Group find(long id) {
+	public Group findById(Long id) {
 		log.debug("findGroup");
 		try {
 			groupDao.beginTransaction();
-			Group grp = groupDao.findById(Long.valueOf(id), true);
+			Group grp = groupDao.findById(id, true);
 			groupDao.commit();
 			return grp;
 		} catch (Exception e) {

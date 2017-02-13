@@ -4,13 +4,19 @@
  */
 package org.hypothesis.data.model;
 
+import java.util.Date;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 import org.hibernate.annotations.Synchronize;
 import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-import java.util.Date;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -47,7 +53,7 @@ import java.util.Date;
 		TableConstants.PACK_TABLE, TableConstants.BRANCH_TABLE, TableConstants.TASK_TABLE, TableConstants.SLIDE_TABLE })
 @Immutable
 @Access(AccessType.PROPERTY)
-public class ExportEvent extends SerializableIdObject {
+public class ExportEvent extends SerializableEntity<Long> {
 
 	/**
 	 * 

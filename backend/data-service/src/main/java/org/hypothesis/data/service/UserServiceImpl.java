@@ -189,11 +189,11 @@ public class UserServiceImpl implements UserService {
 	 * @see org.hypothesis.data.service.UserService#find(long)
 	 */
 	@Override
-	public User find(long id) {
+	public User findById(Long id) {
 		log.debug("findUser");
 		try {
 			userDao.beginTransaction();
-			User usr = userDao.findById(Long.valueOf(id), true);
+			User usr = userDao.findById(id, true);
 			userDao.commit();
 			return usr;
 		} catch (Exception e) {

@@ -4,8 +4,20 @@
  */
 package org.hypothesis.data.model;
 
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -16,7 +28,7 @@ import java.util.Date;
 @Entity
 @Table(name = TableConstants.TEST_TABLE)
 @Access(AccessType.PROPERTY)
-public class SimpleTest extends SerializableIdObject {
+public class SimpleTest extends SerializableEntity<Long> {
 	/**
 	 * 
 	 */

@@ -4,14 +4,27 @@
  */
 package org.hypothesis.data.model;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -22,7 +35,7 @@ import java.util.Set;
 @Entity
 @Table(name = TableConstants.USER_TABLE)
 @Access(AccessType.PROPERTY)
-public final class User extends SerializableIdObject {
+public final class User extends SerializableEntity<Long> {
 
 	public static final User GUEST = new User("Guest");
 
