@@ -25,6 +25,7 @@ import org.hypothesis.data.model.SlideOrder;
 import org.hypothesis.data.model.Status;
 import org.hypothesis.data.model.TableConstants;
 import org.hypothesis.data.model.Task;
+import org.hypothesis.data.model.Test;
 import org.hypothesis.data.model.User;
 
 /**
@@ -38,19 +39,22 @@ public class TestService implements Serializable {
 
 	private static final Logger log = Logger.getLogger(TestService.class);
 
-	private final HibernateDao<SimpleTest, Long> testDao;
+	private final HibernateDao<SimpleTest, Long> simpleTestDao;
+	private final HibernateDao<Test, Long> testDao;
 	private final HibernateDao<Event, Long> eventDao;
 	private final HibernateDao<Score, Long> scoreDao;
 	private final HibernateDao<SlideOrder, Long> slideOrderDao;
 
 	public static TestService newInstance() {
 		return new TestService(new HibernateDao<SimpleTest, Long>(SimpleTest.class),
+				new HibernateDao<Test, Long>(Test.class),
 				new HibernateDao<Event, Long>(Event.class), new HibernateDao<Score, Long>(Score.class),
 				new HibernateDao<SlideOrder, Long>(SlideOrder.class));
 	}
 
-	protected TestService(HibernateDao<SimpleTest, Long> testDao, HibernateDao<Event, Long> eventDao,
+	protected TestService(HibernateDao<SimpleTest, Long> simpleTestDao, HibernateDao<Test, Long> testDao, HibernateDao<Event, Long> eventDao,
 			HibernateDao<Score, Long> scoreDao, HibernateDao<SlideOrder, Long> slideOrderDao) {
+		this.simpleTestDao = simpleTestDao;
 		this.testDao = testDao;
 		this.eventDao = eventDao;
 		this.scoreDao = scoreDao;
@@ -60,14 +64,14 @@ public class TestService implements Serializable {
 	public SimpleTest findById(Long id) {
 		log.debug("TestService::findById(" + (id != null ? id : "NULL") + ")");
 		try {
-			testDao.beginTransaction();
+			simpleTestDao.beginTransaction();
 
-			SimpleTest test = testDao.findById(id, false);
-			testDao.commit();
+			SimpleTest test = simpleTestDao.findById(id, false);
+			simpleTestDao.commit();
 			return test;
 		} catch (Throwable e) {
 			log.error(e.getMessage());
-			testDao.rollback();
+			simpleTestDao.rollback();
 		}
 		return null;
 	}
@@ -75,7 +79,7 @@ public class TestService implements Serializable {
 	public List<SimpleTest> findTestsBy(User user, Pack pack, Status... statuses) {
 		log.debug("findTestsBy(User, Pack, Status[])");
 		try {
-			testDao.beginTransaction();
+			simpleTestDao.beginTransaction();
 
 			int i = 0;
 			Integer[] stats = new Integer[statuses.length];
@@ -83,15 +87,15 @@ public class TestService implements Serializable {
 				stats[i++] = status.getCode();
 			}
 
-			List<SimpleTest> tests = testDao
+			List<SimpleTest> tests = simpleTestDao
 					.findByCriteria(Restrictions.and(Restrictions.eq(EntityConstants.PACK, pack),
 							Restrictions.and(Restrictions.eq(EntityConstants.USER, user),
 									Restrictions.in(FieldConstants.STATUS, stats))));
-			testDao.commit();
+			simpleTestDao.commit();
 			return tests;
 		} catch (Throwable e) {
 			log.error(e.getMessage());
-			testDao.rollback();
+			simpleTestDao.rollback();
 		}
 		return null;
 	}
@@ -100,9 +104,9 @@ public class TestService implements Serializable {
 	public List<SimpleTest> findTestsBy(Pack pack, Collection<User> users, Date dateFrom, Date dateTo) {
 		log.debug("findTestsBy(Pack, Collection<User>, Date, Date)");
 		try {
-			testDao.beginTransaction();
+			simpleTestDao.beginTransaction();
 
-			Criteria criteria = testDao.createCriteria();
+			Criteria criteria = simpleTestDao.createCriteria();
 
 			criteria.add(Restrictions.eq(EntityConstants.PACK, pack));
 
@@ -121,6 +125,81 @@ public class TestService implements Serializable {
 			criteria.addOrder(Order.asc(FieldConstants.ID));
 
 			List<SimpleTest> tests = criteria.list();
+			simpleTestDao.commit();
+
+			return tests;
+
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			simpleTestDao.rollback();
+		}
+
+		return null;
+	}
+
+	/*@SuppressWarnings("unchecked")
+	public List<SimpleTest> findTestScoresBy(Collection<User> users, Date dateFrom, Date dateTo) {
+		log.debug("findTestScoresBy(Collection<User>, Date, Date)");
+		try {
+			testDao.beginTransaction();
+			StringBuilder sb = new StringBuilder(
+					"SELECT DISTINCT a.* FROM " + TableConstants.TEST_TABLE + " a," + TableConstants.TEST_SCORE_TABLE
+							+ " b WHERE a." + FieldConstants.ID + "=b." + FieldConstants.TEST_ID);
+			if (dateFrom != null) {
+				sb.append(" AND a." + FieldConstants.CREATED + ">=:dateFrom");
+			}
+			if (dateTo != null) {
+				sb.append(" AND a." + FieldConstants.CREATED + "<=:dateTo");
+			}
+
+			SQLQuery query = testDao.getSession().createSQLQuery(sb.toString());
+			if (dateFrom != null) {
+				query.setParameter("dateFrom", dateFrom);
+			}
+			if (dateTo != null) {
+				query.setParameter("dateTo", dateTo);
+			}
+			query.addEntity(SimpleTest.class);
+			query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+			List<SimpleTest> tests = query.list();
+			testDao.commit();
+
+			return tests;
+
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			testDao.rollback();
+		}
+
+		return null;
+	}*/
+
+	@SuppressWarnings("unchecked")
+	public List<Test> findTestScoresBy(Collection<User> users, Date dateFrom, Date dateTo) {
+		log.debug("findTestScoresBy(Collection<User>, Date, Date)");
+		try {
+			testDao.beginTransaction();
+
+			Criteria criteria = testDao.createCriteria();
+
+			if (users != null) {
+				criteria.add(Restrictions.in(EntityConstants.USER, users));
+			}
+
+			if (dateFrom != null) {
+				criteria.add(Restrictions.ge(FieldConstants.CREATED, dateFrom));
+			}
+
+			if (dateTo != null) {
+				criteria.add(Restrictions.le(FieldConstants.CREATED, dateTo));
+			}
+			
+			criteria.add(Restrictions.isNotEmpty(FieldConstants.SCORES));
+
+			criteria.addOrder(Order.asc(FieldConstants.ID));
+			criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+			List<Test> tests = criteria.list();
 			testDao.commit();
 
 			return tests;
@@ -136,7 +215,7 @@ public class TestService implements Serializable {
 	public SimpleTest getUnattendedTest(User user, Pack pack, boolean production) {
 		log.debug("getUnattendedTest");
 		try {
-			testDao.beginTransaction();
+			simpleTestDao.beginTransaction();
 
 			List<SimpleTest> tests;
 
@@ -165,15 +244,15 @@ public class TestService implements Serializable {
 				outputTest = new SimpleTest(pack, user);
 				outputTest.setProduction(production);
 				log.debug("persisting new test instance");
-				testDao.makePersistent(outputTest);
+				simpleTestDao.makePersistent(outputTest);
 			}
 
-			testDao.commit();
+			simpleTestDao.commit();
 			return outputTest;
 
 		} catch (Throwable e) {
 			log.error(e.getMessage());
-			testDao.rollback();
+			simpleTestDao.rollback();
 		}
 		return null;
 	}
@@ -182,15 +261,15 @@ public class TestService implements Serializable {
 		if (test != null) {
 			log.debug(String.format("updateTest, test id = %s", test.getId() != null ? test.getId() : "NULL"));
 			try {
-				testDao.beginTransaction();
-				testDao.clear();
-				test = testDao.merge(test);
-				testDao.makePersistent(test);
-				testDao.commit();
+				simpleTestDao.beginTransaction();
+				simpleTestDao.clear();
+				test = simpleTestDao.merge(test);
+				simpleTestDao.makePersistent(test);
+				simpleTestDao.commit();
 				log.debug("test update finished");
 			} catch (Throwable e) {
 				log.error(e.getMessage());
-				testDao.rollback();
+				simpleTestDao.rollback();
 			}
 		}
 	}
@@ -220,7 +299,7 @@ public class TestService implements Serializable {
 	@SuppressWarnings("rawtypes")
 	private int getLastTestEventRank(SimpleTest test) {
 		log.debug("getLastTestEventRank");
-		SQLQuery query = testDao.getSession()
+		SQLQuery query = simpleTestDao.getSession()
 				.createSQLQuery("SELECT max(" + FieldConstants.RANK + ") FROM " + TableConstants.TEST_EVENT_TABLE
 						+ " WHERE " + FieldConstants.TEST_ID + "=:testId GROUP BY " + FieldConstants.TEST_ID);
 		query.setParameter("testId", test.getId());
@@ -236,7 +315,7 @@ public class TestService implements Serializable {
 
 	private void saveTestEventJoin(SimpleTest test, Event event, int rank) {
 		log.debug("saveTestEventJoin");
-		SQLQuery query = testDao.getSession()
+		SQLQuery query = simpleTestDao.getSession()
 				.createSQLQuery("INSERT INTO " + TableConstants.TEST_EVENT_TABLE + " (" + FieldConstants.TEST_ID + ","
 						+ FieldConstants.EVENT_ID + "," + FieldConstants.RANK + ") VALUES (:testId,:eventId,:rank)");
 		query.setParameter("testId", test.getId());
@@ -306,7 +385,7 @@ public class TestService implements Serializable {
 	@SuppressWarnings("rawtypes")
 	private int getLastTestScoreRank(SimpleTest test) {
 		log.debug("getLastTestScoreRank");
-		SQLQuery query = testDao.getSession()
+		SQLQuery query = simpleTestDao.getSession()
 				.createSQLQuery("SELECT max(" + FieldConstants.RANK + ") FROM " + TableConstants.TEST_SCORE_TABLE
 						+ " WHERE " + FieldConstants.TEST_ID + "=:testId GROUP BY " + FieldConstants.TEST_ID);
 		query.setParameter("testId", test.getId());
@@ -322,7 +401,7 @@ public class TestService implements Serializable {
 
 	private void saveTestScoreJoin(SimpleTest test, Score score, int rank) {
 		log.debug("saveTestScoreJoin");
-		SQLQuery query = testDao.getSession()
+		SQLQuery query = simpleTestDao.getSession()
 				.createSQLQuery("INSERT INTO " + TableConstants.TEST_SCORE_TABLE + " (" + FieldConstants.TEST_ID + ","
 						+ FieldConstants.SCORE_ID + "," + FieldConstants.RANK + ") VALUES (:testId,:scoreId,:rank)");
 		query.setParameter("testId", test.getId());

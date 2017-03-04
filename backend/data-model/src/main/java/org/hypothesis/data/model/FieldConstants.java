@@ -60,6 +60,7 @@ public interface FieldConstants {
 	String ENABLED = "enabled";
 	String EXPIRE_DATE = "expire_date";
 	String PASS = "pass";
+	String SCORES = "scores";
 
 	String PACK_NAME = "pack_name";
 	String BRANCH_NAME = "branch_name";

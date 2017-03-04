@@ -52,6 +52,33 @@ public class SlideDataParser {
 		return list;
 	}
 	
+	public static List<String> parseScores(String xmlString) {
+		List<String> list = new ArrayList<>();
+		Document doc = XmlUtility.readString(xmlString);
+		if (doc != null) {
+			@SuppressWarnings("unchecked")
+			List<Element> elements = doc.getRootElement().selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.SCORE));
+
+			for (Element element : elements) {
+				String index = element.attributeValue(DocumentConstants.INDEX);
+
+				try {
+					int i = Integer.parseInt(index);
+					String value = element.getTextTrim(); 
+					if (!value.isEmpty() && i >=1) {
+						if (i >= list.size()) {
+							for (int j = list.size(); j < i; ++j) {
+								list.add(null);
+							}
+						}
+						list.set(i-1, value);
+					}
+				} catch (NumberFormatException e) {}
+			}
+		}
+		return list;
+	}
+	
 	public static FieldWrapper parseFields(String xmlString) {
 		FieldWrapper wrapper = new FieldWrapper();
 

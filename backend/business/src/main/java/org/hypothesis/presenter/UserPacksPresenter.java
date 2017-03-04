@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
@@ -54,17 +53,9 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 	}
 
 	@Override
-	public void attach() {
-		super.attach();
-
-		setUser(SessionManager.getLoggedUser());
-	}
-
-	@Override
 	public void setUser(User user) {
+		super.setUser(user);
 		if (user != getUser()) {
-			super.setUser(user);
-
 			refreshView();
 		}
 	}

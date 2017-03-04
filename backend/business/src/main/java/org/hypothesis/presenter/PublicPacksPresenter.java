@@ -122,8 +122,7 @@ public class PublicPacksPresenter implements PacksPresenter {
 
 	@Override
 	public void attach() {
-		// TODO Auto-generated method stub
-
+		setUser(SessionManager.getLoggedUser());
 	}
 
 	@Override

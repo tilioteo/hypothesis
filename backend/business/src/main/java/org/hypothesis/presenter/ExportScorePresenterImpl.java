@@ -4,26 +4,20 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.hypothesis.business.ExportRunnable;
-import org.hypothesis.business.ExportRunnableImpl;
+import org.hypothesis.business.ExportScoreRunnableImpl;
 import org.hypothesis.business.ExportThread;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Status;
+import org.hypothesis.data.model.Test;
 import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.TestService;
 import org.hypothesis.data.service.UserService;
@@ -31,9 +25,9 @@ import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.Command;
-import org.hypothesis.interfaces.ExportPresenter;
+import org.hypothesis.interfaces.ExportScorePresenter;
 import org.hypothesis.server.Messages;
-import org.hypothesis.ui.view.ExportView;
+import org.hypothesis.ui.view.ExportScoreView;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -71,12 +65,9 @@ import net.engio.mbassy.listener.Handler;
  *         Hypothesis
  *
  */
-@SuppressWarnings({ "serial" })
-public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
+@SuppressWarnings("serial")
+public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEventBus {
 
-	private static final Logger log = Logger.getLogger(ExportPresenterImpl.class);
-
-	private final PermissionService permissionService;
 	private final TestService testService;
 	private final UserService userService;
 
@@ -84,15 +75,11 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	private MainEventBus bus;
 
-	private final List<String> sortedPacks = new ArrayList<>();
-	private final HashMap<String, Pack> packMap = new HashMap<>();
-
 	private VerticalLayout content;
 	private VerticalLayout testSelection;
 	private Button exportButton;
 	private Button cancelExportButton;
 	private ComboBox exportSelectionType;
-	private ComboBox packsSelect;
 	private PopupDateField dateFieldFrom;
 	private PopupDateField dateFieldTo;
 	private Table table;
@@ -105,8 +92,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	private ThreadGroup threadGroup = new ThreadGroup("export-service");
 
-	public ExportPresenterImpl() {
-		permissionService = PermissionService.newInstance();
+	public ExportScorePresenterImpl() {
 		testService = TestService.newInstance();
 		userService = UserService.newInstance();
 
@@ -148,7 +134,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		header.setWidth("100%");
 		header.setSpacing(true);
 
-		Label title = new Label(Messages.getString("Caption.Label.TestsExport"));
+		Label title = new Label(Messages.getString("Caption.Label.ScoresExport"));
 		title.addStyleName("huge");
 		header.addComponent(title);
 		header.addComponent(buildTools());
@@ -267,7 +253,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		ExportRunnable runnable = new ExportRunnableImpl(bus, testIds);
+		ExportRunnable runnable = new ExportScoreRunnableImpl(bus, testIds);
 		runnable.setFinishCommand(new Command() {
 			@Override
 			public void execute() {
@@ -306,9 +292,9 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		HorizontalLayout form = new HorizontalLayout();
 		form.setWidth("100%");
 
-		initPacksSources();
+		//initPacksSources();
 
-		packsSelect = new ComboBox();
+		/*packsSelect = new ComboBox();
 		packsSelect.setInputPrompt(Messages.getString("Caption.Button.ChoosePack"));
 		for (String packTitle : sortedPacks) {
 			packsSelect.addItem(packTitle);
@@ -318,7 +304,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		packsSelect.setRequired(true);
 		packsSelect.setRequiredError(Messages.getString("Message.Error.NoPackSelected"));
 		packsSelect.setValidationVisible(false);
-		form.addComponent(packsSelect);
+		form.addComponent(packsSelect);*/
 
 		dateFieldFrom = new PopupDateField();
 		dateFieldFrom.setResolution(Resolution.SECOND);
@@ -353,18 +339,18 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					packsSelect.validate();
+					//packsSelect.validate();
 					dateFieldFrom.validate();
 					dateFieldTo.validate();
 
-					Pack pack = packMap.get(packsSelect.getValue());
+					//Pack pack = packMap.get(packsSelect.getValue());
 					Date dateFrom = (Date) dateFieldFrom.getValue();
 					Date dateTo = (Date) dateFieldTo.getValue();
 
-					showTests(pack, dateFrom, dateTo);
+					showTests(dateFrom, dateTo);
 
 				} catch (InvalidValueException e) {
-					packsSelect.setValidationVisible(!packsSelect.isValid());
+					//packsSelect.setValidationVisible(!packsSelect.isValid());
 					dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
 					dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
 					Notification.show(e.getMessage(), Type.WARNING_MESSAGE);
@@ -376,7 +362,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		return form;
 	}
 
-	private void initPacksSources() {
+	/*private void initPacksSources() {
 		Set<Pack> packs = permissionService.findUserPacks2(loggedUser, false);
 
 		sortedPacks.clear();
@@ -392,9 +378,9 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 			Collections.sort(sortedPacks);
 		}
-	}
+	}*/
 
-	protected void showTests(Pack pack, Date dateFrom, Date dateTo) {
+	protected void showTests(Date dateFrom, Date dateTo) {
 		testSelection.removeAllComponents();
 		// testSelection.setSpacing(true);
 
@@ -405,9 +391,9 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 			users.add(loggedUser);
 		}
 
-		List<SimpleTest> tests = testService.findTestsBy(pack, users, dateFrom, dateTo);
+		List<Test> tests = testService.findTestScoresBy(users, dateFrom, dateTo);
 
-		if (tests.size() == 0) {
+		if (tests.isEmpty()) {
 			Label label = new Label(Messages.getString("Caption.Label.NoTestsFound"));
 			label.setSizeUndefined();
 			testSelection.addComponent(label);
@@ -416,11 +402,11 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		} else {
 			testSelection.addComponent(buildTestsTable(tests));
 			exportSelectionType.setEnabled(true);
-			bus.post(new MainUIEvent.PackSelectionChangedEvent());
+			//bus.post(new MainUIEvent.PackSelectionChangedEvent());
 		}
 	}
 
-	private Table buildTestsTable(Collection<SimpleTest> tests) {
+	private Table buildTestsTable(Collection<Test> tests) {
 		table = new Table();
 		table.setSelectable(true);
 		table.setMultiSelect(true);
@@ -430,17 +416,25 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 		table.setSortContainerPropertyId(FieldConstants.ID);
 
-		final BeanContainer<Long, SimpleTest> dataSource = new BeanContainer<Long, SimpleTest>(SimpleTest.class);
+		final BeanContainer<Long, Test> dataSource = new BeanContainer<Long, Test>(Test.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_USERNAME);
 		dataSource.addAll(tests);
 		table.setContainerDataSource(dataSource);
 
+		table.addGeneratedColumn(FieldConstants.PACK_ID, new ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				Test test = dataSource.getItem(itemId).getBean();
+				return test.getPack().getId();
+			}
+		});
+
 		table.addGeneratedColumn(FieldConstants.USER_ID, new ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
-				SimpleTest test = dataSource.getItem(itemId).getBean();
+				Test test = dataSource.getItem(itemId).getBean();
 				return test.getUser() != null ? test.getUser().getId() : null;
 			}
 		});
@@ -448,7 +442,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		table.addGeneratedColumn(FieldConstants.USERNAME, new ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
-				SimpleTest test = dataSource.getItem(itemId).getBean();
+				Test test = dataSource.getItem(itemId).getBean();
 				return test.getUser() != null ? test.getUser().getUsername() : null;
 			}
 		});
@@ -456,7 +450,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 		table.addGeneratedColumn(FieldConstants.STATUS, new ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
-				SimpleTest test = dataSource.getItem(itemId).getBean();
+				Test test = dataSource.getItem(itemId).getBean();
 				Status status = test.getStatus();
 				if (status != null) {
 					switch (status) {
@@ -478,13 +472,14 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 			}
 		});
 
-		table.setVisibleColumns(FieldConstants.ID, FieldConstants.USER_ID,
+		table.setVisibleColumns(FieldConstants.ID, FieldConstants.PACK_ID, FieldConstants.USER_ID,
 				// FieldConstants.USERNAME,
 				// FieldConstants.NESTED_USER_ID,
 				// FieldConstants.NESTED_USER_USERNAME,
 				FieldConstants.CREATED, FieldConstants.STATUS);
 
-		table.setColumnHeaders(Messages.getString("Caption.Field.TestID"), Messages.getString("Caption.Field.UserID"),
+		table.setColumnHeaders(Messages.getString("Caption.Field.TestID"), Messages.getString("Caption.Field.PackID"),
+				Messages.getString("Caption.Field.UserID"),
 				// Messages.getString("Caption.Field.Username"),
 				// Messages.getString("Caption.Field.UserID"),
 				// Messages.getString("Caption.Field.Username"),
@@ -531,13 +526,6 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 
 	@Handler
 	public void changeUserPacks(final MainUIEvent.UserPacksChangedEvent event) {
-		initPacksSources();
-
-		packsSelect.removeAllItems();
-		testSelection.removeAllComponents();
-		for (String packTitle : sortedPacks) {
-			packsSelect.addItem(packTitle);
-		}
 	}
 
 	private void afterExportFinnished(boolean canceled) {
@@ -555,7 +543,7 @@ public class ExportPresenterImpl implements ExportPresenter, HasMainEventBus {
 	public View createView() {
 		loggedUser = SessionManager.getLoggedUser();
 
-		return new ExportView(this);
+		return new ExportScoreView(this);
 	}
 
 }

@@ -14,6 +14,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.model.ExportEvent;
+import org.hypothesis.data.model.ExportScore;
 import org.hypothesis.data.model.FieldConstants;
 
 /**
@@ -28,13 +29,17 @@ public class ExportService implements Serializable {
 	private static final Logger log = Logger.getLogger(ExportService.class);
 
 	private final HibernateDao<ExportEvent, Long> exportEventDao;
+	private final HibernateDao<ExportScore, Long> exportScoreDao;
 
 	public static ExportService newInstance() {
-		return new ExportService(new HibernateDao<ExportEvent, Long>(ExportEvent.class));
+		return new ExportService(new HibernateDao<ExportEvent, Long>(ExportEvent.class),
+				new HibernateDao<ExportScore, Long>(ExportScore.class));
 	}
 
-	public ExportService(HibernateDao<ExportEvent, Long> exportEventDao) {
+	public ExportService(HibernateDao<ExportEvent, Long> exportEventDao,
+			HibernateDao<ExportScore, Long> exportScoreDao) {
 		this.exportEventDao = exportEventDao;
+		this.exportScoreDao = exportScoreDao;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -99,6 +104,30 @@ public class ExportService implements Serializable {
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			exportEventDao.rollback();
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<ExportScore> findExportScoresByTestId(Collection<Long> testIds) {
+		log.debug("findExportScoresByTestId");
+		try {
+			exportScoreDao.beginTransaction();
+
+			Criteria criteria = exportScoreDao.createCriteria();
+
+			criteria.add(Restrictions.in(FieldConstants.PROPERTY_TEST_ID, testIds));
+
+			criteria.addOrder(Order.asc(FieldConstants.PROPERTY_TEST_ID));
+			criteria.addOrder(Order.asc(FieldConstants.ID));
+
+			List<ExportScore> scores = criteria.list();
+			exportScoreDao.commit();
+			return scores;
+
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			exportScoreDao.rollback();
 		}
 		return null;
 	}
