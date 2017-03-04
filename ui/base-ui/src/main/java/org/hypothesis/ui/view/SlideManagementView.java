@@ -31,7 +31,7 @@ import javax.inject.Inject;
  */
 @SuppressWarnings("serial")
 @CDIView(value = "/slides", uis = { MainUI.class })
-@Title(value = "Caption.View.Slides", icon = FontAwesome.FILE_CODE_O, index = 6)
+@Title(value = "Caption.View.Slides", icon = FontAwesome.FILE_CODE_O, index = 7)
 @RolesAllowed(value = { RoleType.MANAGER, RoleType.SUPERUSER })
 public class SlideManagementView extends HorizontalLayout implements View {
 

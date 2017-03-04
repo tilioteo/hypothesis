@@ -19,6 +19,8 @@ import org.hypothesis.data.DocumentReader;
 public interface SlideDataReader extends Serializable {
 
 	List<String> getOutputValues(String text, DocumentReader reader);
+	
+	List<String> getScores(String text, DocumentReader reader);
 
 	FieldWrapper getFields(String text, DocumentReader reader);
 

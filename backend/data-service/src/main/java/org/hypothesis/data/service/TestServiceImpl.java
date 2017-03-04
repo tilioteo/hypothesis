@@ -27,13 +27,15 @@ public class TestServiceImpl implements TestService {
 
 	private static final Logger log = Logger.getLogger(TestServiceImpl.class);
 
-	private final HibernateDao<SimpleTest, Long> testDao;
+	private final HibernateDao<SimpleTest, Long> simpleTestDao;
+	private final HibernateDao<Test, Long> testDao;
 	private final HibernateDao<Event, Long> eventDao;
 	private final HibernateDao<Score, Long> scoreDao;
 	private final HibernateDao<SlideOrder, Long> slideOrderDao;
 
 	public TestServiceImpl() {
-		testDao = new HibernateDao<>(SimpleTest.class);
+		simpleTestDao = new HibernateDao<>(SimpleTest.class);
+		testDao = new HibernateDao<>(Test.class);
 		eventDao = new HibernateDao<>(Event.class);
 		scoreDao = new HibernateDao<>(Score.class);
 		slideOrderDao = new HibernateDao<>(SlideOrder.class);
@@ -48,14 +50,14 @@ public class TestServiceImpl implements TestService {
 	public SimpleTest findById(Long id) {
 		log.debug("TestService::findById(" + (id != null ? id : "NULL") + ")");
 		try {
-			testDao.beginTransaction();
+			simpleTestDao.beginTransaction();
 
-			SimpleTest test = testDao.findById(id, false);
-			testDao.commit();
+			SimpleTest test = simpleTestDao.findById(id, false);
+			simpleTestDao.commit();
 			return test;
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			testDao.rollback();
+			simpleTestDao.rollback();
 		}
 		return null;
 	}
@@ -72,18 +74,18 @@ public class TestServiceImpl implements TestService {
 	public List<SimpleTest> findTestsBy(User user, Pack pack, Status... statuses) {
 		log.debug("findTestsBy(User, Pack, Status[])");
 		try {
-			testDao.beginTransaction();
+			simpleTestDao.beginTransaction();
 
 			Integer[] stats = Arrays.stream(statuses).map(Status::getCode).toArray(s -> new Integer[s]);
-			List<SimpleTest> tests = testDao
+			List<SimpleTest> tests = simpleTestDao
 					.findByCriteria(Restrictions.and(Restrictions.eq(EntityConstants.PACK, pack),
 							Restrictions.and(Restrictions.eq(EntityConstants.USER, user),
 									Restrictions.in(FieldConstants.STATUS, stats))));
-			testDao.commit();
+			simpleTestDao.commit();
 			return tests;
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			testDao.rollback();
+			simpleTestDao.rollback();
 		}
 		return null;
 	}
@@ -100,9 +102,9 @@ public class TestServiceImpl implements TestService {
 	public List<SimpleTest> findTestsBy(Pack pack, Collection<User> users, Date dateFrom, Date dateTo) {
 		log.debug("findTestsBy(Pack, Collection<User>, Date, Date)");
 		try {
-			testDao.beginTransaction();
+			simpleTestDao.beginTransaction();
 
-			Criteria criteria = testDao.createCriteria();
+			Criteria criteria = simpleTestDao.createCriteria();
 
 			criteria.add(Restrictions.eq(EntityConstants.PACK, pack));
 
@@ -121,11 +123,86 @@ public class TestServiceImpl implements TestService {
 			criteria.addOrder(Order.asc(FieldConstants.ID));
 
 			List<SimpleTest> tests = criteria.list();
+			simpleTestDao.commit();
+
+			return tests;
+
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			simpleTestDao.rollback();
+		}
+
+		return null;
+	}
+
+	/*@SuppressWarnings("unchecked")
+	public List<SimpleTest> findTestScoresBy(Collection<User> users, Date dateFrom, Date dateTo) {
+		log.debug("findTestScoresBy(Collection<User>, Date, Date)");
+		try {
+			testDao.beginTransaction();
+			StringBuilder sb = new StringBuilder(
+					"SELECT DISTINCT a.* FROM " + TableConstants.TEST_TABLE + " a," + TableConstants.TEST_SCORE_TABLE
+							+ " b WHERE a." + FieldConstants.ID + "=b." + FieldConstants.TEST_ID);
+			if (dateFrom != null) {
+				sb.append(" AND a." + FieldConstants.CREATED + ">=:dateFrom");
+			}
+			if (dateTo != null) {
+				sb.append(" AND a." + FieldConstants.CREATED + "<=:dateTo");
+			}
+
+			SQLQuery query = testDao.getSession().createSQLQuery(sb.toString());
+			if (dateFrom != null) {
+				query.setParameter("dateFrom", dateFrom);
+			}
+			if (dateTo != null) {
+				query.setParameter("dateTo", dateTo);
+			}
+			query.addEntity(SimpleTest.class);
+			query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+			List<SimpleTest> tests = query.list();
 			testDao.commit();
 
 			return tests;
 
 		} catch (Exception e) {
+			log.error(e.getMessage());
+			testDao.rollback();
+		}
+
+		return null;
+	}*/
+
+	@SuppressWarnings("unchecked")
+	public List<Test> findTestScoresBy(Collection<User> users, Date dateFrom, Date dateTo) {
+		log.debug("findTestScoresBy(Collection<User>, Date, Date)");
+		try {
+			testDao.beginTransaction();
+
+			Criteria criteria = testDao.createCriteria();
+
+			if (users != null) {
+				criteria.add(Restrictions.in(EntityConstants.USER, users));
+	}
+
+			if (dateFrom != null) {
+				criteria.add(Restrictions.ge(FieldConstants.CREATED, dateFrom));
+			}
+
+			if (dateTo != null) {
+				criteria.add(Restrictions.le(FieldConstants.CREATED, dateTo));
+			}
+			
+			criteria.add(Restrictions.isNotEmpty(FieldConstants.SCORES));
+
+			criteria.addOrder(Order.asc(FieldConstants.ID));
+			criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+			List<Test> tests = criteria.list();
+			testDao.commit();
+
+			return tests;
+
+		} catch (Throwable e) {
 			log.error(e.getMessage());
 			testDao.rollback();
 		}
@@ -144,7 +221,7 @@ public class TestServiceImpl implements TestService {
 	public SimpleTest getUnattendedTest(User user, Pack pack, boolean production) {
 		log.debug("getUnattendedTest");
 		try {
-			testDao.beginTransaction();
+			simpleTestDao.beginTransaction();
 
 			List<SimpleTest> tests;
 
@@ -173,15 +250,15 @@ public class TestServiceImpl implements TestService {
 				outputTest = new SimpleTest(pack, user);
 				outputTest.setProduction(production);
 				log.debug("persisting new test instance");
-				testDao.makePersistent(outputTest);
+				simpleTestDao.makePersistent(outputTest);
 			}
 
-			testDao.commit();
+			simpleTestDao.commit();
 			return outputTest;
 
 		} catch (Exception e) {
 			log.error(e.getMessage());
-			testDao.rollback();
+			simpleTestDao.rollback();
 		}
 		return null;
 	}
@@ -198,15 +275,15 @@ public class TestServiceImpl implements TestService {
 		if (test != null) {
 			log.debug(String.format("updateTest, test id = %s", test.getId() != null ? test.getId() : "NULL"));
 			try {
-				testDao.beginTransaction();
-				testDao.clear();
-				test = testDao.merge(test);
-				testDao.makePersistent(test);
-				testDao.commit();
+				simpleTestDao.beginTransaction();
+				simpleTestDao.clear();
+				test = simpleTestDao.merge(test);
+				simpleTestDao.makePersistent(test);
+				simpleTestDao.commit();
 				log.debug("test update finished");
 			} catch (Exception e) {
 				log.error(e.getMessage());
-				testDao.rollback();
+				simpleTestDao.rollback();
 			}
 		}
 	}
@@ -244,7 +321,7 @@ public class TestServiceImpl implements TestService {
 	@SuppressWarnings("rawtypes")
 	private int getLastTestEventRank(SimpleTest test) {
 		log.debug("getLastTestEventRank");
-		SQLQuery query = testDao.getSession()
+		SQLQuery query = simpleTestDao.getSession()
 				.createSQLQuery("SELECT max(" + FieldConstants.RANK + ") FROM " + TableConstants.TEST_EVENT_TABLE
 						+ " WHERE " + FieldConstants.TEST_ID + "=:testId GROUP BY " + FieldConstants.TEST_ID);
 		query.setParameter("testId", test.getId());
@@ -260,7 +337,7 @@ public class TestServiceImpl implements TestService {
 
 	private void saveTestEventJoin(SimpleTest test, Event event, int rank) {
 		log.debug("saveTestEventJoin");
-		SQLQuery query = testDao.getSession()
+		SQLQuery query = simpleTestDao.getSession()
 				.createSQLQuery("INSERT INTO " + TableConstants.TEST_EVENT_TABLE + " (" + FieldConstants.TEST_ID + ","
 						+ FieldConstants.EVENT_ID + "," + FieldConstants.RANK + ") VALUES (:testId,:eventId,:rank)");
 		query.setParameter("testId", test.getId());
@@ -346,7 +423,7 @@ public class TestServiceImpl implements TestService {
 	@SuppressWarnings("rawtypes")
 	private int getLastTestScoreRank(SimpleTest test) {
 		log.debug("getLastTestScoreRank");
-		SQLQuery query = testDao.getSession()
+		SQLQuery query = simpleTestDao.getSession()
 				.createSQLQuery("SELECT max(" + FieldConstants.RANK + ") FROM " + TableConstants.TEST_SCORE_TABLE
 						+ " WHERE " + FieldConstants.TEST_ID + "=:testId GROUP BY " + FieldConstants.TEST_ID);
 		query.setParameter("testId", test.getId());
@@ -362,7 +439,7 @@ public class TestServiceImpl implements TestService {
 
 	private void saveTestScoreJoin(SimpleTest test, Score score, int rank) {
 		log.debug("saveTestScoreJoin");
-		SQLQuery query = testDao.getSession()
+		SQLQuery query = simpleTestDao.getSession()
 				.createSQLQuery("INSERT INTO " + TableConstants.TEST_SCORE_TABLE + " (" + FieldConstants.TEST_ID + ","
 						+ FieldConstants.SCORE_ID + "," + FieldConstants.RANK + ") VALUES (:testId,:scoreId,:rank)");
 		query.setParameter("testId", test.getId());
