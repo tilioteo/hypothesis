@@ -85,9 +85,8 @@ public class ProcessManager implements Serializable {
 	private final TestService testService;
 	private final BranchService branchService;
 	private final PermissionService permissionService;
-	private final OutputService outputService;
 
-	private final AsynchronousService asynchronousService;
+	private final transient AsynchronousService asynchronousService;
 
 	private boolean testProcessing = false;
 	private boolean slideProcessing = false;
@@ -114,10 +113,9 @@ public class ProcessManager implements Serializable {
 		persistenceService = PersistenceService.newInstance();
 		branchService = BranchService.newInstance();
 
-		outputService = OutputService.newInstance();
-
-		asynchronousService = new AsynchronousService(testService, outputService, persistenceService, branchService,
-				TaskService.newInstance(), SlideService.newInstance());
+		asynchronousService = new AsynchronousService(TestService.newInstance(), OutputService.newInstance(),
+				PersistenceService.newInstance(), BranchService.newInstance(), TaskService.newInstance(),
+				SlideService.newInstance());
 	}
 
 	private Event createEvent(AbstractProcessEvent event) {
