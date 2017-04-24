@@ -27,6 +27,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
+import org.hypothesis.data.interfaces.HasData;
 import org.hypothesis.data.interfaces.HasList;
 
 /**
@@ -38,7 +39,7 @@ import org.hypothesis.data.interfaces.HasList;
 @Entity
 @Table(name = TableConstants.TASK_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Task extends SerializableIdObject implements HasList<Slide> {
+public final class Task extends SerializableEntity<Long> implements HasList<Slide>, HasData<String> {
 	/**
 	 * 
 	 */
@@ -86,6 +87,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 		this.note = note;
 	}
 
+	@Override
 	@Column(name = FieldConstants.XML_DATA)
 	@Type(type = "text")
 	public String getData() {
@@ -106,7 +108,7 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.TASK_SLIDE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TASK_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.SLIDE_ID) )
+	@JoinTable(name = TableConstants.TASK_SLIDE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TASK_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.SLIDE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = FieldConstants.RANK)
@@ -119,17 +121,18 @@ public final class Task extends SerializableIdObject implements HasList<Slide> {
 	}
 
 	@Transient
-	public final List<Slide> getList() {
+	@Override
+	public List<Slide> getList() {
 		return getSlides();
 	}
 
-	public final void addSlide(Slide slide) {
+	public void addSlide(Slide slide) {
 		if (slide != null) {
 			getSlides().add(slide);
 		}
 	}
 
-	public final void removeSlide(Slide slide) {
+	public void removeSlide(Slide slide) {
 		getSlides().remove(slide);
 	}
 

@@ -1,22 +1,27 @@
-package org.hypothesis.utility;
 /**
- * 
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
  */
+package org.hypothesis.utility;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hypothesis.event.data.ComponentData;
 
 import java.lang.reflect.Field;
 
-import org.hypothesis.event.data.ComponentData;
-
-import com.tilioteo.common.Strings;
-
 /**
- * @author Kamil Morong
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
-public class ComponentDataUtility {
+public final class ComponentDataUtility {
+
+	private ComponentDataUtility() {
+	}
 
 	public static void setComponentDataPropertyValue(ComponentData data, String name, Object value) {
-		if (data != null && !Strings.isNullOrEmpty(name)) {
+		if (data != null && StringUtils.isNotEmpty(name)) {
 			Field field = ReflectionUtility.getDeclaredField(data, name);
 			if (field != null) {
 				field.setAccessible(true);

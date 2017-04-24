@@ -3,17 +3,20 @@
  */
 package org.hypothesis.data;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.dom4j.Document;
 import org.hypothesis.utility.XmlUtility;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * @author morongk
  *
  */
-public class XmlTestUtility {
+public final class XmlTestUtility {
+
+	private XmlTestUtility() {
+	}
 	
 	public static String getSampleReaderXmlString() {
 		try {
@@ -47,4 +50,14 @@ public class XmlTestUtility {
 		return null;
 	}
 
+	public static String getSampleWriterString() {
+		try {
+			return new String(Files.readAllBytes(Paths.get(XmlTestUtility.class.getResource("/xml/sampleWriter.txt").toURI())));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 }

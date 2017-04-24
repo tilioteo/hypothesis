@@ -4,10 +4,10 @@
  */
 package org.hypothesis.business;
 
-import java.io.Serializable;
-
 import org.hypothesis.data.model.User;
 import org.hypothesis.server.SessionUtils;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

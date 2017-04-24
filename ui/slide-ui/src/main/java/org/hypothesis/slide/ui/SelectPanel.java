@@ -4,23 +4,18 @@
  */
 package org.hypothesis.slide.ui;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.hypothesis.interfaces.DocumentConstants;
-import org.hypothesis.interfaces.Field;
-import org.hypothesis.slide.ui.annotations.FieldType;
-import org.vaadin.special.ui.SelectButton;
-
 import com.vaadin.data.Validatable;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.server.AbstractErrorMessage;
 import com.vaadin.server.CompositeErrorMessage;
 import com.vaadin.server.ErrorMessage;
+import org.hypothesis.interfaces.DocumentConstants;
+import org.hypothesis.interfaces.Field;
+import org.hypothesis.slide.ui.annotations.FieldType;
+import org.vaadin.special.ui.SelectButton;
+
+import java.util.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -40,7 +35,7 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 	/**
 	 * The list of validators.
 	 */
-	private LinkedList<Validator> validators = null;
+	private List<Validator> validators = null;
 
 	public SelectPanel() {
 		super();

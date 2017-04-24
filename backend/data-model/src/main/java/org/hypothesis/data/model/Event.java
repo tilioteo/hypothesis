@@ -34,7 +34,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = TableConstants.EVENT_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Event extends SerializableIdObject {
+public final class Event extends SerializableEntity<Long> {
 
 	/**
 	 * 
@@ -200,7 +200,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Transient
-	public final Date getDatetime() {
+	public Date getDatetime() {
 		return new Date(getTimeStamp());
 	}
 

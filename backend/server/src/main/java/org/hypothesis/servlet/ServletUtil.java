@@ -4,12 +4,11 @@
  */
 package org.hypothesis.servlet;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.Manifest;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -17,7 +16,10 @@ import javax.servlet.http.HttpServletRequest;
  *         Hypothesis
  *
  */
-public class ServletUtil {
+public final class ServletUtil {
+
+	private ServletUtil() {
+	}
 
 	public static String getContextURL(HttpServletRequest request) {
 		String scheme = request.getScheme(); // http

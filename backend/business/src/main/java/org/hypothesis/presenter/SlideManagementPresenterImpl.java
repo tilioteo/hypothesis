@@ -4,29 +4,30 @@
  */
 package org.hypothesis.presenter;
 
-import org.hypothesis.builder.SlideContainerFactoryDeferred;
+import javax.annotation.PostConstruct;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
+import org.hypothesis.builder.SlideContainerFactory;
+import org.hypothesis.cdi.Deferred;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.event.model.AfterRenderContentEvent;
 import org.hypothesis.event.model.ComponentEvent;
 import org.hypothesis.event.model.FinishSlideEvent;
-import org.hypothesis.eventbus.HasProcessEventBus;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.SlideManagementPresenter;
 import org.hypothesis.slide.ui.Mask;
 import org.hypothesis.ui.SlideContainer;
-import org.hypothesis.ui.view.SlideManagementView;
 import org.vaadin.alump.fancylayouts.FancyNotifications;
 import org.vaadin.alump.fancylayouts.gwt.client.shared.FancyNotificationsState.Position;
 import org.vaadin.johan.Toolbox;
 import org.vaadin.johan.Toolbox.ORIENTATION;
 
-import com.vaadin.navigator.View;
+import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -35,8 +36,6 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-import net.engio.mbassy.listener.Handler;
-
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -44,27 +43,20 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class SlideManagementPresenterImpl implements SlideManagementPresenter, HasProcessEventBus {
+@Default
+@NormalViewScoped
+public class SlideManagementPresenterImpl implements SlideManagementPresenter {
 
 	private final DocumentReader reader = new XmlDocumentReader();
 
 	private SlideContainer container;
 
-	private final ProcessEventBus bus = ProcessEventBus.createInstance(this);
-	private final SlideContainerFactoryDeferred factory = new SlideContainerFactoryDeferred(bus);
+	@Inject
+	@Deferred
+	private SlideContainerFactory factory;
 
 	private Mask mask;
 	private final FancyNotifications notifications = new FancyNotifications();
-
-	@Override
-	public void attach() {
-		bus.register(this);
-	}
-
-	@Override
-	public void detach() {
-		bus.unregister(this);
-	}
 
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -72,17 +64,11 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 	}
 
 	@Override
-	public View createView() {
-
-		return new SlideManagementView(this);
-	}
-
-	@Override
 	public void showSlide(String template, String content) {
 		notifications.setCloseTimeout(5000);
 		notifications.setPosition(Position.BOTTOM_RIGHT);
 
-		container = factory.buildSlideContainer(template, content, reader);
+		container = factory.createSlideContainer(template, content, reader);
 		if (container != null) {
 			container.getPresenter().buildDone();
 
@@ -105,12 +91,9 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 
 			HorizontalLayout hl = new HorizontalLayout();
 			hl.setSpacing(true);
-			Button startButton = new Button("Start slide", new ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					event.getButton().setEnabled(false);
-					startClicked();
-				}
+			Button startButton = new Button("Start slide", e -> {
+				e.getButton().setEnabled(false);
+				startClicked();
 			});
 			hl.addComponent(startButton);
 
@@ -160,18 +143,12 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 		}
 	}
 
-	@Override
-	public ProcessEventBus getProcessEventBus() {
-		return bus;
-	}
-
 	/**
 	 * Do on action event
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void processActionEvent(ActionEvent event) {
+	public void processActionEvent(@Observes ActionEvent event) {
 		String title = event.getName() + " Id=" + event.getAction().getId();
 		String detail = event.getAction().toString();
 		notifications.showNotification(null, title, detail);
@@ -182,8 +159,7 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void processAfterRender(AfterRenderContentEvent event) {
+	public void processAfterRender(@Observes AfterRenderContentEvent event) {
 		notifications.showNotification(null, event.getName());
 	}
 
@@ -192,10 +168,9 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void processComponentEvent(ComponentEvent event) {
+	public void processComponentEvent(@Observes ComponentEvent event) {
 		String title = event.getTypeName() + " Id=" + event.getData().getId();
-		String detail = event.getName();
+		String detail = event.getData().getEventName();
 		notifications.showNotification(null, title, detail);
 	}
 
@@ -204,11 +179,15 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 	 * 
 	 * @param event
 	 */
-	@Handler
-	public void processFinishSlide(FinishSlideEvent event) {
+	public void processFinishSlide(@Observes FinishSlideEvent event) {
 		mask.setColor("rgba(127,127,255,0.2)");
 		mask.show();
 		Notification.show("FINISH", Type.HUMANIZED_MESSAGE);
+	}
+
+	@PostConstruct
+	public void postConstruct() {
+		System.out.println("PostConstruct " + getClass().getName());
 	}
 
 }

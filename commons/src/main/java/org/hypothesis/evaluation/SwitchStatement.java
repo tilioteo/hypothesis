@@ -4,16 +4,14 @@
  */
 package org.hypothesis.evaluation;
 
+import com.tilioteo.expressions.ExpressionFactory;
+import org.hypothesis.interfaces.Evaluable;
+import org.hypothesis.interfaces.HasVariables;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.hypothesis.interfaces.Evaluable;
-import org.hypothesis.interfaces.HasVariables;
-
-import com.tilioteo.expressions.ExpressionFactory;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -27,7 +25,7 @@ public class SwitchStatement implements Evaluable {
 	private final HasVariables variables;
 	private final Expression expression;
 
-	private final HashMap<String, List<Evaluable>> caseMap = new HashMap<>();
+	private final Map<String, List<Evaluable>> caseMap = new HashMap<>();
 
 	public SwitchStatement(HasVariables variables, Expression expression) {
 		this.variables = variables;
@@ -44,6 +42,7 @@ public class SwitchStatement implements Evaluable {
 		evaluables.add(evaluable);
 	}
 
+	@Override
 	public void evaluate() {
 		if (expression != null && variables != null) {
 			Object result = expression.getValue();
@@ -51,22 +50,15 @@ public class SwitchStatement implements Evaluable {
 				com.tilioteo.expressions.Expression expression = ExpressionFactory.parseString("a==b");
 				expression.setVariableValue("a", result);
 
-				for (Entry<String, List<Evaluable>> entry : caseMap.entrySet()) {
-					com.tilioteo.expressions.Expression caseExpression = ExpressionFactory.parseString(entry.getKey());
-					expression.setVariableValue("b", caseExpression.getValue());
+				caseMap.entrySet().stream().filter(f -> {
+					expression.setVariableValue("b", ExpressionFactory.parseString(f.getKey()).getValue());
 					Boolean value = expression.getBoolean();
-
-					if (value != null && value.booleanValue()) {
-						List<Evaluable> evaluables = caseMap.get(entry.getValue());
-						if (evaluables != null) {
-							for (Evaluable evaluable : evaluables) {
-								evaluable.setVariables(variables.getVariables());
-								evaluable.evaluate();
-								evaluable.updateVariables(variables.getVariables());
-							}
-						}
-					}
-				}
+					return value != null && value.booleanValue() && f.getValue() != null;
+				}).forEach(e -> e.getValue().forEach(i -> {
+					i.setVariables(variables.getVariables());
+					i.evaluate();
+					i.updateVariables(variables.getVariables());
+				}));
 			}
 		}
 	}
@@ -87,15 +79,12 @@ public class SwitchStatement implements Evaluable {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder("switch (" + expression.toString() + ") {\n");
-		for (Entry<String, List<Evaluable>> entry : caseMap.entrySet()) {
-			builder.append("\tcase " + entry.getKey() + " : {\n");
-			List<Evaluable> evaluables = entry.getValue();
-			for (Evaluable evaluable : evaluables) {
-				builder.append("\t\t" + evaluable.toString() + ";\n");
-			}
+		final StringBuilder builder = new StringBuilder("switch (" + expression.toString() + ") {\n");
+		caseMap.entrySet().forEach(e -> {
+			builder.append("\tcase " + e.getKey() + " : {\n");
+			e.getValue().forEach(i -> builder.append("\t\t" + i.toString() + ";\n"));
 			builder.append("\t}\n");
-		}
+		});
 		builder.append("}");
 
 		return builder.toString();

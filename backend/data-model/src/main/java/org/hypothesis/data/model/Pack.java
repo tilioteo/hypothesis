@@ -37,7 +37,7 @@ import org.hypothesis.data.interfaces.HasList;
 @Entity
 @Table(name = TableConstants.PACK_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Pack extends SerializableIdObject implements HasList<Branch> {
+public final class Pack extends SerializableEntity<Long> implements HasList<Branch> {
 
 	/**
 	 * 
@@ -119,7 +119,7 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.PACK_BRANCH_TABLE, joinColumns = @JoinColumn(name = FieldConstants.PACK_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.BRANCH_ID) )
+	@JoinTable(name = TableConstants.PACK_BRANCH_TABLE, joinColumns = @JoinColumn(name = FieldConstants.PACK_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.BRANCH_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = FieldConstants.RANK)
@@ -132,15 +132,16 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	@Transient
-	public final List<Branch> getList() {
+	@Override
+	public List<Branch> getList() {
 		return getBranches();
 	}
 
-	public final void addBranch(Branch b) {
+	public void addBranch(Branch b) {
 		getBranches().add(b);
 	}
 
-	public final void removeBranch(Branch b) {
+	public void removeBranch(Branch b) {
 		getBranches().remove(b);
 	}
 

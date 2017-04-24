@@ -4,11 +4,8 @@
  */
 package org.hypothesis.business;
 
-import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.hypothesis.event.annotations.ElementPath;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -29,7 +26,7 @@ import javassist.bytecode.annotation.StringMemberValue;
  *         Hypothesis
  *
  */
-public class ComponentDataPojoGenerator {
+public final class ComponentDataPojoGenerator {
 
 	private ComponentDataPojoGenerator() {
 	}
@@ -44,8 +41,8 @@ public class ComponentDataPojoGenerator {
 	 * @param properties
 	 *            properties to be defined in POJO, getters and setters are
 	 *            generated as well
-	 * @param structures
-	 *            optional {@link ElementPath} annotation passed to properties
+	 * @param annotations
+	 *            optional map of annotations passed to properties
 	 * @return new Class object or null when an error occurs
 	 * @throws NotFoundException
 	 * @throws CannotCompileException
@@ -76,54 +73,56 @@ public class ComponentDataPojoGenerator {
 			// add this to define an interface to implement, ie:
 			// cc.addInterface(resolveCtClass(Serializable.class));
 
-			for (Entry<String, Class<?>> entry : properties.entrySet()) {
+			final CtClass finalCc = cc;
+			properties.entrySet().forEach(e -> {
+				try {
+					CtField field = new CtField(resolveCtClass(e.getValue()), e.getKey(), finalCc);
 
-				CtField field = new CtField(resolveCtClass(entry.getValue()), entry.getKey(), cc);
+					// specific part - insert annotation to mark serialized
+					// structure of
+					// field
+					java.lang.annotation.Annotation annotation = annotations.get(e.getKey());
+					if (annotation != null) {
+						AnnotationsAttribute attr = new AnnotationsAttribute(constpool,
+								AnnotationsAttribute.visibleTag);
+						Annotation annot = new Annotation(annotation.annotationType().getName(), constpool);
 
-				// specific part - insert annotation to mark serialized
-				// structure of
-				// field
-				java.lang.annotation.Annotation annotation = annotations.get(entry.getKey());
-				if (annotation != null) {
-					AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
-					Annotation annot = new Annotation(annotation.annotationType().getName(), constpool);
+						Arrays.stream(annotation.getClass().getDeclaredMethods())
+								.filter(f -> !"annotationType".equals(f.getName())).forEach(i -> {
+									Object value;
+									i.setAccessible(true);
 
-					Method[] methods = annotation.getClass().getDeclaredMethods();
-					for (Method method : methods) {
-						if (!"annotationType".equals(method.getName())) {
-							Object value;
-							method.setAccessible(true);
-							
-							try {
-								value = method.invoke(annotation);
-
-								// TODO make support for other types
-								if (String.class.isAssignableFrom(value.getClass())) {
 									try {
-										annot.addMemberValue(method.getName(),
-												new StringMemberValue(value.toString(), ccFile.getConstPool()));
-										attr.addAnnotation(annot);
-									} catch (Exception e) {
+										value = i.invoke(annotation);
+
+										// TODO make support for other types
+										if (String.class.isAssignableFrom(value.getClass())) {
+											try {
+												annot.addMemberValue(i.getName(),
+														new StringMemberValue(value.toString(), ccFile.getConstPool()));
+												attr.addAnnotation(annot);
+											} catch (Exception ex) {
+											}
+										}
+									} catch (Exception ex) {
+										ex.printStackTrace();
 									}
-								}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
+								});
+
+						field.getFieldInfo().addAttribute(attr);
 					}
 
-					field.getFieldInfo().addAttribute(attr);
+					finalCc.addField(field);
+
+					// add getter
+					finalCc.addMethod(generateGetter(finalCc, e.getKey(), e.getValue()));
+
+					// add setter
+					// cc.addMethod(generateSetter(cc, entry.getKey(),
+					// entry.getValue()));
+				} catch (CannotCompileException | NotFoundException ex) {
 				}
-
-				cc.addField(field);
-
-				// add getter
-				cc.addMethod(generateGetter(cc, entry.getKey(), entry.getValue()));
-
-				// add setter
-				// cc.addMethod(generateSetter(cc, entry.getKey(),
-				// entry.getValue()));
-			}
+			});
 			return cc.toClass();
 		} else {
 			Class<?> result = null;

@@ -4,9 +4,9 @@
  */
 package org.hypothesis.business;
 
-import java.io.Serializable;
-
 import org.hypothesis.evaluation.Node;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

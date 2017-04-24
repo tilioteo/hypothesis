@@ -53,7 +53,7 @@ import org.hibernate.annotations.Type;
 		TableConstants.PACK_TABLE, TableConstants.BRANCH_TABLE, TableConstants.TASK_TABLE, TableConstants.SLIDE_TABLE })
 @Immutable
 @Access(AccessType.PROPERTY)
-public class ExportEvent extends SerializableIdObject {
+public class ExportEvent extends SerializableEntity<Long> {
 
 	/**
 	 * 

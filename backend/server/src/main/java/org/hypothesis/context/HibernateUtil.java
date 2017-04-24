@@ -5,6 +5,7 @@
 package org.hypothesis.context;
 
 import java.io.File;
+import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 
@@ -14,7 +15,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hypothesis.server.SessionMap;
 
 import com.vaadin.server.VaadinSession;
 
@@ -26,7 +26,7 @@ import com.vaadin.server.VaadinSession;
  *         Utilitiy to work with Hibernate
  * 
  */
-public class HibernateUtil {
+public final class HibernateUtil {
 
 	public static final String CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION = "hibernateConfigLocation";
 
@@ -34,6 +34,13 @@ public class HibernateUtil {
 
 	private static SessionFactory sessionFactory = null;
 	private static ServletContext servletContext = null;
+
+	private HibernateUtil() {
+	}
+
+	@SuppressWarnings("serial")
+	private static class SessionMap extends HashMap<String, Session> {
+	}
 
 	/**
 	 * All hibernate operations take place within a session. The session for the
@@ -46,10 +53,11 @@ public class HibernateUtil {
 			VaadinSession.getCurrent().setAttribute(SessionMap.class, sessions);
 		}
 
-		Session session = sessions.get(Thread.currentThread());
+		String threadGroup = Thread.currentThread().getThreadGroup().getName();
+		Session session = sessions.get(threadGroup);
 		if (null == session) {
 			session = sessionFactory.openSession();
-			sessions.put(Thread.currentThread(), session);
+			sessions.put(threadGroup, session);
 		}
 		return session;
 	}
@@ -88,7 +96,8 @@ public class HibernateUtil {
 					configuration = new Configuration().configure(configFile);
 				}
 
-				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+				ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+						.applySettings(configuration.getProperties()).build();
 				sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 			} catch (Exception ex) {
 				// Make sure you log the exception, as it might be swallowed
@@ -137,20 +146,6 @@ public class HibernateUtil {
 		}
 	}
 
-	/*
-	 * public static void closeSession() { /*log.trace(
-	 * "Closing Hibernate Session."); Session session = threadLocal.get(); if
-	 * (session != null) { session.close(); } threadLocal.set(null);
-	 */
-	/*
-	 * final Session session = getSessionFactory().getCurrentSession();
-	 * 
-	 * commitTransaction(); session.flush();
-	 * 
-	 * if (session.isOpen()) { log.trace("Close opened Hibernate Session.");
-	 * session.close(); } }
-	 */
-
 	public static void shutdown() {
 		log.trace("Closing Hibernate SessionFactory.");
 		if (sessionFactory != null) {
@@ -169,18 +164,31 @@ public class HibernateUtil {
 		try {
 			SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
 			if (sessions != null) {
-				for (Session session : sessions.values()) {
-					if (session.getTransaction().isActive()) {
-						session.getTransaction().commit();
-					}
-					session.flush();
-					session.close();
-				}
+				sessions.values().forEach(HibernateUtil::closeSession);
 				sessions.clear();
 			}
 			VaadinSession.getCurrent().setAttribute(SessionMap.class, null);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private static void closeSession(Session session) {
+		if (session != null && session.isOpen()) {
+			if (session.getTransaction().isActive()) {
+				session.getTransaction().commit();
+			}
+			session.flush();
+			session.close();
+		}
+	}
+
+	public static void closeCurrent() {
+		SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
+		if (sessions != null) {
+			String threadGroup = Thread.currentThread().getThreadGroup().getName();
+			closeSession(sessions.get(threadGroup));
+			sessions.remove(threadGroup);
 		}
 	}
 }

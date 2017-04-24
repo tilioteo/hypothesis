@@ -4,10 +4,10 @@
  */
 package org.hypothesis.data;
 
+import com.vaadin.data.util.DefaultItemSorter;
+
 import java.io.Serializable;
 import java.util.Comparator;
-
-import com.vaadin.data.util.DefaultItemSorter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -37,6 +37,7 @@ public class CaseInsensitiveItemSorter extends DefaultItemSorter {
 	public static class CaseInsensitivePropertyValueComparator implements Comparator<Object>, Serializable {
 
 		@SuppressWarnings("unchecked")
+		@Override
 		public int compare(Object o1, Object o2) {
 			int r;
 			// Normal non-null comparison

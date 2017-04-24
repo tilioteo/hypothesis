@@ -28,7 +28,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = TableConstants.TOKEN_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Token extends SerializableUidObject {
+public final class Token extends SerializableEntity<String> {
 
 	/**
 	 * 
@@ -62,7 +62,7 @@ public final class Token extends SerializableUidObject {
 	 */
 	public Token(User user, Pack pack, String viewUid) {
 		this();
-		this.uid = UUID.randomUUID().toString().replaceAll("-", "");
+		this.id = UUID.randomUUID().toString().replaceAll("-", "");
 		this.user = user;
 		this.pack = pack;
 		this.viewUid = viewUid;
@@ -72,8 +72,8 @@ public final class Token extends SerializableUidObject {
 	@Override
 	@Id
 	@Column(name = FieldConstants.UID)
-	public String getUid() {
-		return uid;
+	public String getId() {
+		return id;
 	}
 
 	@Column(name = FieldConstants.PRODUCTION, nullable = false)
@@ -137,8 +137,8 @@ public final class Token extends SerializableUidObject {
 		}
 		Token other = (Token) obj;
 
-		String uid = getUid();
-		String uid2 = other.getUid();
+		String id = getId();
+		String id2 = other.getId();
 		boolean production = isProduction();
 		boolean production2 = other.isProduction();
 		User user = getUser();
@@ -148,11 +148,11 @@ public final class Token extends SerializableUidObject {
 		Date datetime = getDatetime();
 		Date datetime2 = other.getDatetime();
 
-		if (uid == null) {
-			if (uid2 != null) {
+		if (id == null) {
+			if (id2 != null) {
 				return false;
 			}
-		} else if (!uid.equals(uid2)) {
+		} else if (!id.equals(id2)) {
 			return false;
 		}
 
@@ -189,7 +189,7 @@ public final class Token extends SerializableUidObject {
 
 	@Override
 	public int hashCode() {
-		String uid = getUid();
+		String id = getId();
 		boolean production = isProduction();
 		User user = getUser();
 		Pack pack = getPack();
@@ -197,7 +197,7 @@ public final class Token extends SerializableUidObject {
 
 		final int prime = 59;
 		int result = 1;
-		result = prime * result + (uid != null ? uid.hashCode() : 0);
+		result = prime * result + (id != null ? id.hashCode() : 0);
 		result = prime * result + (production ? 1 : 0);
 		result = prime * result + (user != null ? user.hashCode() : 0);
 		result = prime * result + (pack != null ? pack.hashCode() : 0);

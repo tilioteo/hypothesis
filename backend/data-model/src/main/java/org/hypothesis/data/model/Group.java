@@ -33,7 +33,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 @Entity
 @Table(name = TableConstants.GROUP_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Group extends SerializableIdObject {
+public final class Group extends SerializableEntity<Long> {
 
 	/**
 	 * 
@@ -94,7 +94,7 @@ public final class Group extends SerializableIdObject {
 											 * , cascade = {CascadeType.PERSIST,
 											 * CascadeType.MERGE }
 											 */)
-	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.GROUP_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.USER_ID) )
+	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.GROUP_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.USER_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	public Set<User> getUsers() {
@@ -105,11 +105,11 @@ public final class Group extends SerializableIdObject {
 		this.users = set;
 	}
 
-	public final void addUser(User user) {
+	public void addUser(User user) {
 		getUsers().add(user);
 	}
 
-	public final void removeUser(User user) {
+	public void removeUser(User user) {
 		getUsers().remove(user);
 	}
 

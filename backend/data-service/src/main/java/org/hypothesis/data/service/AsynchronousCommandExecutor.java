@@ -4,10 +4,10 @@
  */
 package org.hypothesis.data.service;
 
-import java.util.concurrent.ArrayBlockingQueue;
-
 import org.apache.log4j.Logger;
 import org.hypothesis.interfaces.Command;
+
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -24,13 +24,16 @@ public class AsynchronousCommandExecutor extends ArrayBlockingQueue<Command> imp
 
 	private static final Logger log = Logger.getLogger(AsynchronousCommandExecutor.class);
 
-	boolean suspended = false;
-	boolean stopped = false;
+	private boolean suspended = false;
+	private boolean stopped = false;
+	private Command finishCommand = null;
+	
 
 	public AsynchronousCommandExecutor() {
 		super(1024);
 
-		Thread thread = new Thread(this);
+		ThreadGroup threadGroup = new ThreadGroup("async-service");
+		Thread thread = new Thread(threadGroup, this);
 		thread.start();
 	}
 
@@ -83,21 +86,27 @@ public class AsynchronousCommandExecutor extends ArrayBlockingQueue<Command> imp
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		Command.Executor.execute(finishCommand);
 	}
 
-	synchronized void stop() {
+	public synchronized void stop() {
 		stopped = true;
 		suspended = false;
 		notify();
 	}
 
-	synchronized void suspend() {
+	public synchronized void suspend() {
 		suspended = true;
 	}
 
-	synchronized void resume() {
+	public synchronized void resume() {
 		suspended = false;
 		notify();
+	}
+	
+	public synchronized void setFinishCommand(Command command) {
+		this.finishCommand = command;
 	}
 
 }

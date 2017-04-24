@@ -4,9 +4,9 @@
  */
 package org.hypothesis.data;
 
-import java.io.Serializable;
-
 import org.hypothesis.interfaces.Document;
+
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

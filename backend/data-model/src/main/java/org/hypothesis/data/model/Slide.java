@@ -28,7 +28,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = TableConstants.SLIDE_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Slide extends SerializableIdObject {
+public final class Slide extends SerializableEntity<Long> {
 
 	/**
 	 * 
@@ -105,8 +105,8 @@ public final class Slide extends SerializableIdObject {
 	 * @return
 	 */
 	@Transient
-	public final String getTemplateUid() {
-		return getTemplate() != null ? getTemplate().getUid() : null;
+	public String getTemplateId() {
+		return getTemplate() != null ? getTemplate().getId() : null;
 	}
 
 	/**
@@ -115,7 +115,7 @@ public final class Slide extends SerializableIdObject {
 	 * @return
 	 */
 	@Transient
-	public final String getTemplateXmlData() {
+	public String getTemplateXmlData() {
 		return getTemplate() != null ? getTemplate().getData() : null;
 	}
 

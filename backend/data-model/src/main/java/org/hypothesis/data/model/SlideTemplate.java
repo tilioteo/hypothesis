@@ -22,7 +22,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = TableConstants.SLIDE_TEMPLATE_TABLE)
 @Access(AccessType.PROPERTY)
-public final class SlideTemplate extends SerializableUidObject {
+public final class SlideTemplate extends SerializableEntity<String> {
 
 	/**
 	 * 
@@ -39,8 +39,8 @@ public final class SlideTemplate extends SerializableUidObject {
 	@Override
 	@Id
 	@Column(name = FieldConstants.UID)
-	public String getUid() {
-		return super.getUid();
+	public String getId() {
+		return super.getId();
 	}
 
 	@Column(name = FieldConstants.XML_DATA, nullable = false)
@@ -75,18 +75,18 @@ public final class SlideTemplate extends SerializableUidObject {
 		}
 		SlideTemplate other = (SlideTemplate) obj;
 
-		String uid = getUid();
-		String uid2 = other.getUid();
+		String id = getId();
+		String id2 = other.getId();
 		String xmlData = getData();
 		String xmlData2 = other.getData();
 		String note = getNote();
 		String note2 = other.getNote();
 
-		if (uid == null) {
-			if (uid2 != null) {
+		if (id == null) {
+			if (id2 != null) {
 				return false;
 			}
-		} else if (!uid.equals(uid2)) {
+		} else if (!id.equals(id2)) {
 			return false;
 		}
 
@@ -111,13 +111,13 @@ public final class SlideTemplate extends SerializableUidObject {
 
 	@Override
 	public int hashCode() {
-		String uid = getUid();
+		String id = getId();
 		String xmlData = getData();
 		String note = getNote();
 
 		final int prime = 43;
 		int result = 1;
-		result = prime * result + (uid != null ? uid.hashCode() : 0);
+		result = prime * result + (id != null ? id.hashCode() : 0);
 		result = prime * result + (xmlData != null ? xmlData.hashCode() : 0);
 		result = prime * result + (note != null ? note.hashCode() : 0);
 		return result;

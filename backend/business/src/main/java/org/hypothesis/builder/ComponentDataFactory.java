@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import org.hypothesis.data.DocumentWriter;
 import org.hypothesis.event.data.ComponentData;
+import org.hypothesis.event.data.ScoreData;
 import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.interfaces.SlidePresenter;
 
@@ -48,5 +49,15 @@ public interface ComponentDataFactory extends Serializable {
 	 *         is null.
 	 */
 	String buildSlideContainerData(SlidePresenter presenter, DocumentWriter writer);
+
+	/**
+	 * Serialize score data by provided writer implementation
+	 * 
+	 * @param scoreData
+	 * @param writer
+	 * @return string representation of score data or null when some parameter
+	 *         is null.
+	 */
+	String buildScoreData(ScoreData scoreData, DocumentWriter writer);
 
 }

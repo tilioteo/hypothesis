@@ -3,10 +3,10 @@
  */
 package org.hypothesis.data;
 
-import static org.junit.Assert.*;
-
 import org.hypothesis.interfaces.Document;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author morongk
@@ -25,9 +25,10 @@ public class XmlDocumentWriterTest {
 		XmlDocumentWriter writer = new XmlDocumentWriter();
 
 		Document doc = reader.readString(XmlTestUtility.getSampleReaderXmlString());
+		String txt = XmlTestUtility.getSampleWriterString();
 		String str = writer.writeString(doc);
 
-		assertEquals("", str);
+		assertEquals(txt, str);
 	}
 
 }

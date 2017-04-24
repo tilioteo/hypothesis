@@ -37,6 +37,7 @@ package org.hypothesis.servlet.jnlp;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /*
@@ -52,7 +53,7 @@ public class VersionString {
 		return (new VersionString(vs)).contains(vi);
 	}
 
-	private final ArrayList<VersionID> _versionIds;
+	private final List<VersionID> _versionIds;
 
 	/** Constructs a VersionString object from string */
 	public VersionString(String vs) {

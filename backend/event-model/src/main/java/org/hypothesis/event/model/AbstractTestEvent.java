@@ -4,8 +4,8 @@
  */
 package org.hypothesis.event.model;
 
-import org.hypothesis.data.interfaces.HasStatus;
 import com.vaadin.server.ErrorHandler;
+import org.hypothesis.data.interfaces.HasStatus;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

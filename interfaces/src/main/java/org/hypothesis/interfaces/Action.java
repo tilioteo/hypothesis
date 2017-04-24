@@ -21,4 +21,6 @@ public interface Action extends Serializable {
 
 	Map<Integer, ExchangeVariable> getOutputs();
 
+	Map<Integer, ExchangeVariable> getScores();
+
 }

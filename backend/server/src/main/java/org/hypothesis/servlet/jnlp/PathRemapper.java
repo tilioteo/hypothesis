@@ -4,10 +4,7 @@
  */
 package org.hypothesis.servlet.jnlp;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -20,7 +17,7 @@ import java.util.Iterator;
  */
 public class PathRemapper {
 
-	final HashMap<String, String> pathremap = new HashMap<>();
+	final Map<String, String> pathremap = new HashMap<>();
 
 	public String get(String path) {
 		if (pathremap.size() > 0) {
@@ -30,7 +27,7 @@ public class PathRemapper {
 
 			// partial match
 			Iterator<String> names = pathremap.keySet().iterator();
-			ArrayList<String> potentialMatches = new ArrayList<>();
+			List<String> potentialMatches = new ArrayList<>();
 			while (names.hasNext()) {
 				String match = names.next();
 				if (path.contains(match))

@@ -27,7 +27,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = TableConstants.BRANCH_OUTPUT_TABLE)
 @Access(AccessType.PROPERTY)
-public final class BranchOutput extends SerializableIdObject {
+public final class BranchOutput extends SerializableEntity<Long> {
 
 	/**
 	 * 

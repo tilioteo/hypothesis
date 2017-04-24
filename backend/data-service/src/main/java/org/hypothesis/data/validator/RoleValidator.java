@@ -4,15 +4,15 @@
  */
 package org.hypothesis.data.validator;
 
-import java.util.Set;
-
+import com.vaadin.data.Validator;
+import org.hypothesis.data.interfaces.UserService;
 import org.hypothesis.data.model.Role;
 import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.RoleService;
-import org.hypothesis.data.service.UserService;
-
+import org.hypothesis.data.service.RoleServiceImpl;
 import org.hypothesis.server.Messages;
-import com.vaadin.data.Validator;
+
+import javax.inject.Inject;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -25,12 +25,13 @@ public class RoleValidator implements Validator {
 
 	private final Object source;
 	private final User loggedUser;
-	private final UserService userService;
+
+	@Inject
+	private UserService userService;
 
 	public RoleValidator(Object source, User loggedUser) {
 		this.source = source;
 		this.loggedUser = loggedUser;
-		this.userService = UserService.newInstance();
 	}
 
 	@Override
@@ -48,7 +49,7 @@ public class RoleValidator implements Validator {
 		}
 
 		// superuser left in update
-		if (((Set<Role>) value).contains(RoleService.ROLE_SUPERUSER)) {
+		if (((Set<Role>) value).contains(RoleServiceImpl.ROLE_SUPERUSER)) {
 			return;
 		}
 

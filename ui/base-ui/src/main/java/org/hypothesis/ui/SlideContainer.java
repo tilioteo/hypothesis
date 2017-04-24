@@ -4,9 +4,8 @@
  */
 package org.hypothesis.ui;
 
-import org.hypothesis.interfaces.SlidePresenter;
-
 import com.vaadin.ui.CssLayout;
+import org.hypothesis.interfaces.SlidePresenter;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

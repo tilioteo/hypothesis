@@ -4,13 +4,13 @@
  */
 package org.hypothesis.evaluation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.hypothesis.interfaces.Evaluable;
 import org.hypothesis.interfaces.HasVariables;
 import org.hypothesis.interfaces.Variable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -43,11 +43,11 @@ public class WhileStatement implements Evaluable {
 			int watchdog = 0;
 
 			while (Boolean.TRUE.equals(result)) {
-				for (Evaluable evaluable : evaluables) {
-					evaluable.setVariables(variables.getVariables());
-					evaluable.evaluate();
-					evaluable.updateVariables(variables.getVariables());
-				}
+				evaluables.forEach(e -> {
+					e.setVariables(variables.getVariables());
+					e.evaluate();
+					e.updateVariables(variables.getVariables());
+				});
 
 				expression.setVariables(variables.getVariables());
 				result = expression.getBoolean();
@@ -76,10 +76,7 @@ public class WhileStatement implements Evaluable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder("while (" + expression.toString() + ") {\n");
-		for (Evaluable evaluable : evaluables) {
-			builder.append("\t" + evaluable.toString() + ";\n");
-		}
-
+		evaluables.forEach(e -> builder.append("\t" + e.toString() + ";\n"));
 		builder.append("}");
 
 		return builder.toString();

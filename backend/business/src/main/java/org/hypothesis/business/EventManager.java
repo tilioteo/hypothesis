@@ -4,11 +4,10 @@
  */
 package org.hypothesis.business;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Set;
+import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Component;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.event.data.ComponentDataConstants;
@@ -18,9 +17,11 @@ import org.hypothesis.interfaces.ComponentEventCallback;
 import org.hypothesis.presenter.SlideContainerPresenter;
 import org.hypothesis.utility.ComponentDataUtility;
 
-import com.tilioteo.common.Strings;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Component;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -30,7 +31,6 @@ import com.vaadin.ui.Component;
  */
 public class EventManager {
 
-	// TODO may be injected
 	private SlideContainerPresenter presenter;
 
 	/**
@@ -66,7 +66,7 @@ public class EventManager {
 		ComponentData data = createComponentData(event);
 		event.setData(data);
 
-		if (!(Strings.isNullOrEmpty(typeName) || Strings.isNullOrEmpty(eventName))) {
+		if (StringUtils.isNotBlank(typeName) && StringUtils.isNotBlank(eventName)) {
 			presenter.fireEvent(event);
 		}
 
@@ -78,37 +78,25 @@ public class EventManager {
 	}
 
 	private ComponentData createComponentData(ComponentEvent event) {
-		HashMap<String, Class<?>> properties = new HashMap<>();
-		HashMap<String, Annotation> annotations = new HashMap<>();
+		Map<String, Class<?>> properties = new HashMap<>();
+		Map<String, Annotation> annotations = new HashMap<>();
 
 		Set<String> names = event.getPropertyNames();
-		for (String name : names) {
-			Object value = event.getProperty(name);
-			Class<?> clazz = event.getPropertyClass(name);
+		names.forEach(e -> {
+			Object value = event.getProperty(e);
+			Class<?> clazz = event.getPropertyClass(e);
 			if (clazz != null) {
-				properties.put(name, clazz);
+				properties.put(e, clazz);
 			} else if (value != null) {
-				properties.put(name, value.getClass());
+				properties.put(e, value.getClass());
 			} else {
-				properties.put(name, Object.class);
+				properties.put(e, Object.class);
 			}
 
-			if (event.getPropertyElementPath(name) != null) {
-				final String elementPath = event.getPropertyElementPath(name);
-
-				annotations.put(name, new ElementPath() {
-					@Override
-					public Class<? extends Annotation> annotationType() {
-						return ElementPath.class;
-					}
-
-					@Override
-					public String value() {
-						return elementPath;
-					}
-				});
+			if (event.getPropertyElementPath(e) != null) {
+				annotations.put(e, createElementPathAnnotation(event.getPropertyElementPath(e)));
 			}
-		}
+		});
 
 		try {
 			String safeClassName = event.getComponent().getClass().getName().replace(".", "_");
@@ -118,13 +106,17 @@ public class EventManager {
 
 			ComponentData data = (ComponentData) dataClass.newInstance();
 
-			for (String name : names) {
-				Object value = event.getProperty(name);
+			names.forEach(e -> {
+				Object value = event.getProperty(e);
 
-				Field field = data.getClass().getDeclaredField(name);
-				field.setAccessible(true);
-				field.set(data, value);
-			}
+				try {
+					Field field = data.getClass().getDeclaredField(e);
+					field.setAccessible(true);
+					field.set(data, value);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			});
 
 			Component component = event.getComponent();
 
@@ -146,5 +138,19 @@ public class EventManager {
 		}
 
 		return null;
+	}
+
+	private ElementPath createElementPathAnnotation(final String value) {
+		return new ElementPath() {
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return ElementPath.class;
+			}
+
+			@Override
+			public String value() {
+				return value;
+			}
+		};
 	}
 }

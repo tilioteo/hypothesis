@@ -30,7 +30,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = TableConstants.USER_PERMISSION_TABLE, uniqueConstraints = {
 		@UniqueConstraint(columnNames = { FieldConstants.USER_ID, FieldConstants.PACK_ID }) })
 @Access(AccessType.PROPERTY)
-public final class UserPermission extends SerializableIdObject {
+public final class UserPermission extends SerializableEntity<Long> {
 
 	/**
 	 * 

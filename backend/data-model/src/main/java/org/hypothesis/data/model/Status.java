@@ -21,8 +21,7 @@ public enum Status implements Serializable {
 	private static final Map<Integer, Status> lookup = new HashMap<>();
 
 	static {
-		for (Status s : EnumSet.allOf(Status.class))
-			lookup.put(s.getCode(), s);
+		EnumSet.allOf(Status.class).forEach(e -> lookup.put(e.getCode(), e));
 	}
 
 	public static Status get(int code) {

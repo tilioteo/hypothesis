@@ -4,19 +4,17 @@
  */
 package org.hypothesis.presenter;
 
-import java.io.File;
-import java.util.Locale;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
-
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.WrappedHttpSession;
+import com.vaadin.server.WrappedSession;
 import org.hypothesis.extension.PluginManager;
 import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.LocaleManager;
 
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.WrappedHttpSession;
-import com.vaadin.server.WrappedSession;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.util.Locale;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

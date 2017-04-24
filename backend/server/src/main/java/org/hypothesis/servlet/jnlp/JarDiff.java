@@ -35,23 +35,8 @@
  */
 package org.hypothesis.servlet.jnlp;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.MissingResourceException;
+import java.io.*;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
@@ -65,7 +50,7 @@ import java.util.jar.JarOutputStream;
  * 
  * @version 1.13, 06/26/03
  */
-public class JarDiff implements JarDiffConstants {
+public final class JarDiff implements JarDiffConstants {
 	/**
 	 * JarFile2 wraps a JarFile providing some convenience methods.
 	 */
@@ -122,9 +107,9 @@ public class JarDiff implements JarDiffConstants {
 
 		private JarFile _jar;
 		private List<JarEntry> _entries;
-		private HashMap<String, JarEntry> _nameToEntryMap;
+		private Map<String, JarEntry> _nameToEntryMap;
 
-		private HashMap<Long, LinkedList<JarEntry>> _crcToEntryMap;
+		private Map<Long, LinkedList<JarEntry>> _crcToEntryMap;
 
 		public JarFile2(String path) throws IOException {
 			_jar = new JarFile(new File(path));
@@ -182,7 +167,7 @@ public class JarDiff implements JarDiffConstants {
 			// check if this jar contains files with the passed in entry's crc
 			if (_crcToEntryMap.containsKey(crcL)) {
 				// get the Linked List with files with the crc
-				LinkedList<JarEntry> ll = _crcToEntryMap.get(crcL);
+				List<JarEntry> ll = _crcToEntryMap.get(crcL);
 				// go through the list and check for content match
 				ListIterator<JarEntry> li = ll.listIterator(0);
 				if (li != null) {
@@ -267,6 +252,9 @@ public class JarDiff implements JarDiffConstants {
 
 	// private static ResourceBundle _resources = null;
 
+	private JarDiff() {
+	}
+
 	/**
 	 * Writes the index file out to <code>jos</code>. <code>oldEntries</code>
 	 * gives the names of the files that were removed, <code>movedMap</code>
@@ -327,11 +315,11 @@ public class JarDiff implements JarDiffConstants {
 		try {
 			Iterator<JarEntry> jarEntries;
 			Iterator<String> nameEntries;
-			HashMap<String, String> moved = new HashMap<>();
+			Map<String, String> moved = new HashMap<>();
 			// HashSet<String> visited = new HashSet<>();
-			HashSet<String> implicit = new HashSet<>();
-			HashSet<String> moveSrc = new HashSet<>();
-			HashSet<String> newEntries = new HashSet<>();
+			Set<String> implicit = new HashSet<>();
+			Set<String> moveSrc = new HashSet<>();
+			Set<String> newEntries = new HashSet<>();
 
 			// FIRST PASS
 			// Go through the entries in new jar and
@@ -393,7 +381,7 @@ public class JarDiff implements JarDiffConstants {
 
 			// SECOND PASS: <deleted files> = <oldjarnames> - <implicitmoves> -
 			// <source of move commands> - <new or modified entries>
-			ArrayList<String> deleted = new ArrayList<>();
+			List<String> deleted = new ArrayList<>();
 			jarEntries = oldJar.getJarEntries();
 			if (jarEntries != null) {
 				while (jarEntries.hasNext()) {

@@ -28,7 +28,7 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = TableConstants.TEST_TABLE)
 @Access(AccessType.PROPERTY)
-public class SimpleTest extends SerializableIdObject {
+public class SimpleTest extends SerializableEntity<Long> {
 	/**
 	 * 
 	 */

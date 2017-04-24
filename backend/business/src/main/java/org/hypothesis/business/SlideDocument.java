@@ -4,13 +4,12 @@
  */
 package org.hypothesis.business;
 
-import java.io.Serializable;
-
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Component.Focusable;
 import org.hypothesis.event.data.Message;
 import org.hypothesis.presenter.SlideContainerPresenter;
 
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Component.Focusable;
+import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

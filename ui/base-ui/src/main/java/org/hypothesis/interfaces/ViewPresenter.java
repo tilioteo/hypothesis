@@ -4,7 +4,6 @@
  */
 package org.hypothesis.interfaces;
 
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 /**
@@ -16,7 +15,5 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 public interface ViewPresenter extends ComponentPresenter {
 
 	void enter(ViewChangeEvent event);
-
-	View createView();
 
 }

@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  *         Hypothesis
  *
  */
-public class ReflectionUtility {
+public final class ReflectionUtility {
 
 	private ReflectionUtility() {
 	}

@@ -3,46 +3,18 @@
  */
 package org.hypothesis.application.junit;
 
+import com.vaadin.Application;
+import com.vaadin.ui.Button.ClickEvent;
 import org.hypothesis.application.collector.BranchMap;
 import org.hypothesis.application.collector.core.BranchManager;
 import org.hypothesis.application.collector.core.SlideManager;
 import org.hypothesis.application.collector.core.TaskManager;
-import org.hypothesis.application.collector.events.AbstractComponentEvent;
-import org.hypothesis.application.collector.events.AbstractContentEvent;
-import org.hypothesis.application.collector.events.AbstractNotificationEvent;
-import org.hypothesis.application.collector.events.AbstractProcessEvent;
-import org.hypothesis.application.collector.events.AbstractRunningEvent;
-import org.hypothesis.application.collector.events.AfterRenderContentEvent;
-import org.hypothesis.application.collector.events.BreakTestEvent;
-import org.hypothesis.application.collector.events.ContinueTestEvent;
-import org.hypothesis.application.collector.events.ErrorNotificationEvent;
-import org.hypothesis.application.collector.events.ErrorTestEvent;
-import org.hypothesis.application.collector.events.FinishBranchEvent;
-import org.hypothesis.application.collector.events.FinishSlideEvent;
+import org.hypothesis.application.collector.events.*;
 import org.hypothesis.application.collector.events.FinishSlideEvent.Direction;
-import org.hypothesis.application.collector.events.FinishTaskEvent;
-import org.hypothesis.application.collector.events.FinishTestEvent;
-import org.hypothesis.application.collector.events.NextBranchEvent;
-import org.hypothesis.application.collector.events.NextSlideEvent;
-import org.hypothesis.application.collector.events.NextTaskEvent;
-import org.hypothesis.application.collector.events.PrepareTestEvent;
-import org.hypothesis.application.collector.events.PriorSlideEvent;
-import org.hypothesis.application.collector.events.ProcessEventListener;
-import org.hypothesis.application.collector.events.ProcessEventManager;
-import org.hypothesis.application.collector.events.RenderContentEvent;
-import org.hypothesis.application.collector.events.StartTestEvent;
 import org.hypothesis.application.collector.ui.MainWindow;
 import org.hypothesis.entity.Branch;
 import org.hypothesis.entity.Pack;
 import org.hypothesis.entity.Test;
-
-import com.vaadin.Application;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * @author Kamil Morong - Hypothesis

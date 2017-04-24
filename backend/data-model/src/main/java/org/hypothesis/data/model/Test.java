@@ -38,7 +38,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 @Entity
 @Table(name = TableConstants.TEST_TABLE)
 @Access(AccessType.PROPERTY)
-public class Test extends SerializableIdObject {
+public class Test extends SerializableEntity<Long> {
 	/**
 	 * 
 	 */
@@ -101,6 +101,11 @@ public class Test extends SerializableIdObject {
 	 * list of events in running test
 	 */
 	private List<Event> events = new LinkedList<>();
+
+	/**
+	 * list of scores in running test
+	 */
+	private List<Score> scores = new LinkedList<>();
 
 	protected Test() {
 		super();
@@ -256,7 +261,7 @@ public class Test extends SerializableIdObject {
 	}
 
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.EVENT_ID) )
+	@JoinTable(name = TableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.EVENT_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = FieldConstants.RANK)
@@ -276,6 +281,19 @@ public class Test extends SerializableIdObject {
 
 	public final void removeEvent(Event event) {
 		getEvents().remove(event);
+	}
+
+	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = TableConstants.TEST_SCORE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.SCORE_ID) )
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@LazyCollection(LazyCollectionOption.TRUE)
+	@OrderColumn(name = FieldConstants.RANK)
+	public List<Score> getScores() {
+		return scores;
+	}
+
+	protected void setScores(List<Score> list) {
+		this.scores = list;
 	}
 
 	@Override

@@ -4,31 +4,20 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.ArrayList;
-
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.model.User;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.MainEventBus;
+import org.hypothesis.interfaces.WindowPresenter;
 import org.hypothesis.server.Messages;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -37,7 +26,7 @@ import com.vaadin.ui.Window.CloseListener;
  *
  */
 @SuppressWarnings("serial")
-public abstract class AbstractWindowPresenter implements CloseListener {
+public abstract class AbstractWindowPresenter implements CloseListener, WindowPresenter {
 
 	protected Object source = null;
 
@@ -45,18 +34,15 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 
 	protected WindowState state;
 
-	protected final MainEventBus bus;
+	@Inject
+	private Event<MainUIEvent> mainEvent;
 
-	protected ArrayList<AbstractField<?>> fields;
+	protected List<AbstractField<?>> fields;
 
 	protected Window window;
 
 	protected TabSheet tabSheet;
 	protected VerticalLayout detailsTab;
-
-	protected AbstractWindowPresenter(MainEventBus bus) {
-		this.bus = bus;
-	}
 
 	protected abstract void initFields();
 
@@ -95,9 +81,7 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 	protected void addField(GridLayout form, final Component field) {
 		if (state == WindowState.MULTIUPDATE) {
 			final CheckBox enabler = new CheckBox(field.getCaption());
-			enabler.addValueChangeListener(new ValueChangeListener() {
-				@Override
-				public void valueChange(Property.ValueChangeEvent event) {
+			enabler.addValueChangeListener(e -> {
 					field.setVisible(enabler.getValue());
 
 					if (field instanceof AbstractField<?>) {
@@ -107,7 +91,6 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 							fields.remove((AbstractField<?>) field);
 						}
 					}
-				}
 			});
 			field.setVisible(false);
 			form.addComponent(enabler);
@@ -135,15 +118,18 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 
 		createWindow();
 
-		bus.post(new MainUIEvent.CloseOpenWindowsEvent());
+		mainEvent.fire(new MainUIEvent.CloseOpenWindowsEvent());
 		UI.getCurrent().addWindow(window);
 		window.center();
 		window.focus();
 	}
 
-	/**
-	 * Show the window handled by this presenter
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.hypothesis.presenter.WindowPresenter#showWindow()
 	 */
+	@Override
 	public void showWindow() {
 		showWindow(WindowState.CREATE, null);
 	}

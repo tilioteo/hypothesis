@@ -4,10 +4,11 @@
  */
 package org.hypothesis.data.validator;
 
-import org.hypothesis.data.service.GroupService;
-
-import org.hypothesis.server.Messages;
 import com.vaadin.data.Validator;
+import org.hypothesis.data.interfaces.GroupService;
+import org.hypothesis.server.Messages;
+
+import javax.inject.Inject;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -18,11 +19,11 @@ import com.vaadin.data.Validator;
 @SuppressWarnings("serial")
 public class GroupNameValidator implements Validator {
 
-	private final GroupService groupService;
+	@Inject
+	private GroupService groupService;
 	private final Long id;
 
 	public GroupNameValidator(Long id) {
-		groupService = GroupService.newInstance();
 		this.id = id;
 	}
 

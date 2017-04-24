@@ -4,12 +4,11 @@
  */
 package org.hypothesis.slide.client.ui.timerlabel;
 
-import org.hypothesis.slide.client.ui.VTimerLabel;
-import org.hypothesis.slide.shared.ui.timerlabel.TimerLabelState;
-
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
+import org.hypothesis.slide.client.ui.VTimerLabel;
+import org.hypothesis.slide.shared.ui.timerlabel.TimerLabelState;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

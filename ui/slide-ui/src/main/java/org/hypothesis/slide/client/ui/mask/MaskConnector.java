@@ -4,9 +4,6 @@
  */
 package org.hypothesis.slide.client.ui.mask;
 
-import org.hypothesis.slide.shared.ui.mask.MaskClientRpc;
-import org.hypothesis.slide.shared.ui.mask.MaskState;
-
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -18,6 +15,8 @@ import com.vaadin.client.ServerConnector;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
 import com.vaadin.shared.ui.Connect;
+import org.hypothesis.slide.shared.ui.mask.MaskClientRpc;
+import org.hypothesis.slide.shared.ui.mask.MaskState;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -4,10 +4,10 @@
  */
 package org.hypothesis.event.model;
 
+import org.hypothesis.event.data.Message;
+
 import java.util.Date;
 import java.util.EventObject;
-
-import org.hypothesis.event.data.Message;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

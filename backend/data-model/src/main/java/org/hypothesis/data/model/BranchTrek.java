@@ -34,7 +34,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo = TableConstants.BRANCH_TREK_TABLE, indexes = {
 		@Index(name = "IX_PACK_BRANCH", columnNames = { FieldConstants.PACK_ID, FieldConstants.BRANCH_ID }) })
 @Access(AccessType.PROPERTY)
-public final class BranchTrek extends SerializableIdObject {
+public final class BranchTrek extends SerializableEntity<Long> {
 	/**
 	 * 
 	 */

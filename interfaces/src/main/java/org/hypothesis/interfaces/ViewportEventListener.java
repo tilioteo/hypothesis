@@ -14,6 +14,7 @@ import java.util.EventObject;
  *         Hypothesis
  *
  */
+@FunctionalInterface
 public interface ViewportEventListener extends EventListener, Serializable {
 
 	void handleEvent(EventObject event);

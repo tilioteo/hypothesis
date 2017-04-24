@@ -5,6 +5,9 @@
 package org.hypothesis.interfaces;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +28,8 @@ public interface Element extends Serializable, Iterable<Element> {
 	void setName(String name);
 
 	String getText();
+	
+	String getTextTrim();
 
 	void setText(String text);
 
@@ -34,7 +39,31 @@ public interface Element extends Serializable, Iterable<Element> {
 
 	void setAttribute(String name, String value);
 
+	void setAttribute(String name, int value);
+
+	void setAttribute(String name, double value);
+
+	void setAttribute(String name, long value);
+
+	void setAttribute(String name, LocalDate value);
+	
+	void setAttribute(String name, LocalTime value);
+	
+	void setAttribute(String name, LocalDateTime value);
+	
 	String getAttribute(String name);
+	
+	Integer getAttributeAsInteger(String name);
+	
+	Double getAttributeAsDouble(String name);
+	
+	Long getAttributeAsLong(String name);
+
+	LocalDate getAttributeAsDate(String name);
+
+	LocalTime getAttributeAsTime(String name);
+
+	LocalDateTime getAttributeAsDateTime(String name);
 
 	void removeAttribute(String name);
 

@@ -23,7 +23,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = TableConstants.ROLE_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Role extends SerializableIdObject {
+public final class Role extends SerializableEntity<Long> {
 
 	/**
 	 * 

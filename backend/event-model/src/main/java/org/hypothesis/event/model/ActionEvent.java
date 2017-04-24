@@ -4,9 +4,8 @@
  */
 package org.hypothesis.event.model;
 
-import org.hypothesis.interfaces.Action;
-
 import com.vaadin.server.ErrorHandler;
+import org.hypothesis.interfaces.Action;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -35,7 +35,7 @@ import org.hibernate.annotations.LazyCollectionOption;
 @Entity
 @Table(name = TableConstants.USER_TABLE)
 @Access(AccessType.PROPERTY)
-public final class User extends SerializableIdObject {
+public final class User extends SerializableEntity<Long> {
 
 	public static final User GUEST = new User("Guest");
 
@@ -79,7 +79,6 @@ public final class User extends SerializableIdObject {
 	}
 
 	public User() {
-
 	}
 
 	/**
@@ -150,7 +149,7 @@ public final class User extends SerializableIdObject {
 	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.ROLE_ID) )
+	@JoinTable(name = TableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.ROLE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.FALSE)
 	public Set<Role> getRoles() {
@@ -161,8 +160,11 @@ public final class User extends SerializableIdObject {
 		this.roles = roles;
 	}
 
-	@ManyToMany(/*targetEntity = Group.class, cascade = { CascadeType.PERSIST, CascadeType.MERGE }*/)
-	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.GROUP_ID) )
+	@ManyToMany(/*
+				 * targetEntity = Group.class, cascade = { CascadeType.PERSIST,
+				 * CascadeType.MERGE }
+				 */)
+	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.GROUP_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	public Set<Group> getGroups() {
@@ -182,23 +184,23 @@ public final class User extends SerializableIdObject {
 		this.ownerId = ownerId;
 	}
 
-	public final void addRole(Role role) {
+	public void addRole(Role role) {
 		getRoles().add(role);
 	}
 
-	public final void removeRole(Role role) {
+	public void removeRole(Role role) {
 		getRoles().remove(role);
 	}
 
-	public final void addGroup(Group group) {
+	public void addGroup(Group group) {
 		getGroups().add(group);
 	}
 
-	public final void removeGroup(Group group) {
+	public void removeGroup(Group group) {
 		getGroups().remove(group);
 	}
 
-	public final boolean hasRole(Role role) {
+	public boolean hasRole(Role role) {
 		return getRoles().contains(role);
 	}
 

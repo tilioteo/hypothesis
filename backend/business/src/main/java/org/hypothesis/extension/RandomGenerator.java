@@ -4,9 +4,9 @@
  */
 package org.hypothesis.extension;
 
-import java.util.Random;
-
 import org.hypothesis.interfaces.Extension;
+
+import java.util.Random;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

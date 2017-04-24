@@ -36,6 +36,8 @@ public interface TableConstants {
 	String USER_ROLE_TABLE = "tbl_user_role";
 	String USER_PERMISSION_TABLE = "tbl_user_permission";
 	String MESSAGE_TABLE = "tbl_message";
+	String SCORE_TABLE = "tbl_score";
+	String TEST_SCORE_TABLE = "tbl_test_score";
 
 	String BRANCH_GENERATOR = "branchGenerator";
 	String BRANCH_SEQUENCE = "hbn_branch_seq";
@@ -65,5 +67,7 @@ public interface TableConstants {
 	String USER_SEQUENCE = "hbn_user_seq";
 	String USER_PERMISSION_GENERATOR = "userPermissionGenerator";
 	String USER_PERMISSION_SEQUENCE = "hbn_user_permission_seq";
+	String SCORE_GENERATOR = "scoreGenerator";
+	String SCORE_SEQUENCE = "hbn_score_seq";
 
 }

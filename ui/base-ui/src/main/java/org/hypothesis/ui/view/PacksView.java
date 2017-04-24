@@ -4,26 +4,19 @@
  */
 package org.hypothesis.ui.view;
 
-import java.util.Iterator;
-
-import org.hypothesis.interfaces.PacksPresenter;
-import org.hypothesis.ui.PackPanel;
-import org.vaadin.jre.ui.DeployJava;
-import org.vaadin.jre.ui.DeployJava.JavaCheckedEvent;
-import org.vaadin.jre.ui.DeployJava.JavaCheckedListener;
-import org.vaadin.jre.ui.DeployJava.JavaInfoPanel;
-
-import org.hypothesis.slide.ui.Mask;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import org.hypothesis.interfaces.PacksPresenter;
+import org.hypothesis.slide.ui.Mask;
+import org.hypothesis.ui.PackPanel;
+import org.vaadin.jre.ui.DeployJava;
+import org.vaadin.jre.ui.DeployJava.JavaCheckedListener;
+import org.vaadin.jre.ui.DeployJava.JavaInfoPanel;
+
+import java.util.Iterator;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -32,9 +25,9 @@ import com.vaadin.ui.themes.ValoTheme;
  *
  */
 @SuppressWarnings("serial")
-public class PacksView extends HorizontalLayout implements View {
+public abstract class PacksView extends HorizontalLayout implements View {
 
-	private final PacksPresenter presenter;
+	private PacksPresenter presenter;
 
 	private VerticalLayout mainLayout;
 	private JavaInfoPanel javaInfoPanel;
@@ -53,24 +46,26 @@ public class PacksView extends HorizontalLayout implements View {
 	private String javaNotInstalledCaption = "javaNotInstalledCaption";
 	private String javaInstallLinkCaption = "javaInstallLinkCaption";
 
-	private final JavaCheckedListener javaCheckedListener = new JavaCheckedListener() {
-		@Override
-		public void javaChecked(JavaCheckedEvent event) {
-			updateJavaInstalled(event.getResult());
-		}
+	private final JavaCheckedListener javaCheckedListener = e -> updateJavaInstalled(e.getResult());
 
-	};
-
-	public PacksView(PacksPresenter presenter) {
-		this.presenter = presenter;
-
+	public PacksView() {
 		setSizeFull();
+	}
+
+	private void buildContent() {
+		removeAllComponents();
 
 		Panel contentPanel = buildContentPanel();
 		addComponent(contentPanel);
 		setExpandRatio(contentPanel, 1.0f);
 		addComponent(buildVerticalPane());
 
+	}
+
+	protected void setPresenter(PacksPresenter presenter) {
+		this.presenter = presenter;
+
+		buildContent();
 	}
 
 	private Panel buildContentPanel() {
@@ -142,7 +137,7 @@ public class PacksView extends HorizontalLayout implements View {
 		if (javaInfoPanel != null && javaInfoPanel.isVisible() && !javaInfoPanel.isJavaOk()) {
 			try {
 				javaInfoPanel.checkJavaVersion();
-			} catch (Throwable e) {
+			} catch (Exception e) {
 			}
 		}
 	}
@@ -167,16 +162,12 @@ public class PacksView extends HorizontalLayout implements View {
 	public void attach() {
 		super.attach();
 
-		presenter.attach();
-
 		DeployJava.get(getUI()).addJavaCheckedListener(javaCheckedListener);
 	}
 
 	@Override
 	public void detach() {
 		DeployJava.get(getUI()).removeJavaCheckedListener(javaCheckedListener);
-
-		presenter.detach();
 
 		super.detach();
 	}

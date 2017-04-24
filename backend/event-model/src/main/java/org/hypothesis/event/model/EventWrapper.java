@@ -4,10 +4,9 @@
  */
 package org.hypothesis.event.model;
 
+import com.vaadin.ui.Component;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.ComponentEventCallback;
-
-import com.vaadin.ui.Component;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -4,13 +4,13 @@
  */
 package org.hypothesis.evaluation;
 
+import org.hypothesis.interfaces.Evaluable;
+import org.hypothesis.interfaces.HasVariables;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.hypothesis.interfaces.Evaluable;
-import org.hypothesis.interfaces.HasVariables;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -56,15 +56,15 @@ public class Node extends AbstractVariableContainer implements Serializable {
 	public void execute() {
 		breakExecution = false;
 		for (Evaluable evaluable : evaluables) {
-			Map<String, org.hypothesis.interfaces.Variable<?>> variables = null;
-			if (getVariables() != null)
-				variables = getVariables();
+			Map<String, org.hypothesis.interfaces.Variable<?>> variables = getVariables();
 
-			if (variables != null)
+			if (variables != null) {
 				evaluable.setVariables(variables);
+			}
 			evaluable.evaluate();
-			if (variables != null)
+			if (variables != null) {
 				evaluable.updateVariables(variables);
+			}
 
 			if (breakExecution) {
 				break;

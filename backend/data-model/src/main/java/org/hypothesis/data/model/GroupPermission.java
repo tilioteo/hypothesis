@@ -33,7 +33,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = TableConstants.GROUP_PERMISSION_TABLE, uniqueConstraints = {
 		@UniqueConstraint(columnNames = { FieldConstants.GROUP_ID, FieldConstants.PACK_ID }) })
 @Access(AccessType.PROPERTY)
-public final class GroupPermission extends SerializableIdObject {
+public final class GroupPermission extends SerializableEntity<Long> {
 
 	/**
 	 * 

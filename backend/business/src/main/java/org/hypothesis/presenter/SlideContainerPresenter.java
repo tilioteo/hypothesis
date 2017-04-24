@@ -7,12 +7,16 @@ package org.hypothesis.presenter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import javax.enterprise.event.Event;
 
 import org.hypothesis.business.EventManager;
 import org.hypothesis.business.MessageManager;
 import org.hypothesis.business.ObjectConstants;
 import org.hypothesis.business.SlideDocument;
 import org.hypothesis.business.SlideNavigator;
+import org.hypothesis.business.impl.MessageManagerImpl;
 import org.hypothesis.evaluation.AbstractBaseAction;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.event.data.ComponentData;
@@ -23,7 +27,6 @@ import org.hypothesis.event.model.MessageEvent;
 import org.hypothesis.event.model.MessageEventManager;
 import org.hypothesis.event.model.ViewportEvent;
 import org.hypothesis.event.model.ViewportEventManager;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.ComponentEventCallback;
@@ -63,36 +66,39 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	private SlideContainer container;
 
-	private ProcessEventBus bus = null;
 	private HypothesisUI ui = null;
 
 	private final ViewportEventManager viewportEventManager = new ViewportEventManager();
 	private final MessageEventManager messageEventManager = new MessageEventManager();
 
-	private final HashMap<String, Component> components = new HashMap<>();
-	private final HashMap<String, Field> fields = new HashMap<>();
-	private final HashMap<String, Window> windows = new HashMap<>();
-	private final HashMap<String, Timer> timers = new HashMap<>();
+	private final Map<String, Component> components = new HashMap<>();
+	private final Map<String, Field> fields = new HashMap<>();
+	private final Map<String, Window> windows = new HashMap<>();
+	private final Map<String, Timer> timers = new HashMap<>();
 
-	private final HashMap<String, Variable<?>> variables = new HashMap<>();
-	private final HashMap<String, Action> actions = new HashMap<>();
+	private final Map<String, Variable<?>> variables = new HashMap<>();
+	private final Map<String, Action> actions = new HashMap<>();
 
-	private HashSet<KeyAction> keyActions = new HashSet<>();
+	private Set<KeyAction> keyActions = new HashSet<>();
 
-	private final HashMap<Integer, ExchangeVariable> inputExpressions = new HashMap<>();
-	private final HashMap<Integer, ExchangeVariable> outputExpressions = new HashMap<>();
+	private final Map<Integer, ExchangeVariable> inputExpressions = new HashMap<>();
+	private final Map<Integer, ExchangeVariable> outputExpressions = new HashMap<>();
+	private final Map<Integer, ExchangeVariable> scoreExpressions = new HashMap<>();
 
 	private final EventManager eventManager;
 	private MessageManager messageManager = null;
 
 	private Long userId = null;
 
+	private Event<ProcessEvent> procEvent;
+
 	/**
 	 * Constructor
 	 */
-	public SlideContainerPresenter() {
+	public SlideContainerPresenter(Event<ProcessEvent> event) {
+		this.procEvent = event;
 		eventManager = new EventManager(this);
-		messageManager = new MessageManager();
+		messageManager = new MessageManagerImpl();
 	}
 
 	/**
@@ -116,6 +122,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 		inputExpressions.clear();
 		outputExpressions.clear();
+		scoreExpressions.clear();
 	}
 
 	@Override
@@ -123,8 +130,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		if (component instanceof SlideContainer) {
 			viewportEventManager.setEnabled(true);
 			messageEventManager.setEnabled(true);
-
-			setProcessEventBus(ProcessEventBus.get(ui));
 
 			fireEvent(new ViewportEvent.Init(container));
 
@@ -142,26 +147,19 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	private void addWindows(UI ui) {
-		for (Window window : windows.values()) {
-			window.setFutureUI(ui);
-		}
+		windows.values().forEach(e -> e.setFutureUI(ui));
 	}
 
 	private void addTimers(HypothesisUI hui) {
-		for (Timer timer : timers.values()) {
-			hui.addTimer(timer);
-		}
+		timers.values().forEach(hui::addTimer);
 	}
 
 	private void addKeyActions(AbstractComponent component) {
-		for (KeyAction keyAction : keyActions) {
-			keyAction.extend(component);
-		}
+		keyActions.forEach(e -> e.extend(component));
 	}
 
 	@Override
 	public void detach(Component component, HasComponents parent, UI ui, VaadinSession session) {
-		bus = null;
 		this.ui = null;
 
 		viewportEventManager.setEnabled(false);
@@ -178,30 +176,24 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	private void removeWindows() {
-		for (Window window : windows.values()) {
-			window.setFutureUI(null);
-		}
+		windows.values().forEach(e -> e.setFutureUI(null));
 	}
 
 	private void removeKeyActions() {
-		for (KeyAction keyAction : keyActions) {
-			keyAction.remove();
-		}
+		keyActions.forEach(e -> e.remove());
 	}
 
 	private void stopTimers() {
 		// stop timers silently
-		for (Timer timer : timers.values()) {
-			timer.stop(true);
-		}
+		timers.values().forEach(e -> e.stop(true));
 	}
 
 	private void closeWindows() {
 		// remove close listeners to close windows silently
-		for (Window window : windows.values()) {
-			window.removeAllCloseListeners();
-			window.close();
-		}
+		windows.values().forEach(e -> {
+			e.removeAllCloseListeners();
+			e.close();
+		});
 	}
 
 	@Override
@@ -215,9 +207,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	 * @param event
 	 */
 	public void fireEvent(ProcessEvent event) {
-		if (bus != null) {
-			bus.post(event);
-		}
+		procEvent.fire(event);
 	}
 
 	/**
@@ -253,14 +243,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	private Command createActionCommand(final Action action) {
-		return new Command() {
-			@Override
-			public void execute() {
-				if (bus != null) {
-					bus.post(new ActionEvent(action));
-				}
-			}
-		};
+		return () -> procEvent.fire(new ActionEvent(action));
 	}
 
 	@Override
@@ -341,9 +324,16 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 	}
 
+	public void setScoreExpression(int id, IndexedExpression expression) {
+		if (expression != null) {
+			scoreExpressions.put(id, expression);
+		}
+	}
+
 	/**
 	 * Get component by id
 	 */
+	@Override
 	public Component getComponent(String id) {
 		return components.get(id);
 	}
@@ -415,14 +405,8 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 	}
 
 	public boolean isValidSlide() {
-		boolean valid = true;
-
 		// validate fields
-		for (Field field : fields.values()) {
-			valid = valid && field.isValid();
-		}
-
-		return valid;
+		return fields.values().stream().allMatch(e -> e.isValid());
 	}
 
 	/**
@@ -456,16 +440,13 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 				if (null == userId || null == receiverId || receiverId.equals(userId)) {
 					// ok - receive this message
-					ui.access(new Runnable() {
-						@Override
-						public void run() {
-							fireEvent(new MessageEvent(message));
-							if (PushMode.MANUAL == ui.getPushConfiguration().getPushMode()) {
-								try {
-									ui.push();
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
+					ui.access(() -> {
+						fireEvent(new MessageEvent(message));
+						if (PushMode.MANUAL == ui.getPushConfiguration().getPushMode()) {
+							try {
+								ui.push();
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
 						}
 					});
@@ -497,11 +478,18 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	@Override
 	public Map<Integer, ExchangeVariable> getOutputs() {
-		for (ExchangeVariable variable : outputExpressions.values()) {
+		outputExpressions.values().forEach(e -> e.setVariables(variables));
+
+		return outputExpressions;
+	}
+
+	@Override
+	public Map<Integer, ExchangeVariable> getScores() {
+		for (ExchangeVariable variable : scoreExpressions.values()) {
 			variable.setVariables(variables);
 		}
 
-		return outputExpressions;
+		return scoreExpressions;
 	}
 
 	@Override
@@ -532,10 +520,6 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 
 		return null;
-	}
-
-	protected void setProcessEventBus(ProcessEventBus bus) {
-		this.bus = bus;
 	}
 
 }

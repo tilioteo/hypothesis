@@ -22,11 +22,6 @@ public class SlideNavigator implements Serializable {
 
 	private SlideContainerPresenter presenter;
 
-	/**
-	 * 
-	 * @param presenter
-	 *            slide container presenter bound to this slide navigator
-	 */
 	public SlideNavigator(SlideContainerPresenter presenter) {
 		this.presenter = presenter;
 	}

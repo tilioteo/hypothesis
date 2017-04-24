@@ -13,6 +13,7 @@ import java.util.EventObject;
  *         Hypothesis
  *
  */
+@FunctionalInterface
 public interface MessageEventListener extends EventListener {
 
 	void handleEvent(EventObject event);
