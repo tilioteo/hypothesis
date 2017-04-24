@@ -22,6 +22,7 @@ import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.Task;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.evaluation.Variable;
+import org.hypothesis.event.data.ScoreData;
 import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.event.model.ComponentEvent;
 import org.hypothesis.interfaces.ExchangeVariable;
@@ -214,6 +215,14 @@ public class SlideManagerImpl extends ListManager<Task, Slide> implements SlideM
 		return null;
 	}
 
+	public Map<Integer, ExchangeVariable> getScores() {
+		if (controller != null) {
+			return controller.getPresenter().getScores();
+		}
+
+		return null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -236,6 +245,11 @@ public class SlideManagerImpl extends ListManager<Task, Slide> implements SlideM
 	@Override
 	public String getComponentData(ComponentEvent componentEvent) {
 		return dataFactory.buildComponentData(componentEvent.getData(), writer);
+	}
+
+	@Override
+	public String getScoreData(ScoreData data) {
+		return dataFactory.buildScoreData(data, writer);
 	}
 
 }

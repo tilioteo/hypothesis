@@ -19,6 +19,7 @@ import org.hypothesis.data.interfaces.TestService;
 import org.hypothesis.data.model.Branch;
 import org.hypothesis.data.model.BranchOutput;
 import org.hypothesis.data.model.Event;
+import org.hypothesis.data.model.Score;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.Status;
@@ -119,6 +120,27 @@ public class AsynchronousServiceImpl implements AsynchronousService {
 				// persist event and test
 				testService.saveEvent(event, test);
 				testService.updateTest(test);
+			}
+		});
+	}
+
+	public void saveTestScore(final Score score, final String scoreData, final Long testId, final Long branchId,
+			final Long taskId, final Long slideId) {
+		commandExecutor.add(() -> {
+			SimpleTest test = testService.findById(testId);
+			if (test != null) {
+				Branch branch = branchId != null ? branchService.findById(branchId) : null;
+				Task task = taskId != null ? taskService.findById(taskId) : null;
+				Slide slide = slideId != null ? slideService.findById(slideId) : null;
+
+				// update score
+				score.setBranch(branch);
+				score.setTask(task);
+				score.setSlide(slide);
+				score.setData(scoreData);
+
+				// persist score
+				testService.saveScore(score, test);
 			}
 		});
 	}

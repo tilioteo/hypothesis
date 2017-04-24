@@ -35,6 +35,7 @@ import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.data.interfaces.ExportService;
 import org.hypothesis.data.model.ExportEvent;
+import org.hypothesis.data.model.ExportScore;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.ControlledUI;
@@ -97,11 +98,36 @@ public class ExportThreadedServiceImpl implements ExportThreadedService {
 		exportService.releaseConnection();
 	};
 
+	private final Runnable exportScoreRunnable = () -> {
+		Resource resource = getExportScoresResource();
+		ControlledUI ui = ControlledUI.getCurrent();
+		if (resource != null && ui != null) {
+			ui.setResource("exportScore", resource);
+			ResourceReference reference = ResourceReference.create(resource, ui, "exportScore");
+
+			UI.getCurrent().access(() -> mainEvent.fire(new MainUIEvent.ExportFinishedEvent(false)));
+
+			Page.getCurrent().open(reference.getURL(), null);
+		} else {
+			UI.getCurrent().access(() -> mainEvent.fire(new MainUIEvent.ExportErrorEvent()));
+		}
+
+		exportService.releaseConnection();
+	};
+
 	@Override
 	public void exportTests(Collection<Long> testIds) {
 		this.testIds = testIds;
 
 		thread = new Thread(threadGroup, exportRunnable);
+		thread.start();
+	}
+
+	@Override
+	public void exportScores(Collection<Long> testIds) {
+		this.testIds = testIds;
+
+		thread = new Thread(threadGroup, exportScoreRunnable);
 		thread.start();
 	}
 
@@ -551,5 +577,189 @@ public class ExportThreadedServiceImpl implements ExportThreadedService {
 		}
 		sheet.autoSizeColumn(0);
 		sheet.autoSizeColumn(1);
+	}
+
+	private StreamResource getExportScoresResource() {
+
+		final InputStream inputStream = getExportScoresFile();
+
+		if (inputStream != null) {
+			StreamResource.StreamSource source = () -> inputStream;
+
+			String filename = Messages.getString("Caption.Export.ScoreFileName");
+			StreamResource resource = new StreamResource(source, filename);
+			resource.setMIMEType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+			return resource;
+		}
+
+		return null;
+	}
+
+	private InputStream getExportScoresFile() {
+		try {
+			List<ExportScore> scores = exportService.findExportScoresByTestId(testIds);
+
+			if (scores != null) {
+				SXSSFWorkbook workbook = null;
+
+				File tempFile;
+				try {
+					tempFile = File.createTempFile("htsm", null);
+
+					workbook = new SXSSFWorkbook(-1);
+					createScoreDataSheet(workbook, scores);
+
+					// finalize file creation
+					FileOutputStream output = new FileOutputStream(tempFile);
+					workbook.write(output);
+					output.close();
+
+					return new FileInputStream(tempFile);
+
+				} catch (IOException | ExportThreadedServiceImpl.CancelledException e) {
+					log.error(e.getMessage());
+				} finally {
+					if (workbook != null) {
+						workbook.close();
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+
+		return null;
+	}
+
+	private void createScoreDataSheet(SXSSFWorkbook workbook, List<ExportScore> scores)
+			throws ExportThreadedServiceImpl.CancelledException {
+		Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.ScoreSheetName"));
+
+		// create cell style for date cell
+		CellStyle dateCellStyle = createDateCellStyle(workbook);
+
+		createScoresHeader(sheet);
+
+		int size = scores.size();
+		float counter = 0f;
+		int lastProgress = 0;
+
+		int outputValueCol = 15;
+
+		int rowNr = 1;
+		for (ExportScore score : scores) {
+			if (cancelPending.get()) {
+				throw new CancelledException();
+			}
+
+			Long testId = score.getTestId();
+			Long userId = score.getUserId();
+			Date scoreDate = score.getDatetime();
+			long scoreTime = scoreDate.getTime();
+			String scoreName = score.getName();
+			Long branchId = score.getBranchId();
+			String branchName = score.getBranchName();
+			Long taskId = score.getTaskId();
+			String taskName = score.getTaskName();
+			Long slideId = score.getSlideId();
+			String slideName = score.getSlideName();
+
+			Row row = sheet.createRow(rowNr++);
+
+			createNumericCell(row, 0, testId);
+			createDateCell(row, 1, scoreDate, dateCellStyle);
+
+			if (userId != null) {
+				createNumericCell(row, 2, userId);
+			}
+
+			createNumericCell(row, 3, score.getId());
+			createNumericCell(row, 4, score.getPackId());
+			createStringCell(row, 5, score.getPackName());
+
+			if (branchId != null) {
+				createNumericCell(row, 6, branchId);
+			}
+			if (branchName != null) {
+				createStringCell(row, 7, branchName);
+			}
+			if (taskId != null) {
+				createNumericCell(row, 8, taskId);
+			}
+			if (taskName != null) {
+				createStringCell(row, 9, taskName);
+			}
+			if (slideId != null) {
+				createNumericCell(row, 10, slideId);
+			}
+			if (slideName != null) {
+				createStringCell(row, 11, slideName);
+			}
+
+			createNumericCell(row, 12, scoreTime);
+			createStringCell(row, 13, scoreName);
+
+			String xmlData = score.getData();
+			createStringCell(row, 14, xmlData);
+
+			if (xmlData != null) {
+				final AtomicInteger seq = new AtomicInteger(outputValueCol);
+
+				// write output properties
+				slideDataReader.getScores(xmlData, reader).forEach(e -> {
+					if (e != null) {
+						createStringCell(row, seq.get(), e);
+					}
+					seq.incrementAndGet();
+				});
+			}
+
+			++counter;
+
+			progress = (int) ((100.0f * counter) / size);
+			if (progress > lastProgress) {
+				lastProgress = progress;
+
+				UI.getCurrent().access(() -> mainEvent.fire(new MainUIEvent.ExportProgressEvent(progress / 100.0f)));
+			}
+		}
+
+	}
+
+	private Row createScoresHeader(Sheet sheet) {
+		// create header row and freeze it
+		Row row = sheet.createRow(0);
+		sheet.createFreezePane(0, 1);
+
+		row.createCell(0).setCellValue("test_id");
+		row.createCell(1).setCellValue("date");
+		row.createCell(2).setCellValue("user_id");
+		row.createCell(3).setCellValue("score_id");
+		row.createCell(4).setCellValue("pack_id");
+		row.createCell(5).setCellValue("pack_name");
+		row.createCell(6).setCellValue("branch_id");
+		row.createCell(7).setCellValue("branch_name");
+		row.createCell(8).setCellValue("task_id");
+		row.createCell(9).setCellValue("task_name");
+		row.createCell(10).setCellValue("slide_id");
+		row.createCell(11).setCellValue("slide_name");
+		row.createCell(12).setCellValue("score_timestamp");
+		row.createCell(13).setCellValue("action_name");
+		row.createCell(14).setCellValue("score_data");
+
+		row.createCell(15).setCellValue("value1");
+		row.createCell(16).setCellValue("value2");
+		row.createCell(17).setCellValue("value3");
+		row.createCell(18).setCellValue("value4");
+		row.createCell(19).setCellValue("value5");
+		row.createCell(20).setCellValue("value6");
+		row.createCell(21).setCellValue("value7");
+		row.createCell(22).setCellValue("value8");
+		row.createCell(23).setCellValue("value9");
+		row.createCell(24).setCellValue("value10");
+
+		return row;
 	}
 }

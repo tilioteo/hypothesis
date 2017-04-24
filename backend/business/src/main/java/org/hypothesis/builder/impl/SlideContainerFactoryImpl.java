@@ -157,6 +157,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 		createInputExpressions(rootElement, presenter);
 		createOutputExpressions(rootElement, presenter);
+		createScoreExpressions(rootElement, presenter);
 
 		createWindows(rootElement, presenter);
 		createViewport(rootElement, presenter);
@@ -194,6 +195,12 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		DocumentUtility.getOutputValueElements(rootElement).stream()
 				.map(m -> EvaluableUtility.createValueExpression(m, DocumentConstants.OUTPUT_VALUE).orElse(null))
 				.filter(Objects::nonNull).forEach(e -> presenter.setOutputExpression(e.getIndex(), e));
+	}
+
+	private void createScoreExpressions(Element rootElement, SlideContainerPresenter presenter) {
+		DocumentUtility.getScoresElements(rootElement).stream()
+				.map(m -> EvaluableUtility.createScoreExpression(m).orElse(null)).filter(Objects::nonNull)
+				.forEach(e -> presenter.setScoreExpression(e.getIndex(), e));
 	}
 
 	private void createTimers(Element rootElement, SlideContainerPresenter presenter) {

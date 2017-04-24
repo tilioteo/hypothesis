@@ -11,6 +11,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.interfaces.ExportService;
 import org.hypothesis.data.model.ExportEvent;
+import org.hypothesis.data.model.ExportScore;
 import org.hypothesis.data.model.FieldConstants;
 
 import javax.enterprise.inject.Default;
@@ -31,9 +32,11 @@ public class ExportServiceImpl implements ExportService {
 	private static final Logger log = Logger.getLogger(ExportServiceImpl.class);
 
 	private final HibernateDao<ExportEvent, Long> exportEventDao;
+	private final HibernateDao<ExportScore, Long> exportScoreDao;
 
 	public ExportServiceImpl() {
 		exportEventDao = new HibernateDao<>(ExportEvent.class);
+		exportScoreDao = new HibernateDao<>(ExportScore.class);
 	}
 
 	/*
@@ -114,6 +117,30 @@ public class ExportServiceImpl implements ExportService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			exportEventDao.rollback();
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<ExportScore> findExportScoresByTestId(Collection<Long> testIds) {
+		log.debug("findExportScoresByTestId");
+		try {
+			exportScoreDao.beginTransaction();
+
+			Criteria criteria = exportScoreDao.createCriteria();
+
+			criteria.add(Restrictions.in(FieldConstants.PROPERTY_TEST_ID, testIds));
+
+			criteria.addOrder(Order.asc(FieldConstants.PROPERTY_TEST_ID));
+			criteria.addOrder(Order.asc(FieldConstants.ID));
+
+			List<ExportScore> scores = criteria.list();
+			exportScoreDao.commit();
+			return scores;
+
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			exportScoreDao.rollback();
 		}
 		return null;
 	}

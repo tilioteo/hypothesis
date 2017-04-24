@@ -15,7 +15,9 @@ import java.util.Collection;
  */
 public interface ExportThreadedService extends Serializable {
 
-    void exportTests(Collection<Long> testIds);
+	void exportTests(Collection<Long> testIds);
 
-    void requestCancel();
+	void exportScores(Collection<Long> testIds);
+
+	void requestCancel();
 }

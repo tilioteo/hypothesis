@@ -29,6 +29,7 @@ import org.hypothesis.data.model.Branch;
 import org.hypothesis.data.model.BranchOutput;
 import org.hypothesis.data.model.Event;
 import org.hypothesis.data.model.Pack;
+import org.hypothesis.data.model.Score;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Slide;
 import org.hypothesis.data.model.SlideOrder;
@@ -36,6 +37,8 @@ import org.hypothesis.data.model.Status;
 import org.hypothesis.data.model.Task;
 import org.hypothesis.data.model.Token;
 import org.hypothesis.data.model.User;
+import org.hypothesis.event.data.ScoreData;
+import org.hypothesis.event.data.ScoreData.Source;
 import org.hypothesis.event.interfaces.ProcessEvent;
 import org.hypothesis.event.model.AbstractProcessEvent;
 import org.hypothesis.event.model.AbstractRunningEvent;
@@ -138,6 +141,7 @@ public class ProcessManagerImpl implements Serializable, ProcessManager {
 	 */
 	public void processActionEvent(@Observes ActionEvent event) {
 		saveUserProcessEvent(event);
+		saveActionScore(event);
 	}
 
 	/**
@@ -248,6 +252,7 @@ public class ProcessManagerImpl implements Serializable, ProcessManager {
 	public void processFinishSlide(@Observes FinishSlideEvent event) {
 		slideManager.finishSlide();
 		saveRunningEvent(event);
+		saveSlideScore(event);
 
 		slideProcessing = false;
 
@@ -642,6 +647,33 @@ public class ProcessManagerImpl implements Serializable, ProcessManager {
 		Long slideId = currentSlide != null ? currentSlide.getId() : null;
 
 		asynchronousService.saveTestEvent(event, date, slideData, status, testId, branchId, taskId, slideId);
+	}
+
+	private void saveActionScore(ActionEvent event) {
+		if (!event.getAction().getScores().isEmpty()) {
+			Score score = new Score(event.getAction().getId(), event.getTimestamp());
+			saveScore(currentTest, score,
+					new ScoreData(Source.ACTION, event.getAction().getId(), event.getAction().getScores()));
+		}
+	}
+
+	private void saveSlideScore(FinishSlideEvent event) {
+		if (!slideManager.getScores().isEmpty()) {
+			Long slideId = currentSlide != null ? currentSlide.getId() : null;
+			Score score = new Score(event.getName(), event.getTimestamp());
+			saveScore(currentTest, score, new ScoreData(Source.SLIDE, slideId.toString(), slideManager.getScores()));
+		}
+	}
+
+	private void saveScore(SimpleTest test, Score score, ScoreData data) {
+		String scoreData = slideManager.getScoreData(data);
+
+		Long testId = test != null ? test.getId() : null;
+		Long branchId = currentBranch != null ? currentBranch.getId() : null;
+		Long taskId = currentTask != null ? currentTask.getId() : null;
+		Long slideId = currentSlide != null ? currentSlide.getId() : null;
+
+		asynchronousService.saveTestScore(score, scoreData, testId, branchId, taskId, slideId);
 	}
 
 	public void fireTestError() {

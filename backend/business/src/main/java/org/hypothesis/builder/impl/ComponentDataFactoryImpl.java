@@ -28,6 +28,8 @@ import org.hypothesis.business.ObjectConstants;
 import org.hypothesis.data.DocumentWriter;
 import org.hypothesis.event.annotations.ElementPath;
 import org.hypothesis.event.data.ComponentData;
+import org.hypothesis.event.data.ScoreData;
+import org.hypothesis.event.data.ScoreData.Source;
 import org.hypothesis.event.model.ActionEvent;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
@@ -427,6 +429,44 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			}
 		} else {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.OBJECT);
+		}
+	}
+
+	@Override
+	public String buildScoreData(ScoreData data, DocumentWriter writer) {
+		Document document = documentFactory.createScoreDataDocument();
+
+		addScoreHeader(document.root(), data);
+		addScoreOutputs(document.root(), data);
+
+		return writer.writeString(document);
+	}
+
+	private void addScoreHeader(Element root, ScoreData data) {
+		Element element = root.createChild(DocumentConstants.SOURCE);
+		element.setAttribute(DocumentConstants.TYPE,
+				data.getSource() == Source.SLIDE ? DocumentConstants.SLIDE : DocumentConstants.ACTION);
+
+		if (StringUtils.isNotBlank(data.getId())) {
+			element.setAttribute(DocumentConstants.ID, data.getId());
+		}
+	}
+
+	private void addScoreOutputs(Element root, ScoreData data) {
+		Map<Integer, ExchangeVariable> scores = data.getScores();
+
+		if (!scores.isEmpty()) {
+			Element element = root.createChild(DocumentConstants.SCORES);
+			for (ExchangeVariable score : scores.values()) {
+				String indexString = "" + score.getIndex();
+				Object value = score.getValue();
+
+				if (value != null) {
+					Element scoreElement = element.createChild(DocumentConstants.SCORE);
+					scoreElement.setAttribute(DocumentConstants.INDEX, indexString);
+					writeOutputValue(scoreElement, value);
+				}
+			}
 		}
 	}
 

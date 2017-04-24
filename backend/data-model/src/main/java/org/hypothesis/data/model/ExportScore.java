@@ -25,15 +25,13 @@ import org.hibernate.annotations.Type;
  *
  */
 @Entity
-@Subselect("SELECT e."+FieldConstants.ID+
-		",e."+FieldConstants.TIMESTAMP+
-		",e."+FieldConstants.CLIENT_TIMESTAMP+
-		",e."+FieldConstants.TYPE+
-		",e."+FieldConstants.NAME+
-		",e."+FieldConstants.XML_DATA+
-		",e."+FieldConstants.BRANCH_ID+
-		",e."+FieldConstants.TASK_ID+
-		",e."+FieldConstants.SLIDE_ID+
+@Subselect("SELECT s."+FieldConstants.ID+
+		",s."+FieldConstants.TIMESTAMP+
+		",s."+FieldConstants.NAME+
+		",s."+FieldConstants.XML_DATA+
+		",s."+FieldConstants.BRANCH_ID+
+		",s."+FieldConstants.TASK_ID+
+		",s."+FieldConstants.SLIDE_ID+
 		",t."+FieldConstants.ID+" "+FieldConstants.TEST_ID+
 		",t."+FieldConstants.USER_ID+
 		",t."+FieldConstants.PACK_ID+
@@ -41,24 +39,24 @@ import org.hibernate.annotations.Type;
 		",p."+FieldConstants.NAME+" "+FieldConstants.PACK_NAME+
 		",b."+FieldConstants.NOTE+" "+FieldConstants.BRANCH_NAME+
 		",ta."+FieldConstants.NAME+" "+FieldConstants.TASK_NAME+
-		",s."+FieldConstants.NOTE+" "+FieldConstants.SLIDE_NAME+
-		" FROM "+TableConstants.EVENT_TABLE+" e JOIN "+
-		TableConstants.TEST_EVENT_TABLE+" te ON te."+FieldConstants.EVENT_ID+"=e."+FieldConstants.ID+" JOIN "+
-		TableConstants.TEST_TABLE+" t ON te."+FieldConstants.TEST_ID+"=t."+FieldConstants.ID+" LEFT JOIN "+
+		",sl."+FieldConstants.NOTE+" "+FieldConstants.SLIDE_NAME+
+		" FROM "+TableConstants.SCORE_TABLE+" s JOIN "+
+		TableConstants.TEST_SCORE_TABLE+" ts ON ts."+FieldConstants.SCORE_ID+"=s."+FieldConstants.ID+" JOIN "+
+		TableConstants.TEST_TABLE+" t ON ts."+FieldConstants.TEST_ID+"=t."+FieldConstants.ID+" LEFT JOIN "+
 		TableConstants.PACK_TABLE+" p ON t."+FieldConstants.PACK_ID+"=p."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.BRANCH_TABLE+" b ON e."+FieldConstants.BRANCH_ID+"=b."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.TASK_TABLE+" ta ON e."+FieldConstants.TASK_ID+"=ta."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.SLIDE_TABLE+" s ON e."+FieldConstants.SLIDE_ID+"=s."+FieldConstants.ID)
-@Synchronize({ TableConstants.EVENT_TABLE, TableConstants.TEST_TABLE, TableConstants.TEST_EVENT_TABLE,
+		TableConstants.BRANCH_TABLE+" b ON s."+FieldConstants.BRANCH_ID+"=b."+FieldConstants.ID+" LEFT JOIN "+
+		TableConstants.TASK_TABLE+" ta ON s."+FieldConstants.TASK_ID+"=ta."+FieldConstants.ID+" LEFT JOIN "+
+		TableConstants.SLIDE_TABLE+" sl ON s."+FieldConstants.SLIDE_ID+"=sl."+FieldConstants.ID)
+@Synchronize({ TableConstants.SCORE_TABLE, TableConstants.TEST_TABLE, TableConstants.TEST_SCORE_TABLE,
 		TableConstants.PACK_TABLE, TableConstants.BRANCH_TABLE, TableConstants.TASK_TABLE, TableConstants.SLIDE_TABLE })
 @Immutable
 @Access(AccessType.PROPERTY)
-public class ExportEvent extends SerializableEntity<Long> {
+public class ExportScore extends SerializableEntity<Long> {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 4342703994277025881L;
+	private static final long serialVersionUID = -6353743831733014773L;
 
 	/**
 	 * timestamp of event
@@ -66,17 +64,7 @@ public class ExportEvent extends SerializableEntity<Long> {
 	private Long timeStamp;
 
 	/**
-	 * client timestamp of event (if possible)
-	 */
-	private Long clientTimeStamp;
-
-	/**
-	 * code of event type
-	 */
-	private Long type;
-
-	/**
-	 * human readable name
+	 * event or action name
 	 */
 	private String name;
 
@@ -154,24 +142,6 @@ public class ExportEvent extends SerializableEntity<Long> {
 
 	protected void setTimeStamp(Long timeStamp) {
 		this.timeStamp = timeStamp;
-	}
-
-	@Column(name = FieldConstants.CLIENT_TIMESTAMP)
-	protected Long getClientTimeStamp() {
-		return clientTimeStamp;
-	}
-
-	protected void setClientTimeStamp(Long clientTimeStamp) {
-		this.clientTimeStamp = clientTimeStamp;
-	}
-
-	@Column(name = FieldConstants.TYPE, nullable = false)
-	public Long getType() {
-		return type;
-	}
-
-	protected void setType(Long type) {
-		this.type = type;
 	}
 
 	@Column(name = FieldConstants.NAME)
@@ -297,8 +267,4 @@ public class ExportEvent extends SerializableEntity<Long> {
 		return new Date(getTimeStamp());
 	}
 
-	@Transient
-	public final Date getClientDatetime() {
-		return getClientTimeStamp() != null ? new Date(getClientTimeStamp()) : null;
-	}
 }

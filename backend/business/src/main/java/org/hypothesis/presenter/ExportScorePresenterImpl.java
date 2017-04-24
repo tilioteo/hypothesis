@@ -4,31 +4,55 @@
  */
 package org.hypothesis.presenter;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
+import org.hypothesis.business.ExportThreadedService;
+import org.hypothesis.business.SessionManager;
+import org.hypothesis.data.interfaces.TestService;
+import org.hypothesis.data.interfaces.UserService;
+import org.hypothesis.data.model.FieldConstants;
+import org.hypothesis.data.model.Status;
+import org.hypothesis.data.model.Test;
+import org.hypothesis.data.model.User;
+import org.hypothesis.data.service.RoleServiceImpl;
+import org.hypothesis.event.interfaces.MainUIEvent;
+import org.hypothesis.interfaces.ExportScorePresenter;
+import org.hypothesis.server.Messages;
+
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.shared.ui.datefield.Resolution;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import org.apache.log4j.Logger;
-import org.hypothesis.business.ExportThreadedService;
-import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.interfaces.PermissionService;
-import org.hypothesis.data.interfaces.TestService;
-import org.hypothesis.data.interfaces.UserService;
-import org.hypothesis.data.model.*;
-import org.hypothesis.data.service.RoleServiceImpl;
-import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.interfaces.ExportPresenter;
-import org.hypothesis.server.Messages;
-
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Default;
-import javax.inject.Inject;
-import java.util.*;
+import com.vaadin.ui.PopupDateField;
+import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -36,14 +60,9 @@ import java.util.*;
  *         Hypothesis
  *
  */
-@SuppressWarnings({ "serial" })
+@SuppressWarnings("serial")
 @Default
-public class ExportPresenterImpl implements ExportPresenter {
-
-	static final Logger log = Logger.getLogger(ExportPresenterImpl.class);
-
-	@Inject
-	private PermissionService permissionService;
+public class ExportScorePresenterImpl implements ExportScorePresenter {
 
 	@Inject
 	private TestService testService;
@@ -57,15 +76,11 @@ public class ExportPresenterImpl implements ExportPresenter {
 	@Inject
 	private Event<MainUIEvent> mainEvent;
 
-	private List<String> sortedPacks = new ArrayList<>();
-	private Map<String, Pack> packMap = new HashMap<>();
-
 	private VerticalLayout content;
 	private VerticalLayout testSelection;
 	private Button exportButton;
 	private Button cancelExportButton;
 	private ComboBox exportSelectionType;
-	private ComboBox packsSelect;
 	private PopupDateField dateFieldFrom;
 	private PopupDateField dateFieldTo;
 	private Table table;
@@ -86,7 +101,7 @@ public class ExportPresenterImpl implements ExportPresenter {
 		header.setWidth("100%");
 		header.setSpacing(true);
 
-		Label title = new Label(Messages.getString("Caption.Label.TestsExport"));
+		Label title = new Label(Messages.getString("Caption.Label.ScoresExport"));
 		title.addStyleName("huge");
 		header.addComponent(title);
 		header.addComponent(buildTools());
@@ -152,7 +167,7 @@ public class ExportPresenterImpl implements ExportPresenter {
 
 	private void buildExportCancelButton() {
 		cancelExportButton = new Button(Messages.getString("Caption.Button.Cancel"),
-				e -> exportThreadedService.requestCancel());
+				e -> mainEvent.fire(new MainUIEvent.ExportFinishedEvent(true)));
 	}
 
 	private void buildProgress() {
@@ -171,14 +186,21 @@ public class ExportPresenterImpl implements ExportPresenter {
 		exportSelectionType.addItem(Messages.getString("Caption.Item.All"));
 		exportSelectionType.select(Messages.getString("Caption.Item.Selected"));
 
-		exportSelectionType.addValueChangeListener(e -> {
-			allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-			mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
+		exportSelectionType.addValueChangeListener(new Property.ValueChangeListener() {
+			public void valueChange(ValueChangeEvent event) {
+				allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
+				mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
+			}
 		});
 	}
 
 	private void buildExportButton() {
-		exportButton = new Button(Messages.getString("Caption.Button.Export"), e -> startExport());
+		exportButton = new Button(Messages.getString("Caption.Button.Export"), new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				startExport();
+			}
+		});
 		exportButton.setEnabled(false);
 
 	}
@@ -187,14 +209,14 @@ public class ExportPresenterImpl implements ExportPresenter {
 	private void startExport() {
 		setExportProgressIndeterminate();
 
-		Collection<Long> testIds;
+		Collection<Long> testIds = null;
 		if (allTestsSelected) {
 			testIds = (Collection<Long>) table.getItemIds();
 		} else {
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		exportThreadedService.exportTests(testIds);
+		exportThreadedService.exportScores(testIds);
 
 		UI.getCurrent().setPollInterval(1000);
 	}
@@ -224,18 +246,21 @@ public class ExportPresenterImpl implements ExportPresenter {
 		HorizontalLayout form = new HorizontalLayout();
 		form.setWidth("100%");
 
-		initPacksSources();
+		// initPacksSources();
 
-		packsSelect = new ComboBox();
-		packsSelect.setInputPrompt(Messages.getString("Caption.Button.ChoosePack"));
-		sortedPacks.forEach(packsSelect::addItem);
-
-		packsSelect.setTextInputAllowed(false);
-		packsSelect.setNullSelectionAllowed(false);
-		packsSelect.setRequired(true);
-		packsSelect.setRequiredError(Messages.getString("Message.Error.NoPackSelected"));
-		packsSelect.setValidationVisible(false);
-		form.addComponent(packsSelect);
+		/*
+		 * packsSelect = new ComboBox();
+		 * packsSelect.setInputPrompt(Messages.getString(
+		 * "Caption.Button.ChoosePack")); for (String packTitle : sortedPacks) {
+		 * packsSelect.addItem(packTitle); }
+		 * packsSelect.setTextInputAllowed(false);
+		 * packsSelect.setNullSelectionAllowed(false);
+		 * packsSelect.setRequired(true);
+		 * packsSelect.setRequiredError(Messages.getString(
+		 * "Message.Error.NoPackSelected"));
+		 * packsSelect.setValidationVisible(false);
+		 * form.addComponent(packsSelect);
+		 */
 
 		dateFieldFrom = new PopupDateField();
 		dateFieldFrom.setResolution(Resolution.SECOND);
@@ -253,33 +278,39 @@ public class ExportPresenterImpl implements ExportPresenter {
 		dateFieldTo.setValidationVisible(false);
 		form.addComponent(dateFieldTo);
 
-		Validator dateValidator = e -> {
-            if (dateFieldFrom.getValue() == null && dateFieldTo.getValue() == null) {
-                throw new InvalidValueException(Messages.getString("Message.Error.NoDateSelected"));
-            }
+		Validator dateValidator = new Validator() {
+			@Override
+			public void validate(Object value) throws InvalidValueException {
+				if (dateFieldFrom.getValue() == null && dateFieldTo.getValue() == null) {
+					throw new InvalidValueException(Messages.getString("Message.Error.NoDateSelected"));
+				}
 
-        };
+			}
+		};
 		dateFieldFrom.addValidator(dateValidator);
 		dateFieldTo.addValidator(dateValidator);
 
 		Button selectionButton = new Button(Messages.getString("Caption.Button.ShowTests"));
-		selectionButton.addClickListener(e -> {
-			try {
-				packsSelect.validate();
-				dateFieldFrom.validate();
-				dateFieldTo.validate();
+		selectionButton.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					// packsSelect.validate();
+					dateFieldFrom.validate();
+					dateFieldTo.validate();
 
-				Pack pack = packMap.get(packsSelect.getValue());
-				Date dateFrom = dateFieldFrom.getValue();
-				Date dateTo = dateFieldTo.getValue();
+					// Pack pack = packMap.get(packsSelect.getValue());
+					Date dateFrom = (Date) dateFieldFrom.getValue();
+					Date dateTo = (Date) dateFieldTo.getValue();
 
-				showTests(pack, dateFrom, dateTo);
+					showTests(dateFrom, dateTo);
 
-			} catch (InvalidValueException ex) {
-				packsSelect.setValidationVisible(!packsSelect.isValid());
-				dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
-				dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
-				Notification.show(ex.getMessage(), Type.WARNING_MESSAGE);
+				} catch (InvalidValueException e) {
+					// packsSelect.setValidationVisible(!packsSelect.isValid());
+					dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
+					dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
+					Notification.show(e.getMessage(), Type.WARNING_MESSAGE);
+				}
 			}
 		});
 		form.addComponent(selectionButton);
@@ -287,38 +318,33 @@ public class ExportPresenterImpl implements ExportPresenter {
 		return form;
 	}
 
-	private void initPacksSources() {
-		User user = SessionManager.getLoggedUser();
-		Set<Pack> packs = permissionService.findUserPacks2(user, false);
+	/*
+	 * private void initPacksSources() { Set<Pack> packs =
+	 * permissionService.findUserPacks2(loggedUser, false);
+	 * 
+	 * sortedPacks.clear(); packMap.clear();
+	 * 
+	 * if (packs != null) { for (Pack pack : packs) { String key =
+	 * Messages.getString("Caption.Item.PackSelect", pack.getName(),
+	 * pack.getId(), pack.getDescription()); sortedPacks.add(key);
+	 * packMap.put(key, pack); }
+	 * 
+	 * Collections.sort(sortedPacks); } }
+	 */
 
-		sortedPacks.clear();
-		packMap.clear();
-
-		if (packs != null) {
-			packs.forEach(e -> {
-				String key = Messages.getString("Caption.Item.PackSelect", e.getName(), e.getId(), e.getDescription());
-				sortedPacks.add(key);
-				packMap.put(key, e);
-			});
-
-			Collections.sort(sortedPacks);
-		}
-	}
-
-	protected void showTests(Pack pack, Date dateFrom, Date dateTo) {
-		User user = SessionManager.getLoggedUser();
-
+	protected void showTests(Date dateFrom, Date dateTo) {
 		testSelection.removeAllComponents();
 		// testSelection.setSpacing(true);
 
 		// MANAGER see only tests created by himself and his users
 		List<User> users = null;
-		if (!user.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
-			users = userService.findOwnerUsers(user);
-			users.add(user);
+		User loggedUser = SessionManager.getLoggedUser();
+		if (!loggedUser.hasRole(RoleServiceImpl.ROLE_SUPERUSER)) {
+			users = userService.findOwnerUsers(loggedUser);
+			users.add(loggedUser);
 		}
 
-		List<SimpleTest> tests = testService.findTestsBy(pack, users, dateFrom, dateTo);
+		List<Test> tests = testService.findTestScoresBy(users, dateFrom, dateTo);
 
 		if (tests.isEmpty()) {
 			Label label = new Label(Messages.getString("Caption.Label.NoTestsFound"));
@@ -329,11 +355,11 @@ public class ExportPresenterImpl implements ExportPresenter {
 		} else {
 			testSelection.addComponent(buildTestsTable(tests));
 			exportSelectionType.setEnabled(true);
-			mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
+			// bus.post(new MainUIEvent.PackSelectionChangedEvent());
 		}
 	}
 
-	private Table buildTestsTable(Collection<SimpleTest> tests) {
+	private Table buildTestsTable(Collection<Test> tests) {
 		table = new Table();
 		table.setSelectable(true);
 		table.setMultiSelect(true);
@@ -343,58 +369,81 @@ public class ExportPresenterImpl implements ExportPresenter {
 
 		table.setSortContainerPropertyId(FieldConstants.ID);
 
-		final BeanContainer<Long, SimpleTest> dataSource = new BeanContainer<>(SimpleTest.class);
+		final BeanContainer<Long, Test> dataSource = new BeanContainer<Long, Test>(Test.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_USERNAME);
 		dataSource.addAll(tests);
 		table.setContainerDataSource(dataSource);
 
-		table.addGeneratedColumn(FieldConstants.USER_ID, (source, itemId, columnId) -> {
-            SimpleTest test = dataSource.getItem(itemId).getBean();
-            return test.getUser() != null ? test.getUser().getId() : null;
-        });
+		table.addGeneratedColumn(FieldConstants.PACK_ID, new ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				Test test = dataSource.getItem(itemId).getBean();
+				return test.getPack().getId();
+			}
+		});
 
-		table.addGeneratedColumn(FieldConstants.USERNAME, (source, itemId, columnId) -> {
-            SimpleTest test = dataSource.getItem(itemId).getBean();
-            return test.getUser() != null ? test.getUser().getUsername() : null;
-        });
+		table.addGeneratedColumn(FieldConstants.USER_ID, new ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				Test test = dataSource.getItem(itemId).getBean();
+				return test.getUser() != null ? test.getUser().getId() : null;
+			}
+		});
 
-		table.addGeneratedColumn(FieldConstants.STATUS, (source, itemId, columnId) -> {
-            SimpleTest test = dataSource.getItem(itemId).getBean();
-            Status status = test.getStatus();
-            if (status != null) {
-                switch (status) {
-                case CREATED:
-                    return Messages.getString("Status.Created");
-                case STARTED:
-                    return Messages.getString("Status.Started");
-                case BROKEN_BY_CLIENT:
-                    return Messages.getString("Status.BrokenClient");
-                case BROKEN_BY_ERROR:
-                    return Messages.getString("Status.BrokenError");
-                case FINISHED:
-                    return Messages.getString("Status.Finished");
-                default:
-                    break;
-                }
-            }
-            return null;
-        });
+		table.addGeneratedColumn(FieldConstants.USERNAME, new ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				Test test = dataSource.getItem(itemId).getBean();
+				return test.getUser() != null ? test.getUser().getUsername() : null;
+			}
+		});
 
-		table.setVisibleColumns(FieldConstants.ID, FieldConstants.USER_ID,
+		table.addGeneratedColumn(FieldConstants.STATUS, new ColumnGenerator() {
+			@Override
+			public Object generateCell(Table source, Object itemId, Object columnId) {
+				Test test = dataSource.getItem(itemId).getBean();
+				Status status = test.getStatus();
+				if (status != null) {
+					switch (status) {
+					case CREATED:
+						return Messages.getString("Status.Created");
+					case STARTED:
+						return Messages.getString("Status.Started");
+					case BROKEN_BY_CLIENT:
+						return Messages.getString("Status.BrokenClient");
+					case BROKEN_BY_ERROR:
+						return Messages.getString("Status.BrokenError");
+					case FINISHED:
+						return Messages.getString("Status.Finished");
+					default:
+						break;
+					}
+				}
+				return null;
+			}
+		});
+
+		table.setVisibleColumns(FieldConstants.ID, FieldConstants.PACK_ID, FieldConstants.USER_ID,
 				// FieldConstants.USERNAME,
 				// FieldConstants.NESTED_USER_ID,
 				// FieldConstants.NESTED_USER_USERNAME,
 				FieldConstants.CREATED, FieldConstants.STATUS);
 
-		table.setColumnHeaders(Messages.getString("Caption.Field.TestID"), Messages.getString("Caption.Field.UserID"),
+		table.setColumnHeaders(Messages.getString("Caption.Field.TestID"), Messages.getString("Caption.Field.PackID"),
+				Messages.getString("Caption.Field.UserID"),
 				// Messages.getString("Caption.Field.Username"),
 				// Messages.getString("Caption.Field.UserID"),
 				// Messages.getString("Caption.Field.Username"),
 				Messages.getString("Caption.Field.Created"), Messages.getString("Caption.Field.Status"));
 
-		table.addValueChangeListener(e -> mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent()));
+		table.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(final ValueChangeEvent event) {
+				mainEvent.fire(new MainUIEvent.PackSelectionChangedEvent());
+			}
+		});
 
 		table.setPageLength(table.size());
 
@@ -403,16 +452,11 @@ public class ExportPresenterImpl implements ExportPresenter {
 
 	@SuppressWarnings("unchecked")
 	public void setExportEnabled(@Observes final MainUIEvent.PackSelectionChangedEvent event) {
-		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
+		boolean itemsSelected = ((Set<Object>) table.getValue()).size() > 0;
 		boolean exportEnabled = allTestsSelected || itemsSelected;
 		exportButton.setEnabled(exportEnabled);
 	}
 
-	/**
-	 * Update progress of export
-	 * 
-	 * @param event
-	 */
 	public void updateExportProgress(@Observes final MainUIEvent.ExportProgressEvent event) {
 		if (exportProgressBar.isIndeterminate() && event.getProgress() >= 0) {
 			setExportProgress();
@@ -420,40 +464,16 @@ public class ExportPresenterImpl implements ExportPresenter {
 		exportProgressBar.setValue(event.getProgress());
 	}
 
-	/**
-	 * Do when export finished
-	 * 
-	 * @param event
-	 */
 	public void exportFinished(@Observes final MainUIEvent.ExportFinishedEvent event) {
-		afterExportFinished();
+		afterExportFinnished(event.isCanceled());
 	}
 
-	/**
-	 * Show error occured during export
-	 * 
-	 * @param event
-	 */
 	public void exportError(@Observes final MainUIEvent.ExportErrorEvent event) {
-		afterExportFinished();
+		afterExportFinnished(false);
 		Notification.show("Export failed", null, Type.WARNING_MESSAGE);
 	}
 
-	/**
-	 * Update ui on user pack change
-	 * 
-	 * @param event
-	 */
-	public void changeUserPacks(@Observes final MainUIEvent.UserPacksChangedEvent event) {
-		initPacksSources();
-
-		packsSelect.removeAllItems();
-		testSelection.removeAllComponents();
-
-		sortedPacks.forEach(packsSelect::addItem);
-	}
-
-	private void afterExportFinished() {
+	private void afterExportFinnished(boolean canceled) {
 		setExportSelection();
 		UI.getCurrent().setPollInterval(-1);
 	}

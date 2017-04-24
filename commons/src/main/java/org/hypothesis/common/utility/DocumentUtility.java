@@ -186,6 +186,12 @@ public final class DocumentUtility {
 				.map(m -> m.firstChild());
 	}
 
+	public static List<Element> getScoresElements(Element documentRoot) {
+		return Optional.ofNullable(documentRoot)
+				.map(m -> m.selectElement(DocumentConstants.SCORES))
+				.map(m -> m.selectElements(DocumentConstants.SCORE)).orElse(Collections.emptyList());
+	}
+
 	public static List<Element> getInputValueElements(Element documentRoot) {
 		return Optional.ofNullable(documentRoot)
 				.filter(f -> ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(f.getName()))

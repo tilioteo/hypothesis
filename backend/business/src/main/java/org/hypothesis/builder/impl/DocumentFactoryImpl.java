@@ -131,4 +131,12 @@ public final class DocumentFactoryImpl implements DocumentFactory {
 		return document;
 	}
 
+	@Override
+	public Document createScoreDataDocument() {
+		Document document = new DocumentImpl();
+		document.createRoot(DocumentConstants.SCORE_DATA);
+
+		return document;
+	}
+
 }

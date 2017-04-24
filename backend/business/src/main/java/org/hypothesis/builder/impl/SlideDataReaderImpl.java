@@ -4,6 +4,7 @@
  */
 package org.hypothesis.builder.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +37,8 @@ public class SlideDataReaderImpl implements SlideDataReader {
 
 			if (Objects.nonNull(doc)) {
 				List<Element> elements = doc.root().selectElements(DocumentConstants.OUTPUT_VALUE);
-				// .selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.OUTPUT_VALUE));
+				// .selectNodes(String.format(XmlUtility.DESCENDANT_FMT,
+				// DocumentConstants.OUTPUT_VALUE));
 
 				List<String> list = Arrays.asList(new String[10]);
 				final Interval<Integer> interval = new Interval<>(1, list.size());
@@ -56,6 +58,40 @@ public class SlideDataReaderImpl implements SlideDataReader {
 	}
 
 	@Override
+	public List<String> getScores(String text, DocumentReader reader) {
+		if (Objects.nonNull(text) && Objects.nonNull(reader)) {
+			Document doc = reader.readString(text);
+
+			if (Objects.nonNull(doc)) {
+				List<Element> elements = doc.root().selectElements(DocumentConstants.SCORE);
+				List<String> list = new ArrayList<>();
+
+				elements.forEach(e -> {
+					Integer index = e.getAttributeAsInteger(DocumentConstants.INDEX);
+					String value = e.getTextTrim();
+
+					if (!value.isEmpty() && index >= 1) {
+						ensureListSize(list, index);
+						list.set(index - 1, value);
+					}
+				});
+
+				return list;
+			}
+		}
+
+		return Collections.emptyList();
+	}
+
+	private void ensureListSize(List<?> list, int size) {
+		if (size >= list.size()) {
+			for (int i = list.size(); i < size; ++i) {
+				list.add(null);
+			}
+		}
+	}
+
+	@Override
 	public FieldWrapper getFields(String text, DocumentReader reader) {
 		FieldWrapperImpl wrapper = new FieldWrapperImpl();
 
@@ -64,7 +100,8 @@ public class SlideDataReaderImpl implements SlideDataReader {
 
 			if (Objects.nonNull(doc)) {
 				List<Element> elements = doc.root().selectElements(DocumentConstants.FIELD);
-				// .selectNodes(String.format(XmlUtility.DESCENDANT_FMT, DocumentConstants.FIELD));
+				// .selectNodes(String.format(XmlUtility.DESCENDANT_FMT,
+				// DocumentConstants.FIELD));
 				elements.forEach(e -> {
 					final String id = e.getAttribute(DocumentConstants.ID);
 					if (StringUtils.isNotBlank(id)) {

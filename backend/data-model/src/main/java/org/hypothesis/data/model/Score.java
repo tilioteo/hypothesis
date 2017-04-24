@@ -1,6 +1,5 @@
 /**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
+ * 
  */
 package org.hypothesis.data.model;
 
@@ -27,19 +26,18 @@ import org.hibernate.annotations.Type;
  * 
  *         Hypothesis
  *
- *         Database entity for test event event is every action during test
- *         running
+ *         Database entity for score recorded during test
  * 
  */
 @Entity
-@Table(name = TableConstants.EVENT_TABLE)
+@Table(name = TableConstants.SCORE_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Event extends SerializableEntity<Long> {
+public class Score extends SerializableEntity<Long> {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1958866075625431131L;
+	private static final long serialVersionUID = -4734568201226095583L;
 
 	/**
 	 * server timestamp of event
@@ -47,17 +45,7 @@ public final class Event extends SerializableEntity<Long> {
 	private Long timeStamp;
 
 	/**
-	 * client timestamp of event
-	 */
-	private Long clientTimeStamp;
-
-	/**
-	 * code of event type
-	 */
-	private Long type;
-
-	/**
-	 * human readable name
+	 * event or action name
 	 */
 	private String name;
 
@@ -86,26 +74,20 @@ public final class Event extends SerializableEntity<Long> {
 	 */
 	private Test test;
 
-	protected Event() {
+	protected Score() {
 		super();
 	}
 
-	public Event(long type, String name, Date datetime) {
-		this(type, name, datetime, null);
-	}
-
-	public Event(long type, String name, Date datetime, Date clientDatetime) {
+	public Score(String name, Date datetime) {
 		this();
-		this.type = type;
 		this.name = name;
 		this.timeStamp = datetime != null ? datetime.getTime() : null;
-		this.clientTimeStamp = clientDatetime != null ? clientDatetime.getTime() : null;
 	}
 
 	@Override
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.EVENT_GENERATOR)
-	@SequenceGenerator(name = TableConstants.EVENT_GENERATOR, sequenceName = TableConstants.EVENT_SEQUENCE, initialValue = 1, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.SCORE_GENERATOR)
+	@SequenceGenerator(name = TableConstants.SCORE_GENERATOR, sequenceName = TableConstants.SCORE_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
@@ -118,24 +100,6 @@ public final class Event extends SerializableEntity<Long> {
 
 	protected void setTimeStamp(Long timeStamp) {
 		this.timeStamp = timeStamp;
-	}
-
-	@Column(name = FieldConstants.CLIENT_TIMESTAMP)
-	public Long getClientTimeStamp() {
-		return clientTimeStamp;
-	}
-
-	public void setClientTimeStamp(Long clientTimeStamp) {
-		this.clientTimeStamp = clientTimeStamp;
-	}
-
-	@Column(name = FieldConstants.TYPE, nullable = false)
-	public Long getType() {
-		return type;
-	}
-
-	protected void setType(Long type) {
-		this.type = type;
 	}
 
 	@Column(name = FieldConstants.NAME)
@@ -188,8 +152,8 @@ public final class Event extends SerializableEntity<Long> {
 	}
 
 	@ManyToOne
-	@JoinTable(name = TableConstants.TEST_EVENT_TABLE, joinColumns = {
-			@JoinColumn(name = FieldConstants.EVENT_ID, insertable = false, updatable = false) }, inverseJoinColumns = {
+	@JoinTable(name = TableConstants.TEST_SCORE_TABLE, joinColumns = {
+			@JoinColumn(name = FieldConstants.SCORE_ID, insertable = false, updatable = false) }, inverseJoinColumns = {
 					@JoinColumn(name = FieldConstants.TEST_ID, insertable = false, updatable = false) })
 	public Test getTest() {
 		return test;
@@ -200,7 +164,7 @@ public final class Event extends SerializableEntity<Long> {
 	}
 
 	@Transient
-	public Date getDatetime() {
+	public final Date getDatetime() {
 		return new Date(getTimeStamp());
 	}
 
@@ -215,14 +179,12 @@ public final class Event extends SerializableEntity<Long> {
 		if (!(obj instanceof Event)) {
 			return false;
 		}
-		Event other = (Event) obj;
+		Score other = (Score) obj;
 
 		Long id = getId();
 		Long id2 = other.getId();
 		Long timeStamp = getTimeStamp();
 		Long timeStamp2 = other.getTimeStamp();
-		Long type = getType();
-		Long type2 = other.getType();
 		String name = getName();
 		String name2 = other.getName();
 		String xmlData = getData();
@@ -244,14 +206,6 @@ public final class Event extends SerializableEntity<Long> {
 				return false;
 			}
 		} else if (!timeStamp.equals(timeStamp2)) {
-			return false;
-		}
-
-		if (type == null) {
-			if (type2 != null) {
-				return false;
-			}
-		} else if (!type.equals(type2)) {
 			return false;
 		}
 
@@ -302,7 +256,6 @@ public final class Event extends SerializableEntity<Long> {
 	public int hashCode() {
 		Long id = getId();
 		Long timeStamp = getTimeStamp();
-		Long type = getType();
 		String name = getName();
 		String xmlData = getData();
 		Branch branch = getBranch();
@@ -313,7 +266,6 @@ public final class Event extends SerializableEntity<Long> {
 		int result = 1;
 		result = prime * result + (id != null ? id.hashCode() : 0);
 		result = prime * result + (timeStamp != null ? timeStamp.hashCode() : 0);
-		result = prime * result + (type != null ? type.hashCode() : 0);
 		result = prime * result + (name != null ? name.hashCode() : 0);
 		result = prime * result + (xmlData != null ? xmlData.hashCode() : 0);
 		result = prime * result + (branch != null ? branch.hashCode() : 0);

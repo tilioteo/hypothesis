@@ -44,6 +44,7 @@ public interface FieldConstants {
 	String TEST_ID = "test_id";
 	String SLIDE_TEMPLATE_UID = "slide_template_uid";
 	String EVENT_ID = "event_id";
+	String SCORE_ID = "score_id";
 	String PRODUCTION = "production";
 	String CREATED = "created";
 	String STARTED = "started";
@@ -59,6 +60,7 @@ public interface FieldConstants {
 	String ENABLED = "enabled";
 	String EXPIRE_DATE = "expire_date";
 	String PASS = "pass";
+	String SCORES = "scores";
 
 	String PACK_NAME = "pack_name";
 	String BRANCH_NAME = "branch_name";

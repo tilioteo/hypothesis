@@ -83,6 +83,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 	private final Map<Integer, ExchangeVariable> inputExpressions = new HashMap<>();
 	private final Map<Integer, ExchangeVariable> outputExpressions = new HashMap<>();
+	private final Map<Integer, ExchangeVariable> scoreExpressions = new HashMap<>();
 
 	private final EventManager eventManager;
 	private MessageManager messageManager = null;
@@ -121,6 +122,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 		inputExpressions.clear();
 		outputExpressions.clear();
+		scoreExpressions.clear();
 	}
 
 	@Override
@@ -322,6 +324,12 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		}
 	}
 
+	public void setScoreExpression(int id, IndexedExpression expression) {
+		if (expression != null) {
+			scoreExpressions.put(id, expression);
+		}
+	}
+
 	/**
 	 * Get component by id
 	 */
@@ -473,6 +481,15 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 		outputExpressions.values().forEach(e -> e.setVariables(variables));
 
 		return outputExpressions;
+	}
+
+	@Override
+	public Map<Integer, ExchangeVariable> getScores() {
+		for (ExchangeVariable variable : scoreExpressions.values()) {
+			variable.setVariables(variables);
+		}
+
+		return scoreExpressions;
 	}
 
 	@Override
