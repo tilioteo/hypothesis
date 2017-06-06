@@ -4,6 +4,7 @@
  */
 package org.hypothesis.presenter;
 
+import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -129,7 +130,8 @@ public class MainPresenterImpl implements MainPresenter {
 		layout.setSizeFull();
 		panel.setContent(layout);
 
-		Label label = new Label("Hypothesis&emsp;v." + VERSION + "&emsp;&emsp;&emsp;© 2013-2016 Tilioteo Ltd");
+		Date now = new Date();
+		Label label = new Label(String.format("Hypothesis&emsp;v.%s&emsp;&emsp;&emsp;© 2013-%d Tilioteo Ltd", VERSION, now.getYear()));
 		label.setContentMode(ContentMode.HTML);
 		label.setWidthUndefined();
 		label.addStyleName(ValoTheme.LABEL_TINY);
