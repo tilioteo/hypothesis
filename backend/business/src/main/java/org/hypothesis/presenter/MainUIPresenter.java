@@ -116,8 +116,9 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 			} else {
 				if (!User.GUEST.equals(user)) {
 					ui.getNavigator().navigateTo(HypothesisViewType.PACKS.getViewName());
-				} else {
-					ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
+				// VN specific - removed public packs
+				//} else {
+				//	ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
 				}
 			}
 		} else {
