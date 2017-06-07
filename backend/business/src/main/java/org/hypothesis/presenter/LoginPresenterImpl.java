@@ -74,12 +74,14 @@ public class LoginPresenterImpl implements LoginPresenter {
 		Responsive.makeResponsive(loginPanel);
 		loginPanel.addStyleName("login-panel");
 
-		loginPanel.addComponent(buildLanguageLinks());
+		// VN specific - login by surname as user name and identity number as password
+		//loginPanel.addComponent(buildLanguageLinks());
 
 		loginPanel.addComponent(buildLabels());
 		loginPanel.addComponent(buildFields());
 		// loginPanel.addComponent(new CheckBox("Remember me", true));
-		loginPanel.addComponent(buildPublicAccessButton());
+		// VN specific - login by surname as user name and identity number as password
+		//loginPanel.addComponent(buildPublicAccessButton());
 		return loginPanel;
 	}
 
