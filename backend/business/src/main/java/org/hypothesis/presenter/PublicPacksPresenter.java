@@ -4,7 +4,6 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,7 +22,6 @@ import org.hypothesis.ui.view.PacksView;
 import org.vaadin.button.ui.OpenPopupButton;
 import org.vaadin.button.ui.OpenPopupButton.WindowClosedEvent;
 import org.vaadin.button.ui.OpenPopupButton.WindowClosedListener;
-import org.vaadin.jre.ui.DeployJava;
 
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.View;
@@ -55,34 +53,34 @@ public class PublicPacksPresenter implements PacksPresenter {
 	private User user = null;
 
 	private boolean testStarted = false;
-	private Date featuredStart;
+//	private Date featuredStart;
 
-	private final ClickListener featuredButtonClickListener = new ClickListener() {
-		@Override
-		public void buttonClick(ClickEvent event) {
-			if (!testStarted) {
-				Pack pack = getPanelBean(getParentPanel(event.getButton()));
-
-				if (pack != null) {
-					Date now = new Date();
-
-					// apply 30 seconds delay from last featured start
-					Date beforeDate = new Date(now.getTime() - 30000);
-					if (featuredStart != null && featuredStart.after(beforeDate)) {
-						return;
-					}
-
-					featuredStart = null;
-					Token token = createToken(pack);
-
-					if (token != null) {
-						featuredStart = new Date();
-						DeployJava.get(view.getUI()).launchJavaWebStart(constructStartJnlp(token.getUid()));
-					}
-				}
-			}
-		}
-	};
+//	private final ClickListener featuredButtonClickListener = new ClickListener() {
+//		@Override
+//		public void buttonClick(ClickEvent event) {
+//			if (!testStarted) {
+//				Pack pack = getPanelBean(getParentPanel(event.getButton()));
+//
+//				if (pack != null) {
+//					Date now = new Date();
+//
+//					// apply 30 seconds delay from last featured start
+//					Date beforeDate = new Date(now.getTime() - 30000);
+//					if (featuredStart != null && featuredStart.after(beforeDate)) {
+//						return;
+//					}
+//
+//					featuredStart = null;
+//					Token token = createToken(pack);
+//
+//					if (token != null) {
+//						featuredStart = new Date();
+//						DeployJava.get(view.getUI()).launchJavaWebStart(constructStartJnlp(token.getUid()));
+//					}
+//				}
+//			}
+//		}
+//	};
 
 	private final ClickListener legacyButtonClickListener = new ClickListener() {
 		@Override
@@ -145,21 +143,21 @@ public class PublicPacksPresenter implements PacksPresenter {
 		return tokenService.createToken(user, pack, viewUid, true);
 	}
 
-	private String constructStartJnlp(String uid) {
-		StringBuilder builder = new StringBuilder();
-		String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
-		builder.append(contextUrl);
-		builder.append("/resource/browserapplication.jnlp?");
-		builder.append("jnlp.app_url=");
-		builder.append(contextUrl);
-		builder.append("/process/");
-		builder.append("&jnlp.close_key=");
-		builder.append("close.html");
-		builder.append("&jnlp.token=");
-		builder.append(uid);
-
-		return builder.toString();
-	}
+//	private String constructStartJnlp(String uid) {
+//		StringBuilder builder = new StringBuilder();
+//		String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
+//		builder.append(contextUrl);
+//		builder.append("/resource/browserapplication.jnlp?");
+//		builder.append("jnlp.app_url=");
+//		builder.append(contextUrl);
+//		builder.append("/process/");
+//		builder.append("&jnlp.close_key=");
+//		builder.append("close.html");
+//		builder.append("&jnlp.token=");
+//		builder.append(uid);
+//
+//		return builder.toString();
+//	}
 
 	private String constructStartUrl(String uid, boolean returnBack) {
 		StringBuilder builder = new StringBuilder();
@@ -208,24 +206,24 @@ public class PublicPacksPresenter implements PacksPresenter {
 	}
 
 	private PackPanel createPackPanel(Pack pack) {
-		BeanItem<Pack> beanItem = new BeanItem<Pack>(pack);
+		BeanItem<Pack> beanItem = new BeanItem<>(pack);
 		PackPanel panel = new PackPanel();
 
 		panel.setCaption(pack.getName());
 		panel.setIcon(FontAwesome.ARCHIVE);
 		panel.setDescriptionPropertyDataSource(beanItem.getItemProperty("description"));
-		panel.setStartInfoCaption(Messages.getString("Caption.Pack.ControlTop"));
-		panel.setStartInfoSingleCaption(Messages.getString("Caption.Pack.ControlTopSingle"));
-		panel.setModeCaption(Messages.getString("Caption.Pack.ControlBottom"));
-		panel.setModeSingleCaption(Messages.getString("Caption.Pack.ControlBottomSingle"));
-		panel.setNoJavaCaption(Messages.getString("Caption.Pack.NoJava"));
-		panel.setFeaturedButtonCaption(Messages.getString("Caption.Button.StartFeatured"));
-		panel.setFeaturedButtonClickListener(featuredButtonClickListener);
+//		panel.setStartInfoCaption(Messages.getString("Caption.Pack.ControlTop"));
+//		panel.setStartInfoSingleCaption(Messages.getString("Caption.Pack.ControlTopSingle"));
+//		panel.setModeCaption(Messages.getString("Caption.Pack.ControlBottom"));
+//		panel.setModeSingleCaption(Messages.getString("Caption.Pack.ControlBottomSingle"));
+//		panel.setNoJavaCaption(Messages.getString("Caption.Pack.NoJava"));
+//		panel.setFeaturedButtonCaption(Messages.getString("Caption.Button.StartFeatured"));
+//		panel.setFeaturedButtonClickListener(featuredButtonClickListener);
 		panel.setLegacyButtonCaption(Messages.getString("Caption.Button.StartLegacy"));
 		panel.setLegacyButtonClickListener(legacyButtonClickListener);
 		panel.setLegacyButtonWindowClosedListener(legacyButtonWindowClosedListener);
 
-		panel.setJavaRequired(pack.isJavaRequired());
+//		panel.setJavaRequired(pack.isJavaRequired());
 
 		panelBeans.put(panel, beanItem);
 
@@ -262,10 +260,10 @@ public class PublicPacksPresenter implements PacksPresenter {
 		view = new PacksView(this);
 
 		view.setEmptyInfoCaption(FontAwesome.FROWN_O.getHtml() + " " + Messages.getString("Message.Info.NoPacks"));
-		view.setCheckingJavaInfo(Messages.getString("Message.Info.CheckingJava"));
-		view.setJavaInstalledCaption(Messages.getString("Message.Info.JavaInstalled"));
-		view.setJavaNotInstalledCaption(Messages.getString("Message.Info.JavaNotInstalled"));
-		view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"));
+//		view.setCheckingJavaInfo(Messages.getString("Message.Info.CheckingJava"));
+//		view.setJavaInstalledCaption(Messages.getString("Message.Info.JavaInstalled"));
+//		view.setJavaNotInstalledCaption(Messages.getString("Message.Info.JavaNotInstalled"));
+//		view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"));
 
 		// afterCreate();
 

@@ -53,13 +53,13 @@ public class PacksView extends HorizontalLayout implements View {
 	private String javaNotInstalledCaption = "javaNotInstalledCaption";
 	private String javaInstallLinkCaption = "javaInstallLinkCaption";
 
-	private final JavaCheckedListener javaCheckedListener = new JavaCheckedListener() {
-		@Override
-		public void javaChecked(JavaCheckedEvent event) {
-			updateJavaInstalled(event.getResult());
-		}
-
-	};
+//	private final JavaCheckedListener javaCheckedListener = new JavaCheckedListener() {
+//		@Override
+//		public void javaChecked(JavaCheckedEvent event) {
+//			updateJavaInstalled(event.getResult());
+//		}
+//
+//	};
 
 	public PacksView(PacksPresenter presenter) {
 		this.presenter = presenter;
@@ -147,21 +147,21 @@ public class PacksView extends HorizontalLayout implements View {
 		}
 	}
 
-	private void updateJavaInstalled(boolean javaInstalled) {
-		if (!javaInstalled) {
-			javaInfoPanel.removeStyleName("hidden");
-		}
-
-		if (mainLayout != null) {
-			Iterator<Component> iterator = mainLayout.iterator();
-			for (; iterator.hasNext();) {
-				Component component = iterator.next();
-				if (component instanceof PackPanel) {
-					((PackPanel) component).setJavaInstalled(javaInstalled);
-				}
-			}
-		}
-	}
+//	private void updateJavaInstalled(boolean javaInstalled) {
+//		if (!javaInstalled) {
+//			javaInfoPanel.removeStyleName("hidden");
+//		}
+//
+//		if (mainLayout != null) {
+//			Iterator<Component> iterator = mainLayout.iterator();
+//			for (; iterator.hasNext();) {
+//				Component component = iterator.next();
+//				if (component instanceof PackPanel) {
+//					((PackPanel) component).setJavaInstalled(javaInstalled);
+//				}
+//			}
+//		}
+//	}
 
 	@Override
 	public void attach() {
@@ -169,12 +169,12 @@ public class PacksView extends HorizontalLayout implements View {
 
 		presenter.attach();
 
-		DeployJava.get(getUI()).addJavaCheckedListener(javaCheckedListener);
+//		DeployJava.get(getUI()).addJavaCheckedListener(javaCheckedListener);
 	}
 
 	@Override
 	public void detach() {
-		DeployJava.get(getUI()).removeJavaCheckedListener(javaCheckedListener);
+//		DeployJava.get(getUI()).removeJavaCheckedListener(javaCheckedListener);
 
 		presenter.detach();
 
@@ -228,7 +228,7 @@ public class PacksView extends HorizontalLayout implements View {
 			}
 
 			panel.setHeight(150.0f, Unit.PIXELS);
-			panel.setJavaInstalled(javaInfoPanel.isJavaOk());
+//			panel.setJavaInstalled(javaInfoPanel.isJavaOk());
 
 			mainLayout.addComponent(panel);
 		}
