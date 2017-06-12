@@ -76,6 +76,8 @@ public final class User extends SerializableIdObject {
 	 * user can have another user (id of user) as owner
 	 */
 	private Long ownerId;
+	
+	private String name;
 
 	protected User(String username) {
 		this.username = username;
@@ -95,6 +97,11 @@ public final class User extends SerializableIdObject {
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
 		return super.getId();
+	}
+	
+	@Override
+	public void setId(Long id) {
+		super.setId(id);
 	}
 
 	// VN specific - login by surname as user name and identity number as password
@@ -184,6 +191,15 @@ public final class User extends SerializableIdObject {
 
 	public void setOwnerId(Long ownerId) {
 		this.ownerId = ownerId;
+	}
+
+	@Column(name = FieldConstants.NAME, nullable = true)
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public final void addRole(Role role) {

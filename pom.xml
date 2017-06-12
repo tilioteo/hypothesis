@@ -10,7 +10,7 @@
 	<name>hypothesis-parent</name>
 
 	<properties>
-		<hypothesis.version>1.5.5</hypothesis.version>
+		<hypothesis.version>1.5.6</hypothesis.version>
 
 		<vaadin.version>7.6.8</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
@@ -38,6 +38,7 @@
 		<aceeditor.version>0.8.14</aceeditor.version>
 		<fancylayouts.version>1.0.1</fancylayouts.version>
 		<toolbox.version>1.0.1</toolbox.version>
+		<filteringtable.version>0.9.15.v7</filteringtable.version>
 		<commons.version>1.0.1</commons.version>
 		<expressions.version>1.0.1</expressions.version>
 		<jcabi.version>1.1</jcabi.version>
@@ -237,6 +238,12 @@
 				<groupId>com.jcabi</groupId>
 				<artifactId>jcabi-manifests</artifactId>
 				<version>${jcabi.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.vaadin.addons</groupId>
+				<artifactId>filteringtable</artifactId>
+				<version>${filteringtable.version}</version>
 			</dependency>
 
 			<dependency>

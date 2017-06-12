@@ -78,6 +78,11 @@
 			<version>${toolbox.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>filteringtable</artifactId>
+		</dependency>
+
 		<!-- Optional plugin libraries -->
 	</dependencies>
 
