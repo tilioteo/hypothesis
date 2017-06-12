@@ -61,6 +61,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -73,7 +74,7 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class UserManagementPresenter extends AbstractManagementPresenter {
+public class UserManagementPresenter extends AbstractManagementPresenter implements ColumnGenerator {
 
 	private final PermissionService permissionService;
 	private final UserService userService;
@@ -339,7 +340,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 
 	@Override
 	public Table buildTable() {
-		table = new Table();
+		Table table = new Table();
 		table.setSizeFull();
 		table.addStyleName(ValoTheme.TABLE_SMALL);
 		table.setSelectable(true);
@@ -402,6 +403,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 			}
 		});
 
+		this.table = table;
 		return table;
 	}
 
@@ -561,7 +563,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 		container.removeItem(user.getId());
 		container.addItem(user.getId(), user);
 
-		table.sort();
+		((Table) table).sort();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -577,7 +579,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter {
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void setToolsEnabled(final MainUIEvent.UserSelectionChangedEvent event) {
-		boolean itemsSelected = ((Set<Object>) table.getValue()).size() > 0;
+		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
 		boolean toolsEnabled = allSelected || itemsSelected;
 		buttonGroup.setEnabled(toolsEnabled);
 	}

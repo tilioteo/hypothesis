@@ -5,7 +5,6 @@
 package org.hypothesis.interfaces;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Table;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -17,7 +16,7 @@ public interface ManagementPresenter extends ViewPresenter {
 
 	Component buildHeader();
 
-	Table buildTable();
+	Component buildTable();
 	
 	void init();
 

@@ -54,6 +54,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -66,7 +67,7 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class GroupManagementPresenter extends AbstractManagementPresenter {
+public class GroupManagementPresenter extends AbstractManagementPresenter implements ColumnGenerator {
 
 	private final PermissionService permissionService;
 	private final GroupService groupService;
@@ -82,13 +83,13 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 	public void init() {
 		groupWindowPresenter = new GroupWindowPresenter(bus);
 	}
-	
+
 	@Override
 	public void setMainEventBus(MainEventBus bus) {
 		if (this.bus != null) {
 			this.bus.unregister(this);
 		}
-		
+
 		super.setMainEventBus(bus);
 		if (this.bus != null) {
 			this.bus.register(this);
@@ -277,8 +278,9 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 	}
 
 	@Override
-	public Table buildTable() {
-		table = new Table();
+	public Component buildTable() {
+		Table table = new Table();
+		table.sort();
 		table.setSizeFull();
 		table.addStyleName(ValoTheme.TABLE_SMALL);
 		table.setSelectable(true);
@@ -331,6 +333,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 			}
 		});
 
+		this.table = table;
 		return table;
 	}
 
@@ -438,7 +441,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter {
 			container.removeItem(group.getId());
 			container.addItem(group.getId(), group);
 
-			table.sort();
+			((Table) table).sort();
 		}
 	}
 

@@ -9,22 +9,19 @@ import org.hypothesis.data.model.User;
 import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ManagementPresenter;
-import org.hypothesis.server.Messages;
 import org.hypothesis.ui.view.ManagementView;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.ConfirmDialog.Listener;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -34,14 +31,14 @@ import com.vaadin.ui.Table.ColumnGenerator;
  */
 @SuppressWarnings("serial")
 public abstract class AbstractManagementPresenter
-		implements ManagementPresenter, HasMainEventBus, ColumnGenerator, Listener {
+		implements ManagementPresenter, HasMainEventBus, Listener {
 
 	protected User loggedUser;
 
 	protected MainEventBus bus;
 
 	protected CssLayout buttonGroup;
-	protected Table table;
+	protected AbstractSelect table;
 
 	protected ConfirmDialog deletionConfirmDialog;
 
@@ -86,25 +83,9 @@ public abstract class AbstractManagementPresenter
 		tools.setSpacing(true);
 
 		tools.addComponent(buildAddButton());
-		tools.addComponent(buildSelection());
-
-		buttonGroup = new CssLayout();
-		buttonGroup.addStyleName("v-component-group");
-		buttonGroup.addComponent(buildUpdateButton());
-		buttonGroup.addComponent(buildDeleteButton());
-		buttonGroup.addComponent(buildExportButton());
-		buttonGroup.setEnabled(false);
-		tools.addComponent(buttonGroup);
+		tools.addComponent(buildUpdateButton());
 
 		return tools;
-	}
-
-	private Component buildExportButton() {
-		Button exportButton = new Button(Messages.getString("Caption.Button.Export"));
-		Resource exportResource = getExportResource();
-		FileDownloader fileDownloader = new FileDownloader(exportResource);
-		fileDownloader.extend(exportButton);
-		return exportButton;
 	}
 
 	@Override

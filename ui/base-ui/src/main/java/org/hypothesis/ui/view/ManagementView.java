@@ -8,7 +8,7 @@ import org.hypothesis.interfaces.ManagementPresenter;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Table;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -30,7 +30,7 @@ public class ManagementView extends VerticalLayout implements View {
 		setSpacing(true);
 
 		addComponent(presenter.buildHeader());
-		Table table = presenter.buildTable();
+		Component table = presenter.buildTable();
 		addComponent(table);
 		setExpandRatio(table, 1);
 	}

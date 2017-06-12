@@ -167,7 +167,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	private void buildRolesField() {
 		if (rolesField == null) {
 			rolesField = new OptionGroup(Messages.getString("Caption.Field.Role"));
-			rolesField.addStyleName("horizontal");
+			rolesField.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 			rolesField.setItemCaptionPropertyId(FieldConstants.NAME);
 			rolesField.setMultiSelect(true);
 
