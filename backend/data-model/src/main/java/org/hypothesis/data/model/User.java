@@ -78,6 +78,9 @@ public final class User extends SerializableIdObject {
 	private Long ownerId;
 	
 	private String name;
+	private String gender;
+	private String education;
+	private Date birthDate;
 
 	protected User(String username) {
 		this.username = username;
@@ -202,6 +205,33 @@ public final class User extends SerializableIdObject {
 		this.name = name;
 	}
 
+	@Column(name = FieldConstants.GENDER, nullable = true, length = 1)
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	@Column(name = FieldConstants.EDUCATION, nullable = true)
+	public String getEducation() {
+		return education;
+	}
+
+	public void setEducation(String education) {
+		this.education = education;
+	}
+
+	@Column(name = FieldConstants.BIRTH_DATE)
+	public Date getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
+	}
+
 	public final void addRole(Role role) {
 		getRoles().add(role);
 	}
@@ -249,6 +279,10 @@ public final class User extends SerializableIdObject {
 		String note2 = other.getNote();
 		Long ownerId = getOwnerId();
 		Long ownerId2 = other.getOwnerId();
+		String gender = getGender();
+		String gender2 = other.getGender();
+		String education = getEducation();
+		String education2 = other.getEducation();
 
 		// if id of one instance is null then compare other properties
 		if (id != null && id2 != null && !id.equals(id2)) {
@@ -302,6 +336,22 @@ public final class User extends SerializableIdObject {
 		} else if (!ownerId.equals(ownerId2)) {
 			return false;
 		}
+		
+		if (gender == null) {
+			if (gender2 != null) {
+				return false;
+			}
+		} else if (!gender.equals(gender2)) {
+			return false;
+		}
+
+		if (education == null) {
+			if (education2 != null) {
+				return false;
+			}
+		} else if (!education.equals(education2)) {
+			return false;
+		}
 
 		return true;
 	}
@@ -317,6 +367,8 @@ public final class User extends SerializableIdObject {
 		Long ownerId = getOwnerId();
 		Set<Role> roles = getRoles();
 		// Set<Group> groups = getGroups();
+		String gender = getGender();
+		String education = getEducation();
 
 		final int prime = 61;
 		int result = 1;
@@ -329,6 +381,8 @@ public final class User extends SerializableIdObject {
 		result = prime * result + (ownerId != null ? ownerId.hashCode() : 0);
 		result = prime * result + roles.hashCode();
 		// result = prime * result + groups.hashCode();
+		result = prime * result + (gender != null ? gender.hashCode() : 0);
+		result = prime * result + (education != null ? education.hashCode() : 0);
 		return result;
 	}
 

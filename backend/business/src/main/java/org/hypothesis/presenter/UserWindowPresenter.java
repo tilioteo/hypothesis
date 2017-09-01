@@ -215,7 +215,8 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			table.addContainerProperty(FieldConstants.NAME, String.class, null);
 			table.addContainerProperty(FieldConstants.SELECTED, Boolean.class, null);
 
-			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED));
+			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED,
+					Messages.getString("Caption.Button.EnablePack")));
 
 			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
 				@Override
@@ -255,10 +256,12 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			table.addStyleName(ValoTheme.TABLE_COMPACT);
 
 			table.addContainerProperty(FieldConstants.NAME, String.class, null);
-			table.addContainerProperty(FieldConstants.TEST_STATE, Boolean.class, null);
+			table.addContainerProperty(FieldConstants.TEST_STATE, Integer.class, null);
 
 			table.addGeneratedColumn(FieldConstants.TEST_ENABLER,
-					new DoubleCheckerColumnGenerator(FieldConstants.TEST_STATE));
+					new DoubleCheckerColumnGenerator(FieldConstants.TEST_STATE,
+							Messages.getString("Caption.Button.EnablePack"),
+							Messages.getString("Caption.Button.DisablePack")));
 
 			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
 				@Override

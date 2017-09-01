@@ -25,29 +25,38 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 
 	private final String stateField;
 
-	private String enabledCaption = "enabledCaption";
-	private String disabledCaption = "disabledCaption";
+	private String enabledCaption;
+	private String disabledCaption;
 
-	public DoubleCheckerColumnGenerator(String stateField) {
+	public DoubleCheckerColumnGenerator(String stateField, String enabledCaption, String disabledCaption) {
 		this.stateField = stateField;
+		this.enabledCaption = enabledCaption;
+		this.disabledCaption = disabledCaption;
 	}
 
 	@Override
 	public Object generateCell(final Table source, final Object itemId, Object columnId) {
 		CssLayout group = new CssLayout();
-		group.addStyleName("v-component-group");
+		group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
 
 		Item item = source.getItem(itemId);
-		Boolean state = (Boolean) item.getItemProperty(stateField).getValue();
+		Integer state = (Integer) item.getItemProperty(stateField).getValue();
 
 		final Button enabledButton = new Button();
 		enabledButton.setIcon(FontAwesome.CHECK);
 		enabledButton.addStyleName(ValoTheme.BUTTON_SMALL);
-		enabledButton.setDescription(enabledCaption);// Messages.getString("Caption.Button.EnableTest")
+		enabledButton.setDescription(enabledCaption);
 
-		if (state != null && state.equals(true)) {
-			enabledButton.setData(true);
-			enabledButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+		if (state != null) {
+			if (state == 1) {
+				enabledButton.setData(true);
+				enabledButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+				enabledButton.setIcon(FontAwesome.SQUARE);
+				enabledButton.setEnabled(false);
+			} else if (state == 2) {
+				enabledButton.setData(true);
+				enabledButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+			}
 		} else {
 			enabledButton.setData(false);
 		}
@@ -55,10 +64,9 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 		final Button disabledButton = new Button();
 		disabledButton.setIcon(FontAwesome.TIMES);
 		disabledButton.addStyleName(ValoTheme.BUTTON_SMALL);
-		disabledButton.setDescription(disabledCaption);// Messages.getString("Caption.Button.DisableTest")
-		disabledButton.setData(false);
+		disabledButton.setDescription(disabledCaption);
 
-		if (state != null && state.equals(false)) {
+		if (state != null && state == 0) {
 			disabledButton.setData(true);
 			disabledButton.addStyleName(ValoTheme.BUTTON_DANGER);
 		} else {
@@ -69,7 +77,7 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (enabledButton.getData().equals(false)) {
-					source.getItem(itemId).getItemProperty(stateField).setValue(true);
+					source.getItem(itemId).getItemProperty(stateField).setValue(1);
 					enabledButton.setData(true);
 					enabledButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 					disabledButton.setData(false);
@@ -86,7 +94,7 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (disabledButton.getData().equals(false)) {
-					source.getItem(itemId).getItemProperty(stateField).setValue(false);
+					source.getItem(itemId).getItemProperty(stateField).setValue(0);
 					disabledButton.setData(true);
 					disabledButton.addStyleName(ValoTheme.BUTTON_DANGER);
 					enabledButton.setData(false);
@@ -103,14 +111,6 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 		group.addComponent(disabledButton);
 
 		return group;
-	}
-
-	public void setEnabledCaption(String caption) {
-		this.enabledCaption = caption;
-	}
-
-	public void setDisabledCaption(String caption) {
-		this.disabledCaption = caption;
 	}
 
 }

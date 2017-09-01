@@ -24,10 +24,11 @@ public class SimpleCheckerColumnGenerator implements ColumnGenerator {
 
 	private final String stateField;
 
-	private String buttonCaption = "buttonCaption";
+	private String buttonCaption;
 
-	public SimpleCheckerColumnGenerator(String stateField) {
+	public SimpleCheckerColumnGenerator(String stateField, String buttonCaption) {
 		this.stateField = stateField;
+		this.buttonCaption = buttonCaption;
 	}
 
 	@Override
@@ -39,7 +40,7 @@ public class SimpleCheckerColumnGenerator implements ColumnGenerator {
 		final Button button = new Button();
 		button.setIcon(FontAwesome.CHECK);
 		button.addStyleName(ValoTheme.BUTTON_SMALL);
-		button.setDescription(buttonCaption);// Messages.getString("Caption.Button.EnableTest")
+		button.setDescription(buttonCaption);
 
 		if (state != null && state.equals(true)) {
 			button.setData(true);
@@ -64,10 +65,6 @@ public class SimpleCheckerColumnGenerator implements ColumnGenerator {
 		});
 
 		return button;
-	}
-
-	public void setButtonCaption(String caption) {
-		this.buttonCaption = caption;
 	}
 
 }

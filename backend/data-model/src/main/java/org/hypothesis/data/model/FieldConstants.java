@@ -59,8 +59,13 @@ public interface FieldConstants {
 	String PASSWORD = "password";
 	String ENABLED = "enabled";
 	String EXPIRE_DATE = "expire_date";
+	String BIRTH_DATE = "birth_date";
 	String PASS = "pass";
 	String SCORES = "scores";
+	String ENABLE_AFTER_PACK_ID = "after_pack_id";
+	String GENDER = "gender";
+	String EDUCATION = "education";
+	String FIRST_NAME = "first_name";
 
 	String PACK_NAME = "pack_name";
 	String BRANCH_NAME = "branch_name";

@@ -18,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -58,6 +59,8 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	private Boolean javaRequired = true;
 
 	private String note;
+	
+	private Pack enableAfter;
 
 	/**
 	 * list of contained branches
@@ -117,6 +120,17 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	public void setNote(String note) {
 		this.note = note;
 	}
+	
+//	@ManyToOne(/* cascade = { CascadeType.PERSIST, CascadeType.MERGE } */)
+//	@JoinColumn(name = FieldConstants.ENABLE_AFTER_PACK_ID, nullable = false)
+//	// @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+//	public Pack getEnableAfter() {
+//		return enableAfter;
+//	}
+//
+//	public void setEnableAfter(Pack pack) {
+//		this.enableAfter = pack;
+//	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JoinTable(name = TableConstants.PACK_BRANCH_TABLE, joinColumns = @JoinColumn(name = FieldConstants.PACK_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.BRANCH_ID) )

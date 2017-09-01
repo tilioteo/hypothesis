@@ -121,7 +121,8 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			table.addContainerProperty(FieldConstants.USERNAME, String.class, null);
 			table.addContainerProperty(FieldConstants.SELECTED, Boolean.class, null);
 
-			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED));
+			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED,
+					Messages.getString("Caption.Button.EnablePack")));
 
 			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
 				@Override
@@ -162,7 +163,8 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			table.addContainerProperty(FieldConstants.NAME, String.class, null);
 			table.addContainerProperty(FieldConstants.SELECTED, Boolean.class, null);
 
-			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED));
+			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED,
+					Messages.getString("Caption.Button.EnablePack")));
 
 			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
 				@Override
@@ -207,7 +209,8 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		buildNoteField();
 		addField(form, noteField);
 
-		buildUsersField(!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
+		buildUsersField(
+				!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
 		addField(form, usersField);
 		// TODO: upozornit, ze uzivatel nema zadne uzivatele?
 
@@ -255,7 +258,8 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		if (!users.isEmpty()) {
-			buildUsersField(!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
+			buildUsersField(
+					!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
 
 			for (User user : users) {
 				Table table = usersField;

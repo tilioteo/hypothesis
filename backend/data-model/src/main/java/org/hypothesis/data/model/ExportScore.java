@@ -40,15 +40,23 @@ import org.hibernate.annotations.Type;
 		",b."+FieldConstants.NOTE+" "+FieldConstants.BRANCH_NAME+
 		",ta."+FieldConstants.NAME+" "+FieldConstants.TASK_NAME+
 		",sl."+FieldConstants.NOTE+" "+FieldConstants.SLIDE_NAME+
+		",u."+FieldConstants.USERNAME+
+		",u."+FieldConstants.PASSWORD+
+		",u."+FieldConstants.NAME+" "+FieldConstants.FIRST_NAME+
+		",u."+FieldConstants.GENDER+
+		",u."+FieldConstants.EDUCATION+
+		",u."+FieldConstants.NOTE+" "+FieldConstants.NOTE+
 		" FROM "+TableConstants.SCORE_TABLE+" s JOIN "+
 		TableConstants.TEST_SCORE_TABLE+" ts ON ts."+FieldConstants.SCORE_ID+"=s."+FieldConstants.ID+" JOIN "+
 		TableConstants.TEST_TABLE+" t ON ts."+FieldConstants.TEST_ID+"=t."+FieldConstants.ID+" LEFT JOIN "+
 		TableConstants.PACK_TABLE+" p ON t."+FieldConstants.PACK_ID+"=p."+FieldConstants.ID+" LEFT JOIN "+
 		TableConstants.BRANCH_TABLE+" b ON s."+FieldConstants.BRANCH_ID+"=b."+FieldConstants.ID+" LEFT JOIN "+
 		TableConstants.TASK_TABLE+" ta ON s."+FieldConstants.TASK_ID+"=ta."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.SLIDE_TABLE+" sl ON s."+FieldConstants.SLIDE_ID+"=sl."+FieldConstants.ID)
+		TableConstants.SLIDE_TABLE+" sl ON s."+FieldConstants.SLIDE_ID+"=sl."+FieldConstants.ID+" LEFT JOIN "+
+		TableConstants.USER_TABLE+" u ON t."+FieldConstants.USER_ID+"=u."+FieldConstants.ID)
 @Synchronize({ TableConstants.SCORE_TABLE, TableConstants.TEST_TABLE, TableConstants.TEST_SCORE_TABLE,
-		TableConstants.PACK_TABLE, TableConstants.BRANCH_TABLE, TableConstants.TASK_TABLE, TableConstants.SLIDE_TABLE })
+		TableConstants.PACK_TABLE, TableConstants.BRANCH_TABLE, TableConstants.TASK_TABLE, TableConstants.SLIDE_TABLE,
+		TableConstants.USER_TABLE })
 @Immutable
 @Access(AccessType.PROPERTY)
 public class ExportScore extends SerializableIdObject {
@@ -127,6 +135,13 @@ public class ExportScore extends SerializableIdObject {
 	 * timestamp test created at
 	 */
 	private Date created;
+	
+	private String firstName;
+	private String username;
+	private String password;
+	private String gender;
+	private String education;
+	private String note;
 
 	@Override
 	@Id
@@ -260,6 +275,60 @@ public class ExportScore extends SerializableIdObject {
 
 	protected void setCreated(Date created) {
 		this.created = created;
+	}
+
+	@Column(name = FieldConstants.FIRST_NAME, nullable = false)
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	@Column(name = FieldConstants.USERNAME, nullable = false)
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	@Column(name = FieldConstants.PASSWORD, nullable = false)
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Column(name = FieldConstants.GENDER, nullable = false)
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	@Column(name = FieldConstants.EDUCATION, nullable = false)
+	public String getEducation() {
+		return education;
+	}
+
+	public void setEducation(String education) {
+		this.education = education;
+	}
+
+	@Column(name = FieldConstants.NOTE, nullable = false)
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 	@Transient

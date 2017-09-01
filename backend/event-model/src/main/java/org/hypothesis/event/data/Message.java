@@ -4,7 +4,6 @@
  */
 package org.hypothesis.event.data;
 
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,9 +20,8 @@ import elemental.json.JsonObject;
  *
  */
 @SuppressWarnings("serial")
-public class Message implements Serializable {
+public class Message extends JsonMessage {
 
-	private static final String MESSAGE_CLASS = "CLASS";
 	private static final String MESSAGE_UID = "UID";
 	private static final String MESSAGE_SENDER = "SENDER";
 	private static final String MESSAGE_RECEIVER = "RECEIVER";
@@ -31,7 +29,6 @@ public class Message implements Serializable {
 	private static final String MESSAGE_DATA = "DATA";
 	private static final String MESSAGE_TIMESTAMP = "TIMESTAMP";
 
-	private JsonObject json;
 	private JsonObject defs;
 	private JsonObject data;
 
@@ -41,9 +38,8 @@ public class Message implements Serializable {
 	}
 
 	public Message(String uid, Long senderId) {
-		json = Json.createObject();
-
-		json.put(MESSAGE_CLASS, this.getClass().getName());
+		initJson();
+		
 		json.put(MESSAGE_UID, uid);
 		if (senderId != null) {
 			json.put(MESSAGE_SENDER, senderId);
@@ -197,11 +193,6 @@ public class Message implements Serializable {
 
 	public void updateTimestamp() {
 		json.put(MESSAGE_TIMESTAMP, dateToString(new Date()));
-	}
-
-	@Override
-	public String toString() {
-		return json.toJson();
 	}
 
 	public static final Message fromJson(String string) {

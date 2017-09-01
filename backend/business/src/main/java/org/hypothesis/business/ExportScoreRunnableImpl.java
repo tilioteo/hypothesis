@@ -29,6 +29,7 @@ import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.Command;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.ControlledUI;
+import org.hypothesis.utility.GenderUtility;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
@@ -166,22 +167,29 @@ public class ExportScoreRunnableImpl implements ExportRunnable {
 					header.createCell(13).setCellValue("action_name");
 					header.createCell(14).setCellValue("score_data");
 
-					header.createCell(15).setCellValue("value1");
-					header.createCell(16).setCellValue("value2");
-					header.createCell(17).setCellValue("value3");
-					header.createCell(18).setCellValue("value4");
-					header.createCell(19).setCellValue("value5");
-					header.createCell(20).setCellValue("value6");
-					header.createCell(21).setCellValue("value7");
-					header.createCell(22).setCellValue("value8");
-					header.createCell(23).setCellValue("value9");
-					header.createCell(24).setCellValue("value10");
+					header.createCell(15).setCellValue("Jméno");
+					header.createCell(16).setCellValue("Příjmení");
+					header.createCell(17).setCellValue("Rodné číslo");
+					header.createCell(18).setCellValue("Pohlaví");
+					header.createCell(19).setCellValue("Vzdělání");
+					header.createCell(20).setCellValue("Poznámka");
+
+					header.createCell(21).setCellValue("value1");
+					header.createCell(22).setCellValue("value2");
+					header.createCell(23).setCellValue("value3");
+					header.createCell(24).setCellValue("value4");
+					header.createCell(25).setCellValue("value5");
+					header.createCell(26).setCellValue("value6");
+					header.createCell(27).setCellValue("value7");
+					header.createCell(28).setCellValue("value8");
+					header.createCell(29).setCellValue("value9");
+					header.createCell(30).setCellValue("value10");
 
 					int size = scores.size();
 					float counter = 0f;
 					int lastProgress = 0;
 
-					int outputValueCol = 15;
+					int outputValueCol = 21;
 
 					int rowNr = 1;
 					for (ExportScore score : scores) {
@@ -202,6 +210,13 @@ public class ExportScoreRunnableImpl implements ExportRunnable {
 						String taskName = score.getTaskName();
 						Long slideId = score.getSlideId();
 						String slideName = score.getSlideName();
+
+						String firstName = score.getFirstName();
+						String username = score.getUsername();
+						String pasword = score.getPassword();
+						String gender = score.getGender();
+						String education = score.getEducation();
+						String note = score.getNote();
 
 						Row row = sheet.createRow(rowNr++);
 
@@ -274,6 +289,42 @@ public class ExportScoreRunnableImpl implements ExportRunnable {
 						cell = row.createCell(14);
 						cell.setCellValue(xmlData);
 						cell.setCellType(Cell.CELL_TYPE_STRING);
+
+						if (firstName != null) {
+							cell = row.createCell(15);
+							cell.setCellValue(firstName);
+							cell.setCellType(Cell.CELL_TYPE_STRING);
+						}
+
+						if (username != null) {
+							cell = row.createCell(16);
+							cell.setCellValue(username);
+							cell.setCellType(Cell.CELL_TYPE_STRING);
+						}
+
+						if (pasword != null) {
+							cell = row.createCell(17);
+							cell.setCellValue(pasword);
+							cell.setCellType(Cell.CELL_TYPE_STRING);
+						}
+
+						if (gender != null) {
+							cell = row.createCell(18);
+							cell.setCellValue(GenderUtility.getLocalizedName(gender));
+							cell.setCellType(Cell.CELL_TYPE_STRING);
+						}
+
+						if (education != null) {
+							cell = row.createCell(19);
+							cell.setCellValue(education);
+							cell.setCellType(Cell.CELL_TYPE_STRING);
+						}
+
+						if (note != null) {
+							cell = row.createCell(20);
+							cell.setCellValue(note);
+							cell.setCellType(Cell.CELL_TYPE_STRING);
+						}
 
 						if (xmlData != null) {
 							int colNr = outputValueCol;

@@ -6,15 +6,21 @@ package org.hypothesis.presenter;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.data.model.Group;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.Token;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.TokenService;
+import org.hypothesis.event.data.UIMessage;
+import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.PacksPresenter;
 import org.hypothesis.server.Messages;
+import org.hypothesis.servlet.BroadcastService;
+import org.hypothesis.servlet.BroadcastService.BroadcastListener;
 import org.hypothesis.servlet.ServletUtil;
 import org.hypothesis.ui.ControlledUI;
 import org.hypothesis.ui.PackPanel;
@@ -29,10 +35,12 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.UI;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -41,7 +49,7 @@ import com.vaadin.ui.Component;
  *
  */
 @SuppressWarnings("serial")
-public class PublicPacksPresenter implements PacksPresenter {
+public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 
 	protected final PermissionService permissionService;
 	private final TokenService tokenService;
@@ -121,12 +129,12 @@ public class PublicPacksPresenter implements PacksPresenter {
 	@Override
 	public void attach() {
 		setUser(SessionManager.getLoggedUser());
+		BroadcastService.register(this);
 	}
 
 	@Override
 	public void detach() {
-		// TODO Auto-generated method stub
-
+		BroadcastService.unregister(this);
 	}
 
 	@Override
@@ -268,6 +276,78 @@ public class PublicPacksPresenter implements PacksPresenter {
 		// afterCreate();
 
 		return view;
+	}
+
+	@Override
+	public void receiveBroadcast(String message) {
+		if (view != null && view.getUI() != null && view.getUI().getSession() != null) { // prevent from detached ui
+			// deserialize received message
+			final UIMessage uiMessage = UIMessage.fromJson(message);
+
+			if (canHandleMessage(uiMessage)) {
+				handleMessage(uiMessage);
+			}
+		}
+	}
+
+	private boolean canHandleMessage(UIMessage message) {
+		if (message != null) {
+			Long groupId = message.getGroupId();
+			Long userId = message.getUserId();
+
+			if (null == groupId && null == userId) { // non addressed broadcast message
+				return true;
+
+			} else if (user != null // addressed message, user must be logged
+					&& ((groupId != null && groupMatches(groupId, user.getGroups()))
+							|| (userId != null && user.getId().equals(userId)))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// TODO: replace by lambda
+	private boolean groupMatches(Long groupId, Set<Group> groups) {
+		for (Group group : groups) {
+			if (group.getId().equals(groupId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void handleMessage(UIMessage message) {
+		if ("RefreshPacks".equals(message.getType())) {
+			pushCommand(new Command() {
+				@Override
+				public void execute() {
+					refreshView();
+				}
+			});
+		}
+	}
+	
+	private void pushCommand(final Command command) {
+		if (command != null && view != null && view.getUI() != null) {
+			final UI ui = view.getUI();
+
+			ui.access(new Runnable() {
+				@Override
+				public void run() {
+					Command.Executor.execute(command);
+
+					if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
+						try {
+							ui.push();
+						} catch (Throwable e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			});
+		}
 	}
 
 }
