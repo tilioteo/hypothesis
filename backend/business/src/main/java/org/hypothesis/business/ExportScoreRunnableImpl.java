@@ -173,23 +173,24 @@ public class ExportScoreRunnableImpl implements ExportRunnable {
 					header.createCell(18).setCellValue("Pohlaví");
 					header.createCell(19).setCellValue("Vzdělání");
 					header.createCell(20).setCellValue("Poznámka");
+					header.createCell(21).setCellValue("Poznámka2");
 
-					header.createCell(21).setCellValue("value1");
-					header.createCell(22).setCellValue("value2");
-					header.createCell(23).setCellValue("value3");
-					header.createCell(24).setCellValue("value4");
-					header.createCell(25).setCellValue("value5");
-					header.createCell(26).setCellValue("value6");
-					header.createCell(27).setCellValue("value7");
-					header.createCell(28).setCellValue("value8");
-					header.createCell(29).setCellValue("value9");
-					header.createCell(30).setCellValue("value10");
+					header.createCell(22).setCellValue("value1");
+					header.createCell(23).setCellValue("value2");
+					header.createCell(24).setCellValue("value3");
+					header.createCell(25).setCellValue("value4");
+					header.createCell(26).setCellValue("value5");
+					header.createCell(27).setCellValue("value6");
+					header.createCell(28).setCellValue("value7");
+					header.createCell(29).setCellValue("value8");
+					header.createCell(30).setCellValue("value9");
+					header.createCell(31).setCellValue("value10");
 
 					int size = scores.size();
 					float counter = 0f;
 					int lastProgress = 0;
 
-					int outputValueCol = 21;
+					int outputValueCol = 22;
 
 					int rowNr = 1;
 					for (ExportScore score : scores) {
