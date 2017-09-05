@@ -45,7 +45,8 @@ import org.hibernate.annotations.Type;
 		",u."+FieldConstants.NAME+" "+FieldConstants.FIRST_NAME+
 		",u."+FieldConstants.GENDER+
 		",u."+FieldConstants.EDUCATION+
-		",u."+FieldConstants.NOTE+" "+FieldConstants.NOTE+
+		",u."+FieldConstants.BIRTH_DATE+
+		",u."+FieldConstants.NOTE+
 		" FROM "+TableConstants.SCORE_TABLE+" s JOIN "+
 		TableConstants.TEST_SCORE_TABLE+" ts ON ts."+FieldConstants.SCORE_ID+"=s."+FieldConstants.ID+" JOIN "+
 		TableConstants.TEST_TABLE+" t ON ts."+FieldConstants.TEST_ID+"=t."+FieldConstants.ID+" LEFT JOIN "+
@@ -141,6 +142,7 @@ public class ExportScore extends SerializableIdObject {
 	private String password;
 	private String gender;
 	private String education;
+	private Date birthDate;
 	private String note;
 
 	@Override
@@ -320,6 +322,15 @@ public class ExportScore extends SerializableIdObject {
 
 	public void setEducation(String education) {
 		this.education = education;
+	}
+
+	@Column(name = FieldConstants.BIRTH_DATE)
+	public Date getBirthDate() {
+		return birthDate;
+	}
+
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
 	}
 
 	@Column(name = FieldConstants.NOTE, nullable = false)

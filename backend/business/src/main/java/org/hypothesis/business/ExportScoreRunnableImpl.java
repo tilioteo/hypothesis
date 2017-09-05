@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -167,30 +168,32 @@ public class ExportScoreRunnableImpl implements ExportRunnable {
 					header.createCell(13).setCellValue("action_name");
 					header.createCell(14).setCellValue("score_data");
 
-					header.createCell(15).setCellValue("Jméno");
-					header.createCell(16).setCellValue("Příjmení");
-					header.createCell(17).setCellValue("Rodné číslo");
-					header.createCell(18).setCellValue("Pohlaví");
-					header.createCell(19).setCellValue("Vzdělání");
-					header.createCell(20).setCellValue("Poznámka");
-					header.createCell(21).setCellValue("Poznámka2");
+					header.createCell(15).setCellValue(Messages.getString("Caption.Field.Name"));
+					header.createCell(16).setCellValue(Messages.getString("Caption.Field.Surname"));
+					header.createCell(17).setCellValue(Messages.getString("Caption.Field.BirthNumber"));
+					header.createCell(18).setCellValue(Messages.getString("Caption.Field.DateOfBirth"));
+					header.createCell(19).setCellValue(Messages.getString("Caption.Field.Gender"));
+					header.createCell(20).setCellValue(Messages.getString("Caption.Field.Education"));
+					header.createCell(21).setCellValue(Messages.getString("Caption.Field.Note"));
+					header.createCell(22).setCellValue(Messages.getString("Caption.Field.Note") + "2");
+					header.createCell(23).setCellValue(Messages.getString("Caption.Field.Note") + "3");
 
-					header.createCell(22).setCellValue("value1");
-					header.createCell(23).setCellValue("value2");
-					header.createCell(24).setCellValue("value3");
-					header.createCell(25).setCellValue("value4");
-					header.createCell(26).setCellValue("value5");
-					header.createCell(27).setCellValue("value6");
-					header.createCell(28).setCellValue("value7");
-					header.createCell(29).setCellValue("value8");
-					header.createCell(30).setCellValue("value9");
-					header.createCell(31).setCellValue("value10");
+					header.createCell(24).setCellValue("value1");
+					header.createCell(25).setCellValue("value2");
+					header.createCell(26).setCellValue("value3");
+					header.createCell(27).setCellValue("value4");
+					header.createCell(28).setCellValue("value5");
+					header.createCell(29).setCellValue("value6");
+					header.createCell(30).setCellValue("value7");
+					header.createCell(31).setCellValue("value8");
+					header.createCell(32).setCellValue("value9");
+					header.createCell(33).setCellValue("value10");
 
 					int size = scores.size();
 					float counter = 0f;
 					int lastProgress = 0;
 
-					int outputValueCol = 22;
+					int outputValueCol = 24;
 
 					int rowNr = 1;
 					for (ExportScore score : scores) {
@@ -216,6 +219,7 @@ public class ExportScoreRunnableImpl implements ExportRunnable {
 						String username = score.getUsername();
 						String pasword = score.getPassword();
 						String gender = score.getGender();
+						String dateOfBirth = DateFormatUtils.format(score.getBirthDate(), Messages.getString("Format.Export.Date")); 
 						String education = score.getEducation();
 						String note = score.getNote();
 
@@ -309,20 +313,26 @@ public class ExportScoreRunnableImpl implements ExportRunnable {
 							cell.setCellType(Cell.CELL_TYPE_STRING);
 						}
 
-						if (gender != null) {
+						if (dateOfBirth != null) {
 							cell = row.createCell(18);
+							cell.setCellValue(dateOfBirth);
+							cell.setCellType(Cell.CELL_TYPE_STRING);
+						}
+
+						if (gender != null) {
+							cell = row.createCell(19);
 							cell.setCellValue(GenderUtility.getLocalizedName(gender));
 							cell.setCellType(Cell.CELL_TYPE_STRING);
 						}
 
 						if (education != null) {
-							cell = row.createCell(19);
+							cell = row.createCell(20);
 							cell.setCellValue(education);
 							cell.setCellType(Cell.CELL_TYPE_STRING);
 						}
 
 						if (note != null) {
-							cell = row.createCell(20);
+							cell = row.createCell(21);
 							cell.setCellValue(note);
 							cell.setCellType(Cell.CELL_TYPE_STRING);
 						}
