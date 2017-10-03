@@ -94,4 +94,9 @@ public interface FieldConstants {
 	String NESTED_USER = "user.";
 	String NESTED_USER_ID = NESTED_USER + ID;
 	String NESTED_USER_USERNAME = NESTED_USER + USERNAME;
+	String NESTED_USER_NAME = NESTED_USER + NAME;
+	String NESTED_USER_PASSWORD = NESTED_USER + PASSWORD;
+
+	String NESTED_PACK = "pack.";
+	String NESTED_PACK_ID = NESTED_PACK + ID;
 }
