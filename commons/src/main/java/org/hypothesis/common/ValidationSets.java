@@ -30,7 +30,8 @@ public final class ValidationSets {
 			new String[] { DocumentConstants.BUTTON, DocumentConstants.COMBOBOX, DocumentConstants.BUTTON_PANEL,
 					DocumentConstants.DATE_FIELD, DocumentConstants.IMAGE, DocumentConstants.VIDEO,
 					DocumentConstants.AUDIO, DocumentConstants.LABEL, DocumentConstants.SELECT_PANEL,
-					DocumentConstants.TEXT_AREA, DocumentConstants.TEXT_FIELD, DocumentConstants.TIMER_LABEL });
+					DocumentConstants.TEXT_AREA, DocumentConstants.TEXT_FIELD, DocumentConstants.TIMER_LABEL,
+					DocumentConstants.CLIENT_SIM});
 
 	public static final StringSet VALID_WINDOW_CHILDREN = VALID_PANEL_CHILDREN;
 

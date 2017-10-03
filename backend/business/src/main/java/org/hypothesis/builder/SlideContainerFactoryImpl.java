@@ -41,6 +41,7 @@ import org.hypothesis.presenter.SlideContainerPresenter;
 import org.hypothesis.slide.ui.Audio;
 import org.hypothesis.slide.ui.Button;
 import org.hypothesis.slide.ui.ButtonPanel;
+import org.hypothesis.slide.ui.ClientSim;
 import org.hypothesis.slide.ui.ComboBox;
 import org.hypothesis.slide.ui.DateField;
 import org.hypothesis.slide.ui.HorizontalLayout;
@@ -55,6 +56,7 @@ import org.hypothesis.slide.ui.TimerLabel;
 import org.hypothesis.slide.ui.VerticalLayout;
 import org.hypothesis.slide.ui.Video;
 import org.hypothesis.slide.ui.Window;
+import org.hypothesis.slide.ui.ClientSim.ClientEvent;
 import org.hypothesis.ui.SlideContainer;
 import org.vaadin.special.data.DateRangeValidator;
 import org.vaadin.special.data.EmptyValidator;
@@ -535,6 +537,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 				component = createTimerLabel(element, properties, alignmentWrapper, presenter);
 			else if (name.equals(DocumentConstants.LABEL))
 				component = createLabel(element, properties, alignmentWrapper, presenter);
+			else if (name.equals(DocumentConstants.CLIENT_SIM))
+				component = createClientSim(element, properties, alignmentWrapper, presenter);
 
 			if (component != null) {
 				if (id != null) {
@@ -1167,6 +1171,35 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		SlideComponentUtility.setLabelProperties(component, element, properties, alignmentWrapper);
 
 		return component;
+	}
+
+	private ClientSim createClientSim(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+			SlideContainerPresenter presenter) {
+		ClientSim component = new ClientSim();
+		SlideComponentUtility.setClientSimProperties(component, element, properties, alignmentWrapper);
+		addClientSimHandlers(component, element, presenter);
+
+		return component;
+	}
+
+	private void addClientSimHandlers(ClientSim component, Element element, SlideContainerPresenter presenter) {
+		DocumentUtility.iterateHandlers(component, element, presenter, new HandlerCallback() {
+			@Override
+			public void setComponentHandler(Component component, Element element, Element handler, String name,
+					String actionId, final Action action, final SlidePresenter presenter) {
+				final ClientSim clientSim = (ClientSim) component;
+
+				if (DocumentConstants.CLIENT.equals(name)) {
+					clientSim.addClientListener(new ClientSim.ClientListener() {
+						@Override
+						public void client(ClientEvent event) {
+							presenter.handleEvent(clientSim, DocumentConstants.CLIENT_SIM, ProcessEventTypes.ClientSimEvent, action,
+									ComponentEventCallback.DEFAULT);
+						}
+					});
+				}
+			}
+		});
 	}
 
 	private ComponentWrapper createPluginComponent(Element element, SlidePresenter presenter) {

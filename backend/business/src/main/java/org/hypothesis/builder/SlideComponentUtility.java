@@ -15,6 +15,7 @@ import org.hypothesis.interfaces.Element;
 import org.hypothesis.slide.ui.Audio;
 import org.hypothesis.slide.ui.Button;
 import org.hypothesis.slide.ui.ButtonPanel;
+import org.hypothesis.slide.ui.ClientSim;
 import org.hypothesis.slide.ui.ComboBox;
 import org.hypothesis.slide.ui.DateField;
 import org.hypothesis.slide.ui.Image;
@@ -262,6 +263,11 @@ public class SlideComponentUtility {
 
 		// set Window specific properties
 		// TODO in future set dynamic css
+	}
+
+	public static void setClientSimProperties(ClientSim component, Element element, StringMap properties,
+			AlignmentWrapper alignmentWrapper) {
+		setPanelProperties(component, element, properties, alignmentWrapper);
 	}
 
 }

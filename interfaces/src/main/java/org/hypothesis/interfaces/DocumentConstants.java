@@ -51,6 +51,7 @@ public interface DocumentConstants {
 	String TEXT_AREA = "TextArea";
 	String LABEL = "Label";
 	String TIMER_LABEL = "TimerLabel";
+	String CLIENT_SIM = "ClientSim";
 	String PROPERTIES = "Properties";
 	String PROPERTY = "Property";
 	String HANDLERS = "Handlers";
@@ -98,6 +99,7 @@ public interface DocumentConstants {
 	String START = "Start";
 	String STOP = "Stop";
 	String UPDATE = "Update";
+	String CLIENT = "Client";
 	String TIME_FORMAT = "TimeFormat";
 	String TIMER_ID = "TimerId";
 	String TIME = "Time";

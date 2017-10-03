@@ -7,10 +7,12 @@ package org.hypothesis.ui;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
+import org.hypothesis.interfaces.TimerHandler;
 import org.vaadin.special.ui.NonVisualComponent;
 import org.vaadin.special.ui.ShortcutKey;
 import org.vaadin.special.ui.Timer;
 
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 
 /**
@@ -20,7 +22,7 @@ import com.vaadin.ui.Component;
  *
  */
 @SuppressWarnings("serial")
-public abstract class HypothesisUI extends ControlledUI {
+public abstract class HypothesisUI extends ControlledUI implements TimerHandler {
 
 	/**
 	 * List of timers in this UI.
@@ -65,17 +67,23 @@ public abstract class HypothesisUI extends ControlledUI {
 	 * @throws NullPointerException
 	 *             if the given <code>Timer</code> is <code>null</code>.
 	 */
-	public void addTimer(Timer timer) throws IllegalArgumentException, NullPointerException {
-
+	@Override
+	public void addTimer(AbstractComponent timer) throws IllegalArgumentException, NullPointerException {
 		if (timer == null) {
 			throw new NullPointerException("Argument cannot be null.");
 		}
 
-		if (timer.isAttached()) {
-			throw new IllegalArgumentException("Timer is already attached to an application.");
-		}
+		if (timer instanceof Timer) {
 
-		attachTimer(timer);
+			if (timer.isAttached()) {
+				throw new IllegalArgumentException("Timer is already attached to an application.");
+			}
+
+			attachTimer((Timer) timer);
+
+		} else {
+			throw new IllegalArgumentException("Timer must be of class " + Timer.class.getCanonicalName());
+		}
 	}
 
 	/**
@@ -96,17 +104,24 @@ public abstract class HypothesisUI extends ControlledUI {
 	 *            Timer to be removed.
 	 * @return true if the timer was removed, false otherwise
 	 */
-	public boolean removeTimer(Timer timer) {
-		if (!timers.remove(timer)) {
-			// Timer timer is not in this UI.
-			return false;
-		}
-		timer.stop(true);
-		detachNonVisualComponent(timer, true);
+	@Override
+	public boolean removeTimer(AbstractComponent timer) throws IllegalArgumentException {
+		if (timer instanceof Timer) {
+			Timer t = (Timer)timer;
+			if (!timers.remove(t)) {
+				// Timer timer is not in this UI.
+				return false;
+			}
+			t.stop(true);
+			detachNonVisualComponent(t, true);
 
-		return true;
+			return true;
+		} else {
+			throw new IllegalArgumentException("Timer must be of class " + Timer.class.getCanonicalName());
+		}
 	}
 
+	@Override
 	public void removeAllTimers() {
 		Iterator<Timer> iterator;
 		while ((iterator = timers.iterator()).hasNext()) {

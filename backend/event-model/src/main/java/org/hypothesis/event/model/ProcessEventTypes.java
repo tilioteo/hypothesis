@@ -65,6 +65,7 @@ public class ProcessEventTypes {
 	public static final String SlideInit = "SLIDE_INIT";
 	public static final String SlideShow = "SLIDE_SHOW";
 	public static final String ShortcutKey = "SHORTCUT_KEY";
+	public static final String ClientSimEvent = "CLIENT_SIM_EVENT";
 	public static final String Message = "MESSAGE";
 
 	static {
@@ -114,7 +115,8 @@ public class ProcessEventTypes {
 		registerEvent(AudioStart); // 118
 		registerEvent(AudioStop); // 119
 		registerEvent(ImageError); // 120
-		// nextId += 880; // plugin events begin from 1000
+		registerEvent(ClientSimEvent); // 121
+		// nextId += 879; // plugin events begin from 1000
 	}
 
 	private static long generateId() {
