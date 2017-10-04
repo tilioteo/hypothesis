@@ -977,7 +977,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				Pack pack = (Pack) itemId;
 				Integer testState = (Integer) item.getItemProperty(FieldConstants.TEST_STATE).getValue();
 
-				if (testState != null) {
+				if (testState != null && testState > 1) {
 					permissionService.addUserPermission(new UserPermission(user, pack, 1 == testState));
 				}
 			}
