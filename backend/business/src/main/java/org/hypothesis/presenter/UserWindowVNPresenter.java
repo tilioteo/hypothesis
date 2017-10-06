@@ -25,6 +25,7 @@ import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.table.CheckTable;
 import org.hypothesis.ui.table.DoubleCheckerColumnGenerator;
+import org.hypothesis.ui.table.DoubleCheckerColumnGenerator.Status;
 import org.hypothesis.ui.table.SimpleCheckerColumnGenerator;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.ConfirmDialog.Listener;
@@ -267,7 +268,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			table.addStyleName(ValoTheme.TABLE_COMPACT);
 
 			table.addContainerProperty(FieldConstants.NAME, String.class, null);
-			table.addContainerProperty(FieldConstants.TEST_STATE, Integer.class, null);
+			table.addContainerProperty(FieldConstants.TEST_STATE, Status.class, null);
 
 			table.addGeneratedColumn(FieldConstants.TEST_ENABLER,
 					new DoubleCheckerColumnGenerator(FieldConstants.TEST_STATE,
@@ -465,16 +466,24 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		for (Object itemId : packsField.getItemIds()) {
 			Item row = packsField.getItem(itemId);
 			Pack pack = (Pack) itemId;
-
+			
+			Status state = Status.NONE;
+			
 			if (groupPacks.contains(pack)) {
-				row.getItemProperty(FieldConstants.TEST_STATE).setValue(1);
-			} else if (enabledPacks.contains(pack)) {
-				row.getItemProperty(FieldConstants.TEST_STATE).setValue(2);
-			} else if (disabledPacks.contains(pack)) {
-				row.getItemProperty(FieldConstants.TEST_STATE).setValue(0);
+				if (disabledPacks.contains(pack)) {
+					state = Status.DISABLED_OVERRIDE;
+				} else {
+					state = Status.ENABLED_INHERITED;
+				}
 			} else {
-				row.getItemProperty(FieldConstants.TEST_STATE).setValue(null);
+				if (enabledPacks.contains(pack)) {
+					state = Status.ENABLED;
+				} else if (disabledPacks.contains(pack)) {
+					state = Status.DISABLED;
+				}
 			}
+
+			row.getItemProperty(FieldConstants.TEST_STATE).setValue(state);
 		}
 	}
 
@@ -975,10 +984,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			for (Object itemId : packsField.getItemIds()) {
 				Item item = packsField.getItem(itemId);
 				Pack pack = (Pack) itemId;
-				Integer testState = (Integer) item.getItemProperty(FieldConstants.TEST_STATE).getValue();
+				Status state = (Status) item.getItemProperty(FieldConstants.TEST_STATE).getValue();
 
-				if (testState != null && testState > 1) {
-					permissionService.addUserPermission(new UserPermission(user, pack, 1 == testState));
+				if (state != null && state != Status.NONE && state != Status.ENABLED_INHERITED) {
+					boolean enabled = state == Status.ENABLED || !(state == Status.DISABLED || state == Status.DISABLED_OVERRIDE);
+					permissionService.addUserPermission(new UserPermission(user, pack, enabled));
 				}
 			}
 		}

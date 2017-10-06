@@ -14,6 +14,7 @@ import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Group;
+import org.hypothesis.data.model.GroupPermission;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.Role;
 import org.hypothesis.data.model.User;
@@ -30,6 +31,7 @@ import org.hypothesis.server.Messages;
 import org.hypothesis.ui.table.CheckTable;
 import org.hypothesis.ui.table.DoubleCheckerColumnGenerator;
 import org.hypothesis.ui.table.SimpleCheckerColumnGenerator;
+import org.hypothesis.ui.table.DoubleCheckerColumnGenerator.Status;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -256,7 +258,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			table.addStyleName(ValoTheme.TABLE_COMPACT);
 
 			table.addContainerProperty(FieldConstants.NAME, String.class, null);
-			table.addContainerProperty(FieldConstants.TEST_STATE, Integer.class, null);
+			table.addContainerProperty(FieldConstants.TEST_STATE, Status.class, null);
 
 			table.addGeneratedColumn(FieldConstants.TEST_ENABLER,
 					new DoubleCheckerColumnGenerator(FieldConstants.TEST_STATE,
@@ -413,6 +415,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		// packs
 		Set<Pack> enabledPacks;
 		Set<Pack> disabledPacks;
+		Set<Pack> groupPacks = new HashSet<>();
 
 		if (state.equals(WindowState.UPDATE)) {
 			enabledPacks = permissionService.getUserPacks(user, true, null);
@@ -422,17 +425,33 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			disabledPacks = new HashSet<>();
 		}
 
+		if (state != WindowState.MULTIUPDATE && !user.getGroups().isEmpty()) {
+			for (GroupPermission groupPermission : permissionService.getGroupsPermissions(user.getGroups())) {
+				groupPacks.add(groupPermission.getPack());
+			}
+		}
+
 		for (Object itemId : packsField.getItemIds()) {
 			Item row = packsField.getItem(itemId);
 			Pack pack = (Pack) itemId;
 
-			if (enabledPacks.contains(pack)) {
-				row.getItemProperty(FieldConstants.TEST_STATE).setValue(true);
-			} else if (disabledPacks.contains(pack)) {
-				row.getItemProperty(FieldConstants.TEST_STATE).setValue(false);
+			Status state = Status.NONE;
+			
+			if (groupPacks.contains(pack)) {
+				if (disabledPacks.contains(pack)) {
+					state = Status.DISABLED_OVERRIDE;
+				} else {
+					state = Status.ENABLED_INHERITED;
+				}
 			} else {
-				row.getItemProperty(FieldConstants.TEST_STATE).setValue(null);
+				if (enabledPacks.contains(pack)) {
+					state = Status.ENABLED;
+				} else if (disabledPacks.contains(pack)) {
+					state = Status.DISABLED;
+				}
 			}
+
+			row.getItemProperty(FieldConstants.TEST_STATE).setValue(state);
 		}
 	}
 
