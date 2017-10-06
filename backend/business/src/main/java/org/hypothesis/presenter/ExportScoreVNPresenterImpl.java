@@ -4,6 +4,7 @@
  */
 package org.hypothesis.presenter;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -376,8 +377,11 @@ public class ExportScoreVNPresenterImpl implements ExportScorePresenter, HasMain
 		//Pack pack = packMap.get(packsSelect.getValue());
 		Date dateFrom = (Date) dateFieldFrom.getValue();
 		Date dateTo = (Date) dateFieldTo.getValue();
+		Calendar c = Calendar.getInstance();
+		c.setTime(dateTo);
+		c.add(Calendar.DATE, 1);
 
-		showTests(dateFrom, dateTo);
+		showTests(dateFrom, c.getTime());
 	}
 
 	/*private void initPacksSources() {
