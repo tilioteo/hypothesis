@@ -260,7 +260,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				disabledPacks = new HashSet<>();
 			}
 
-			Set<Group> groups = user.getGroups();
+			Set<Group> groups = user != null ? user.getGroups() : new HashSet<Group>();
 			if (checked) {
 				groups.add(group);
 			} else {
