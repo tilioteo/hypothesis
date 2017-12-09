@@ -4,6 +4,9 @@
  */
 package org.hypothesis.ui.table;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.vaadin.data.Item;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
@@ -22,7 +25,7 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 @SuppressWarnings({ "serial", "unchecked" })
 public class DoubleCheckerColumnGenerator implements ColumnGenerator {
-	
+
 	public enum Status {
 		NONE,
 		DISABLED,
@@ -44,11 +47,14 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 
 	@Override
 	public Object generateCell(final Table source, final Object itemId, Object columnId) {
+		Map<Object, ButtonsHolder> map = (Map<Object, ButtonsHolder>) source.getData();
+		if (null == map) {
+			map = new HashMap<>();
+			source.setData(map);
+		}
+
 		CssLayout group = new CssLayout();
 		group.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-
-		Item item = source.getItem(itemId);
-		Status state = (Status) item.getItemProperty(stateField).getValue();
 
 		final Button enabledButton = new Button();
 		enabledButton.setIcon(FontAwesome.CHECK);
@@ -59,20 +65,18 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 		disabledButton.setIcon(FontAwesome.TIMES);
 		disabledButton.addStyleName(ValoTheme.BUTTON_SMALL);
 		disabledButton.setDescription(disabledCaption);
-		
-		setButtons(state, enabledButton, disabledButton);
+
+		map.put(itemId, new ButtonsHolder(enabledButton, disabledButton));
+		setButtons((Status) source.getItem(itemId).getItemProperty(stateField).getValue(), enabledButton,
+				disabledButton);
 
 		enabledButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Status state = (Status) source.getItem(itemId).getItemProperty(stateField).getValue();
-				Status newState = null;
-				if (state == Status.NONE || state == Status.DISABLED) {
-					newState = Status.ENABLED;
-				} else if (state == Status.ENABLED) {
-					newState = Status.NONE;
-				}
-				
+				Item item = source.getItem(itemId);
+				Status state = (Status) item.getItemProperty(stateField).getValue();
+				Status newState = switchEnabledStatus(state);
+
 				if (newState != state) {
 					source.getItem(itemId).getItemProperty(stateField).setValue(newState);
 					setButtons(newState, enabledButton, disabledButton);
@@ -83,17 +87,9 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 		disabledButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Status state = (Status) source.getItem(itemId).getItemProperty(stateField).getValue();
-				Status newState = null;
-				if (state == Status.NONE) {
-					newState = Status.DISABLED;
-				} else if (state == Status.ENABLED || state == Status.DISABLED) {
-					newState = Status.NONE;
-				} else if (state == Status.ENABLED_INHERITED) {
-					newState = Status.DISABLED_OVERRIDE;
-				} else if (state == Status.DISABLED_OVERRIDE) {
-					newState = Status.ENABLED_INHERITED;
-				}
+				Item item = source.getItem(itemId);
+				Status state = (Status) item.getItemProperty(stateField).getValue();
+				Status newState = switchDisabledStatus(state);
 
 				if (newState != state) {
 					source.getItem(itemId).getItemProperty(stateField).setValue(newState);
@@ -108,14 +104,36 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 		return group;
 	}
 
-	private void setButtons(Status state, Button enabledButton, Button disabledButton) {
+	public static Status switchEnabledStatus(Status oldState) {
+		if (null == oldState || oldState == Status.NONE || oldState == Status.DISABLED) {
+			return Status.ENABLED;
+		} else if (oldState == Status.ENABLED) {
+			return Status.NONE;
+		}
+		return null;
+	}
+
+	public static Status switchDisabledStatus(Status oldState) {
+		if (null == oldState || oldState == Status.NONE) {
+			return Status.DISABLED;
+		} else if (oldState == Status.ENABLED || oldState == Status.DISABLED) {
+			return Status.NONE;
+		} else if (oldState == Status.ENABLED_INHERITED) {
+			return Status.DISABLED_OVERRIDE;
+		} else if (oldState == Status.DISABLED_OVERRIDE) {
+			return Status.ENABLED_INHERITED;
+		}
+		return null;
+	}
+
+	public static void setButtons(Status state, Button enabledButton, Button disabledButton) {
 		enabledButton.setIcon(FontAwesome.CHECK);
 		enabledButton.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
 		enabledButton.setEnabled(true);
 
 		disabledButton.removeStyleName(ValoTheme.BUTTON_DANGER);
 		disabledButton.setEnabled(true);
-		
+
 		if (state != null && state != Status.NONE) {
 			switch (state) {
 			case DISABLED:
@@ -142,6 +160,16 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 			default:
 				break;
 			}
+		}
+	}
+
+	public static class ButtonsHolder {
+		public Button enabledButton;
+		public Button disabledButton;
+
+		public ButtonsHolder(Button enabledButton, Button disabledButton) {
+			this.enabledButton = enabledButton;
+			this.disabledButton = disabledButton;
 		}
 	}
 

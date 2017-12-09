@@ -3,6 +3,7 @@ package org.hypothesis.presenter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.hypothesis.business.SessionManager;
@@ -23,10 +24,11 @@ import org.hypothesis.data.validator.RoleValidator;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
+import org.hypothesis.ui.table.AbstractSimpleCheckerColumnGenerator;
 import org.hypothesis.ui.table.CheckTable;
 import org.hypothesis.ui.table.DoubleCheckerColumnGenerator;
+import org.hypothesis.ui.table.DoubleCheckerColumnGenerator.ButtonsHolder;
 import org.hypothesis.ui.table.DoubleCheckerColumnGenerator.Status;
-import org.hypothesis.ui.table.SimpleCheckerColumnGenerator;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.ConfirmDialog.Listener;
 
@@ -92,7 +94,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	private DateField birthDateField;
 	private OptionGroup rolesField;
 	private CheckBox enabledField;
-	// private PopupDateField expireDateField;
 	private TextField noteField;
 	private Table groupsField;
 	private Table packsField;
@@ -122,10 +123,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			usernameField.setMaxLength(30);
 			usernameField.setRequired(true);
 			usernameField.setRequiredError(Messages.getString("Message.Error.UsernameRequired"));
-			// usernameField.addValidator(
-			// new
-			// StringLengthValidator(Messages.getString("Message.Error.UsernameLength",
-			// 4, 30), 4, 30, false));
 		}
 	}
 
@@ -157,9 +154,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 			BeanItemContainer<Role> dataSource = new BeanItemContainer<Role>(Role.class);
 			rolesField.setContainerDataSource(dataSource);
-
-			// rolesField.setRequired(true);
-			// usernameField.setRequiredError(Messages.getString("Message.Error.RoleRequired"));
 		}
 	}
 
@@ -168,15 +162,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			enabledField = new CheckBox(Messages.getString("Caption.Field.Enabled"));
 		}
 	}
-
-	// private void buildExpireDateField() {
-	// if (expireDateField == null) {
-	// expireDateField = new
-	// PopupDateField(Messages.getString("Caption.Field.ExpireDate"));
-	// expireDateField.setResolution(Resolution.DAY);
-	// expireDateField.setDateFormat(Messages.getString("Format.Date"));
-	// }
-	// }
 
 	private void buildNoteField() {
 		if (noteField == null) {
@@ -191,12 +176,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			educationField.setNullRepresentation("");
 		}
 	}
-	
+
 	private void buildGenderField() {
 		if (genderField == null) {
 			genderField = new ComboBox(Messages.getString("Caption.Field.Gender"));
 			genderField.setTextInputAllowed(false);
-			//genderField.setNullSelectionAllowed(false);
 
 			genderField.addItem(Gender.MALE);
 			genderField.addItem(Gender.FEMALE);
@@ -204,7 +188,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			genderField.setItemCaption(Gender.FEMALE, Messages.getString(Gender.FEMALE.getMessageCode()));
 		}
 	}
-	
+
 	private void buildBirthDateField() {
 		if (birthDateField == null) {
 			birthDateField = new DateField(Messages.getString("Caption.Field.DateOfBirth"));
@@ -226,8 +210,14 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			table.addContainerProperty(FieldConstants.NAME, String.class, null);
 			table.addContainerProperty(FieldConstants.SELECTED, Boolean.class, null);
 
-			table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED,
-					Messages.getString("Caption.Button.EnablePack")));
+			table.addGeneratedColumn(FieldConstants.ENABLER, new AbstractSimpleCheckerColumnGenerator(
+					FieldConstants.SELECTED, Messages.getString("Caption.Button.EnablePack")) {
+
+				@Override
+				public void onStateChanged(Object itemId, boolean checked) {
+					_updatePacksByGroup((Group) itemId, checked);
+				}
+			});
 
 			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
 				@Override
@@ -252,6 +242,63 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				groupsField.setRequiredError(Messages.getString("Message.Error.GroupRequired"));
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void _updatePacksByGroup(Group group, boolean checked) {
+		Map<Object, DoubleCheckerColumnGenerator.ButtonsHolder> map = (Map<Object, ButtonsHolder>) packsField.getData();
+		if (map != null) {
+			Set<Pack> enabledPacks;
+			Set<Pack> disabledPacks;
+			Set<Pack> groupPacks = new HashSet<>();
+			User user = (User) source;
+			if (WindowState.UPDATE == state) {
+				enabledPacks = permissionService.getUserPacks(user, true, null);
+				disabledPacks = permissionService.getUserPacks(user, false, null);
+			} else {
+				enabledPacks = new HashSet<>();
+				disabledPacks = new HashSet<>();
+			}
+
+			Set<Group> groups = user.getGroups();
+			if (checked) {
+				groups.add(group);
+			} else {
+				groups.remove(group);
+			}
+			if (WindowState.MULTIUPDATE != state && !groups.isEmpty()) {
+				for (GroupPermission groupPermission : permissionService.getGroupsPermissions(groups)) {
+					groupPacks.add(groupPermission.getPack());
+				}
+			}
+
+			for (Object itemId : packsField.getItemIds()) {
+				Item row = packsField.getItem(itemId);
+				Pack pack = (Pack) itemId;
+
+				Status state = Status.NONE;
+
+				if (groupPacks.contains(pack)) {
+					if (disabledPacks.contains(pack)) {
+						state = Status.DISABLED_OVERRIDE;
+					} else {
+						state = Status.ENABLED_INHERITED;
+					}
+				} else {
+					if (enabledPacks.contains(pack)) {
+						state = Status.ENABLED;
+					} else if (disabledPacks.contains(pack)) {
+						state = Status.DISABLED;
+					}
+				}
+
+				row.getItemProperty(FieldConstants.TEST_STATE).setValue(state);
+				ButtonsHolder buttonsHolder = map.get(itemId);
+				DoubleCheckerColumnGenerator.setButtons(state, buttonsHolder.enabledButton,
+						buttonsHolder.disabledButton);
+			}
+		}
+
 	}
 
 	private void buildPacksField() {
@@ -303,12 +350,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 		// username
 		buildUsernameField();
-		// if (state.equals(WindowState.CREATE)) {
-		// usernameField.addValidator(new UsernameValidator(null));
-		// } else if (state.equals(WindowState.UPDATE)) {
-		// usernameField.addValidator(new UsernameValidator(((User)
-		// source).getId()));
-		// }
 
 		// name
 		buildNameField();
@@ -327,13 +368,13 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
 			rolesField.select(RoleService.ROLE_USER);
 			rolesField.setEnabled(false);
-		} else if (!state.equals(WindowState.CREATE)) {
+		} else if (WindowState.CREATE != state) {
 			rolesField.setRequired(true);
 			rolesField.setRequiredError(Messages.getString("Message.Error.RoleRequired"));
 			rolesField.addValidator(new RoleValidator(source, loggedUser));
 		}
 
-		if (state == WindowState.CREATE) {
+		if (WindowState.CREATE == state) {
 			Set<Role> roles = new HashSet<>();
 			roles.add(RoleService.ROLE_USER);
 			rolesField.setValue(roles);
@@ -350,13 +391,13 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 		// note
 		buildNoteField();
-		
+
 		// gender
 		buildGenderField();
-		
+
 		// education
 		buildEducationField();
-		
+
 		// date of birth
 		buildBirthDateField();
 
@@ -416,7 +457,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		passwordField.setValue(user.getPassword());
 		rolesField.setValue(user.getRoles());
 		enabledField.setValue(user.getEnabled());
-		// expireDateField.setValue(user.getExpireDate());
 		noteField.setValue(user.getNote());
 		genderField.select(Gender.get(user.getGender()));
 		educationField.setValue(user.getEducation());
@@ -426,7 +466,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		if (groupsField != null) {
 			Set<Group> groups;
 
-			if (state.equals(WindowState.UPDATE)) {
+			if (WindowState.UPDATE == state) {
 				groups = user.getGroups();
 			} else {
 				groups = new HashSet<>();
@@ -449,7 +489,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		Set<Pack> disabledPacks;
 		Set<Pack> groupPacks = new HashSet<>();
 
-		if (state.equals(WindowState.UPDATE)) {
+		if (WindowState.UPDATE == state) {
 			enabledPacks = permissionService.getUserPacks(user, true, null);
 			disabledPacks = permissionService.getUserPacks(user, false, null);
 		} else {
@@ -457,7 +497,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			disabledPacks = new HashSet<>();
 		}
 
-		if (state != WindowState.MULTIUPDATE && !user.getGroups().isEmpty()) {
+		if (WindowState.MULTIUPDATE != state && !user.getGroups().isEmpty()) {
 			for (GroupPermission groupPermission : permissionService.getGroupsPermissions(user.getGroups())) {
 				groupPacks.add(groupPermission.getPack());
 			}
@@ -466,9 +506,9 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		for (Object itemId : packsField.getItemIds()) {
 			Item row = packsField.getItem(itemId);
 			Pack pack = (Pack) itemId;
-			
+
 			Status state = Status.NONE;
-			
+
 			if (groupPacks.contains(pack)) {
 				if (disabledPacks.contains(pack)) {
 					state = Status.DISABLED_OVERRIDE;
@@ -497,7 +537,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		passwordField = null;
 		rolesField = null;
 		enabledField = null;
-		// expireDateField = null;
 		noteField = null;
 		groupsField = null;
 		packsField = null;
@@ -521,22 +560,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		innerLayout.addComponent(buildUserDetail());
 		innerLayout.addComponent(buildUserRelations());
 
-		// Component userContent = buildUserContent();
-		// content.addComponent(userContent);
-		// content.setExpandRatio(userContent, 1f);
-
-		// tabSheet = new TabSheet();
-		// tabSheet.setSizeFull();
-		// tabSheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
-		// tabSheet.addStyleName(ValoTheme.TABSHEET_ICONS_ON_TOP);
-		// tabSheet.addStyleName(ValoTheme.TABSHEET_CENTERED_TABS);
-		// content.addComponent(tabSheet);
-		// content.setExpandRatio(tabSheet, 1f);
-
-		// tabSheet.addComponent(buildUserDetailsTab());
-		// tabSheet.addComponent(buildUserGroupsTab());
-		// tabSheet.addComponent(buildUserTestsTab());
-
 		content.addComponent(buildFooter());
 
 		setValidationVisible(false);
@@ -558,7 +581,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		panel.setCaption(Messages.getString("Caption.Tab.UserGroups"));
 		panel.setIcon(FontAwesome.GROUP);
 
-		// panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
 		panel.setContent(buildUserGroupsForm());
 
 		return panel;
@@ -570,7 +592,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		panel.setCaption(Messages.getString("Caption.Tab.UserPacks"));
 		panel.setIcon(FontAwesome.COG);
 
-		// panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
 		panel.setContent(buildUserPacksForm());
 
 		return panel;
@@ -583,52 +604,16 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		panel.setCaption(Messages.getString("Caption.Tab.UserDetails"));
 		panel.setIcon(FontAwesome.USER);
 
-		// panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
 		panel.setContent(buildUserDetailsForm());
 
 		return panel;
 	}
 
-	// private Component buildUserContent() {
-	// HorizontalLayout mainLayout = new HorizontalLayout();
-	// mainLayout.setSizeFull();
-	//
-	// VerticalLayout subLayout = new VerticalLayout();
-	// subLayout.setSizeFull();
-	// subLayout.addComponent(buildUserTestsTab());
-	// subLayout.addComponent(buildUserGroupsTab());
-	//
-	// mainLayout.addComponent(buildUserDetailsTab());
-	// mainLayout.addComponent(subLayout);
-	//
-	//
-	// return mainLayout;
-	// }
-
-	// private Component buildUserDetailsTab() {
-	// VerticalLayout tab = new VerticalLayout();
-	// tab.setCaption(Messages.getString("Caption.Tab.UserDetails"));
-	// tab.setIcon(FontAwesome.USER);
-	// tab.setSpacing(true);
-	// tab.setMargin(true);
-	// tab.setSizeFull();
-	//
-	// Panel panel = new Panel();
-	// panel.setSizeFull();
-	// panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-	// panel.setContent(buildUserDetailsForm());
-	// tab.addComponent(panel);
-	//
-	// //detailsTab = tab;
-	//
-	// return tab;
-	// }
-
 	private Component buildUserDetailsForm() {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSizeFull();
 
-		if (state.equals(WindowState.MULTIUPDATE)) {
+		if (WindowState.MULTIUPDATE == state) {
 			addInformationLabel(layout);
 		}
 
@@ -638,11 +623,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		form.setSpacing(true);
 
 		// ID
-		if (state.equals(WindowState.UPDATE)) {
+		if (WindowState.UPDATE == state) {
 			addField(form, idField);
 		}
 
-		if (state != WindowState.MULTIUPDATE) {
+		if (WindowState.MULTIUPDATE != state) {
 			// username
 			addField(form, usernameField);
 
@@ -656,10 +641,10 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		addField(form, rolesField);
 		addField(form, enabledField);
 
-		if (state != WindowState.MULTIUPDATE) {
+		if (WindowState.MULTIUPDATE != state) {
 			addField(form, birthDateField);
 		}
-		
+
 		addField(form, genderField);
 		addField(form, educationField);
 		addField(form, noteField);
@@ -673,23 +658,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		return layout;
 	}
 
-	// private Component buildUserGroupsTab() {
-	// VerticalLayout tab = new VerticalLayout();
-	// tab.setCaption(Messages.getString("Caption.Tab.UserGroups"));
-	// tab.setIcon(FontAwesome.GROUP);
-	// tab.setSpacing(true);
-	// tab.setMargin(true);
-	// tab.setSizeFull();
-	//
-	// Panel panel = new Panel();
-	// panel.setSizeFull();
-	// panel.addStyleName("borderless");
-	// panel.setContent(buildUserGroupsForm());
-	// tab.addComponent(panel);
-	//
-	// return tab;
-	// }
-
 	private Component buildUserGroupsForm() {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSizeFull();
@@ -700,12 +668,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			panel.setSizeFull();
 			panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
 
-			if (state.equals(WindowState.MULTIUPDATE)) {
+			if (WindowState.MULTIUPDATE == state) {
 				addInformationLabel(layout);
 
 				GridLayout form = new GridLayout();
 				form.setColumns(2);
-				// form.setMargin(true);
 				form.setSpacing(true);
 				form.setSizeUndefined();
 
@@ -728,23 +695,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		return layout;
 	}
 
-	// private Component buildUserTestsTab() {
-	// VerticalLayout tab = new VerticalLayout();
-	// tab.setCaption(Messages.getString("Caption.Tab.UserPacks"));
-	// tab.setIcon(FontAwesome.COG);
-	// tab.setSpacing(true);
-	// tab.setMargin(true);
-	// tab.setSizeFull();
-	//
-	// Panel panel = new Panel();
-	// panel.setSizeFull();
-	// //panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-	// panel.setContent(buildUserTestsForm());
-	// tab.addComponent(panel);
-	//
-	// return tab;
-	// }
-
 	private Component buildUserPacksForm() {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSizeFull();
@@ -754,12 +704,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		panel.setSizeFull();
 		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
 
-		if (state.equals(WindowState.MULTIUPDATE)) {
+		if (WindowState.MULTIUPDATE == state) {
 			addInformationLabel(layout);
 
 			GridLayout form = new GridLayout();
 			form.setColumns(2);
-			// form.setMargin(true);
 			form.setSpacing(true);
 			form.setSizeUndefined();
 
@@ -812,9 +761,9 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 			if (committed) {
 				Notification success = null;
-				if (state.equals(WindowState.CREATE)) {
+				if (WindowState.CREATE == state) {
 					success = new Notification(Messages.getString("Message.Info.UserAdded"));
-				} else if (state.equals(WindowState.UPDATE)) {
+				} else if (WindowState.UPDATE == state) {
 					success = new Notification(Messages.getString("Message.Info.UserUpdated"));
 				} else {
 					success = new Notification(Messages.getString("Message.Info.UsersUpdated"));
@@ -881,7 +830,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 		} else {
 			User user;
-			if (state.equals(WindowState.CREATE)) {
+			if (WindowState.CREATE == state) {
 				user = new User();
 			} else {
 				user = (User) source;
@@ -899,11 +848,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	private User saveUser(User user) {
 		boolean savingLoggedUser = user.equals(loggedUser);
 
-		if (state.equals(WindowState.CREATE)) {
+		if (WindowState.CREATE == state) {
 			user.setOwnerId(loggedUser.getId());
 		}
 
-		if (!(state.equals(WindowState.MULTIUPDATE))) {
+		if (WindowState.MULTIUPDATE != state) {
 			user.setUsername(usernameField.getValue());
 			user.setPassword(passwordField.getValue());
 		}
@@ -930,14 +879,10 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			user.setEnabled(enabledField.getValue());
 		}
 
-		// if (expireDateField.isVisible()) {
-		// user.setExpireDate(expireDateField.getValue());
-		// }
-
 		if (noteField.isVisible()) {
 			user.setNote(noteField.getValue());
 		}
-		
+
 		if (genderField.isVisible()) {
 			if (genderField.getValue() != null) {
 				user.setGender(((Gender) genderField.getValue()).getCode());
@@ -945,11 +890,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				user.setGender(null);
 			}
 		}
-		
+
 		if (educationField.isVisible()) {
 			user.setEducation(educationField.getValue());
 		}
-		
+
 		if (birthDateField.isVisible()) {
 			user.setBirthDate(birthDateField.getValue());
 		}
@@ -961,7 +906,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (selected == null) {
-					if (state.equals(WindowState.MULTIUPDATE)) {
+					if (WindowState.MULTIUPDATE == state) {
 						user.removeGroup(group);
 					}
 				} else if (selected.equals(true)) {
@@ -987,7 +932,8 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				Status state = (Status) item.getItemProperty(FieldConstants.TEST_STATE).getValue();
 
 				if (state != null && state != Status.NONE && state != Status.ENABLED_INHERITED) {
-					boolean enabled = state == Status.ENABLED || !(state == Status.DISABLED || state == Status.DISABLED_OVERRIDE);
+					boolean enabled = state == Status.ENABLED
+							|| !(state == Status.DISABLED || state == Status.DISABLED_OVERRIDE);
 					permissionService.addUserPermission(new UserPermission(user, pack, enabled));
 				}
 			}
@@ -1025,7 +971,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		passwordField.setValidationVisible(visible);
 		rolesField.setValidationVisible(visible);
 		enabledField.setValidationVisible(visible);
-		// expireDateField.setValidationVisible(visible);
 		noteField.setValidationVisible(visible);
 		if (groupsField != null) {
 			groupsField.setValidationVisible(visible);
