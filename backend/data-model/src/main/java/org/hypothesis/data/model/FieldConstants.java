@@ -66,6 +66,7 @@ public interface FieldConstants {
 	String GENDER = "gender";
 	String EDUCATION = "education";
 	String FIRST_NAME = "first_name";
+	String AUTO_DISABLE = "auto_disable";
 
 	String PACK_NAME = "pack_name";
 	String BRANCH_NAME = "branch_name";

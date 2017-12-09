@@ -116,6 +116,7 @@ public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 	private final WindowClosedListener legacyButtonWindowClosedListener = new WindowClosedListener() {
 		@Override
 		public void windowClosed(WindowClosedEvent event) {
+			refreshView();
 			testStarted = false;
 			view.unmask();
 		}

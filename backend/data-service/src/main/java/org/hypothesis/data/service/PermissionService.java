@@ -145,6 +145,33 @@ public class PermissionService implements Serializable {
 		}
 	}
 
+	public void removePackPermission(User user, Pack pack) {
+		log.debug("removePackPermission");
+		try {
+			Set<UserPermission> userPermissions = getUserPermissions(user);
+			Set<GroupPermission> groupPermissions = getGroupsPermissions(user.getGroups());
+			userPermissionDao.beginTransaction();
+			for (UserPermission userPermission : userPermissions) {
+				if (userPermission.getPack().equals(pack) && userPermission.getEnabled()) {
+					userPermissionDao.makeTransient(userPermission);
+				}
+			}
+			Set<Pack> usedPacks = new HashSet<>();
+			for (GroupPermission groupPermission : groupPermissions) {
+				if (groupPermission.getPack().equals(pack) && !usedPacks.contains(pack)) {
+					usedPacks.add(pack);
+					UserPermission userPermission = new UserPermission(user, pack, false);
+					userPermissionDao.makePersistent(userPermission);
+				}
+			}
+			userPermissionDao.commit();
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			userPermissionDao.rollback();
+			// throw e;
+		}
+	}
+
 	public List<GroupPermission> findAllGroupPermissions() {
 		log.debug("findAllGroupPermissions");
 		try {

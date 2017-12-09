@@ -97,6 +97,8 @@ public class ProcessManager implements Serializable {
 	private Branch currentBranch = null;
 	private Task currentTask = null;
 	private Slide currentSlide = null;
+	
+	private User currentUser = null;
 
 	private final ProcessEventBus bus;
 
@@ -411,8 +413,16 @@ public class ProcessManager implements Serializable {
 	@Handler
 	public void processStartTest(StartTestEvent event) {
 		saveRunningEvent(event);
+		tryDisablePack();
 
 		renderSlide();
+	}
+
+	private void tryDisablePack() {
+		if (currentUser != null && currentUser.getAutoDisable()) {
+			permissionService.removePackPermission(currentUser, currentPack);
+		}
+		
 	}
 
 	public void processTest(SimpleTest test) {
@@ -608,6 +618,7 @@ public class ProcessManager implements Serializable {
 	}
 
 	public void setCurrentUser(User user) {
+		currentUser = user;
 		slideManager.setUserId(user != null ? user.getId() : null);
 	}
 

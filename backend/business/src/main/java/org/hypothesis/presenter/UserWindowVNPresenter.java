@@ -33,6 +33,8 @@ import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.ConfirmDialog.Listener;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItemContainer;
@@ -94,11 +96,14 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	private DateField birthDateField;
 	private OptionGroup rolesField;
 	private CheckBox enabledField;
+	private CheckBox autoDisableField;
 	private TextField noteField;
 	private Table groupsField;
 	private Table packsField;
 
 	private boolean committed = false;
+
+	private boolean isFirstRoleSelected;
 
 	public UserWindowVNPresenter(MainEventBus bus) {
 		super(bus);
@@ -151,6 +156,19 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			rolesField.addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
 			rolesField.setItemCaptionPropertyId(FieldConstants.NAME);
 			rolesField.setMultiSelect(true);
+			rolesField.addValueChangeListener(new ValueChangeListener() {
+				@SuppressWarnings("unchecked")
+				@Override
+				public void valueChange(ValueChangeEvent event) {
+					if (WindowState.CREATE == state && !isFirstRoleSelected) {
+						Set<Role> roles = (Set<Role>) event.getProperty().getValue();
+						if (roles.size() == 1 && roles.contains(RoleService.ROLE_USER)) {
+							isFirstRoleSelected = true;
+							autoDisableField.setValue(true);
+						}
+					}
+				}
+			});
 
 			BeanItemContainer<Role> dataSource = new BeanItemContainer<Role>(Role.class);
 			rolesField.setContainerDataSource(dataSource);
@@ -160,6 +178,12 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	private void buildEnabledField() {
 		if (enabledField == null) {
 			enabledField = new CheckBox(Messages.getString("Caption.Field.Enabled"));
+		}
+	}
+
+	private void buildAutoDisableField() {
+		if (autoDisableField == null) {
+			autoDisableField = new CheckBox(Messages.getString("Caption.Field.AutoDisable"));
 		}
 	}
 
@@ -343,6 +367,8 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void initFields() {
+		isFirstRoleSelected = false;
+
 		fields = new ArrayList<>();
 
 		// ID
@@ -356,6 +382,9 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 		// password
 		buildPasswordField();
+
+		// auto disable - must be created before roles field
+		buildAutoDisableField();
 
 		// roles
 		buildRolesField();
@@ -457,6 +486,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		passwordField.setValue(user.getPassword());
 		rolesField.setValue(user.getRoles());
 		enabledField.setValue(user.getEnabled());
+		autoDisableField.setValue(user.getAutoDisable());
 		noteField.setValue(user.getNote());
 		genderField.select(Gender.get(user.getGender()));
 		educationField.setValue(user.getEducation());
@@ -537,6 +567,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		passwordField = null;
 		rolesField = null;
 		enabledField = null;
+		autoDisableField = null;
 		noteField = null;
 		groupsField = null;
 		packsField = null;
@@ -640,6 +671,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 		addField(form, rolesField);
 		addField(form, enabledField);
+		addField(form, autoDisableField);
 
 		if (WindowState.MULTIUPDATE != state) {
 			addField(form, birthDateField);
@@ -879,6 +911,10 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			user.setEnabled(enabledField.getValue());
 		}
 
+		if (autoDisableField.isVisible()) {
+			user.setAutoDisable(autoDisableField.getValue());
+		}
+
 		if (noteField.isVisible()) {
 			user.setNote(noteField.getValue());
 		}
@@ -985,5 +1021,4 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	public void showWindow(Collection<User> users) {
 		showWindow(WindowState.MULTIUPDATE, users);
 	}
-
 }

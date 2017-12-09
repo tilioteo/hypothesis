@@ -56,6 +56,11 @@ public final class User extends SerializableIdObject {
 	private Boolean enabled = true;
 
 	/**
+	 * disable current processed pack
+	 */
+	private boolean autoDisable;
+
+	/**
 	 * user account will expire at
 	 */
 	private Date expireDate;
@@ -143,6 +148,16 @@ public final class User extends SerializableIdObject {
 
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
+	}
+
+
+	@Column(name = FieldConstants.AUTO_DISABLE, nullable = false)
+	public boolean getAutoDisable() {
+		return autoDisable;
+	}
+
+	public void setAutoDisable(boolean autoDisable) {
+		this.autoDisable = autoDisable;
 	}
 
 	@Column(name = FieldConstants.EXPIRE_DATE)
