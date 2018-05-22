@@ -205,6 +205,8 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		if (genderField == null) {
 			genderField = new ComboBox(Messages.getString("Caption.Field.Gender"));
 			genderField.setTextInputAllowed(false);
+			genderField.setRequired(true);
+			genderField.setRequiredError(Messages.getString("Message.Error.SelectGender"));
 
 			genderField.addItem(Gender.MALE);
 			genderField.addItem(Gender.FEMALE);

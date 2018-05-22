@@ -6,6 +6,7 @@ package org.hypothesis.data.service;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -88,18 +89,22 @@ public class ExportService implements Serializable {
 	public List<ExportEvent> findExportEventsByTestId(Collection<Long> testIds) {
 		log.debug("findExportEventsByTestId");
 		try {
-			exportEventDao.beginTransaction();
+			if (testIds != null && !testIds.isEmpty()) {
+				exportEventDao.beginTransaction();
 
-			Criteria criteria = exportEventDao.createCriteria();
+				Criteria criteria = exportEventDao.createCriteria();
 
-			criteria.add(Restrictions.in(FieldConstants.PROPERTY_TEST_ID, testIds));
+				criteria.add(Restrictions.in(FieldConstants.PROPERTY_TEST_ID, testIds));
 
-			criteria.addOrder(Order.asc(FieldConstants.PROPERTY_TEST_ID));
-			criteria.addOrder(Order.asc(FieldConstants.ID));
+				criteria.addOrder(Order.asc(FieldConstants.PROPERTY_TEST_ID));
+				criteria.addOrder(Order.asc(FieldConstants.ID));
 
-			List<ExportEvent> events = criteria.list();
-			exportEventDao.commit();
-			return events;
+				List<ExportEvent> events = criteria.list();
+				exportEventDao.commit();
+				return events;
+			} else {
+				return Collections.emptyList();
+			}
 
 		} catch (Throwable e) {
 			log.error(e.getMessage());
@@ -112,18 +117,22 @@ public class ExportService implements Serializable {
 	public List<ExportScore> findExportScoresByTestId(Collection<Long> testIds) {
 		log.debug("findExportScoresByTestId");
 		try {
-			exportScoreDao.beginTransaction();
+			if (testIds != null && !testIds.isEmpty()) {
+				exportScoreDao.beginTransaction();
 
-			Criteria criteria = exportScoreDao.createCriteria();
+				Criteria criteria = exportScoreDao.createCriteria();
 
-			criteria.add(Restrictions.in(FieldConstants.PROPERTY_TEST_ID, testIds));
+				criteria.add(Restrictions.in(FieldConstants.PROPERTY_TEST_ID, testIds));
 
-			criteria.addOrder(Order.asc(FieldConstants.PROPERTY_TEST_ID));
-			criteria.addOrder(Order.asc(FieldConstants.ID));
+				criteria.addOrder(Order.asc(FieldConstants.PROPERTY_TEST_ID));
+				criteria.addOrder(Order.asc(FieldConstants.ID));
 
-			List<ExportScore> scores = criteria.list();
-			exportScoreDao.commit();
-			return scores;
+				List<ExportScore> scores = criteria.list();
+				exportScoreDao.commit();
+				return scores;
+			} else {
+				return Collections.emptyList();
+			}
 
 		} catch (Throwable e) {
 			log.error(e.getMessage());

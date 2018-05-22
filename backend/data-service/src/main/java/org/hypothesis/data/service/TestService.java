@@ -7,6 +7,7 @@ package org.hypothesis.data.service;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,13 +48,13 @@ public class TestService implements Serializable {
 
 	public static TestService newInstance() {
 		return new TestService(new HibernateDao<SimpleTest, Long>(SimpleTest.class),
-				new HibernateDao<Test, Long>(Test.class),
-				new HibernateDao<Event, Long>(Event.class), new HibernateDao<Score, Long>(Score.class),
-				new HibernateDao<SlideOrder, Long>(SlideOrder.class));
+				new HibernateDao<Test, Long>(Test.class), new HibernateDao<Event, Long>(Event.class),
+				new HibernateDao<Score, Long>(Score.class), new HibernateDao<SlideOrder, Long>(SlideOrder.class));
 	}
 
-	protected TestService(HibernateDao<SimpleTest, Long> simpleTestDao, HibernateDao<Test, Long> testDao, HibernateDao<Event, Long> eventDao,
-			HibernateDao<Score, Long> scoreDao, HibernateDao<SlideOrder, Long> slideOrderDao) {
+	protected TestService(HibernateDao<SimpleTest, Long> simpleTestDao, HibernateDao<Test, Long> testDao,
+			HibernateDao<Event, Long> eventDao, HibernateDao<Score, Long> scoreDao,
+			HibernateDao<SlideOrder, Long> slideOrderDao) {
 		this.simpleTestDao = simpleTestDao;
 		this.testDao = testDao;
 		this.eventDao = eventDao;
@@ -79,20 +80,24 @@ public class TestService implements Serializable {
 	public List<SimpleTest> findTestsBy(User user, Pack pack, Status... statuses) {
 		log.debug("findTestsBy(User, Pack, Status[])");
 		try {
-			simpleTestDao.beginTransaction();
+			if (statuses != null && statuses.length > 0) {
+				simpleTestDao.beginTransaction();
 
-			int i = 0;
-			Integer[] stats = new Integer[statuses.length];
-			for (Status status : statuses) {
-				stats[i++] = status.getCode();
+				int i = 0;
+				Integer[] stats = new Integer[statuses.length];
+				for (Status status : statuses) {
+					stats[i++] = status.getCode();
+				}
+
+				List<SimpleTest> tests = simpleTestDao
+						.findByCriteria(Restrictions.and(Restrictions.eq(EntityConstants.PACK, pack),
+								Restrictions.and(Restrictions.eq(EntityConstants.USER, user),
+										Restrictions.in(FieldConstants.STATUS, stats))));
+				simpleTestDao.commit();
+				return tests;
+			} else {
+				return Collections.emptyList();
 			}
-
-			List<SimpleTest> tests = simpleTestDao
-					.findByCriteria(Restrictions.and(Restrictions.eq(EntityConstants.PACK, pack),
-							Restrictions.and(Restrictions.eq(EntityConstants.USER, user),
-									Restrictions.in(FieldConstants.STATUS, stats))));
-			simpleTestDao.commit();
-			return tests;
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			simpleTestDao.rollback();
@@ -110,7 +115,7 @@ public class TestService implements Serializable {
 
 			criteria.add(Restrictions.eq(EntityConstants.PACK, pack));
 
-			if (users != null) {
+			if (users != null && !users.isEmpty()) {
 				criteria.add(Restrictions.in(EntityConstants.USER, users));
 			}
 
@@ -137,42 +142,31 @@ public class TestService implements Serializable {
 		return null;
 	}
 
-	/*@SuppressWarnings("unchecked")
-	public List<SimpleTest> findTestScoresBy(Collection<User> users, Date dateFrom, Date dateTo) {
-		log.debug("findTestScoresBy(Collection<User>, Date, Date)");
-		try {
-			testDao.beginTransaction();
-			StringBuilder sb = new StringBuilder(
-					"SELECT DISTINCT a.* FROM " + TableConstants.TEST_TABLE + " a," + TableConstants.TEST_SCORE_TABLE
-							+ " b WHERE a." + FieldConstants.ID + "=b." + FieldConstants.TEST_ID);
-			if (dateFrom != null) {
-				sb.append(" AND a." + FieldConstants.CREATED + ">=:dateFrom");
-			}
-			if (dateTo != null) {
-				sb.append(" AND a." + FieldConstants.CREATED + "<=:dateTo");
-			}
-
-			SQLQuery query = testDao.getSession().createSQLQuery(sb.toString());
-			if (dateFrom != null) {
-				query.setParameter("dateFrom", dateFrom);
-			}
-			if (dateTo != null) {
-				query.setParameter("dateTo", dateTo);
-			}
-			query.addEntity(SimpleTest.class);
-			query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
-			List<SimpleTest> tests = query.list();
-			testDao.commit();
-
-			return tests;
-
-		} catch (Throwable e) {
-			log.error(e.getMessage());
-			testDao.rollback();
-		}
-
-		return null;
-	}*/
+	/*
+	 * @SuppressWarnings("unchecked") public List<SimpleTest>
+	 * findTestScoresBy(Collection<User> users, Date dateFrom, Date dateTo) {
+	 * log.debug("findTestScoresBy(Collection<User>, Date, Date)"); try {
+	 * testDao.beginTransaction(); StringBuilder sb = new StringBuilder(
+	 * "SELECT DISTINCT a.* FROM " + TableConstants.TEST_TABLE + " a," +
+	 * TableConstants.TEST_SCORE_TABLE + " b WHERE a." + FieldConstants.ID +
+	 * "=b." + FieldConstants.TEST_ID); if (dateFrom != null) {
+	 * sb.append(" AND a." + FieldConstants.CREATED + ">=:dateFrom"); } if
+	 * (dateTo != null) { sb.append(" AND a." + FieldConstants.CREATED +
+	 * "<=:dateTo"); }
+	 * 
+	 * SQLQuery query = testDao.getSession().createSQLQuery(sb.toString()); if
+	 * (dateFrom != null) { query.setParameter("dateFrom", dateFrom); } if
+	 * (dateTo != null) { query.setParameter("dateTo", dateTo); }
+	 * query.addEntity(SimpleTest.class);
+	 * query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+	 * List<SimpleTest> tests = query.list(); testDao.commit();
+	 * 
+	 * return tests;
+	 * 
+	 * } catch (Throwable e) { log.error(e.getMessage()); testDao.rollback(); }
+	 * 
+	 * return null; }
+	 */
 
 	@SuppressWarnings("unchecked")
 	public List<Test> findTestScoresBy(Collection<User> users, Date dateFrom, Date dateTo) {
@@ -182,7 +176,7 @@ public class TestService implements Serializable {
 
 			Criteria criteria = testDao.createCriteria();
 
-			if (users != null) {
+			if (users != null && !users.isEmpty()) {
 				criteria.add(Restrictions.in(EntityConstants.USER, users));
 			}
 
@@ -193,7 +187,7 @@ public class TestService implements Serializable {
 			if (dateTo != null) {
 				criteria.add(Restrictions.le(FieldConstants.CREATED, dateTo));
 			}
-			
+
 			criteria.add(Restrictions.isNotEmpty(FieldConstants.SCORES));
 
 			criteria.addOrder(Order.asc(FieldConstants.ID));
