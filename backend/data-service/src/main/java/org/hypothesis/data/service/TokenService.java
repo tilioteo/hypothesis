@@ -61,6 +61,7 @@ public class TokenService implements Serializable {
 			tokenDao.beginTransaction();
 			List<Token> tokens = tokenDao.findByCriteria(Restrictions.lt(FieldConstants.DATETIME, date));
 			for (Token invalidToken : tokens) {
+				invalidToken = tokenDao.merge(invalidToken);
 				tokenDao.makeTransient(invalidToken);
 			}
 			tokenDao.commit();
@@ -76,6 +77,7 @@ public class TokenService implements Serializable {
 
 			if (token != null) {
 				// remove from database
+				token = tokenDao.merge(token);
 				tokenDao.makeTransient(token);
 			}
 

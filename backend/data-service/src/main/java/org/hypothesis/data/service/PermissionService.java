@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -494,6 +495,46 @@ public class PermissionService implements Serializable {
 			packDao.rollback();
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Pack> getUserPacksVN(User user) {
+		log.debug("getUserPermissionsVN");
+		List<Pack> packs = new LinkedList<>();
+		try {
+			userPermissionDao.beginTransaction();
+			Criteria criteria = userPermissionDao.createCriteria();
+			criteria.add(Restrictions.eq(EntityConstants.USER, user));
+			criteria.addOrder(Order.asc(FieldConstants.RANK));
+			List<UserPermission> usrPerms = criteria.list();
+
+			for (UserPermission userPermission : usrPerms) {
+				packs.add((userPermission.getPack()));
+			}
+			userPermissionDao.commit();
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			userPermissionDao.rollback();
+		}
+		return packs;
+	}
+	
+	public void deleteUserPermissionVN(User user, Pack pack) {
+		log.debug("deleteUserPermissionVN");
+		try {
+			Set<UserPermission> userPermissions = getUserPermissions(user);
+			userPermissionDao.beginTransaction();
+			for (UserPermission userPermission : userPermissions) {
+				if (userPermission.getPack().equals(pack)) {
+					userPermissionDao.makeTransient(userPermission);
+				}
+			}
+			userPermissionDao.commit();
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			userPermissionDao.rollback();
+			// throw e;
+		}
 	}
 
 }

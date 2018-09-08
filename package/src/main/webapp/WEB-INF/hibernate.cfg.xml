@@ -25,6 +25,7 @@
 			Check the database schema on startup -->
 		<property name="hibernate.hbm2ddl.auto">validate</property>
 		<!--<property name="hibernate.hbm2ddl.auto">update</property>-->
+		<property name="hibernate.event.merge.entity_copy_observer">allow</property>
 		<mapping class="org.hypothesis.data.model.SlideTemplate" />
 		<mapping class="org.hypothesis.data.model.Slide" />
 		<mapping class="org.hypothesis.data.model.SlideOrder" />
@@ -32,6 +33,7 @@
 		<mapping class="org.hypothesis.data.model.Branch" />
 		<mapping class="org.hypothesis.data.model.BranchOutput" />
 		<mapping class="org.hypothesis.data.model.Pack" />
+		<mapping class="org.hypothesis.data.model.PackSet" />
 		<mapping class="org.hypothesis.data.model.BranchTrek" />
 		<mapping class="org.hypothesis.data.model.Event" />
 		<mapping class="org.hypothesis.data.model.ExportEvent"/>

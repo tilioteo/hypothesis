@@ -50,6 +50,8 @@ public final class UserPermission extends SerializableIdObject {
 	 * 
 	 */
 	private Integer pass; // default 1, null - unlimited
+	
+	private Integer rank;
 
 	protected UserPermission() {
 		super();
@@ -64,11 +66,16 @@ public final class UserPermission extends SerializableIdObject {
 	}
 
 	public UserPermission(User user, Pack pack, boolean enabled, Integer pass) {
+		this(user, pack, enabled, pass, 0);
+	}
+
+	public UserPermission(User user, Pack pack, boolean enabled, Integer pass, Integer rank) {
 		this();
 		this.user = user;
 		this.pack = pack;
 		this.enabled = enabled;
 		this.pass = pass;
+		this.rank = rank;
 	}
 
 	public UserPermission(User user, Pack pack, Integer pass) {
@@ -123,6 +130,15 @@ public final class UserPermission extends SerializableIdObject {
 		this.pass = pass;
 	}
 
+	@Column(name = FieldConstants.RANK, nullable = false)
+	public Integer getRank() {
+		return rank;
+	}
+
+	public void setRank(Integer rank) {
+		this.rank = rank;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -146,6 +162,8 @@ public final class UserPermission extends SerializableIdObject {
 		Boolean enabled2 = other.getEnabled();
 		Integer pass = getPass();
 		Integer pass2 = other.getPass();
+		Integer rank = getRank();
+		Integer rank2 = other.getRank();
 
 		// if id of one instance is null then compare other properties
 		if (id != null && id2 != null && !id.equals(id2)) {
@@ -184,6 +202,14 @@ public final class UserPermission extends SerializableIdObject {
 			return false;
 		}
 
+		if (rank == null) {
+			if (rank2 != null) {
+				return false;
+			}
+		} else if (!rank.equals(rank2)) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -194,6 +220,7 @@ public final class UserPermission extends SerializableIdObject {
 		Pack pack = getPack();
 		Boolean enabled = getEnabled();
 		Integer pass = getPass();
+		Integer rank = getRank();
 
 		final int prime = 67;
 		int result = 1;
@@ -202,6 +229,7 @@ public final class UserPermission extends SerializableIdObject {
 		result = prime * result + (pack != null ? pack.hashCode() : 0);
 		result = prime * result + (enabled != null ? enabled.hashCode() : 0);
 		result = prime * result + (pass != null ? pass.hashCode() : 0);
+		result = prime * result + (rank != null ? rank.hashCode() : 0);
 		return result;
 	}
 

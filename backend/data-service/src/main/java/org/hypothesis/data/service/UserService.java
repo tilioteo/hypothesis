@@ -186,6 +186,22 @@ public class UserService implements Serializable {
 		return null;
 	}
 
+	public List<User> findByPasswordAkaBirthNumber(String password) {
+		log.debug("findByPasswordAkaBirthNumber");
+		try {
+			userDao.beginTransaction();
+			List<User> users = userDao
+					.findByCriteria(Restrictions.eq(FieldConstants.PASSWORD, password));
+			userDao.commit();
+
+			return users;
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			userDao.rollback();
+		}
+		return null;
+	}
+
 	public boolean usernameExists(Long id, String username) {
 		log.debug("usernameExists");
 		try {

@@ -17,6 +17,7 @@ public interface FieldConstants {
 	String NAME = "name";
 	String NOTE = "note";
 	String RANK = "rank";
+	String ORDER = "order";
 	String KEY = "key";
 	String TYPE = "type";
 	String USER_ID = "user_id";
@@ -41,6 +42,7 @@ public interface FieldConstants {
 	String BRANCH_TREK_ID = "branch_trek_id"; // used?
 	String TASK_ID = "task_id";
 	String SLIDE_ID = "slide_id";
+	String PACK_SET_ID = "pack_set_id";
 	String TEST_ID = "test_id";
 	String SLIDE_TEMPLATE_UID = "slide_template_uid";
 	String EVENT_ID = "event_id";
@@ -60,6 +62,7 @@ public interface FieldConstants {
 	String ENABLED = "enabled";
 	String EXPIRE_DATE = "expire_date";
 	String BIRTH_DATE = "birth_date";
+	String TESTING_DATE = "testing_date";
 	String PASS = "pass";
 	String SCORES = "scores";
 	String ENABLE_AFTER_PACK_ID = "after_pack_id";

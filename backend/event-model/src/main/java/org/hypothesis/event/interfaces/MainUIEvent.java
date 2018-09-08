@@ -5,6 +5,7 @@
 package org.hypothesis.event.interfaces;
 
 import org.hypothesis.data.model.Group;
+import org.hypothesis.data.model.PackSet;
 import org.hypothesis.data.model.User;
 
 /**
@@ -162,6 +163,30 @@ public interface MainUIEvent extends HypothesisEvent {
 
 		public float getProgress() {
 			return progress;
+		}
+	}
+
+	final class PackSetAddedEvent implements MainUIEvent {
+		private final PackSet packSet;
+
+		public PackSetAddedEvent(final PackSet packSet) {
+			this.packSet = packSet;
+		}
+
+		public PackSet getPackSet() {
+			return packSet;
+		}
+	}
+
+	final class PackSetChangedEvent implements MainUIEvent {
+		private final PackSet packSet;
+
+		public PackSetChangedEvent(final PackSet packSet) {
+			this.packSet = packSet;
+		}
+
+		public PackSet getPackSet() {
+			return packSet;
 		}
 	}
 

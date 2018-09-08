@@ -1,22 +1,23 @@
 package org.hypothesis.presenter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.CaseInsensitiveItemSorter;
+import org.hypothesis.data.LongItemSorter;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Gender;
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.GroupPermission;
 import org.hypothesis.data.model.Pack;
+import org.hypothesis.data.model.PackSet;
 import org.hypothesis.data.model.Role;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.model.UserPermission;
-import org.hypothesis.data.service.GroupService;
+import org.hypothesis.data.service.PackSetService;
 import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.UserService;
@@ -24,29 +25,35 @@ import org.hypothesis.data.validator.RoleValidator;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
-import org.hypothesis.ui.table.AbstractSimpleCheckerColumnGenerator;
-import org.hypothesis.ui.table.CheckTable;
-import org.hypothesis.ui.table.DoubleCheckerColumnGenerator;
-import org.hypothesis.ui.table.DoubleCheckerColumnGenerator.ButtonsHolder;
-import org.hypothesis.ui.table.DoubleCheckerColumnGenerator.Status;
+import org.hypothesis.utility.BirthNumberUtility;
+import org.hypothesis.utility.DateUtility;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.dialogs.ConfirmDialog.Listener;
 
-import com.vaadin.data.Item;
+import com.vaadin.data.Container;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.event.DataBoundTransferable;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.event.dd.acceptcriteria.And;
+import com.vaadin.event.dd.acceptcriteria.SourceIs;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.Position;
+import com.vaadin.shared.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
+import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
+import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -57,12 +64,13 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
+import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -82,10 +90,11 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
-	private final GroupService groupService;
+	// private final GroupService groupService;
 	private final UserService userService;
 	private final RoleService roleService;
 	private final PermissionService permissionService;
+	private final PackSetService packSetService;
 
 	private TextField idField;
 	private TextField usernameField;
@@ -94,12 +103,15 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	private TextField educationField;
 	private ComboBox genderField;
 	private DateField birthDateField;
+	private DateField testingDateField;
 	private OptionGroup rolesField;
 	private CheckBox enabledField;
 	private CheckBox autoDisableField;
 	private TextField noteField;
-	private Table groupsField;
-	private Table packsField;
+	// private Table groupsField;
+	// private Table packsField;
+
+	private Table permittedPacks;
 
 	private boolean committed = false;
 
@@ -108,10 +120,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	public UserWindowVNPresenter(MainEventBus bus) {
 		super(bus);
 
-		groupService = GroupService.newInstance();
+		// groupService = GroupService.newInstance();
 		userService = UserService.newInstance();
 		roleService = RoleService.newInstance();
 		permissionService = PermissionService.newInstance();
+		packSetService = PackSetService.newInstance();
 	}
 
 	private void buildIdField() {
@@ -144,9 +157,55 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			passwordField.setNullRepresentation("");
 			passwordField.setMaxLength(30);
 			passwordField.setRequired(true);
-			usernameField.setRequiredError(Messages.getString("Message.Error.PasswordRequired"));
+			passwordField.setRequiredError(Messages.getString("Message.Error.PasswordRequired"));
 			passwordField.addValidator(
 					new StringLengthValidator(Messages.getString("Message.Error.PasswordLength", 4, 30), 4, 30, false));
+
+			passwordField.addBlurListener(new BlurListener() {
+				@Override
+				public void blur(BlurEvent event) {
+					if (WindowState.CREATE == state && StringUtils.isNotBlank(passwordField.getValue())) {
+						processPeronalNumber(StringUtils.trim(passwordField.getValue()));
+					}
+				}
+			});
+		}
+	}
+
+	private void processPeronalNumber(String value) {
+		List<User> oldUsers = userService.findByPasswordAkaBirthNumber(value);
+		if (!oldUsers.isEmpty()) {
+			if (oldUsers.size() == 1) {
+				source = oldUsers.get(0);
+				state = WindowState.UPDATE;
+				fillFields();
+				Notification.show(Messages.getString("Message.Info.PersonLoaded"));
+			} else {
+				Notification.show(Messages.getString("Message.Warning.MorePersons", value), Type.WARNING_MESSAGE);
+			}
+		} else {
+			if (!BirthNumberUtility.isValid(value)) {
+				Notification.show(Messages.getString("Message.Warning.InvalidBirthNumber", value),
+						Type.WARNING_MESSAGE);
+			}
+			LocalDate birthDate = BirthNumberUtility.parseDate(value);
+			if (birthDate == null) {
+				Notification.show(Messages.getString("Message.Warning.CannotGetDateOfBirth"), Type.WARNING_MESSAGE);
+			} else {
+				birthDateField.setValue(DateUtility.toDate(birthDate));
+				switch (BirthNumberUtility.getSexChar(value)) {
+				case 'M':
+					genderField.setValue(Gender.MALE);
+					break;
+				case 'F':
+					genderField.setValue(Gender.FEMALE);
+					break;
+				default:
+					Notification.show(Messages.getString("Message.Warning.CannotGetGender"), Type.WARNING_MESSAGE);
+					break;
+				}
+			}
+
 		}
 	}
 
@@ -178,6 +237,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	private void buildEnabledField() {
 		if (enabledField == null) {
 			enabledField = new CheckBox(Messages.getString("Caption.Field.Enabled"));
+			enabledField.setValue(true);
 		}
 	}
 
@@ -218,153 +278,176 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	private void buildBirthDateField() {
 		if (birthDateField == null) {
 			birthDateField = new DateField(Messages.getString("Caption.Field.DateOfBirth"));
+			birthDateField.setDateFormat(Messages.getString("Format.Date"));
 		}
 	}
 
-	private void buildGroupsField(boolean required) {
-		if (groupsField == null) {
-			final Table table = new CheckTable(Messages.getString("Caption.Field.Groups"));
-			table.setSelectable(false);
-			table.addStyleName(ValoTheme.TABLE_SMALL);
-			table.addStyleName(ValoTheme.TABLE_NO_HEADER);
-			table.addStyleName(ValoTheme.TABLE_BORDERLESS);
-			table.addStyleName(ValoTheme.TABLE_NO_STRIPES);
-			table.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
-			table.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
-			table.addStyleName(ValoTheme.TABLE_COMPACT);
-
-			table.addContainerProperty(FieldConstants.NAME, String.class, null);
-			table.addContainerProperty(FieldConstants.SELECTED, Boolean.class, null);
-
-			table.addGeneratedColumn(FieldConstants.ENABLER, new AbstractSimpleCheckerColumnGenerator(
-					FieldConstants.SELECTED, Messages.getString("Caption.Button.EnablePack")) {
-
-				@Override
-				public void onStateChanged(Object itemId, boolean checked) {
-					_updatePacksByGroup((Group) itemId, checked);
-				}
-			});
-
-			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
-				@Override
-				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					Group group = (Group) itemId;
-					return Messages.getString("Caption.Item.GroupDescription", group.getName(), group.getId());
-				}
-			});
-
-			table.setVisibleColumns(FieldConstants.ENABLER, FieldConstants.NAME);
-			table.setColumnHeaders(Messages.getString("Caption.Field.State"), Messages.getString("Caption.Field.Name"));
-
-			table.setPageLength(table.size());
-
-			groupsField = table;
-
-			// TODO: vymyslet validator na kontrolu vyberu
-			// (nevybiram primo v tabulce), vyhnout se CheckTable
-			// (je prilis zjednodsena a nedoladena)
-			if (required) {
-				groupsField.setRequired(true);
-				groupsField.setRequiredError(Messages.getString("Message.Error.GroupRequired"));
-			}
+	private void buildTestingDateField() {
+		if (testingDateField == null) {
+			testingDateField = new DateField(Messages.getString("Caption.Field.DateOfTesting"));
+			testingDateField.setDateFormat(Messages.getString("Format.Date"));
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void _updatePacksByGroup(Group group, boolean checked) {
-		Map<Object, DoubleCheckerColumnGenerator.ButtonsHolder> map = (Map<Object, ButtonsHolder>) packsField.getData();
-		if (map != null) {
-			Set<Pack> enabledPacks;
-			Set<Pack> disabledPacks;
-			Set<Pack> groupPacks = new HashSet<>();
-			User user = (User) source;
-			if (WindowState.UPDATE == state) {
-				enabledPacks = permissionService.getUserPacks(user, true, null);
-				disabledPacks = permissionService.getUserPacks(user, false, null);
-			} else {
-				enabledPacks = new HashSet<>();
-				disabledPacks = new HashSet<>();
-			}
+	// private void buildGroupsField(boolean required) {
+	// if (groupsField == null) {
+	// final Table table = new
+	// CheckTable(Messages.getString("Caption.Field.Groups"));
+	// table.setSelectable(false);
+	// table.addStyleName(ValoTheme.TABLE_SMALL);
+	// table.addStyleName(ValoTheme.TABLE_NO_HEADER);
+	// table.addStyleName(ValoTheme.TABLE_BORDERLESS);
+	// table.addStyleName(ValoTheme.TABLE_NO_STRIPES);
+	// table.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
+	// table.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
+	// table.addStyleName(ValoTheme.TABLE_COMPACT);
+	//
+	// table.addContainerProperty(FieldConstants.NAME, String.class, null);
+	// table.addContainerProperty(FieldConstants.SELECTED, Boolean.class, null);
+	//
+	// table.addGeneratedColumn(FieldConstants.ENABLER, new
+	// AbstractSimpleCheckerColumnGenerator(
+	// FieldConstants.SELECTED, Messages.getString("Caption.Button.EnablePack"))
+	// {
+	//
+	// @Override
+	// public void onStateChanged(Object itemId, boolean checked) {
+	// _updatePacksByGroup((Group) itemId, checked);
+	// }
+	// });
+	//
+	// table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
+	// @Override
+	// public String generateDescription(Component source, Object itemId, Object
+	// propertyId) {
+	// Group group = (Group) itemId;
+	// return Messages.getString("Caption.Item.GroupDescription",
+	// group.getName(), group.getId());
+	// }
+	// });
+	//
+	// table.setVisibleColumns(FieldConstants.ENABLER, FieldConstants.NAME);
+	// table.setColumnHeaders(Messages.getString("Caption.Field.State"),
+	// Messages.getString("Caption.Field.Name"));
+	//
+	// table.setPageLength(table.size());
+	//
+	// groupsField = table;
+	//
+	// // TODO: vymyslet validator na kontrolu vyberu
+	// // (nevybiram primo v tabulce), vyhnout se CheckTable
+	// // (je prilis zjednodsena a nedoladena)
+	// if (required) {
+	// groupsField.setRequired(true);
+	// groupsField.setRequiredError(Messages.getString("Message.Error.GroupRequired"));
+	// }
+	// }
+	// }
 
-			Set<Group> groups = user != null ? user.getGroups() : new HashSet<Group>();
-			if (checked) {
-				groups.add(group);
-			} else {
-				groups.remove(group);
-			}
-			if (WindowState.MULTIUPDATE != state && !groups.isEmpty()) {
-				for (GroupPermission groupPermission : permissionService.getGroupsPermissions(groups)) {
-					groupPacks.add(groupPermission.getPack());
-				}
-			}
+	// @SuppressWarnings("unchecked")
+	// private void _updatePacksByGroup(Group group, boolean checked) {
+	// Map<Object, DoubleCheckerColumnGenerator.ButtonsHolder> map =
+	// (Map<Object, ButtonsHolder>) packsField.getData();
+	// if (map != null) {
+	// Set<Pack> enabledPacks;
+	// Set<Pack> disabledPacks;
+	// Set<Pack> groupPacks = new HashSet<>();
+	// User user = (User) source;
+	// if (WindowState.UPDATE == state) {
+	// enabledPacks = permissionService.getUserPacks(user, true, null);
+	// disabledPacks = permissionService.getUserPacks(user, false, null);
+	// } else {
+	// enabledPacks = new HashSet<>();
+	// disabledPacks = new HashSet<>();
+	// }
+	//
+	// Set<Group> groups = user != null ? user.getGroups() : new
+	// HashSet<Group>();
+	// if (checked) {
+	// groups.add(group);
+	// } else {
+	// groups.remove(group);
+	// }
+	// if (WindowState.MULTIUPDATE != state && !groups.isEmpty()) {
+	// for (GroupPermission groupPermission :
+	// permissionService.getGroupsPermissions(groups)) {
+	// groupPacks.add(groupPermission.getPack());
+	// }
+	// }
+	//
+	// for (Object itemId : packsField.getItemIds()) {
+	// Item row = packsField.getItem(itemId);
+	// Pack pack = (Pack) itemId;
+	//
+	// Status state = Status.NONE;
+	//
+	// if (groupPacks.contains(pack)) {
+	// if (disabledPacks.contains(pack)) {
+	// state = Status.DISABLED_OVERRIDE;
+	// } else {
+	// state = Status.ENABLED_INHERITED;
+	// }
+	// } else {
+	// if (enabledPacks.contains(pack)) {
+	// state = Status.ENABLED;
+	// } else if (disabledPacks.contains(pack)) {
+	// state = Status.DISABLED;
+	// }
+	// }
+	//
+	// row.getItemProperty(FieldConstants.TEST_STATE).setValue(state);
+	// ButtonsHolder buttonsHolder = map.get(itemId);
+	// DoubleCheckerColumnGenerator.setButtons(state,
+	// buttonsHolder.enabledButton,
+	// buttonsHolder.disabledButton);
+	// }
+	// }
+	//
+	// }
 
-			for (Object itemId : packsField.getItemIds()) {
-				Item row = packsField.getItem(itemId);
-				Pack pack = (Pack) itemId;
-
-				Status state = Status.NONE;
-
-				if (groupPacks.contains(pack)) {
-					if (disabledPacks.contains(pack)) {
-						state = Status.DISABLED_OVERRIDE;
-					} else {
-						state = Status.ENABLED_INHERITED;
-					}
-				} else {
-					if (enabledPacks.contains(pack)) {
-						state = Status.ENABLED;
-					} else if (disabledPacks.contains(pack)) {
-						state = Status.DISABLED;
-					}
-				}
-
-				row.getItemProperty(FieldConstants.TEST_STATE).setValue(state);
-				ButtonsHolder buttonsHolder = map.get(itemId);
-				DoubleCheckerColumnGenerator.setButtons(state, buttonsHolder.enabledButton,
-						buttonsHolder.disabledButton);
-			}
-		}
-
-	}
-
-	private void buildPacksField() {
-		if (packsField == null) {
-			final Table table = new Table(Messages.getString("Caption.Field.Packs"));
-			table.setSizeUndefined();
-			table.setSelectable(false);
-			table.addStyleName(ValoTheme.TABLE_SMALL);
-			table.addStyleName(ValoTheme.TABLE_NO_HEADER);
-			table.addStyleName(ValoTheme.TABLE_BORDERLESS);
-			table.addStyleName(ValoTheme.TABLE_NO_STRIPES);
-			table.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
-			table.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
-			table.addStyleName(ValoTheme.TABLE_COMPACT);
-
-			table.addContainerProperty(FieldConstants.NAME, String.class, null);
-			table.addContainerProperty(FieldConstants.TEST_STATE, Status.class, null);
-
-			table.addGeneratedColumn(FieldConstants.TEST_ENABLER,
-					new DoubleCheckerColumnGenerator(FieldConstants.TEST_STATE,
-							Messages.getString("Caption.Button.EnablePack"),
-							Messages.getString("Caption.Button.DisablePack")));
-
-			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
-				@Override
-				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					Pack pack = (Pack) itemId;
-					return Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
-							pack.getDescription());
-				}
-			});
-
-			table.setVisibleColumns(FieldConstants.TEST_ENABLER, FieldConstants.NAME);
-			table.setColumnHeaders(Messages.getString("Caption.Field.State"), Messages.getString("Caption.Field.Name"));
-
-			table.setPageLength(table.size());
-
-			packsField = table;
-		}
-	}
+	// private void buildPacksField() {
+	// if (packsField == null) {
+	// final Table table = new Table(Messages.getString("Caption.Field.Packs"));
+	// table.setSizeUndefined();
+	// table.setSelectable(false);
+	// table.addStyleName(ValoTheme.TABLE_SMALL);
+	// table.addStyleName(ValoTheme.TABLE_NO_HEADER);
+	// table.addStyleName(ValoTheme.TABLE_BORDERLESS);
+	// table.addStyleName(ValoTheme.TABLE_NO_STRIPES);
+	// table.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
+	// table.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
+	// table.addStyleName(ValoTheme.TABLE_COMPACT);
+	//
+	// table.addContainerProperty(FieldConstants.NAME, String.class, null);
+	// table.addContainerProperty(FieldConstants.TEST_STATE, Status.class,
+	// null);
+	//
+	// table.addGeneratedColumn(FieldConstants.TEST_ENABLER,
+	// new DoubleCheckerColumnGenerator(FieldConstants.TEST_STATE,
+	// Messages.getString("Caption.Button.EnablePack"),
+	// Messages.getString("Caption.Button.DisablePack")));
+	//
+	// table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
+	// @Override
+	// public String generateDescription(Component source, Object itemId, Object
+	// propertyId) {
+	// Pack pack = (Pack) itemId;
+	// return Messages.getString("Caption.Item.PackDescription", pack.getName(),
+	// pack.getId(),
+	// pack.getDescription());
+	// }
+	// });
+	//
+	// table.setVisibleColumns(FieldConstants.TEST_ENABLER,
+	// FieldConstants.NAME);
+	// table.setColumnHeaders(Messages.getString("Caption.Field.State"),
+	// Messages.getString("Caption.Field.Name"));
+	//
+	// table.setPageLength(table.size());
+	//
+	// packsField = table;
+	// }
+	// }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -405,12 +488,6 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			rolesField.addValidator(new RoleValidator(source, loggedUser));
 		}
 
-		if (WindowState.CREATE == state) {
-			Set<Role> roles = new HashSet<>();
-			roles.add(RoleService.ROLE_USER);
-			rolesField.setValue(roles);
-		}
-
 		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
 			rolesField.setItemEnabled(RoleService.ROLE_SUPERUSER, false);
 			rolesField.setItemEnabled(RoleService.ROLE_MANAGER, false);
@@ -431,49 +508,66 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 		// date of birth
 		buildBirthDateField();
+		
+		// date of testing
+		buildTestingDateField();
+
+		if (WindowState.CREATE == state) {
+			Set<Role> roles = new HashSet<>();
+			roles.add(RoleService.ROLE_USER);
+			rolesField.setValue(roles);
+			
+			testingDateField.setValue(DateUtility.toDate(LocalDate.now()));
+		}
 
 		// groups
-		Collection<Group> groups;
-
-		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			groups = groupService.findAll();
-		} else {
-			groups = groupService.findOwnerGroups(loggedUser);
-		}
-
-		if (!groups.isEmpty()) {
-			buildGroupsField(!loggedUser.hasRole(RoleService.ROLE_SUPERUSER));
-
-			for (Group group : groups) {
-				groupsField.addItem(group);
-				Item row = groupsField.getItem(group);
-				row.getItemProperty(FieldConstants.NAME).setValue(group.getName());
-			}
-
-			((IndexedContainer) groupsField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
-			groupsField.sort(new Object[] { FieldConstants.NAME }, new boolean[] { true });
-		}
+		// Collection<Group> groups;
+		//
+		// if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+		// groups = groupService.findAll();
+		// } else {
+		// groups = groupService.findOwnerGroups(loggedUser);
+		// }
+		//
+		// if (!groups.isEmpty()) {
+		// buildGroupsField(!loggedUser.hasRole(RoleService.ROLE_SUPERUSER));
+		//
+		// for (Group group : groups) {
+		// groupsField.addItem(group);
+		// Item row = groupsField.getItem(group);
+		// row.getItemProperty(FieldConstants.NAME).setValue(group.getName());
+		// }
+		//
+		// ((IndexedContainer)
+		// groupsField.getContainerDataSource()).setItemSorter(new
+		// CaseInsensitiveItemSorter());
+		// groupsField.sort(new Object[] { FieldConstants.NAME }, new boolean[]
+		// { true });
+		// }
 
 		// packs
-		buildPacksField();
-
-		Collection<Pack> packs;
-		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			packs = permissionService.findAllPacks();
-		} else {
-			packs = permissionService.findUserPacks2(loggedUser, false);
-		}
-
-		// TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
-
-		for (Pack pack : packs) {
-			packsField.addItem(pack);
-			Item row = packsField.getItem(pack);
-			row.getItemProperty(FieldConstants.NAME).setValue(pack.getName());
-		}
-
-		((IndexedContainer) packsField.getContainerDataSource()).setItemSorter(new CaseInsensitiveItemSorter());
-		packsField.sort(new Object[] { FieldConstants.NAME }, new boolean[] { true });
+		// buildPacksField();
+		//
+		// Collection<Pack> packs;
+		// if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+		// packs = permissionService.findAllPacks();
+		// } else {
+		// packs = permissionService.findUserPacks2(loggedUser, false);
+		// }
+		//
+		// // TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
+		//
+		// for (Pack pack : packs) {
+		// packsField.addItem(pack);
+		// Item row = packsField.getItem(pack);
+		// row.getItemProperty(FieldConstants.NAME).setValue(pack.getName());
+		// }
+		//
+		// ((IndexedContainer)
+		// packsField.getContainerDataSource()).setItemSorter(new
+		// CaseInsensitiveItemSorter());
+		// packsField.sort(new Object[] { FieldConstants.NAME }, new boolean[] {
+		// true });
 	}
 
 	@SuppressWarnings("unchecked")
@@ -493,70 +587,73 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		genderField.select(Gender.get(user.getGender()));
 		educationField.setValue(user.getEducation());
 		birthDateField.setValue(user.getBirthDate());
+		testingDateField.setValue(user.getTestingDate());
 
 		// groups
-		if (groupsField != null) {
-			Set<Group> groups;
-
-			if (WindowState.UPDATE == state) {
-				groups = user.getGroups();
-			} else {
-				groups = new HashSet<>();
-			}
-
-			for (Object itemId : groupsField.getItemIds()) {
-				Item row = groupsField.getItem(itemId);
-				Group group = groupService.merge((Group) itemId);
-
-				if (groups.contains(group)) {
-					row.getItemProperty(FieldConstants.SELECTED).setValue(true);
-				} else {
-					row.getItemProperty(FieldConstants.SELECTED).setValue(false);
-				}
-			}
-		}
+		// if (groupsField != null) {
+		// Set<Group> groups;
+		//
+		// if (WindowState.UPDATE == state) {
+		// groups = user.getGroups();
+		// } else {
+		// groups = new HashSet<>();
+		// }
+		//
+		// for (Object itemId : groupsField.getItemIds()) {
+		// Item row = groupsField.getItem(itemId);
+		// Group group = groupService.merge((Group) itemId);
+		//
+		// if (groups.contains(group)) {
+		// row.getItemProperty(FieldConstants.SELECTED).setValue(true);
+		// } else {
+		// row.getItemProperty(FieldConstants.SELECTED).setValue(false);
+		// }
+		// }
+		// }
 
 		// packs
-		Set<Pack> enabledPacks;
-		Set<Pack> disabledPacks;
-		Set<Pack> groupPacks = new HashSet<>();
-
-		if (WindowState.UPDATE == state) {
-			enabledPacks = permissionService.getUserPacks(user, true, null);
-			disabledPacks = permissionService.getUserPacks(user, false, null);
-		} else {
-			enabledPacks = new HashSet<>();
-			disabledPacks = new HashSet<>();
-		}
-
-		if (WindowState.MULTIUPDATE != state && !user.getGroups().isEmpty()) {
-			for (GroupPermission groupPermission : permissionService.getGroupsPermissions(user.getGroups())) {
-				groupPacks.add(groupPermission.getPack());
-			}
-		}
-
-		for (Object itemId : packsField.getItemIds()) {
-			Item row = packsField.getItem(itemId);
-			Pack pack = (Pack) itemId;
-
-			Status state = Status.NONE;
-
-			if (groupPacks.contains(pack)) {
-				if (disabledPacks.contains(pack)) {
-					state = Status.DISABLED_OVERRIDE;
-				} else {
-					state = Status.ENABLED_INHERITED;
-				}
-			} else {
-				if (enabledPacks.contains(pack)) {
-					state = Status.ENABLED;
-				} else if (disabledPacks.contains(pack)) {
-					state = Status.DISABLED;
-				}
-			}
-
-			row.getItemProperty(FieldConstants.TEST_STATE).setValue(state);
-		}
+		// Set<Pack> enabledPacks;
+		// Set<Pack> disabledPacks;
+		// Set<Pack> groupPacks = new HashSet<>();
+		//
+		// if (WindowState.UPDATE == state) {
+		// enabledPacks = permissionService.getUserPacks(user, true, null);
+		// disabledPacks = permissionService.getUserPacks(user, false, null);
+		// } else {
+		// enabledPacks = new HashSet<>();
+		// disabledPacks = new HashSet<>();
+		// }
+		//
+		// if (WindowState.MULTIUPDATE != state && !user.getGroups().isEmpty())
+		// {
+		// for (GroupPermission groupPermission :
+		// permissionService.getGroupsPermissions(user.getGroups())) {
+		// groupPacks.add(groupPermission.getPack());
+		// }
+		// }
+		//
+		// for (Object itemId : packsField.getItemIds()) {
+		// Item row = packsField.getItem(itemId);
+		// Pack pack = (Pack) itemId;
+		//
+		// Status state = Status.NONE;
+		//
+		// if (groupPacks.contains(pack)) {
+		// if (disabledPacks.contains(pack)) {
+		// state = Status.DISABLED_OVERRIDE;
+		// } else {
+		// state = Status.ENABLED_INHERITED;
+		// }
+		// } else {
+		// if (enabledPacks.contains(pack)) {
+		// state = Status.ENABLED;
+		// } else if (disabledPacks.contains(pack)) {
+		// state = Status.DISABLED;
+		// }
+		// }
+		//
+		// row.getItemProperty(FieldConstants.TEST_STATE).setValue(state);
+		// }
 	}
 
 	@Override
@@ -571,11 +668,12 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		enabledField = null;
 		autoDisableField = null;
 		noteField = null;
-		groupsField = null;
-		packsField = null;
+		// groupsField = null;
+		// packsField = null;
 		genderField = null;
 		educationField = null;
 		birthDateField = null;
+		testingDateField = null;
 	}
 
 	@Override
@@ -602,32 +700,289 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSizeFull();
 
-		layout.addComponent(buildUserPacks());
-		layout.addComponent(buildUserGroups());
+		// layout.addComponent(buildUserGroups());
+		layout.addComponent(buildPackSets());
+		layout.addComponent(buildUserPacks2());
 
 		return layout;
 	}
 
-	private Component buildUserGroups() {
-		Panel panel = new Panel();
-		panel.setSizeFull();
-		panel.setCaption(Messages.getString("Caption.Tab.UserGroups"));
-		panel.setIcon(FontAwesome.GROUP);
+	// private Component buildUserGroups() {
+	// Panel panel = new Panel();
+	// panel.setSizeFull();
+	// panel.setCaption(Messages.getString("Caption.Tab.UserGroups"));
+	// panel.setIcon(FontAwesome.GROUP);
+	//
+	// panel.setContent(buildUserGroupsForm());
+	//
+	// return panel;
+	// }
 
-		panel.setContent(buildUserGroupsForm());
+	// private Component buildUserPacks() {
+	// Panel panel = new Panel();
+	// panel.setSizeFull();
+	// panel.setCaption(Messages.getString("Caption.Tab.UserPacks"));
+	// panel.setIcon(FontAwesome.COG);
+	//
+	// panel.setContent(buildUserPacksForm());
+	//
+	// return panel;
+	// }
 
-		return panel;
-	}
-
-	private Component buildUserPacks() {
+	private Component buildUserPacks2() {
 		Panel panel = new Panel();
 		panel.setSizeFull();
 		panel.setCaption(Messages.getString("Caption.Tab.UserPacks"));
 		panel.setIcon(FontAwesome.COG);
 
-		panel.setContent(buildUserPacksForm());
+		panel.setContent(buildUserPacksForm2());
 
 		return panel;
+	}
+
+	private Component buildUserPacksForm2() {
+		HorizontalLayout hl = new HorizontalLayout();
+		hl.setSizeFull();
+		hl.setMargin(true);
+		hl.setSpacing(true);
+
+		final Button btnUp = new Button(FontAwesome.ARROW_UP);
+		final Button btnDown = new Button(FontAwesome.ARROW_DOWN);
+		final Button btnDelete = new Button(FontAwesome.TRASH);
+
+		final Table table = new Table();
+		table.setSizeFull();
+		table.addStyleName(ValoTheme.TABLE_SMALL);
+		table.setSelectable(true);
+
+		final BeanItemContainer<Pack> dataSource = new BeanItemContainer<Pack>(Pack.class);
+
+		table.setContainerDataSource(dataSource);
+
+		table.addGeneratedColumn(FieldConstants.ORDER, new ColumnGenerator() {
+			@Override
+			public Object generateCell(final Table source, final Object itemId, final Object columnId) {
+				Container.Indexed container = (Container.Indexed) source.getContainerDataSource();
+				return Integer.toString(container.indexOfId(itemId) + 1);
+			}
+		});
+
+		table.setVisibleColumns(FieldConstants.ORDER, FieldConstants.NAME);
+		table.setColumnHeaders(Messages.getString("Caption.Field.Order"), Messages.getString("Caption.Field.Name"));
+		table.setSortEnabled(false);
+
+		table.setDragMode(TableDragMode.ROW);
+
+		table.setDropHandler(new DropHandler() {
+			@Override
+			public AcceptCriterion getAcceptCriterion() {
+				return new And(new SourceIs(table), AcceptItem.ALL);
+			}
+
+			@Override
+			public void drop(DragAndDropEvent event) {
+				DataBoundTransferable t = (DataBoundTransferable) event.getTransferable();
+				Pack sourceItemId = (Pack) t.getItemId();
+
+				AbstractSelectTargetDetails dropData = (AbstractSelectTargetDetails) event.getTargetDetails();
+
+				Pack targetItemId = (Pack) dropData.getItemIdOver();
+
+				if (sourceItemId == targetItemId || targetItemId == null) {
+					return;
+				}
+
+				dataSource.removeItem(sourceItemId);
+
+				if (dropData.getDropLocation() == VerticalDropLocation.BOTTOM) {
+					dataSource.addItemAfter(targetItemId, sourceItemId);
+				} else {
+					Object prevItemId = dataSource.prevItemId(targetItemId);
+					dataSource.addItemAfter(prevItemId, sourceItemId);
+				}
+			}
+		});
+
+		hl.addComponent(table);
+		hl.setExpandRatio(table, 1.0f);
+
+		VerticalLayout buttonLayout = new VerticalLayout();
+		buttonLayout.setWidthUndefined();
+		buttonLayout.setSpacing(true);
+
+		btnUp.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Pack pack = (Pack) table.getValue();
+				if (pack != null) {
+					List<Pack> list = dataSource.getItemIds();
+					int idx = list.indexOf(pack);
+					if (idx > 0) {
+						dataSource.removeItem(pack);
+						dataSource.addItemAt(idx - 1, pack);
+					}
+				}
+			}
+		});
+
+		btnDown.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Pack pack = (Pack) table.getValue();
+				if (pack != null) {
+					List<Pack> list = dataSource.getItemIds();
+					int idx = list.indexOf(pack);
+					if (idx < list.size() - 1) {
+						dataSource.removeItem(pack);
+						dataSource.addItemAt(idx + 1, pack);
+					}
+				}
+			}
+		});
+
+		btnDelete.addClickListener(new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Pack pack = (Pack) table.getValue();
+				if (pack != null) {
+					dataSource.removeItem(pack);
+				}
+			}
+		});
+
+		buttonLayout.addComponent(btnUp);
+		buttonLayout.addComponent(btnDown);
+		buttonLayout.addComponent(btnDelete);
+
+		hl.addComponent(buttonLayout);
+
+		permittedPacks = table;
+
+		// fill table
+		if (WindowState.UPDATE == state) {
+			List<Pack> packs = permissionService.getUserPacksVN((User) source);
+			for (Pack pack : packs) {
+				dataSource.addBean(pack);
+			}
+		}
+
+		return hl;
+	}
+
+	private Component buildPackSets() {
+		Panel panel = new Panel();
+		panel.setSizeFull();
+		panel.setCaption(Messages.getString("Caption.Tab.PackSets"));
+		panel.setIcon(FontAwesome.BOOK);
+
+		panel.setContent(buildPacksForm());
+
+		return panel;
+	}
+
+	private Component buildPacksForm() {
+		VerticalLayout vl = new VerticalLayout();
+		vl.setSizeFull();
+		vl.setSpacing(true);
+		vl.setMargin(true);
+
+		HorizontalLayout hl = new HorizontalLayout();
+		hl.setSizeFull();
+		hl.setSpacing(true);
+
+		Table table = new Table();
+		table.setSizeFull();
+		table.addStyleName(ValoTheme.TABLE_SMALL);
+		table.setSelectable(true);
+
+		BeanItemContainer<PackSet> dataSource = new BeanItemContainer<PackSet>(PackSet.class);
+
+		final BeanItemContainer<Pack> detailSource = new BeanItemContainer<Pack>(Pack.class);
+
+		List<PackSet> packSets = packSetService.findAll();
+		for (PackSet packSet : packSets) {
+			packSet = packSetService.merge(packSet);
+			dataSource.addBean(packSet);
+		}
+		table.setContainerDataSource(dataSource);
+		dataSource.setItemSorter(new LongItemSorter());
+		table.setSortEnabled(false);
+		table.setSortContainerPropertyId(FieldConstants.ID);
+		table.sort();
+
+		table.setVisibleColumns(FieldConstants.NAME);
+		table.setColumnHeaders(Messages.getString("Caption.Field.AvailablePackSets"));
+
+		Table detailTable = new Table();
+		detailTable.setSizeFull();
+		detailTable.addStyleName(ValoTheme.TABLE_SMALL);
+
+		detailTable.setContainerDataSource(detailSource);
+
+		detailTable.setVisibleColumns(FieldConstants.NAME);
+		detailTable.setColumnHeaders(Messages.getString("Caption.Field.PackSetContent"));
+		detailTable.setSortEnabled(false);
+
+		hl.addComponent(table);
+		hl.addComponent(detailTable);
+
+		HorizontalLayout buttonLayout = new HorizontalLayout();
+		buttonLayout.setWidth(100.0f, Unit.PERCENTAGE);
+		buttonLayout.setSpacing(true);
+
+		final Button btnAdd = new Button(Messages.getString("Caption.Field.AddPacks"), new ClickListener() {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Object itemId = table.getValue();
+				if (itemId != null) {
+					addSelectedPackSet((PackSet) itemId);
+				}
+
+			}
+		});
+		btnAdd.setEnabled(false);
+
+		table.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				btnAdd.setEnabled(table.getValue() != null);
+
+				updateDetailContainer(detailSource, (PackSet) table.getValue());
+			}
+		});
+
+		buttonLayout.addComponent(btnAdd);
+
+		vl.addComponent(hl);
+		vl.addComponent(buttonLayout);
+
+		vl.setExpandRatio(hl, 1.0f);
+
+		return vl;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addSelectedPackSet(PackSet packSet) {
+		if (permittedPacks != null && permittedPacks.getContainerDataSource() != null) {
+			BeanItemContainer<Pack> dataSource = (BeanItemContainer<Pack>) permittedPacks.getContainerDataSource();
+			packSet = packSetService.merge(packSet);
+
+			for (Pack pack : packSet.getPacks()) {
+				if (!dataSource.containsId(pack)) {
+					dataSource.addBean(pack);
+				}
+			}
+		}
+	}
+
+	private void updateDetailContainer(BeanItemContainer<Pack> container, PackSet packSet) {
+		if (container != null && packSet != null) {
+			packSet = packSetService.merge(packSet);
+			container.removeAllItems();
+			for (Pack pack : packSet.getPacks()) {
+				container.addBean(pack);
+			}
+		}
 	}
 
 	private Component buildUserDetail() {
@@ -661,14 +1016,14 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		}
 
 		if (WindowState.MULTIUPDATE != state) {
+			// password
+			addField(form, passwordField);
+
 			// username
 			addField(form, usernameField);
 
 			// name
 			addField(form, nameField);
-
-			// password
-			addField(form, passwordField);
 		}
 
 		addField(form, rolesField);
@@ -681,6 +1036,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 		addField(form, genderField);
 		addField(form, educationField);
+		addField(form, testingDateField);
 		addField(form, noteField);
 
 		Panel panel = new Panel(form);
@@ -692,72 +1048,72 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		return layout;
 	}
 
-	private Component buildUserGroupsForm() {
-		VerticalLayout layout = new VerticalLayout();
-		layout.setSizeFull();
-		layout.setMargin(true);
+	// private Component buildUserGroupsForm() {
+	// VerticalLayout layout = new VerticalLayout();
+	// layout.setSizeFull();
+	// layout.setMargin(true);
+	//
+	// if (groupsField != null) {
+	// Panel panel = new Panel();
+	// panel.setSizeFull();
+	// panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
+	//
+	// if (WindowState.MULTIUPDATE == state) {
+	// addInformationLabel(layout);
+	//
+	// GridLayout form = new GridLayout();
+	// form.setColumns(2);
+	// form.setSpacing(true);
+	// form.setSizeUndefined();
+	//
+	// addField(form, groupsField);
+	// panel.setContent(form);
+	//
+	// } else {
+	// panel.setContent(groupsField);
+	// }
+	//
+	// layout.addComponent(panel);
+	// layout.setExpandRatio(panel, 1f);
+	//
+	// } else {
+	// Label label = new Label(Messages.getString("Caption.Item.UserNoGroups"));
+	// layout.addComponent(label);
+	// layout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
+	// }
+	//
+	// return layout;
+	// }
 
-		if (groupsField != null) {
-			Panel panel = new Panel();
-			panel.setSizeFull();
-			panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-
-			if (WindowState.MULTIUPDATE == state) {
-				addInformationLabel(layout);
-
-				GridLayout form = new GridLayout();
-				form.setColumns(2);
-				form.setSpacing(true);
-				form.setSizeUndefined();
-
-				addField(form, groupsField);
-				panel.setContent(form);
-
-			} else {
-				panel.setContent(groupsField);
-			}
-
-			layout.addComponent(panel);
-			layout.setExpandRatio(panel, 1f);
-
-		} else {
-			Label label = new Label(Messages.getString("Caption.Item.UserNoGroups"));
-			layout.addComponent(label);
-			layout.setComponentAlignment(label, Alignment.MIDDLE_CENTER);
-		}
-
-		return layout;
-	}
-
-	private Component buildUserPacksForm() {
-		VerticalLayout layout = new VerticalLayout();
-		layout.setSizeFull();
-		layout.setMargin(true);
-
-		Panel panel = new Panel();
-		panel.setSizeFull();
-		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-
-		if (WindowState.MULTIUPDATE == state) {
-			addInformationLabel(layout);
-
-			GridLayout form = new GridLayout();
-			form.setColumns(2);
-			form.setSpacing(true);
-			form.setSizeUndefined();
-
-			addField(form, packsField);
-			panel.setContent(form);
-
-		} else {
-			panel.setContent(packsField);
-		}
-
-		layout.addComponent(panel);
-		layout.setExpandRatio(panel, 1f);
-
-		return layout;
-	}
+	// private Component buildUserPacksForm() {
+	// VerticalLayout layout = new VerticalLayout();
+	// layout.setSizeFull();
+	// layout.setMargin(true);
+	//
+	// Panel panel = new Panel();
+	// panel.setSizeFull();
+	// panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
+	//
+	// if (WindowState.MULTIUPDATE == state) {
+	// addInformationLabel(layout);
+	//
+	// GridLayout form = new GridLayout();
+	// form.setColumns(2);
+	// form.setSpacing(true);
+	// form.setSizeUndefined();
+	//
+	// addField(form, packsField);
+	// panel.setContent(form);
+	//
+	// } else {
+	// panel.setContent(packsField);
+	// }
+	//
+	// layout.addComponent(panel);
+	// layout.setExpandRatio(panel, 1f);
+	//
+	// return layout;
+	// }
 
 	private Component buildFooter() {
 		HorizontalLayout footer = new HorizontalLayout();
@@ -937,43 +1293,43 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			user.setBirthDate(birthDateField.getValue());
 		}
 
-		if (groupsField != null && groupsField.isVisible() && groupsField.isEnabled()) {
-			for (Object itemId : groupsField.getItemIds()) {
-				Item item = groupsField.getItem(itemId);
-				Group group = groupService.merge((Group) itemId);
-				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
-
-				if (selected == null) {
-					if (WindowState.MULTIUPDATE == state) {
-						user.removeGroup(group);
-					}
-				} else if (selected.equals(true)) {
-					user.addGroup(group);
-				} else if (selected.equals(false)) {
-					user.removeGroup(group);
-				}
-
-				if (group != null) {
-					bus.post(new MainUIEvent.GroupUsersChangedEvent(group));
-				}
-			}
+		if (testingDateField.isVisible()) {
+			user.setTestingDate(testingDateField.getValue());
 		}
+
+		// if (groupsField != null && groupsField.isVisible() &&
+		// groupsField.isEnabled()) {
+		// for (Object itemId : groupsField.getItemIds()) {
+		// Item item = groupsField.getItem(itemId);
+		// Group group = groupService.merge((Group) itemId);
+		// Boolean selected = (Boolean)
+		// item.getItemProperty(FieldConstants.SELECTED).getValue();
+		//
+		// if (selected == null) {
+		// if (WindowState.MULTIUPDATE == state) {
+		// user.removeGroup(group);
+		// }
+		// } else if (selected.equals(true)) {
+		// user.addGroup(group);
+		// } else if (selected.equals(false)) {
+		// user.removeGroup(group);
+		// }
+		//
+		// if (group != null) {
+		// bus.post(new MainUIEvent.GroupUsersChangedEvent(group));
+		// }
+		// }
+		// }
 
 		user = userService.add(user);
 
-		if (packsField.isVisible()) {
+		if (permittedPacks.isVisible()) {
 			permissionService.deleteUserPermissions(user);
 
-			for (Object itemId : packsField.getItemIds()) {
-				Item item = packsField.getItem(itemId);
+			int rank = 1;
+			for (Object itemId : permittedPacks.getItemIds()) {
 				Pack pack = (Pack) itemId;
-				Status state = (Status) item.getItemProperty(FieldConstants.TEST_STATE).getValue();
-
-				if (state != null && state != Status.NONE && state != Status.ENABLED_INHERITED) {
-					boolean enabled = state == Status.ENABLED
-							|| !(state == Status.DISABLED || state == Status.DISABLED_OVERRIDE);
-					permissionService.addUserPermission(new UserPermission(user, pack, enabled));
-				}
+				permissionService.addUserPermission(new UserPermission(user, pack, true, 0, rank++));
 			}
 		}
 
@@ -1010,10 +1366,10 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		rolesField.setValidationVisible(visible);
 		enabledField.setValidationVisible(visible);
 		noteField.setValidationVisible(visible);
-		if (groupsField != null) {
-			groupsField.setValidationVisible(visible);
-		}
-		packsField.setValidationVisible(visible);
+		// if (groupsField != null) {
+		// groupsField.setValidationVisible(visible);
+		// }
+		// packsField.setValidationVisible(visible);
 	}
 
 	public void showWindow(User user) {

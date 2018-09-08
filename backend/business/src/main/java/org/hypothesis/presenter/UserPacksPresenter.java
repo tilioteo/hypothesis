@@ -4,9 +4,7 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.User;
@@ -35,15 +33,7 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 			try {
 				User user = userService.merge(getUser());
 
-				Set<Pack> packs = permissionService.findUserPacks(user, false);
-				if (packs != null) {
-					LinkedList<Pack> list = new LinkedList<>();
-					for (Pack pack : packs) {
-						list.add(pack);
-					}
-
-					return list;
-				}
+				return permissionService.getUserPacksVN(user);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}

@@ -23,6 +23,8 @@ public interface TableConstants {
 	String GROUP_PERMISSION_TABLE = "tbl_group_permission";
 	String PACK_TABLE = "tbl_pack";
 	String PACK_BRANCH_TABLE = "tbl_pack_branch";
+	String PACK_SET_TABLE = "tbl_pack_set";
+	String PACK_SET_PACK_TABLE = "tbl_pack_set_pack";
 	String ROLE_TABLE = "tbl_role";
 	String SLIDE_TABLE = "tbl_slide";
 	String SLIDE_ORDER_TABLE = "tbl_slide_order";
@@ -53,6 +55,8 @@ public interface TableConstants {
 	String GROUP_PERMISSION_SEQUENCE = "hbn_group_permission_seq";
 	String PACK_GENERATOR = "packGenerator";
 	String PACK_SEQUENCE = "hbn_pack_seq";
+	String PACK_SET_GENERATOR = "packSetGenerator";
+	String PACK_SET_SEQUENCE = "hbn_pack_set_seq";
 	String ROLE_GENERATOR = "roleGenerator";
 	String ROLE_SEQUENCE = "hbn_role_seq";
 	String SLIDE_GENERATOR = "slideGenerator";

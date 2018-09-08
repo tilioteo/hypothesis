@@ -22,11 +22,35 @@ public class PackService implements Serializable {
 
 	private final HibernateDao<Pack, Long> packDao;
 
+	public static PackService newInstance() {
+		return new PackService(new HibernateDao<>(Pack.class));
+	}
+
 	public PackService(HibernateDao<Pack, Long> packDao) {
 		this.packDao = packDao;
 	}
 
-	public Pack findPackById(Long id) {
+	public Pack merge(Pack pack) {
+		try {
+			packDao.beginTransaction();
+			pack = mergeInit(pack);
+			packDao.commit();
+			return pack;
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			packDao.rollback();
+		}
+		return null;
+	}
+
+	private Pack mergeInit(Pack pack) {
+		packDao.clear();
+		pack = packDao.merge(pack);
+		// Hibernate.initialize(pack.getBranches());
+		return pack;
+	}
+
+	public Pack find(Long id) {
 		log.debug(String.format("findPackById: id = %s", id != null ? id : "null"));
 		try {
 			packDao.beginTransaction();

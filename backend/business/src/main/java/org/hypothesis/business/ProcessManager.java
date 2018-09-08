@@ -135,7 +135,8 @@ public class ProcessManager implements Serializable {
 	private boolean checkUserPack(User user, Pack pack) {
 		Collection<Pack> packs;
 		if (user != null) {
-			packs = permissionService.findUserPacks(user, true);
+			//packs = permissionService.findUserPacks(user, true);
+			packs = permissionService.getUserPacksVN(user);
 			for (Pack allowedPack : packs) {
 				if (allowedPack.getId().equals(pack.getId()))
 					return true;
@@ -261,6 +262,8 @@ public class ProcessManager implements Serializable {
 	@Handler
 	public void processFinishTest(FinishTestEvent event) {
 		saveRunningEvent(event);
+		
+		tryDisablePack();
 
 		currentTest = null;
 		testProcessing = false;
@@ -413,14 +416,14 @@ public class ProcessManager implements Serializable {
 	@Handler
 	public void processStartTest(StartTestEvent event) {
 		saveRunningEvent(event);
-		tryDisablePack();
+		//tryDisablePack();
 
 		renderSlide();
 	}
 
 	private void tryDisablePack() {
 		if (currentUser != null && currentUser.getAutoDisable()) {
-			permissionService.removePackPermission(currentUser, currentPack);
+			permissionService.deleteUserPermissionVN(currentUser, currentPack);
 		}
 		
 	}

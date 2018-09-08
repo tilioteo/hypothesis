@@ -368,7 +368,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		else if (columnId.equals(FieldConstants.AVAILABLE_PACKS)) {
 			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
 
-			Set<Pack> packs = permissionService.findUserPacks2(user, false);
+			List<Pack> packs = permissionService.getUserPacksVN(user);
 			List<String> sortedPacks = new ArrayList<>();
 			List<String> sortedPackDescs = new ArrayList<>();
 			for (Pack pack : packs) {
@@ -376,8 +376,6 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 				sortedPackDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
 						pack.getDescription()));
 			}
-			Collections.sort(sortedPacks);
-			Collections.sort(sortedPackDescs);
 
 			StringBuilder labelBuilder = new StringBuilder();
 			for (String pack : sortedPacks) {

@@ -86,6 +86,7 @@ public final class User extends SerializableIdObject {
 	private String gender;
 	private String education;
 	private Date birthDate;
+	private Date testingDate;
 
 	protected User(String username) {
 		this.username = username;
@@ -246,6 +247,15 @@ public final class User extends SerializableIdObject {
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
+	
+	@Column(name = FieldConstants.TESTING_DATE)
+	public Date getTestingDate() {
+		return testingDate;
+	}
+
+	public void setTestingDate(Date testingDate) {
+		this.testingDate = testingDate;
+	}
 
 	public final void addRole(Role role) {
 		getRoles().add(role);
@@ -298,6 +308,11 @@ public final class User extends SerializableIdObject {
 		String gender2 = other.getGender();
 		String education = getEducation();
 		String education2 = other.getEducation();
+		Date birthDate = getBirthDate();
+		Date birthDate2 = other.getBirthDate();
+		Date testingDate = getTestingDate();
+		Date testingDate2 = other.getTestingDate();
+		
 
 		// if id of one instance is null then compare other properties
 		if (id != null && id2 != null && !id.equals(id2)) {
@@ -368,6 +383,22 @@ public final class User extends SerializableIdObject {
 			return false;
 		}
 
+		if (birthDate == null) {
+			if (birthDate2 != null) {
+				return false;
+			}
+		} else if (!birthDate.equals(birthDate2)) {
+			return false;
+		}
+
+		if (testingDate == null) {
+			if (testingDate2 != null) {
+				return false;
+			}
+		} else if (!testingDate.equals(testingDate2)) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -384,6 +415,8 @@ public final class User extends SerializableIdObject {
 		// Set<Group> groups = getGroups();
 		String gender = getGender();
 		String education = getEducation();
+		Date birthDate = getBirthDate();
+		Date testingDate = getTestingDate();
 
 		final int prime = 61;
 		int result = 1;
@@ -398,6 +431,8 @@ public final class User extends SerializableIdObject {
 		// result = prime * result + groups.hashCode();
 		result = prime * result + (gender != null ? gender.hashCode() : 0);
 		result = prime * result + (education != null ? education.hashCode() : 0);
+		result = prime * result + (birthDate != null ? birthDate.hashCode() : 0);
+		result = prime * result + (testingDate != null ? testingDate.hashCode() : 0);
 		return result;
 	}
 
