@@ -4,6 +4,8 @@
  */
 package org.hypothesis.business;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Set;
@@ -15,7 +17,6 @@ import org.hypothesis.interfaces.ComponentEventCallback;
 import org.hypothesis.presenter.SlideContainerPresenter;
 import org.hypothesis.utility.ReflectionUtility;
 
-import com.tilioteo.common.Strings;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 
@@ -41,7 +42,7 @@ public class EventManager {
 		ComponentData data = createComponentData(event);
 		event.setData(data);
 
-		if (!(Strings.isNullOrEmpty(typeName) || Strings.isNullOrEmpty(eventName))) {
+		if (!(isEmpty(typeName) || isEmpty(eventName))) {
 			presenter.fireEvent(event);
 		}
 

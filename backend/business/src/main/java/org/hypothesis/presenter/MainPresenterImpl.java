@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.MainPresenter;
 import org.hypothesis.servlet.ServletUtil;
@@ -94,7 +95,7 @@ public class MainPresenterImpl implements MainPresenter {
 		layout.setExpandRatio(space, 0.6f);
 		layout.setExpandRatio(label, 1.0f);
 
-		if (!VERSION_ADDITIONAL.isEmpty()) {
+		if (StringUtils.isNotBlank(VERSION_ADDITIONAL)) {
 			Label additional = new Label(VERSION_ADDITIONAL);
 			layout.addComponent(additional);
 			layout.setComponentAlignment(additional, Alignment.MIDDLE_RIGHT);

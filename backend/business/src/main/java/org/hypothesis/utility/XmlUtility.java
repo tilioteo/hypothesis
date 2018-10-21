@@ -4,6 +4,8 @@
  */
 package org.hypothesis.utility;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.io.File;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -20,8 +22,6 @@ import org.dom4j.Node;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -82,7 +82,7 @@ public class XmlUtility implements Serializable {
 		Element result = null;
 		if (element != null) {
 			HashMap<String, String> namespaces = new HashMap<>();
-			if (!Strings.isNullOrEmpty(prefix) && !Strings.isNullOrEmpty(uri)) {
+			if (isNotEmpty(prefix) && isNotEmpty(uri)) {
 				name = String.format("%s:%s", prefix, name);
 				namespaces.put(prefix, uri);
 			}

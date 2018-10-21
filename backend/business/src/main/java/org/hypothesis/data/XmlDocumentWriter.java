@@ -4,6 +4,8 @@
  */
 package org.hypothesis.data;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,8 +13,6 @@ import java.util.Map.Entry;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.Element;
 import org.hypothesis.utility.XmlUtility;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -44,7 +44,7 @@ public class XmlDocumentWriter implements DocumentWriter {
 
 		for (Element sourceElement : elements) {
 			org.dom4j.Element destXmlElement = xmlElement.addElement(sourceElement.getName());
-			if (!Strings.isNullOrEmpty(sourceElement.getText())) {
+			if (isNotEmpty(sourceElement.getText())) {
 				destXmlElement.addText(sourceElement.getText());
 			}
 			copyElement(sourceElement, destXmlElement);

@@ -1,5 +1,7 @@
 package org.hypothesis.presenter;
 
+import static org.hypothesis.presenter.BroadcastMessages.REFRESH_PACKS;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,9 +24,11 @@ import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.data.validator.RoleValidator;
+import org.hypothesis.event.data.UIMessage;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
+import org.hypothesis.servlet.BroadcastService;
 import org.hypothesis.utility.BirthNumberUtility;
 import org.hypothesis.utility.DateUtility;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -508,7 +512,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 		// date of birth
 		buildBirthDateField();
-		
+
 		// date of testing
 		buildTestingDateField();
 
@@ -516,7 +520,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			Set<Role> roles = new HashSet<>();
 			roles.add(RoleService.ROLE_USER);
 			rolesField.setValue(roles);
-			
+
 			testingDateField.setValue(DateUtility.toDate(LocalDate.now()));
 		}
 
@@ -1355,7 +1359,16 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			bus.post(new MainUIEvent.UserPacksChangedEvent(user));
 		}
 
+		BroadcastService.broadcast(createRefreshViewMessage(user));
+
 		return user;
+	}
+
+	private String createRefreshViewMessage(User user) {
+		UIMessage message = new UIMessage(REFRESH_PACKS);
+		message.setUserId(user.getId());
+
+		return message.toString();
 	}
 
 	private void setValidationVisible(boolean visible) {

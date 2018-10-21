@@ -4,8 +4,27 @@
  */
 package org.hypothesis.builder;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.hypothesis.common.utility.StringUtility.getBoolean;
+import static org.hypothesis.common.utility.StringUtility.getDimension;
+import static org.hypothesis.common.utility.StringUtility.getInteger;
+import static org.hypothesis.common.utility.StringUtility.getStringArray;
+import static org.hypothesis.interfaces.DocumentConstants.BORDER;
+import static org.hypothesis.interfaces.DocumentConstants.DIRECTION;
+import static org.hypothesis.interfaces.DocumentConstants.LABEL_POSITION;
+import static org.hypothesis.interfaces.DocumentConstants.ORIENTATION;
+import static org.vaadin.special.shared.ui.selectbutton.SelectButtonState.LabelPosition.Bottom;
+import static org.vaadin.special.shared.ui.selectbutton.SelectButtonState.LabelPosition.Left;
+import static org.vaadin.special.shared.ui.selectbutton.SelectButtonState.LabelPosition.Right;
+import static org.vaadin.special.shared.ui.selectbutton.SelectButtonState.LabelPosition.Top;
+import static org.vaadin.special.shared.ui.timer.TimerState.Direction.DOWN;
+import static org.vaadin.special.shared.ui.timer.TimerState.Direction.UP;
+import static org.vaadin.special.ui.MultipleComponentPanel.Orientation.Horizontal;
+import static org.vaadin.special.ui.MultipleComponentPanel.Orientation.Vertical;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.hypothesis.common.utility.ComponentUtility;
 import org.hypothesis.common.utility.DocumentUtility;
@@ -33,8 +52,6 @@ import org.vaadin.special.ui.MultipleComponentPanel;
 import org.vaadin.special.ui.MultipleComponentPanel.Orientation;
 import org.vaadin.special.ui.Timer;
 
-import com.tilioteo.common.Strings;
-import com.tilioteo.common.collections.StringMap;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
@@ -48,81 +65,81 @@ import com.vaadin.ui.AbstractMedia;
  */
 public class SlideComponentUtility {
 
-	private static Orientation getOrientation(StringMap properties, Orientation defaultValue) {
-		String value = properties.get(DocumentConstants.ORIENTATION);
+	private static Orientation getOrientation(Map<String, String> properties, Orientation defaultValue) {
+		String value = properties.get(ORIENTATION);
 
 		if (value != null) {
 			if ("horizontal".equalsIgnoreCase(value))
-				return Orientation.Horizontal;
+				return Horizontal;
 			else if ("vertical".equalsIgnoreCase(value))
-				return Orientation.Vertical;
+				return Vertical;
 		}
 
 		return defaultValue;
 	}
 
-	private static LabelPosition getLabelPosition(StringMap properties, LabelPosition defaultValue) {
-		String value = properties.get(DocumentConstants.LABEL_POSITION);
+	private static LabelPosition getLabelPosition(Map<String, String> properties, LabelPosition defaultValue) {
+		String value = properties.get(LABEL_POSITION);
 
 		if (value != null) {
 			if ("right".equalsIgnoreCase(value))
-				return LabelPosition.Right;
+				return Right;
 			else if ("left".equalsIgnoreCase(value))
-				return LabelPosition.Left;
+				return Left;
 			else if ("bottom".equalsIgnoreCase(value))
-				return LabelPosition.Bottom;
+				return Bottom;
 			else if ("top".equalsIgnoreCase(value))
-				return LabelPosition.Top;
+				return Top;
 		}
 
 		return defaultValue;
 	}
 
-	private static Direction getTimerDirection(StringMap properties, Direction defaultValue) {
-		String value = properties.get(DocumentConstants.DIRECTION);
+	private static Direction getTimerDirection(Map<String, String> properties, Direction defaultValue) {
+		String value = properties.get(DIRECTION);
 
 		if (value != null) {
 			if ("up".equalsIgnoreCase(value)) {
-				return Direction.UP;
+				return UP;
 			} else if ("down".equalsIgnoreCase(value)) {
-				return Direction.DOWN;
+				return DOWN;
 			}
 		}
 
 		return defaultValue;
 	}
 
-	public static void setPanelProperties(Panel panel, Element element, StringMap properties,
+	public static void setPanelProperties(Panel panel, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(panel, element, properties, alignmentWrapper);
 
 		// set Panel specific properties
 		// defaults to true
-		boolean border = properties.getBoolean(DocumentConstants.BORDER, true);
+		boolean border = getBoolean(properties, BORDER, true);
 		if (!border) {
 			panel.addStyleName("borderless");
 		}
 	}
 
 	public static void setComponentPanelProperties(MultipleComponentPanel<? extends AbstractComponent> component,
-			Element element, StringMap stringMap, AlignmentWrapper alignmentWrapper) {
+			Element element, Map<String, String> stringMap, AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(component, element, stringMap, alignmentWrapper);
 
-		Orientation orientation = getOrientation(stringMap, Orientation.Horizontal);
+		Orientation orientation = getOrientation(stringMap, Horizontal);
 		component.setOrientation(orientation);
 
 		setChildrenSize(component, stringMap);
 		setChildrenStyle(component, stringMap);
 	}
 
-	public static void setImageProperties(Image image, Element element, StringMap properties,
+	public static void setImageProperties(Image image, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(image, element, properties, alignmentWrapper);
 
-		image.setSource(new ExternalResource(properties.get(DocumentConstants.URL, "")));
+		image.setSource(new ExternalResource(properties.getOrDefault(DocumentConstants.URL, "")));
 	}
 
-	public static void setVideoProperties(Video video, Element element, StringMap properties,
+	public static void setVideoProperties(Video video, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(video, element, properties, alignmentWrapper);
 
@@ -132,7 +149,7 @@ public class SlideComponentUtility {
 		video.setAltText("Your browser doesn't support video element.");
 	}
 
-	public static void setAudioProperties(Audio audio, Element element, StringMap properties,
+	public static void setAudioProperties(Audio audio, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(audio, element, properties, alignmentWrapper);
 
@@ -149,7 +166,7 @@ public class SlideComponentUtility {
 		if (elements != null) {
 			for (Element element : elements) {
 				String url = element.getAttribute(DocumentConstants.URL);
-				if (!Strings.isNullOrEmpty(url)) {
+				if (isNotEmpty(url)) {
 					resources.add(new ExternalResource(url));
 				}
 			}
@@ -161,16 +178,16 @@ public class SlideComponentUtility {
 	}
 
 	private static void setChildrenSize(MultipleComponentPanel<? extends AbstractComponent> component,
-			StringMap stringMap) {
-		setChildrenWidth(component, stringMap.getDimension(DocumentConstants.CHILD_WIDTH));
-		setChildrenHeight(component, stringMap.getDimension(DocumentConstants.CHILD_HEIGHT));
+			Map<String, String> stringMap) {
+		setChildrenWidth(component, getDimension(stringMap, DocumentConstants.CHILD_WIDTH));
+		setChildrenHeight(component, getDimension(stringMap, DocumentConstants.CHILD_HEIGHT));
 		if (component != null) {
 			component.updateContent();
 		}
 	}
 
 	private static void setChildrenStyle(MultipleComponentPanel<? extends AbstractComponent> component,
-			StringMap stringMap) {
+			Map<String, String> stringMap) {
 		String style = stringMap.get(DocumentConstants.CHILD_STYLE);
 		if (component != null && style != null) {
 			component.setChildrenStyle(style);
@@ -192,7 +209,7 @@ public class SlideComponentUtility {
 		}
 	}
 
-	public static void setButtonProperties(Button component, Element element, StringMap properties,
+	public static void setButtonProperties(Button component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(component, element, properties, alignmentWrapper);
 
@@ -200,64 +217,65 @@ public class SlideComponentUtility {
 		// TODO in future set dynamic css
 	}
 
-	public static void setButtonPanelProperties(ButtonPanel component, Element element, StringMap properties,
+	public static void setButtonPanelProperties(ButtonPanel component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
-		component.setCaptions(properties.getStringArray(DocumentConstants.CAPTIONS));
+		component.setCaptions(getStringArray(properties, DocumentConstants.CAPTIONS));
 
 		setComponentPanelProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setSelectPanelProperties(SelectPanel component, Element element, StringMap properties,
+	public static void setSelectPanelProperties(SelectPanel component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
-		component.setCaptions(properties.getStringArray(DocumentConstants.CAPTIONS));
+		component.setCaptions(getStringArray(properties, DocumentConstants.CAPTIONS));
 
 		setComponentPanelProperties(component, element, properties, alignmentWrapper);
 
 		// set SelectPanel specific properties
-		component.setMultiSelect(properties.getBoolean(DocumentConstants.MULTI_SELECT, false));
+		component.setMultiSelect(getBoolean(properties, DocumentConstants.MULTI_SELECT, false));
 		component.setLabelPosition(getLabelPosition(properties, LabelPosition.Right));
 	}
 
-	public static void setTextFieldProperties(TextField component, Element element, StringMap properties,
+	public static void setTextFieldProperties(TextField component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonFieldProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setTextAreaProperties(TextArea component, Element element, StringMap properties,
+	public static void setTextAreaProperties(TextArea component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonFieldProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setDateFieldProperties(DateField component, Element element, StringMap properties,
+	public static void setDateFieldProperties(DateField component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonFieldProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setComboBoxProperties(ComboBox component, Element element, StringMap properties,
+	public static void setComboBoxProperties(ComboBox component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonFieldProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setTimerLabelProperties(TimerLabel component, Element element, StringMap properties,
+	public static void setTimerLabelProperties(TimerLabel component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		setLabelProperties(component, element, properties, alignmentWrapper);
 
 		// TimerLabel specific properties
-		component.setTimeFormat(properties.get(DocumentConstants.TIME_FORMAT, TimerLabel.DEAFAULT_TIME_FORMAT));
+		component
+				.setTimeFormat(properties.getOrDefault(DocumentConstants.TIME_FORMAT, TimerLabel.DEAFAULT_TIME_FORMAT));
 	}
 
-	public static void setLabelProperties(Label component, Element element, StringMap properties,
+	public static void setLabelProperties(Label component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(component, element, properties, alignmentWrapper);
 	}
 
-	public static void setTimerProperties(Timer component, Element element, StringMap properties) {
+	public static void setTimerProperties(Timer component, Element element, Map<String, String> properties) {
 		component.setData(DocumentUtility.getId(element));
-		component.setTime(properties.getInteger(DocumentConstants.TIME, 0));
+		component.setTime(getInteger(properties, DocumentConstants.TIME, 0));
 		component.setDirection(getTimerDirection(properties, Direction.UP));
 	}
 
-	public static void setWindowProperties(Window component, Element element, StringMap properties,
+	public static void setWindowProperties(Window component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		ComponentUtility.setCommonProperties(component, element, properties, alignmentWrapper);
 
@@ -265,7 +283,7 @@ public class SlideComponentUtility {
 		// TODO in future set dynamic css
 	}
 
-	public static void setClientSimProperties(ClientSim component, Element element, StringMap properties,
+	public static void setClientSimProperties(ClientSim component, Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper) {
 		setPanelProperties(component, element, properties, alignmentWrapper);
 	}

@@ -12,7 +12,6 @@ import java.util.Set;
 import org.hypothesis.business.ExportRunnable;
 import org.hypothesis.business.ExportScoreRunnableImpl;
 import org.hypothesis.business.ExportThread;
-import org.hypothesis.business.SessionManager;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Status;
@@ -22,8 +21,6 @@ import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.TestService;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.HasMainEventBus;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.ExportScorePresenter;
 import org.hypothesis.server.Messages;
@@ -66,14 +63,10 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEventBus {
+public class ExportScorePresenterImpl extends AbstractMainBusPresenter implements ExportScorePresenter {
 
 	private final TestService testService;
 	private final UserService userService;
-
-	private User loggedUser;
-
-	private MainEventBus bus;
 
 	private VerticalLayout content;
 	private VerticalLayout testSelection;
@@ -95,33 +88,6 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 	public ExportScorePresenterImpl() {
 		testService = TestService.newInstance();
 		userService = UserService.newInstance();
-
-	}
-
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		this.bus = bus;
-	}
-
-	@Override
-	public MainEventBus getMainEventBus() {
-		return bus;
-	}
-
-	@Override
-	public void attach() {
-		if (bus != null) {
-			bus.register(this);
-		}
-
-		loggedUser = SessionManager.getLoggedUser();
-	}
-
-	@Override
-	public void detach() {
-		if (bus != null) {
-			bus.unregister(this);
-		}
 	}
 
 	@Override
@@ -202,7 +168,7 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 		cancelExportButton = new Button(Messages.getString("Caption.Button.Cancel"), new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				bus.post(new MainUIEvent.ExportFinishedEvent(true));
+				getBus().post(new MainUIEvent.ExportFinishedEvent(true));
 			}
 		});
 	}
@@ -226,7 +192,7 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 		exportSelectionType.addValueChangeListener(new Property.ValueChangeListener() {
 			public void valueChange(ValueChangeEvent event) {
 				allTestsSelected = exportSelectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				bus.post(new MainUIEvent.PackSelectionChangedEvent());
+				getBus().post(new MainUIEvent.PackSelectionChangedEvent());
 			}
 		});
 	}
@@ -253,7 +219,7 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		ExportRunnable runnable = new ExportScoreRunnableImpl(bus, testIds);
+		ExportRunnable runnable = new ExportScoreRunnableImpl(getBus(), testIds);
 		runnable.setFinishCommand(new Command() {
 			@Override
 			public void execute() {
@@ -292,19 +258,21 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 		HorizontalLayout form = new HorizontalLayout();
 		form.setWidth("100%");
 
-		//initPacksSources();
+		// initPacksSources();
 
-		/*packsSelect = new ComboBox();
-		packsSelect.setInputPrompt(Messages.getString("Caption.Button.ChoosePack"));
-		for (String packTitle : sortedPacks) {
-			packsSelect.addItem(packTitle);
-		}
-		packsSelect.setTextInputAllowed(false);
-		packsSelect.setNullSelectionAllowed(false);
-		packsSelect.setRequired(true);
-		packsSelect.setRequiredError(Messages.getString("Message.Error.NoPackSelected"));
-		packsSelect.setValidationVisible(false);
-		form.addComponent(packsSelect);*/
+		/*
+		 * packsSelect = new ComboBox();
+		 * packsSelect.setInputPrompt(Messages.getString(
+		 * "Caption.Button.ChoosePack")); for (String packTitle : sortedPacks) {
+		 * packsSelect.addItem(packTitle); }
+		 * packsSelect.setTextInputAllowed(false);
+		 * packsSelect.setNullSelectionAllowed(false);
+		 * packsSelect.setRequired(true);
+		 * packsSelect.setRequiredError(Messages.getString(
+		 * "Message.Error.NoPackSelected"));
+		 * packsSelect.setValidationVisible(false);
+		 * form.addComponent(packsSelect);
+		 */
 
 		dateFieldFrom = new PopupDateField();
 		dateFieldFrom.setResolution(Resolution.SECOND);
@@ -339,18 +307,18 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					//packsSelect.validate();
+					// packsSelect.validate();
 					dateFieldFrom.validate();
 					dateFieldTo.validate();
 
-					//Pack pack = packMap.get(packsSelect.getValue());
+					// Pack pack = packMap.get(packsSelect.getValue());
 					Date dateFrom = (Date) dateFieldFrom.getValue();
 					Date dateTo = (Date) dateFieldTo.getValue();
 
 					showTests(dateFrom, dateTo);
 
 				} catch (InvalidValueException e) {
-					//packsSelect.setValidationVisible(!packsSelect.isValid());
+					// packsSelect.setValidationVisible(!packsSelect.isValid());
 					dateFieldFrom.setValidationVisible(!dateFieldFrom.isValid());
 					dateFieldTo.setValidationVisible(!dateFieldTo.isValid());
 					Notification.show(e.getMessage(), Type.WARNING_MESSAGE);
@@ -362,23 +330,19 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 		return form;
 	}
 
-	/*private void initPacksSources() {
-		Set<Pack> packs = permissionService.findUserPacks2(loggedUser, false);
-
-		sortedPacks.clear();
-		packMap.clear();
-
-		if (packs != null) {
-			for (Pack pack : packs) {
-				String key = Messages.getString("Caption.Item.PackSelect", pack.getName(), pack.getId(),
-						pack.getDescription());
-				sortedPacks.add(key);
-				packMap.put(key, pack);
-			}
-
-			Collections.sort(sortedPacks);
-		}
-	}*/
+	/*
+	 * private void initPacksSources() { Set<Pack> packs =
+	 * permissionService.findUserPacks2(loggedUser, false);
+	 * 
+	 * sortedPacks.clear(); packMap.clear();
+	 * 
+	 * if (packs != null) { for (Pack pack : packs) { String key =
+	 * Messages.getString("Caption.Item.PackSelect", pack.getName(),
+	 * pack.getId(), pack.getDescription()); sortedPacks.add(key);
+	 * packMap.put(key, pack); }
+	 * 
+	 * Collections.sort(sortedPacks); } }
+	 */
 
 	protected void showTests(Date dateFrom, Date dateTo) {
 		testSelection.removeAllComponents();
@@ -386,6 +350,7 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 
 		// MANAGER see only tests created by himself and his users
 		List<User> users = null;
+		User loggedUser = getLoggedUser();
 		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
 			users = userService.findOwnerUsers(loggedUser);
 			users.add(loggedUser);
@@ -402,7 +367,7 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 		} else {
 			testSelection.addComponent(buildTestsTable(tests));
 			exportSelectionType.setEnabled(true);
-			//bus.post(new MainUIEvent.PackSelectionChangedEvent());
+			// bus.post(new MainUIEvent.PackSelectionChangedEvent());
 		}
 	}
 
@@ -488,7 +453,7 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 		table.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				bus.post(new MainUIEvent.PackSelectionChangedEvent());
+				getBus().post(new MainUIEvent.PackSelectionChangedEvent());
 			}
 		});
 
@@ -541,8 +506,6 @@ public class ExportScorePresenterImpl implements ExportScorePresenter, HasMainEv
 
 	@Override
 	public View createView() {
-		loggedUser = SessionManager.getLoggedUser();
-
 		return new ExportScoreView(this);
 	}
 

@@ -44,12 +44,13 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class SlideManagementPresenterImpl implements SlideManagementPresenter, HasProcessEventBus {
+public class SlideManagementPresenterImpl extends AbstractViewPresenter
+		implements SlideManagementPresenter, HasProcessEventBus {
 
 	private final DocumentReader reader = new XmlDocumentReader();
 
 	private SlideContainer container;
-	//private SliderPanel sliderPanel;
+	// private SliderPanel sliderPanel;
 
 	private final ProcessEventBus bus = ProcessEventBus.createInstance(this);
 	private final SlideContainerFactoryDeferred factory = new SlideContainerFactoryDeferred(bus);
@@ -69,7 +70,6 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 			Toolbox toolbox = new Toolbox();
 			toolbox.setOrientation(ORIENTATION.TOP_CENTER);
 			toolbox.setOverflowSize(5);
-			
+
 			HorizontalLayout hl = new HorizontalLayout();
 			hl.setSpacing(true);
 			Button startButton = new Button("Start slide", new ClickListener() {
@@ -114,11 +114,11 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 				}
 			});
 			hl.addComponent(startButton);
-			
-			CssLayout tlLayout = new CssLayout(toolbox); 
+
+			CssLayout tlLayout = new CssLayout(toolbox);
 			tlLayout.setHeight("0px");
 			topLayout.addComponent(tlLayout);
-			//layout.setExpandRatio(tlLayout, 0f);
+			// layout.setExpandRatio(tlLayout, 0f);
 
 			toolbox.setContent(hl);
 
@@ -151,7 +151,7 @@ public class SlideManagementPresenterImpl implements SlideManagementPresenter, H
 
 	private void startClicked() {
 		mask.hide();
-		//sliderPanel.collapse();
+		// sliderPanel.collapse();
 
 		if (container != null && container.getPresenter() instanceof SlideContainerPresenterDeferred) {
 			SlideContainerPresenterDeferred containerPresenter = (SlideContainerPresenterDeferred) container

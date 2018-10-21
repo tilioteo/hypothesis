@@ -4,6 +4,8 @@
  */
 package org.hypothesis.business;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -16,8 +18,6 @@ import org.hypothesis.event.data.Message;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -61,7 +61,7 @@ public class MessageManager implements Serializable {
 						for (Element propertyElement : properties) {
 							String name = DocumentUtility.getName(propertyElement);
 							String type = DocumentUtility.getType(propertyElement);
-							if (Strings.isNullOrEmpty(name) || Strings.isNullOrEmpty(type)) {
+							if (isEmpty(name) || isEmpty(type)) {
 								return null;
 							}
 							Class<?> clazz;

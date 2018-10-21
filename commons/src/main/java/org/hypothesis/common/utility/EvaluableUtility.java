@@ -4,6 +4,13 @@
  */
 package org.hypothesis.common.utility;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.hypothesis.common.utility.StringUtility.toDouble;
+import static org.hypothesis.common.utility.StringUtility.toDoubleArray;
+import static org.hypothesis.common.utility.StringUtility.toInteger;
+import static org.hypothesis.common.utility.StringUtility.toIntegerArray;
+import static org.hypothesis.common.utility.StringUtility.toStringArray;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +30,6 @@ import org.hypothesis.interfaces.Evaluator;
 import org.hypothesis.interfaces.ReferenceCallback;
 import org.hypothesis.interfaces.Variable;
 
-import com.tilioteo.common.Strings;
 import com.tilioteo.expressions.ExpressionFactory;
 
 /**
@@ -40,7 +46,7 @@ public class EvaluableUtility {
 		if (actions != null) {
 			for (Element actionElement : actions) {
 				String id = DocumentUtility.getId(actionElement);
-				if (!Strings.isNullOrEmpty(id)) {
+				if (isNotEmpty(id)) {
 					Action action = createAction(actionElement, evaluator);
 					if (action != null) {
 						evaluator.setAction(id, action);
@@ -77,7 +83,7 @@ public class EvaluableUtility {
 	}
 
 	private static Action createInnerAction(Element element, String id, Evaluator evaluator) {
-		if (element != null && !Strings.isNullOrEmpty(id)) {
+		if (element != null && isNotEmpty(id)) {
 			org.hypothesis.evaluation.Action action = new org.hypothesis.evaluation.Action(evaluator, id);
 			List<Element> elements = element.children();
 			for (Element evaluableElement : elements) {
@@ -214,7 +220,7 @@ public class EvaluableUtility {
 	private static Call createCall(Element element, Evaluator evaluator) {
 		if (element != null && element.getName().equals(DocumentConstants.CALL)) {
 			String actionId = DocumentUtility.getAction(element);
-			if (!Strings.isNullOrEmpty(actionId)) {
+			if (isNotEmpty(actionId)) {
 				return new Call(evaluator, actionId);
 			}
 		}
@@ -293,7 +299,7 @@ public class EvaluableUtility {
 		if (variables != null) {
 			for (Element variableElement : variables) {
 				String id = DocumentUtility.getId(variableElement);
-				if (!Strings.isNullOrEmpty(id)) {
+				if (isNotEmpty(id)) {
 					Variable<?> variable = createVariable(variableElement, evaluator, callback);
 					if (variable != null)
 						evaluator.getVariables().put(variable.getName(), variable);
@@ -326,7 +332,7 @@ public class EvaluableUtility {
 					if (instance != null) {
 						if (instance.getName().equals(DocumentConstants.CLASS)) {
 							String className = DocumentUtility.getName(instance);
-							if (!Strings.isNullOrEmpty(className)) {
+							if (isNotEmpty(className)) {
 								try {
 									Class<?> clazz = Class.forName(className);
 									Constructor<?> ctor = clazz.getConstructor();
@@ -342,18 +348,18 @@ public class EvaluableUtility {
 					}
 				}
 			} else if (DocumentConstants.INTEGER.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<Integer>(id, Strings.toInteger(value));
+				variable = new org.hypothesis.evaluation.Variable<Integer>(id, toInteger(value));
 			else if (DocumentConstants.BOOLEAN.equalsIgnoreCase(type))
 				variable = new org.hypothesis.evaluation.Variable<Boolean>(id, Boolean.parseBoolean(value));
 			else if (DocumentConstants.FLOAT.equalsIgnoreCase(type))
-				variable = new org.hypothesis.evaluation.Variable<Double>(id, Strings.toDouble(value));
+				variable = new org.hypothesis.evaluation.Variable<Double>(id, toDouble(value));
 			else if (DocumentConstants.STRING.equalsIgnoreCase(type))
 				variable = new org.hypothesis.evaluation.Variable<String>(id, value);
 
 			else if (DocumentConstants.INTEGER_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<Object>(id);
 				ArrayList<Integer> array = new ArrayList<>();
-				Integer[] integers = Strings.toIntegerArray(values, DocumentConstants.STR_COMMA);
+				Integer[] integers = toIntegerArray(values, DocumentConstants.STR_COMMA);
 				if (integers != null) {
 					for (Integer integer : integers) {
 						if (integer != null) {
@@ -365,7 +371,7 @@ public class EvaluableUtility {
 			} else if (DocumentConstants.FLOAT_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<Object>(id);
 				ArrayList<Double> array = new ArrayList<>();
-				Double[] doubles = Strings.toDoubleArray(values, DocumentConstants.STR_COMMA);
+				Double[] doubles = toDoubleArray(values, DocumentConstants.STR_COMMA);
 				if (doubles != null) {
 					for (Double dbl : doubles) {
 						if (dbl != null) {
@@ -377,7 +383,7 @@ public class EvaluableUtility {
 			} else if (DocumentConstants.STRING_ARRAY.equalsIgnoreCase(type)) {
 				variable = new org.hypothesis.evaluation.Variable<Object>(id);
 				ArrayList<String> array = new ArrayList<>();
-				String[] strings = Strings.toStringArray(values, DocumentConstants.STR_COMMA,
+				String[] strings = toStringArray(values, DocumentConstants.STR_COMMA,
 						DocumentConstants.STR_QUOTED_STRING_SPLIT_PATTERN);
 				if (strings != null) {
 					for (String string : strings) {

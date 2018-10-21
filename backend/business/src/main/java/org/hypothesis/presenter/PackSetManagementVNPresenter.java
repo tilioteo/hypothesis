@@ -9,7 +9,6 @@ import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.PackSet;
 import org.hypothesis.data.service.PackSetService;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.presenter.UserManagementVNPresenter.UserTableFilterDecorator;
 import org.hypothesis.server.Messages;
 import org.tepi.filtertable.FilterTable;
@@ -55,19 +54,9 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
 
 	@Override
 	public void init() {
-		packSetWindowPresenter = new PackSetWindowVNPresenter(bus);
-	}
+		super.init();
 
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		if (this.bus != null) {
-			this.bus.unregister(this);
-		}
-
-		super.setMainEventBus(bus);
-		if (this.bus != null) {
-			this.bus.register(this);
-		}
+		packSetWindowPresenter = new PackSetWindowVNPresenter(getBus());
 	}
 
 	@Override

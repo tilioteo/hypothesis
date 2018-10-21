@@ -6,7 +6,6 @@ package org.hypothesis.navigator;
 
 import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
-import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.interfaces.ViewPresenter;
 
 import com.vaadin.navigator.View;
@@ -76,11 +75,11 @@ public class HypothesisViewProvider implements ViewProvider {
 				presenter = viewType.getViewPresenterClass().newInstance();
 
 				if (presenter instanceof HasMainEventBus) {
-					((HasMainEventBus) presenter).setMainEventBus(bus);
+					((HasMainEventBus) presenter).setBus(bus);
 				}
-				
-				if (presenter instanceof ManagementPresenter) {
-					((ManagementPresenter) presenter).init();
+
+				if (presenter instanceof ViewPresenter) {
+					((ViewPresenter) presenter).init();
 				}
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();

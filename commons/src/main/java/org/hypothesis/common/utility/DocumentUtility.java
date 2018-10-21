@@ -4,11 +4,20 @@
  */
 package org.hypothesis.common.utility;
 
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.hypothesis.common.utility.StringUtility.toDate;
+import static org.hypothesis.common.utility.StringUtility.toDouble;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.hypothesis.common.ValidationSets;
 import org.hypothesis.interfaces.Action;
@@ -18,9 +27,6 @@ import org.hypothesis.interfaces.Element;
 import org.hypothesis.interfaces.HandlerCallback;
 import org.hypothesis.interfaces.SlidePresenter;
 
-import com.tilioteo.common.Strings;
-import com.tilioteo.common.collections.StringMap;
-import com.tilioteo.common.collections.StringSet;
 import com.vaadin.ui.Component;
 
 /**
@@ -82,7 +88,7 @@ public final class DocumentUtility {
 			return result;
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static String getTrimmedText(Element element) {
@@ -94,8 +100,8 @@ public final class DocumentUtility {
 	}
 
 	public static List<Element> getSubElementChildren(Element element, String subNodeName,
-			StringSet validElementNames) {
-		if (element != null && !Strings.isNullOrEmpty(subNodeName)) {
+			Set<String> validElementNames) {
+		if (element != null && isNotEmpty(subNodeName)) {
 			Element subElement = element.selectElement(subNodeName);
 
 			if (subElement != null) {
@@ -115,7 +121,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static boolean isValidSlideDocument(Document doc) {
@@ -133,7 +139,7 @@ public final class DocumentUtility {
 	public static List<Element> getActionsElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return null;
+				return emptyList();
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
@@ -143,7 +149,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static Element getExpressionElement(Element element) {
@@ -213,7 +219,7 @@ public final class DocumentUtility {
 	public static List<Element> getVariablesElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return null;
+				return emptyList();
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
@@ -223,7 +229,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static List<Element> getScoresElements(Element root) {
@@ -232,7 +238,7 @@ public final class DocumentUtility {
 			return element.selectElements(DocumentConstants.SCORE);
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static Element getReferenceSubElement(Element element) {
@@ -260,33 +266,33 @@ public final class DocumentUtility {
 	public static List<Element> getInputValueElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return null;
+				return emptyList();
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
 			return findElementsByNameStarting(documentRoot, DocumentConstants.INPUT_VALUE);
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static List<Element> getOutputValueElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return null;
+				return emptyList();
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
 			return findElementsByNameStarting(documentRoot, DocumentConstants.OUTPUT_VALUE);
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static List<Element> getTimersElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return null;
+				return emptyList();
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
@@ -296,11 +302,11 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return emptyList();
 	}
 
-	public static StringMap getPropertyValueMap(Element component) {
-		StringMap map = new StringMap();
+	public static Map<String, String> getPropertyValueMap(Element component) {
+		Map<String, String> map = new HashMap<>();
 		List<Element> elements = getComponentProperties(component);
 
 		if (elements != null) {
@@ -320,7 +326,7 @@ public final class DocumentUtility {
 		return getSubElementChildren(component, DocumentConstants.PROPERTIES, null);
 	}
 
-	public static List<Element> getContainerComponents(Element container, StringSet valids) {
+	public static List<Element> getContainerComponents(Element container, Set<String> valids) {
 		return getSubElementChildren(container, DocumentConstants.COMPONENTS, valids);
 	}
 
@@ -341,13 +347,13 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static List<Element> getWindowsElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
-				return null;
+				return emptyList();
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
@@ -357,7 +363,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static Element getViewportOrWindowRootElement(Element element) {
@@ -427,7 +433,7 @@ public final class DocumentUtility {
 		if (messageElement != null) {
 			String message = getTrimmedText(messageElement);
 
-			if (Strings.isNullOrEmpty(message)) {
+			if (isEmpty(message)) {
 				return defaultMessage;
 			}
 
@@ -449,7 +455,7 @@ public final class DocumentUtility {
 		Element subElement = getMinElement(element);
 
 		if (subElement != null) {
-			return Strings.toDouble(subElement.getAttribute(DocumentConstants.VALUE));
+			return toDouble(subElement.getAttribute(DocumentConstants.VALUE));
 		}
 
 		return null;
@@ -459,7 +465,7 @@ public final class DocumentUtility {
 		Element subElement = getMaxElement(element);
 
 		if (subElement != null) {
-			return Strings.toDouble(subElement.getAttribute(DocumentConstants.VALUE));
+			return toDouble(subElement.getAttribute(DocumentConstants.VALUE));
 		}
 
 		return null;
@@ -486,11 +492,11 @@ public final class DocumentUtility {
 		if (subElement != null) {
 			String format = subElement.getAttribute(DocumentConstants.FORMAT);
 
-			if (Strings.isNullOrEmpty(format)) {
+			if (isEmpty(format)) {
 				format = defaultFormat;
 			}
 
-			return Strings.toDate(subElement.getAttribute(DocumentConstants.VALUE), format);
+			return toDate(subElement.getAttribute(DocumentConstants.VALUE), format);
 		}
 
 		return null;
@@ -501,11 +507,11 @@ public final class DocumentUtility {
 		if (subElement != null) {
 			String format = subElement.getAttribute(DocumentConstants.FORMAT);
 
-			if (Strings.isNullOrEmpty(format)) {
+			if (isEmpty(format)) {
 				format = defaultFormat;
 			}
 
-			return Strings.toDate(subElement.getAttribute(DocumentConstants.VALUE), format);
+			return toDate(subElement.getAttribute(DocumentConstants.VALUE), format);
 		}
 
 		return null;
@@ -519,14 +525,14 @@ public final class DocumentUtility {
 	public static List<Element> getPathElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!DocumentConstants.BRANCH.equals(documentRoot.getName())) {
-				return null;
+				return emptyList();
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
 			return documentRoot.selectElements(DocumentConstants.PATH);
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static Element getDefaultPathElement(Element documentRoot) {
@@ -563,13 +569,13 @@ public final class DocumentUtility {
 			return patternElement.selectElements(DocumentConstants.NICK);
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static Long getSlideId(Element element) {
 		if (element != null) {
 			String idString = element.getAttribute(DocumentConstants.SLIDE_ID);
-			if (!Strings.isNullOrEmpty(idString)) {
+			if (isNotEmpty(idString)) {
 				try {
 					return Long.parseLong(idString);
 				} catch (NumberFormatException e) {
@@ -595,7 +601,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static Element getEvaluateElement(Element element) {
@@ -614,7 +620,7 @@ public final class DocumentUtility {
 	public static List<Element> getPropertyElements(Element documentRoot) {
 		if (documentRoot != null) {
 			if (!DocumentConstants.MESSAGE.equals(documentRoot.getName())) {
-				return null;
+				return emptyList();
 				// throw new NotValidDocumentRoot(documentRoot);
 			}
 
@@ -624,7 +630,7 @@ public final class DocumentUtility {
 			}
 		}
 
-		return null;
+		return emptyList();
 	}
 
 	public static void iterateHandlers(Component component, Element element, SlidePresenter presenter,
@@ -642,7 +648,7 @@ public final class DocumentUtility {
 					presenter.setAction(actionId, anonymousAction);
 				}
 
-				if (!Strings.isNullOrEmpty(actionId) && !Strings.isNullOrEmpty(name)) {
+				if (isNotEmpty(actionId) && isNotEmpty(name)) {
 					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction,
 							presenter);
 				}

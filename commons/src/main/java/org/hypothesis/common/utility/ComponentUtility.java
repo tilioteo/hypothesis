@@ -4,15 +4,35 @@
  */
 package org.hypothesis.common.utility;
 
+import static com.vaadin.ui.Alignment.BOTTOM_CENTER;
+import static com.vaadin.ui.Alignment.BOTTOM_LEFT;
+import static com.vaadin.ui.Alignment.BOTTOM_RIGHT;
+import static com.vaadin.ui.Alignment.MIDDLE_CENTER;
+import static com.vaadin.ui.Alignment.MIDDLE_LEFT;
+import static com.vaadin.ui.Alignment.MIDDLE_RIGHT;
+import static com.vaadin.ui.Alignment.TOP_CENTER;
+import static com.vaadin.ui.Alignment.TOP_LEFT;
+import static com.vaadin.ui.Alignment.TOP_RIGHT;
+import static org.hypothesis.common.utility.StringUtility.getBoolean;
+import static org.hypothesis.common.utility.StringUtility.getDimension;
+import static org.hypothesis.interfaces.DocumentConstants.ALIGNMENT;
+import static org.hypothesis.interfaces.DocumentConstants.CAPTION;
+import static org.hypothesis.interfaces.DocumentConstants.ENABLED;
+import static org.hypothesis.interfaces.DocumentConstants.HEIGHT;
+import static org.hypothesis.interfaces.DocumentConstants.READ_ONLY;
+import static org.hypothesis.interfaces.DocumentConstants.SPACING;
+import static org.hypothesis.interfaces.DocumentConstants.STYLE;
+import static org.hypothesis.interfaces.DocumentConstants.VISIBLE;
+import static org.hypothesis.interfaces.DocumentConstants.WIDTH;
+
 import java.util.Date;
+import java.util.Map;
 
 import org.hypothesis.interfaces.AlignmentWrapper;
 import org.hypothesis.interfaces.ComponentEvent;
 import org.hypothesis.interfaces.ComponentEventCallback;
-import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
 
-import com.tilioteo.common.collections.StringMap;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractOrderedLayout;
@@ -27,7 +47,7 @@ import com.vaadin.ui.Component;
  */
 public class ComponentUtility {
 
-	public static void setCommonProperties(Component component, Element element, StringMap stringMap,
+	public static void setCommonProperties(Component component, Element element, Map<String, String> stringMap,
 			AlignmentWrapper alignmentWrapper) {
 		// store component id
 		if (component instanceof AbstractComponent)
@@ -35,28 +55,28 @@ public class ComponentUtility {
 
 		setCaption(component, stringMap);
 
-		setWidth(component, stringMap.getDimension(DocumentConstants.WIDTH));
-		setHeight(component, stringMap.getDimension(DocumentConstants.HEIGHT));
-		component.setVisible(stringMap.getBoolean(DocumentConstants.VISIBLE, true));
-		component.setEnabled(stringMap.getBoolean(DocumentConstants.ENABLED, true));
+		setWidth(component, getDimension(stringMap, WIDTH));
+		setHeight(component, getDimension(stringMap, HEIGHT));
+		component.setVisible(getBoolean(stringMap, VISIBLE, true));
+		component.setEnabled(getBoolean(stringMap, ENABLED, true));
 
 		setStyle(component, stringMap);
 
 		setWrappedAlignment(stringMap, alignmentWrapper);
 	}
 
-	private static void setStyle(Component component, StringMap properties) {
+	private static void setStyle(Component component, Map<String, String> properties) {
 		if (component instanceof AbstractComponent) {
-			String style = properties.get(DocumentConstants.STYLE);
+			String style = properties.get(STYLE);
 			if (style != null) {
 				component.addStyleName(style);
 			}
 		}
 	}
 
-	private static void setCaption(Component component, StringMap properties) {
+	private static void setCaption(Component component, Map<String, String> properties) {
 		if (component instanceof AbstractComponent) {
-			String caption = properties.get(DocumentConstants.CAPTION);
+			String caption = properties.get(CAPTION);
 			if (caption != null) {
 				component.setCaption(caption);
 			}
@@ -75,9 +95,9 @@ public class ComponentUtility {
 		}
 	}
 
-	private static void setWrappedAlignment(StringMap properties, AlignmentWrapper alignmentWrapper) {
+	private static void setWrappedAlignment(Map<String, String> properties, AlignmentWrapper alignmentWrapper) {
 		if (alignmentWrapper != null) {
-			String align = properties.get(DocumentConstants.ALIGNMENT);
+			String align = properties.get(ALIGNMENT);
 			Alignment alignment = stringToAlignment(align);
 			alignmentWrapper.setAlignment(alignment);
 		}
@@ -87,49 +107,49 @@ public class ComponentUtility {
 		if (align != null) {
 			align = align.trim().toLowerCase();
 			if (align.equals("tl") || align.equals("lt"))
-				return Alignment.TOP_LEFT;
+				return TOP_LEFT;
 			else if (align.equals("tc") || align.equals("ct"))
-				return Alignment.TOP_CENTER;
+				return TOP_CENTER;
 			else if (align.equals("tr") || align.equals("rt"))
-				return Alignment.TOP_RIGHT;
+				return TOP_RIGHT;
 			else if (align.equals("ml") || align.equals("lm"))
-				return Alignment.MIDDLE_LEFT;
+				return MIDDLE_LEFT;
 			else if (align.equals("mc") || align.equals("cm"))
-				return Alignment.MIDDLE_CENTER;
+				return MIDDLE_CENTER;
 			else if (align.equals("mr") || align.equals("rm"))
-				return Alignment.MIDDLE_RIGHT;
+				return MIDDLE_RIGHT;
 			else if (align.equals("bl") || align.equals("lb"))
-				return Alignment.BOTTOM_LEFT;
+				return BOTTOM_LEFT;
 			else if (align.equals("bc") || align.equals("cb"))
-				return Alignment.BOTTOM_CENTER;
+				return BOTTOM_CENTER;
 			else if (align.equals("br") || align.equals("rb"))
-				return Alignment.BOTTOM_RIGHT;
+				return BOTTOM_RIGHT;
 		}
 
 		// default
-		return Alignment.MIDDLE_CENTER;
+		return MIDDLE_CENTER;
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void setCommonFieldProperties(AbstractField component, Element element, StringMap stringMap,
+	public static void setCommonFieldProperties(AbstractField component, Element element, Map<String, String> stringMap,
 			AlignmentWrapper alignmentWrapper) {
 		setCommonProperties(component, element, stringMap, alignmentWrapper);
 
 		// set AbstractField specific properties
-		component.setReadOnly(stringMap.getBoolean(DocumentConstants.READ_ONLY, false));
+		component.setReadOnly(getBoolean(stringMap, READ_ONLY, false));
 	}
 
-	public static void setCommonLayoutProperties(AbstractOrderedLayout component, Element element, StringMap stringMap,
-			AlignmentWrapper alignmentWrapper) {
+	public static void setCommonLayoutProperties(AbstractOrderedLayout component, Element element,
+			Map<String, String> stringMap, AlignmentWrapper alignmentWrapper) {
 		setCommonProperties(component, element, stringMap, alignmentWrapper);
 		setLayoutSpacing(component, stringMap);
 	}
 
-	private static void setLayoutSpacing(AbstractOrderedLayout component, StringMap properties) {
+	private static void setLayoutSpacing(AbstractOrderedLayout component, Map<String, String> properties) {
 		// TODO how to handle with spacing value?
 		// int value = stringMap.getInteger(SlideXmlConstants.SPACING, -1);
 		// if (value > 0)
-		boolean value = properties.getBoolean(DocumentConstants.SPACING, false);
+		boolean value = getBoolean(properties, SPACING, false);
 		component.setSpacing(value);
 	}
 

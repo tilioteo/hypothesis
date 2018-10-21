@@ -4,6 +4,8 @@
  */
 package org.hypothesis.presenter;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -25,7 +27,6 @@ import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.MainUI;
 
-import com.tilioteo.common.Strings;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
@@ -111,14 +112,14 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 			String viewName = getViewName();
 
-			if (!Strings.isNullOrEmpty(viewName) && userCanAccessView(user, viewName)) {
+			if (isNotEmpty(viewName) && userCanAccessView(user, viewName)) {
 				ui.getNavigator().navigateTo(viewName);
 			} else {
 				if (!User.GUEST.equals(user)) {
 					ui.getNavigator().navigateTo(HypothesisViewType.PACKS.getViewName());
-				// VN specific - removed public packs
-				//} else {
-				//	ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
+					// VN specific - removed public packs
+					// } else {
+					// ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
 				}
 			}
 		} else {
@@ -138,7 +139,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	private String getViewName() {
 		String fragment = Page.getCurrent().getUriFragment();
-		if (!Strings.isNullOrEmpty(fragment) && fragment.startsWith("!")) {
+		if (isNotEmpty(fragment) && fragment.startsWith("!")) {
 			fragment = fragment.substring(1);
 			int l = fragment.lastIndexOf("/");
 			if (l > 0) {
@@ -231,13 +232,13 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	}
 
 	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		// nop
+	public MainEventBus getBus() {
+		return bus;
 	}
 
 	@Override
-	public MainEventBus getMainEventBus() {
-		return bus;
+	public void setBus(MainEventBus bus) {
+		// noop
 	}
 
 }

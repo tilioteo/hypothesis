@@ -4,10 +4,6 @@
  */
 package org.hypothesis.presenter;
 
-import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.model.User;
-import org.hypothesis.eventbus.HasMainEventBus;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ManagementPresenter;
 import org.hypothesis.ui.view.ManagementView;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -30,12 +26,8 @@ import com.vaadin.ui.HorizontalLayout;
  *
  */
 @SuppressWarnings("serial")
-public abstract class AbstractManagementPresenter
-		implements ManagementPresenter, HasMainEventBus, Listener {
-
-	protected User loggedUser;
-
-	protected MainEventBus bus;
+public abstract class AbstractManagementPresenter extends AbstractMainBusPresenter
+		implements ManagementPresenter, Listener {
 
 	protected CssLayout buttonGroup;
 	protected AbstractSelect table;
@@ -55,26 +47,6 @@ public abstract class AbstractManagementPresenter
 	protected abstract Resource getExportResource();
 
 	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		this.bus = bus;
-	}
-
-	@Override
-	public MainEventBus getMainEventBus() {
-		return bus;
-	}
-
-	@Override
-	public void attach() {
-		bus.register(this);
-	}
-
-	@Override
-	public void detach() {
-		bus.unregister(this);
-	}
-
-	@Override
 	public void enter(ViewChangeEvent event) {
 	}
 
@@ -90,9 +62,6 @@ public abstract class AbstractManagementPresenter
 
 	@Override
 	public View createView() {
-		loggedUser = SessionManager.getLoggedUser();
-
 		return new ManagementView(this);
 	}
-
 }

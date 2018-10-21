@@ -50,6 +50,23 @@ public class ServletUtil {
 		return url.toString();
 	}
 
+	public static String getHttpContextURL(HttpServletRequest request) {
+		String serverName = request.getServerName(); // hostname.com
+		int serverPort = request.getServerPort(); // 80
+		String contextPath = request.getContextPath(); // /mywebapp
+
+		StringBuffer url = new StringBuffer();
+		url.append(request.isSecure() ? "https" : "http").append("://").append(serverName);
+
+		if ((serverPort != 80) && (serverPort != 443)) {
+			url.append(":").append(serverPort);
+		}
+
+		url.append(contextPath);
+
+		return url.toString();
+	}
+
 	public static Manifest getManifest(ServletContext context) {
 		InputStream inputStream = context.getResourceAsStream("/META-INF/MANIFEST.MF");
 		Manifest manifest = null;

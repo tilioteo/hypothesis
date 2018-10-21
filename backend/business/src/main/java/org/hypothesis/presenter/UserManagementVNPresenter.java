@@ -24,7 +24,6 @@ import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
 import org.tepi.filtertable.FilterDecorator;
 import org.tepi.filtertable.FilterTable;
@@ -80,19 +79,9 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 
 	@Override
 	public void init() {
-		userWindowPresenter = new UserWindowVNPresenter(bus);
-	}
+		super.init();
 
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		if (this.bus != null) {
-			this.bus.unregister(this);
-		}
-
-		super.setMainEventBus(bus);
-		if (this.bus != null) {
-			this.bus.register(this);
-		}
+		userWindowPresenter = new UserWindowVNPresenter(getBus());
 	}
 
 	@Override
@@ -117,6 +106,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		addButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
+				User loggedUser = getLoggedUser();
 				if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)
 						&& groupService.findOwnerGroups(loggedUser).isEmpty()) {
 					Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
@@ -168,6 +158,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 	private void deleteUsers() {
 		Collection<User> users = getSelectedUsers();
 
+		User loggedUser = getLoggedUser();
 		checkDeletionPermission(loggedUser, users);
 		checkSuperuserLeft(loggedUser);
 
@@ -179,7 +170,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 
 			for (Group group : user.getGroups()) {
 				if (group != null) {
-					bus.post(new MainUIEvent.GroupUsersChangedEvent(group));
+					getBus().post(new MainUIEvent.GroupUsersChangedEvent(group));
 				}
 			}
 
@@ -187,7 +178,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		}
 
 		if (users.contains(loggedUser)) {
-			bus.post(new MainUIEvent.UserLoggedOutEvent());
+			getBus().post(new MainUIEvent.UserLoggedOutEvent());
 		}
 	}
 
@@ -271,6 +262,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
 		List<User> users;
+		User loggedUser = getLoggedUser();
 		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
 			users = userService.findAll();
 		} else {
@@ -297,7 +289,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 				Messages.getString("Caption.Field.Enabled"));
 
 		table.setFilterBarVisible(true);
-		
+
 		table.setFilterDecorator(new UserTableFilterDecorator());
 		table.setFilterFieldVisible(FieldConstants.ID, false);
 		table.setFilterFieldVisible(FieldConstants.ROLES, false);
@@ -306,7 +298,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		table.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				bus.post(new MainUIEvent.UserSelectionChangedEvent());
+				getBus().post(new MainUIEvent.UserSelectionChangedEvent());
 			}
 		});
 
@@ -451,7 +443,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		boolean toolsEnabled = allSelected || itemsSelected;
 		buttonGroup.setEnabled(toolsEnabled);
 	}
-	
+
 	public static class UserTableFilterDecorator implements FilterDecorator {
 
 		@Override
@@ -536,7 +528,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		public boolean usePopupForNumericProperty(Object propertyId) {
 			return false;
 		}
-		
+
 	}
 
 }

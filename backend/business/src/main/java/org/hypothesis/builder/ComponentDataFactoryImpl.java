@@ -4,6 +4,8 @@
  */
 package org.hypothesis.builder;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
@@ -35,7 +37,6 @@ import org.hypothesis.slide.ui.TextArea;
 import org.hypothesis.slide.ui.TextField;
 import org.vaadin.special.ui.SelectButton;
 
-import com.tilioteo.common.Strings;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractTextField;
 
@@ -62,11 +63,11 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		Element element = root.createChild(DocumentConstants.SOURCE);
 		element.setAttribute(DocumentConstants.TYPE, data.getTypeName());
 
-		if (!Strings.isNullOrEmpty(data.getId())) {
+		if (isNotEmpty(data.getId())) {
 			element.setAttribute(DocumentConstants.ID, data.getId());
 		}
 
-		if (!Strings.isNullOrEmpty(data.getSender().getCaption())) {
+		if (isNotEmpty(data.getSender().getCaption())) {
 			element.setText(data.getSender().getCaption());
 		}
 	}
@@ -136,7 +137,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 						if (!isAttribute) {
 							baseElement.setText(value);
-						} else if (!Strings.isNullOrEmpty(attributeName)) {
+						} else if (isNotEmpty(attributeName)) {
 							baseElement.setAttribute(attributeName, value);
 						}
 					}
@@ -219,7 +220,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		element.setAttribute(DocumentConstants.TYPE, DocumentConstants.SLIDE);
 		String id = presenter.getSlideId();
 
-		if (!Strings.isNullOrEmpty(id)) {
+		if (isNotEmpty(id)) {
 			element.setAttribute(DocumentConstants.ID, id);
 		}
 
@@ -241,14 +242,14 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 
 	private void writeFieldData(Element element, AbstractComponent field) {
 		String fieldType = getFieldType(field);
-		if (!Strings.isNullOrEmpty(fieldType)) {
+		if (isNotEmpty(fieldType)) {
 			Element fieldElement = element.createChild(DocumentConstants.FIELD);
 			fieldElement.setAttribute(DocumentConstants.TYPE, fieldType);
 			fieldElement.setAttribute(DocumentConstants.ID, (String) field.getData());
 
 			Element captionElement = fieldElement.createChild(DocumentConstants.CAPTION);
 			String caption = field.getCaption();
-			if (!Strings.isNullOrEmpty(caption)) {
+			if (isNotEmpty(caption)) {
 				captionElement.setText(caption);
 			}
 
@@ -537,7 +538,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		element.setAttribute(DocumentConstants.TYPE,
 				data.getSource() == Source.SLIDE ? DocumentConstants.SLIDE : DocumentConstants.ACTION);
 
-		if (!Strings.isNullOrEmpty(data.getId())) {
+		if (isNotEmpty(data.getId())) {
 			element.setAttribute(DocumentConstants.ID, data.getId());
 		}
 	}

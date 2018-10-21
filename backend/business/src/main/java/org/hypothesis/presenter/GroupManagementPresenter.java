@@ -30,7 +30,6 @@ import org.hypothesis.data.service.GroupService;
 import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
@@ -81,19 +80,9 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 
 	@Override
 	public void init() {
-		groupWindowPresenter = new GroupWindowPresenter(bus);
-	}
+		super.init();
 
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		if (this.bus != null) {
-			this.bus.unregister(this);
-		}
-
-		super.setMainEventBus(bus);
-		if (this.bus != null) {
-			this.bus.register(this);
-		}
+		groupWindowPresenter = new GroupWindowPresenter(getBus());
 	}
 
 	@Override
@@ -138,7 +127,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 		selectionType.addValueChangeListener(new Property.ValueChangeListener() {
 			public void valueChange(ValueChangeEvent event) {
 				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				bus.post(new MainUIEvent.GroupSelectionChangedEvent());
+				getBus().post(new MainUIEvent.GroupSelectionChangedEvent());
 			}
 		});
 
@@ -249,7 +238,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 
 			for (User user : users) {
 				if (user != null) {
-					bus.post(new MainUIEvent.UserGroupsChangedEvent(user));
+					getBus().post(new MainUIEvent.UserGroupsChangedEvent(user));
 				}
 			}
 
@@ -292,6 +281,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
 		List<Group> groups;
+		User loggedUser = getLoggedUser();
 		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
 			groups = groupService.findAll();
 		} else {
@@ -318,7 +308,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 		table.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				bus.post(new MainUIEvent.GroupSelectionChangedEvent());
+				getBus().post(new MainUIEvent.GroupSelectionChangedEvent());
 			}
 		});
 

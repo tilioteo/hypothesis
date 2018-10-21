@@ -4,6 +4,8 @@
  */
 package org.hypothesis.builder;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +16,6 @@ import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
 import org.hypothesis.interfaces.Element;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -46,8 +46,8 @@ public class DocumentFactory {
 				String name = bindContent.getName();
 				String id = bindContent.getAttribute(DocumentConstants.ID);
 
-				if (!Strings.isNullOrEmpty(name)) {
-					if (!Strings.isNullOrEmpty(id)) {
+				if (isNotEmpty(name)) {
+					if (isNotEmpty(id)) {
 						HashMap<String, String> attributes = new HashMap<>();
 						attributes.put(DocumentConstants.ID, id);
 
@@ -90,7 +90,7 @@ public class DocumentFactory {
 		String id = sourceSubElement.getAttribute(DocumentConstants.ID);
 
 		Element destinationSubElement = null;
-		if (!Strings.isNullOrEmpty(id)) {
+		if (isNotEmpty(id)) {
 			HashMap<String, String> attributes = new HashMap<>();
 			attributes.put(DocumentConstants.ID, id);
 			destinationSubElement = DocumentUtility.findElementByNameAndValue(destinationElement, name, attributes,
@@ -122,7 +122,7 @@ public class DocumentFactory {
 			Element destinationSubElement = null;
 
 			if (!destSubEmpty) {
-				if (!Strings.isNullOrEmpty(id)) {
+				if (isNotEmpty(id)) {
 					HashMap<String, String> attributes = new HashMap<>();
 					attributes.put(DocumentConstants.ID, id);
 					destinationSubElement = DocumentUtility.findElementByNameAndValue(destination, name, attributes,

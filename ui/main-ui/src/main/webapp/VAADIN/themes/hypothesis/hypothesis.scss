@@ -17,6 +17,7 @@
   
   $color1: #8D9099;
   $color2: #DFE8F6;
+  $color3: #C0C0C2;
   $color-packpanel: #F7F7F7;
   $color-packpanel-nojava: #CACACA;
   
@@ -57,6 +58,7 @@
     background-color: $color2;
   }
   
+/* disable controls hiding for UVN
   .packpanel .controls {
     visibility: hidden;
   }
@@ -72,9 +74,15 @@
   .packpanel-nojava:hover .controls {
     visibility: visible;
   }
+*/
   
   .v-panel-caption-packpanel {
     @include valo-panel-caption-style($background-color: $color1);
+    font-weight: bold;
+  }
+  
+  .v-panel-caption-packpanel-disabled {
+    @include valo-panel-caption-style($background-color: $color3);
     font-weight: bold;
   }
   
@@ -84,6 +92,7 @@
     //border-radius: initial;
   }
 
+/*
   .v-panel-caption-packpanel-nojava {
     @include valo-panel-caption-style($background-color: $color1);
     font-weight: bold;
@@ -94,6 +103,7 @@
     border: none;
     //border-radius: initial;
   }
+*/
   
   .v-label-red {
     color: red;

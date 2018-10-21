@@ -4,6 +4,8 @@
  */
 package org.hypothesis.presenter;
 
+import static org.hypothesis.presenter.BroadcastMessages.REFRESH_PACKS;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +51,7 @@ import com.vaadin.ui.UI;
  *
  */
 @SuppressWarnings("serial")
-public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
+public class PublicPacksPresenter extends AbstractViewPresenter implements PacksPresenter, BroadcastListener {
 
 	protected final PermissionService permissionService;
 	private final TokenService tokenService;
@@ -58,37 +60,7 @@ public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 
 	private final HashMap<PackPanel, BeanItem<Pack>> panelBeans = new HashMap<>();
 
-	private User user = null;
-
 	private boolean testStarted = false;
-//	private Date featuredStart;
-
-//	private final ClickListener featuredButtonClickListener = new ClickListener() {
-//		@Override
-//		public void buttonClick(ClickEvent event) {
-//			if (!testStarted) {
-//				Pack pack = getPanelBean(getParentPanel(event.getButton()));
-//
-//				if (pack != null) {
-//					Date now = new Date();
-//
-//					// apply 30 seconds delay from last featured start
-//					Date beforeDate = new Date(now.getTime() - 30000);
-//					if (featuredStart != null && featuredStart.after(beforeDate)) {
-//						return;
-//					}
-//
-//					featuredStart = null;
-//					Token token = createToken(pack);
-//
-//					if (token != null) {
-//						featuredStart = new Date();
-//						DeployJava.get(view.getUI()).launchJavaWebStart(constructStartJnlp(token.getUid()));
-//					}
-//				}
-//			}
-//		}
-//	};
 
 	private final ClickListener legacyButtonClickListener = new ClickListener() {
 		@Override
@@ -127,9 +99,16 @@ public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 		tokenService = TokenService.newInstance();
 	}
 
+	protected PacksView getView() {
+		return view;
+	}
+
+	protected HashMap<PackPanel, BeanItem<Pack>> getPanelBeans() {
+		return panelBeans;
+	}
+
 	@Override
 	public void attach() {
-		setUser(SessionManager.getLoggedUser());
 		BroadcastService.register(this);
 	}
 
@@ -149,28 +128,12 @@ public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 
 	private Token createToken(Pack pack) {
 		String viewUid = SessionManager.getMainUID();
-		return tokenService.createToken(user, pack, viewUid, true);
+		return tokenService.createToken(getLoggedUser(), pack, viewUid, true);
 	}
-
-//	private String constructStartJnlp(String uid) {
-//		StringBuilder builder = new StringBuilder();
-//		String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
-//		builder.append(contextUrl);
-//		builder.append("/resource/browserapplication.jnlp?");
-//		builder.append("jnlp.app_url=");
-//		builder.append(contextUrl);
-//		builder.append("/process/");
-//		builder.append("&jnlp.close_key=");
-//		builder.append("close.html");
-//		builder.append("&jnlp.token=");
-//		builder.append(uid);
-//
-//		return builder.toString();
-//	}
 
 	private String constructStartUrl(String uid, boolean returnBack) {
 		StringBuilder builder = new StringBuilder();
-		String contextUrl = ServletUtil.getContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
+		String contextUrl = ServletUtil.getHttpContextURL((VaadinServletRequest) VaadinService.getCurrentRequest());
 		builder.append(contextUrl);
 		builder.append("/process/?");
 
@@ -214,25 +177,16 @@ public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 		view.markAsDirty();
 	}
 
-	private PackPanel createPackPanel(Pack pack) {
+	protected PackPanel createPackPanel(Pack pack) {
 		BeanItem<Pack> beanItem = new BeanItem<>(pack);
 		PackPanel panel = new PackPanel();
 
 		panel.setCaption(pack.getName());
 		panel.setIcon(FontAwesome.ARCHIVE);
 		panel.setDescriptionPropertyDataSource(beanItem.getItemProperty("description"));
-//		panel.setStartInfoCaption(Messages.getString("Caption.Pack.ControlTop"));
-//		panel.setStartInfoSingleCaption(Messages.getString("Caption.Pack.ControlTopSingle"));
-//		panel.setModeCaption(Messages.getString("Caption.Pack.ControlBottom"));
-//		panel.setModeSingleCaption(Messages.getString("Caption.Pack.ControlBottomSingle"));
-//		panel.setNoJavaCaption(Messages.getString("Caption.Pack.NoJava"));
-//		panel.setFeaturedButtonCaption(Messages.getString("Caption.Button.StartFeatured"));
-//		panel.setFeaturedButtonClickListener(featuredButtonClickListener);
 		panel.setLegacyButtonCaption(Messages.getString("Caption.Button.StartLegacy"));
 		panel.setLegacyButtonClickListener(legacyButtonClickListener);
 		panel.setLegacyButtonWindowClosedListener(legacyButtonWindowClosedListener);
-
-//		panel.setJavaRequired(pack.isJavaRequired());
 
 		panelBeans.put(panel, beanItem);
 
@@ -256,32 +210,21 @@ public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 		return null;
 	}
 
-	protected User getUser() {
-		return user;
-	}
-
-	protected void setUser(User user) {
-		this.user = user;
-	}
-
 	@Override
 	public View createView() {
 		view = new PacksView(this);
 
 		view.setEmptyInfoCaption(FontAwesome.FROWN_O.getHtml() + " " + Messages.getString("Message.Info.NoPacks"));
-//		view.setCheckingJavaInfo(Messages.getString("Message.Info.CheckingJava"));
-//		view.setJavaInstalledCaption(Messages.getString("Message.Info.JavaInstalled"));
-//		view.setJavaNotInstalledCaption(Messages.getString("Message.Info.JavaNotInstalled"));
-//		view.setJavaInstalLinkCaption(Messages.getString("Message.Info.GetJava"));
-
-		// afterCreate();
 
 		return view;
 	}
 
 	@Override
 	public void receiveBroadcast(String message) {
-		if (view != null && view.getUI() != null && view.getUI().getSession() != null) { // prevent from detached ui
+		if (view != null && view.getUI() != null && view.getUI().getSession() != null) { // prevent
+																							// from
+																							// detached
+																							// ui
 			// deserialize received message
 			final UIMessage uiMessage = UIMessage.fromJson(message);
 
@@ -296,12 +239,16 @@ public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 			Long groupId = message.getGroupId();
 			Long userId = message.getUserId();
 
-			if (null == groupId && null == userId) { // non addressed broadcast message
+			User loggedUser = getLoggedUser();
+
+			if (null == groupId && null == userId) { // non addressed broadcast
+														// message
 				return true;
 
-			} else if (user != null // addressed message, user must be logged
-					&& ((groupId != null && groupMatches(groupId, user.getGroups()))
-							|| (userId != null && user.getId().equals(userId)))) {
+			} else if (loggedUser != null // addressed message, user must be
+											// logged
+					&& ((groupId != null && groupMatches(groupId, loggedUser.getGroups()))
+							|| (userId != null && loggedUser.getId().equals(userId)))) {
 				return true;
 			}
 		}
@@ -320,7 +267,7 @@ public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 	}
 
 	private void handleMessage(UIMessage message) {
-		if ("RefreshPacks".equals(message.getType())) {
+		if (REFRESH_PACKS.equals(message.getType())) {
 			pushCommand(new Command() {
 				@Override
 				public void execute() {
@@ -329,7 +276,7 @@ public class PublicPacksPresenter implements PacksPresenter, BroadcastListener {
 			});
 		}
 	}
-	
+
 	private void pushCommand(final Command command) {
 		if (command != null && view != null && view.getUI() != null) {
 			final UI ui = view.getUI();

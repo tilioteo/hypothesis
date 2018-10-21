@@ -4,6 +4,8 @@
  */
 package org.hypothesis.extension;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -23,8 +25,6 @@ import org.hypothesis.interfaces.Plugin;
 import org.hypothesis.interfaces.SlideComponentPlugin;
 import org.hypothesis.interfaces.SlideComponentPlugin.ValidParentGroup;
 import org.hypothesis.utility.XmlUtility;
-
-import com.tilioteo.common.Strings;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -94,7 +94,7 @@ public class PluginManager implements Serializable {
 		Element classElement = getClassElement(element);
 		if (classElement != null) {
 			String className = classElement.getTextTrim();
-			if (!Strings.isNullOrEmpty(className)) {
+			if (isNotEmpty(className)) {
 				registerPluginClassName(className);
 			}
 		}

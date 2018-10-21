@@ -11,7 +11,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 
 /**
- * @author morongk
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
  *
  */
 @SuppressWarnings("serial")
@@ -30,15 +32,9 @@ public class PackManagementPresenter extends AbstractManagementPresenter {
 	}
 
 	@Override
-	public void init() {
+	public void onClose(ConfirmDialog arg0) {
 		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void onClose(ConfirmDialog dialog) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

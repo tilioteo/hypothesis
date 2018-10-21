@@ -10,6 +10,7 @@ import java.util.Set;
 import org.hypothesis.data.model.Role;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.interfaces.ViewPresenter;
+import org.hypothesis.presenter.ControlPanelVNPresenter;
 import org.hypothesis.presenter.ExportPresenterImpl;
 import org.hypothesis.presenter.ExportScoreVNPresenterImpl;
 import org.hypothesis.presenter.GroupManagementPresenter;
@@ -34,6 +35,7 @@ public enum HypothesisViewType {
 	USERS("/users", "Caption.View.Users", UserManagementVNPresenter.class, FontAwesome.USER, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
 	GROUPS("/groups", "Caption.View.Groups", GroupManagementPresenter.class, FontAwesome.GROUP, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
 	PACK_SETS("/sets", "Caption.View.PackSets", PackSetManagementVNPresenter.class, FontAwesome.BOOK, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
+	CONTROL("/control", "Caption.View.ControlPanel", ControlPanelVNPresenter.class, FontAwesome.LIST, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
 	EXPORT("/export", "Caption.View.Export", ExportPresenterImpl.class, FontAwesome.TABLE, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
 	SCORES("/scores", "Caption.View.Scores", ExportScoreVNPresenterImpl.class, FontAwesome.BAR_CHART, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
 	SLIDES("/slides", "Caption.View.Slides", SlideManagementPresenterImpl.class, FontAwesome.FILE_CODE_O, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER});

@@ -14,7 +14,8 @@ import java.io.Serializable;
  */
 public interface HasMainEventBus extends Serializable {
 
-	void setMainEventBus(MainEventBus bus);
-	MainEventBus getMainEventBus();
+	MainEventBus getBus();
+
+	void setBus(MainEventBus bus);
 
 }

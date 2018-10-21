@@ -4,23 +4,94 @@
  */
 package org.hypothesis.builder;
 
+import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.hypothesis.common.ValidationSets.VALID_CONTAINER_CHILDREN;
+import static org.hypothesis.common.ValidationSets.VALID_WINDOW_CHILDREN;
+import static org.hypothesis.common.utility.StringUtility.toInteger;
+import static org.hypothesis.event.model.ProcessEventTypes.AudioLoad;
+import static org.hypothesis.event.model.ProcessEventTypes.AudioStart;
+import static org.hypothesis.event.model.ProcessEventTypes.AudioStop;
+import static org.hypothesis.event.model.ProcessEventTypes.ButtonClick;
+import static org.hypothesis.event.model.ProcessEventTypes.ButtonPanelClick;
+import static org.hypothesis.event.model.ProcessEventTypes.ClientSimEvent;
+import static org.hypothesis.event.model.ProcessEventTypes.ImageClick;
+import static org.hypothesis.event.model.ProcessEventTypes.ImageError;
+import static org.hypothesis.event.model.ProcessEventTypes.ImageLoad;
+import static org.hypothesis.event.model.ProcessEventTypes.Message;
+import static org.hypothesis.event.model.ProcessEventTypes.SelectPanelClick;
+import static org.hypothesis.event.model.ProcessEventTypes.ShortcutKey;
+import static org.hypothesis.event.model.ProcessEventTypes.SlideInit;
+import static org.hypothesis.event.model.ProcessEventTypes.SlideShow;
+import static org.hypothesis.event.model.ProcessEventTypes.TimerStart;
+import static org.hypothesis.event.model.ProcessEventTypes.TimerStop;
+import static org.hypothesis.event.model.ProcessEventTypes.TimerUpdate;
+import static org.hypothesis.event.model.ProcessEventTypes.VideoClick;
+import static org.hypothesis.event.model.ProcessEventTypes.VideoLoad;
+import static org.hypothesis.event.model.ProcessEventTypes.VideoStart;
+import static org.hypothesis.event.model.ProcessEventTypes.VideoStop;
+import static org.hypothesis.event.model.ProcessEventTypes.WindowClose;
+import static org.hypothesis.event.model.ProcessEventTypes.WindowInit;
+import static org.hypothesis.event.model.ProcessEventTypes.WindowOpen;
+import static org.hypothesis.interfaces.ComponentEventCallback.DEFAULT;
+import static org.hypothesis.interfaces.DocumentConstants.AUDIO;
+import static org.hypothesis.interfaces.DocumentConstants.BUTTON;
+import static org.hypothesis.interfaces.DocumentConstants.BUTTON_PANEL;
+import static org.hypothesis.interfaces.DocumentConstants.CLICK;
+import static org.hypothesis.interfaces.DocumentConstants.CLIENT;
+import static org.hypothesis.interfaces.DocumentConstants.CLIENT_SIM;
+import static org.hypothesis.interfaces.DocumentConstants.COMBOBOX;
+import static org.hypothesis.interfaces.DocumentConstants.COMPONENT;
+import static org.hypothesis.interfaces.DocumentConstants.DATE_FIELD;
+import static org.hypothesis.interfaces.DocumentConstants.EMPTY;
+import static org.hypothesis.interfaces.DocumentConstants.ERROR;
+import static org.hypothesis.interfaces.DocumentConstants.FINISH;
+import static org.hypothesis.interfaces.DocumentConstants.FORM_LAYOUT;
+import static org.hypothesis.interfaces.DocumentConstants.HORIZONTAL_LAYOUT;
+import static org.hypothesis.interfaces.DocumentConstants.IMAGE;
+import static org.hypothesis.interfaces.DocumentConstants.INIT;
+import static org.hypothesis.interfaces.DocumentConstants.INPUT_VALUE;
+import static org.hypothesis.interfaces.DocumentConstants.INTEGER;
+import static org.hypothesis.interfaces.DocumentConstants.INTERVAL;
+import static org.hypothesis.interfaces.DocumentConstants.LABEL;
+import static org.hypothesis.interfaces.DocumentConstants.LOAD;
+import static org.hypothesis.interfaces.DocumentConstants.MESSAGE;
+import static org.hypothesis.interfaces.DocumentConstants.NUMBER;
+import static org.hypothesis.interfaces.DocumentConstants.OUTPUT_VALUE;
+import static org.hypothesis.interfaces.DocumentConstants.PANEL;
+import static org.hypothesis.interfaces.DocumentConstants.RANGE;
+import static org.hypothesis.interfaces.DocumentConstants.SELECT_PANEL;
+import static org.hypothesis.interfaces.DocumentConstants.SHORTCUT;
+import static org.hypothesis.interfaces.DocumentConstants.SHOW;
+import static org.hypothesis.interfaces.DocumentConstants.SLIDE;
+import static org.hypothesis.interfaces.DocumentConstants.START;
+import static org.hypothesis.interfaces.DocumentConstants.STOP;
+import static org.hypothesis.interfaces.DocumentConstants.TEXT_AREA;
+import static org.hypothesis.interfaces.DocumentConstants.TEXT_FIELD;
+import static org.hypothesis.interfaces.DocumentConstants.TIMER;
+import static org.hypothesis.interfaces.DocumentConstants.TIMER_ID;
+import static org.hypothesis.interfaces.DocumentConstants.TIMER_LABEL;
+import static org.hypothesis.interfaces.DocumentConstants.UPDATE;
+import static org.hypothesis.interfaces.DocumentConstants.VERTICAL_LAYOUT;
+import static org.hypothesis.interfaces.DocumentConstants.VIDEO;
+import static org.hypothesis.interfaces.DocumentConstants.WINDOW;
+
 import java.util.Date;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ShortcutUtility;
 import org.hypothesis.business.ShortcutUtility.ShortcutKeys;
 import org.hypothesis.common.AlignmentWrapperImpl;
 import org.hypothesis.common.ComponentWrapperImpl;
-import org.hypothesis.common.ValidationSets;
 import org.hypothesis.common.utility.ComponentUtility;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.common.utility.EvaluableUtility;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.event.model.MessageEvent;
-import org.hypothesis.event.model.ProcessEventTypes;
 import org.hypothesis.extension.PluginManager;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.AlignmentWrapper;
@@ -42,6 +113,7 @@ import org.hypothesis.slide.ui.Audio;
 import org.hypothesis.slide.ui.Button;
 import org.hypothesis.slide.ui.ButtonPanel;
 import org.hypothesis.slide.ui.ClientSim;
+import org.hypothesis.slide.ui.ClientSim.ClientEvent;
 import org.hypothesis.slide.ui.ComboBox;
 import org.hypothesis.slide.ui.DateField;
 import org.hypothesis.slide.ui.HorizontalLayout;
@@ -56,7 +128,6 @@ import org.hypothesis.slide.ui.TimerLabel;
 import org.hypothesis.slide.ui.VerticalLayout;
 import org.hypothesis.slide.ui.Video;
 import org.hypothesis.slide.ui.Window;
-import org.hypothesis.slide.ui.ClientSim.ClientEvent;
 import org.hypothesis.ui.SlideContainer;
 import org.vaadin.special.data.DateRangeValidator;
 import org.vaadin.special.data.EmptyValidator;
@@ -71,10 +142,7 @@ import org.vaadin.special.ui.KeyAction.KeyActionListener;
 import org.vaadin.special.ui.Media;
 import org.vaadin.special.ui.SelectButton;
 
-import com.tilioteo.common.Strings;
-import com.tilioteo.common.collections.StringMap;
 import com.vaadin.data.Validatable;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
@@ -144,14 +212,14 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		EvaluableUtility.createVariables(rootElement, presenter, new ReferenceCallback() {
 			@Override
 			public Object getReference(String name, String id, Evaluator evaluator) {
-				if (!Strings.isNullOrEmpty(id) && evaluator instanceof SlideContainerPresenter) {
+				if (isNotEmpty(id) && evaluator instanceof SlideContainerPresenter) {
 					SlideContainerPresenter presenter = (SlideContainerPresenter) evaluator;
 
-					if (DocumentConstants.COMPONENT.equals(name)) {
+					if (COMPONENT.equals(name)) {
 						return presenter.getComponent(id);
-					} else if (DocumentConstants.TIMER.equals(name)) {
+					} else if (TIMER.equals(name)) {
 						return presenter.getTimer(id);
-					} else if (DocumentConstants.WINDOW.equals(name)) {
+					} else if (WINDOW.equals(name)) {
 						return presenter.getWindow(id);
 					}
 				}
@@ -167,8 +235,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 		if (inputElements != null) {
 			for (Element inputElement : inputElements) {
-				IndexedExpression indexedExpression = EvaluableUtility.createValueExpression(inputElement,
-						DocumentConstants.INPUT_VALUE);
+				IndexedExpression indexedExpression = EvaluableUtility.createValueExpression(inputElement, INPUT_VALUE);
 				if (indexedExpression != null) {
 					presenter.setInputExpression(indexedExpression.getIndex(), indexedExpression);
 				}
@@ -182,7 +249,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		if (outputElements != null) {
 			for (Element outputElement : outputElements) {
 				IndexedExpression indexedExpression = EvaluableUtility.createValueExpression(outputElement,
-						DocumentConstants.OUTPUT_VALUE);
+						OUTPUT_VALUE);
 				if (indexedExpression != null) {
 					presenter.setOutputExpression(indexedExpression.getIndex(), indexedExpression);
 				}
@@ -209,7 +276,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		if (elements != null) {
 			for (Element element : elements) {
 				String id = DocumentUtility.getId(element);
-				if (!Strings.isNullOrEmpty(id)) {
+				if (isNotEmpty(id)) {
 
 					Timer timer = createTimer(element, presenter);
 					presenter.setTimer(id, timer);
@@ -219,7 +286,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private Timer createTimer(Element element, SlideContainerPresenter presenter) {
-		StringMap properties = DocumentUtility.getPropertyValueMap(element);
+		Map<String, String> properties = DocumentUtility.getPropertyValueMap(element);
 
 		Timer component = new Timer();
 		SlideComponentUtility.setTimerProperties(component, element, properties);
@@ -235,45 +302,42 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String actionId, final Action action, final SlidePresenter presenter) {
 				final Timer timer = (Timer) component;
 
-				if (DocumentConstants.START.equals(name)) {
+				if (START.equals(name)) {
 					timer.addStartListener(new Timer.StartListener() {
 						@Override
 						public void start(final Timer.StartEvent event) {
-							presenter.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStart, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setProperty("time", event.getTime());
-										}
-									});
+							presenter.handleEvent(timer, TIMER, TimerStart, action, new ComponentEventCallback() {
+								@Override
+								public void initEvent(ComponentEvent componentEvent) {
+									componentEvent.setProperty("time", event.getTime());
+								}
+							});
 						}
 					});
-				} else if (DocumentConstants.STOP.equals(name)) {
+				} else if (STOP.equals(name)) {
 					timer.addStopListener(new Timer.StopListener() {
 						@Override
 						public void stop(final Timer.StopEvent event) {
-							presenter.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerStop, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setProperty("time", event.getTime());
-										}
-									});
+							presenter.handleEvent(timer, TIMER, TimerStop, action, new ComponentEventCallback() {
+								@Override
+								public void initEvent(ComponentEvent componentEvent) {
+									componentEvent.setProperty("time", event.getTime());
+								}
+							});
 						}
 					});
-				} else if (DocumentConstants.UPDATE.equals(name)) {
-					Integer interval = Strings.toInteger((element.getAttribute(DocumentConstants.INTERVAL)));
+				} else if (UPDATE.equals(name)) {
+					Integer interval = toInteger((element.getAttribute(INTERVAL)));
 					if (interval != null) {
 						timer.addUpdateListener(interval, new Timer.UpdateListener() {
 							@Override
 							public void update(final Timer.UpdateEvent event) {
-								presenter.handleEvent(timer, DocumentConstants.TIMER, ProcessEventTypes.TimerUpdate,
-										action, new ComponentEventCallback() {
-											@Override
-											public void initEvent(ComponentEvent componentEvent) {
-												componentEvent.setProperty("time", event.getTime());
-											}
-										});
+								presenter.handleEvent(timer, TIMER, TimerUpdate, action, new ComponentEventCallback() {
+									@Override
+									public void initEvent(ComponentEvent componentEvent) {
+										componentEvent.setProperty("time", event.getTime());
+									}
+								});
 							}
 						});
 					}
@@ -288,7 +352,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		if (elements != null) {
 			for (Element windowElement : elements) {
 				String id = DocumentUtility.getId(windowElement);
-				if (!Strings.isNullOrEmpty(id)) {
+				if (isNotEmpty(id)) {
 					Element element = DocumentUtility.getViewportOrWindowRootElement(windowElement);
 
 					if (element != null) {
@@ -301,7 +365,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private Window createWindow(Element element, SlideContainerPresenter presenter) {
-		StringMap properties = DocumentUtility.getPropertyValueMap(element);
+		Map<String, String> properties = DocumentUtility.getPropertyValueMap(element);
 
 		Window component = new Window();
 		SlideComponentUtility.setWindowProperties(component, element, properties, new AlignmentWrapperImpl());
@@ -312,7 +376,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private void addWindowComponents(Window container, Element element, SlideContainerPresenter presenter) {
-		List<Element> elements = DocumentUtility.getContainerComponents(element, ValidationSets.VALID_WINDOW_CHILDREN);
+		List<Element> elements = DocumentUtility.getContainerComponents(element, VALID_WINDOW_CHILDREN);
 
 		if (elements != null) {
 			for (Element childElement : elements) {
@@ -345,24 +409,21 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					window.addInitListener(new Window.InitListener() {
 						@Override
 						public void initWindow(Window.InitEvent event) {
-							presenter.handleEvent(window, DocumentConstants.WINDOW, ProcessEventTypes.WindowInit,
-									action, ComponentEventCallback.DEFAULT);
+							presenter.handleEvent(window, WINDOW, WindowInit, action, DEFAULT);
 						}
 					});
 				} else if (DocumentConstants.OPEN.equals(name)) {
 					window.addOpenListener(new Window.OpenListener() {
 						@Override
 						public void openWindow(Window.OpenEvent event) {
-							presenter.handleEvent(window, DocumentConstants.WINDOW, ProcessEventTypes.WindowOpen,
-									action, ComponentEventCallback.DEFAULT);
+							presenter.handleEvent(window, WINDOW, WindowOpen, action, DEFAULT);
 						}
 					});
 				} else if (DocumentConstants.CLOSE.equals(name)) {
 					window.addCloseListener(new Window.CloseListener() {
 						@Override
 						public void windowClose(Window.CloseEvent event) {
-							presenter.handleEvent(window, DocumentConstants.WINDOW, ProcessEventTypes.WindowClose,
-									action, ComponentEventCallback.DEFAULT);
+							presenter.handleEvent(window, WINDOW, WindowClose, action, DEFAULT);
 						}
 					});
 				}
@@ -392,31 +453,28 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String actionId, final Action action, final SlidePresenter presenter) {
 				final SlideContainer container = (SlideContainer) component;
 
-				if (DocumentConstants.INIT.equals(name)) {
+				if (INIT.equals(name)) {
 					presenter.addViewportInitListener(new ViewportEventListener() {
 						@Override
 						public void handleEvent(EventObject event) {
-							presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.SlideInit,
-									action, ComponentEventCallback.DEFAULT);
+							presenter.handleEvent(container, SLIDE, SlideInit, action, DEFAULT);
 						}
 					});
-				} else if (DocumentConstants.SHOW.equals(name)) {
+				} else if (SHOW.equals(name)) {
 					presenter.addViewportShowListener(new ViewportEventListener() {
 						@Override
 						public void handleEvent(EventObject event) {
-							presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.SlideShow,
-									action, ComponentEventCallback.DEFAULT);
+							presenter.handleEvent(container, SLIDE, SlideShow, action, DEFAULT);
 						}
 					});
-				} else if (DocumentConstants.FINISH.equals(name)) {
+				} else if (FINISH.equals(name)) {
 					presenter.addViewportFinishListener(new ViewportEventListener() {
 						@Override
 						public void handleEvent(EventObject event) {
-							presenter.handleEvent(container, DocumentConstants.SLIDE, null,
-									action, ComponentEventCallback.DEFAULT);
+							presenter.handleEvent(container, SLIDE, null, action, DEFAULT);
 						}
 					});
-				} else if (DocumentConstants.SHORTCUT.equals(name)) {
+				} else if (SHORTCUT.equals(name)) {
 					String key = DocumentUtility.getKey(handler);
 					ShortcutKeys shortcutKeys = ShortcutUtility.parseShortcut(key);
 					if (shortcutKeys != null) {
@@ -431,8 +489,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						keyAction.addKeypressListener(new KeyActionListener() {
 							@Override
 							public void keyPressed(final KeyActionEvent keyPressEvent) {
-								presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.ShortcutKey,
-										action, new ComponentEventCallback() {
+								presenter.handleEvent(container, SLIDE, ShortcutKey, action,
+										new ComponentEventCallback() {
 											@Override
 											public void initEvent(ComponentEvent componentEvent) {
 												componentEvent.setTimestamp(keyPressEvent.getServerDatetime());
@@ -464,17 +522,17 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 						// presenter.addShortcutKey(shortcutKey);
 						presenter.addKeyAction(keyAction);
 					}
-				} else if (DocumentConstants.MESSAGE.equals(name)) {
+				} else if (MESSAGE.equals(name)) {
 					String uid = DocumentUtility.getUid(handler);
-					if (!Strings.isNullOrEmpty(uid)) {
+					if (isNotEmpty(uid)) {
 						presenter.addMessageListener(uid, new MessageEventListener() {
 							@Override
 							public void handleEvent(EventObject event) {
 								if (event instanceof MessageEvent) {
 									final MessageEvent messageEvent = (MessageEvent) event;
 
-									presenter.handleEvent(container, DocumentConstants.SLIDE, ProcessEventTypes.Message,
-											action, new ComponentEventCallback() {
+									presenter.handleEvent(container, SLIDE, Message, action,
+											new ComponentEventCallback() {
 												@Override
 												public void initEvent(ComponentEvent componentEvent) {
 													componentEvent.setProperty("message", messageEvent.getMessage(),
@@ -500,44 +558,44 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 			Component component = null;
 
-			StringMap properties = DocumentUtility.getPropertyValueMap(element);
+			Map<String, String> properties = DocumentUtility.getPropertyValueMap(element);
 			AlignmentWrapper alignmentWrapper = new AlignmentWrapperImpl();
 
-			if (name.equals(DocumentConstants.VERTICAL_LAYOUT))
+			if (name.equals(VERTICAL_LAYOUT))
 				component = createVerticalLayout(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.HORIZONTAL_LAYOUT))
+			else if (name.equals(HORIZONTAL_LAYOUT))
 				component = createHorizontalLayout(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.FORM_LAYOUT))
+			else if (name.equals(FORM_LAYOUT))
 				component = createFormLayout(element, properties, alignmentWrapper, presenter);
 
-			else if (name.equals(DocumentConstants.PANEL))
+			else if (name.equals(PANEL))
 				component = createPanel(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.IMAGE))
+			else if (name.equals(IMAGE))
 				component = createImage(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.VIDEO))
+			else if (name.equals(VIDEO))
 				component = createVideo(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.AUDIO))
+			else if (name.equals(AUDIO))
 				component = createAudio(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.BUTTON))
+			else if (name.equals(BUTTON))
 				component = createButton(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.BUTTON_PANEL))
+			else if (name.equals(BUTTON_PANEL))
 				component = createButtonPanel(element, properties, alignmentWrapper, presenter);
 
-			else if (name.equals(DocumentConstants.SELECT_PANEL))
+			else if (name.equals(SELECT_PANEL))
 				component = createSelectPanel(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.TEXT_FIELD))
+			else if (name.equals(TEXT_FIELD))
 				component = createTextField(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.TEXT_AREA))
+			else if (name.equals(TEXT_AREA))
 				component = createTextArea(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.DATE_FIELD))
+			else if (name.equals(DATE_FIELD))
 				component = createDateField(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.COMBOBOX))
+			else if (name.equals(COMBOBOX))
 				component = createComboBox(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.TIMER_LABEL))
+			else if (name.equals(TIMER_LABEL))
 				component = createTimerLabel(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.LABEL))
+			else if (name.equals(LABEL))
 				component = createLabel(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DocumentConstants.CLIENT_SIM))
+			else if (name.equals(CLIENT_SIM))
 				component = createClientSim(element, properties, alignmentWrapper, presenter);
 
 			if (component != null) {
@@ -554,7 +612,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return null;
 	}
 
-	private VerticalLayout createVerticalLayout(Element element, StringMap properties,
+	private VerticalLayout createVerticalLayout(Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		VerticalLayout component = new VerticalLayout();
 		ComponentUtility.setCommonLayoutProperties(component, element, properties, alignmentWrapper);
@@ -565,8 +623,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 	private void addVerticalLayoutComponents(VerticalLayout container, Element element,
 			SlideContainerPresenter presenter) {
-		List<Element> elements = DocumentUtility.getContainerComponents(element,
-				ValidationSets.VALID_CONTAINER_CHILDREN);
+		List<Element> elements = DocumentUtility.getContainerComponents(element, VALID_CONTAINER_CHILDREN);
 
 		if (elements != null) {
 			for (Element childElement : elements) {
@@ -578,7 +635,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					container.setComponentAlignment(component, componentWrapper.getAlignment());
 
 					float ratio = 1.0f;
-					if (component.getHeightUnits() == Unit.PERCENTAGE) {
+					if (component.getHeightUnits() == PERCENTAGE) {
 						ratio = component.getHeight() / 100;
 						component.setHeight("100%");
 					}
@@ -589,7 +646,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		}
 	}
 
-	private HorizontalLayout createHorizontalLayout(Element element, StringMap properties,
+	private HorizontalLayout createHorizontalLayout(Element element, Map<String, String> properties,
 			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		HorizontalLayout component = new HorizontalLayout();
 		ComponentUtility.setCommonLayoutProperties(component, element, properties, alignmentWrapper);
@@ -600,8 +657,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
 	private void addHorizontalLayoutComponents(HorizontalLayout container, Element element,
 			SlideContainerPresenter presenter) {
-		List<Element> elements = DocumentUtility.getContainerComponents(element,
-				ValidationSets.VALID_CONTAINER_CHILDREN);
+		List<Element> elements = DocumentUtility.getContainerComponents(element, VALID_CONTAINER_CHILDREN);
 
 		if (elements != null) {
 			for (Element childElement : elements) {
@@ -613,7 +669,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					container.setComponentAlignment(component, componentWrapper.getAlignment());
 
 					float ratio = 1.0f;
-					if (component.getWidthUnits() == Unit.PERCENTAGE) {
+					if (component.getWidthUnits() == PERCENTAGE) {
 						ratio = component.getWidth() / 100;
 						component.setWidth("100%");
 					}
@@ -624,8 +680,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		}
 	}
 
-	private FormLayout createFormLayout(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private FormLayout createFormLayout(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		FormLayout component = new FormLayout();
 		ComponentUtility.setCommonLayoutProperties(component, element, properties, alignmentWrapper);
 		addFormLayoutComponents(component, element, presenter);
@@ -634,8 +690,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private void addFormLayoutComponents(FormLayout container, Element element, SlideContainerPresenter presenter) {
-		List<Element> elements = DocumentUtility.getContainerComponents(element,
-				ValidationSets.VALID_CONTAINER_CHILDREN);
+		List<Element> elements = DocumentUtility.getContainerComponents(element, VALID_CONTAINER_CHILDREN);
 
 		if (elements != null) {
 			for (Element childElement : elements) {
@@ -649,7 +704,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		}
 	}
 
-	private Panel createPanel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Panel createPanel(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Panel component = new Panel();
 		SlideComponentUtility.setPanelProperties(component, element, properties, alignmentWrapper);
@@ -659,8 +714,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 	}
 
 	private void addPanelComponents(Panel container, Element element, SlideContainerPresenter presenter) {
-		List<Element> elements = DocumentUtility.getContainerComponents(element,
-				ValidationSets.VALID_CONTAINER_CHILDREN);
+		List<Element> elements = DocumentUtility.getContainerComponents(element, VALID_CONTAINER_CHILDREN);
 
 		if (elements != null) {
 			for (Element childElement : elements) {
@@ -682,7 +736,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		}
 	}
 
-	private Image createImage(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Image createImage(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Image component = new Image();
 		SlideComponentUtility.setImageProperties(component, element, properties, alignmentWrapper);
@@ -698,39 +752,36 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String actionId, final Action action, final SlidePresenter presenter) {
 				final Image image = (Image) component;
 
-				if (DocumentConstants.CLICK.equals(name)) {
+				if (CLICK.equals(name)) {
 					image.addClickListener(new MouseEvents.ClickListener() {
 						@Override
 						public void click(final MouseEvents.ClickEvent event) {
-							presenter.handleEvent(image, DocumentConstants.IMAGE, ProcessEventTypes.ImageClick, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setTimestamp(event.getServerDatetime());
-											componentEvent.setClientTimestamp(event.getClientDatetime());
+							presenter.handleEvent(image, IMAGE, ImageClick, action, new ComponentEventCallback() {
+								@Override
+								public void initEvent(ComponentEvent componentEvent) {
+									componentEvent.setTimestamp(event.getServerDatetime());
+									componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("x", event.getRelativeX());
-											componentEvent.setProperty("y", event.getRelativeY());
-										}
-									});
+									componentEvent.setProperty("x", event.getRelativeX());
+									componentEvent.setProperty("y", event.getRelativeY());
+								}
+							});
 						}
 					});
-				} else if (DocumentConstants.LOAD.equals(name)) {
+				} else if (LOAD.equals(name)) {
 					image.addLoadListener(new Image.LoadListener() {
 						@Override
 						public void load(Image.LoadEvent event) {
-							presenter.handleEvent(image, DocumentConstants.IMAGE, ProcessEventTypes.ImageLoad, action,
-									ComponentUtility.createDefaultEventCallback(event.getServerDatetime(),
-											event.getClientDatetime()));
+							presenter.handleEvent(image, IMAGE, ImageLoad, action, ComponentUtility
+									.createDefaultEventCallback(event.getServerDatetime(), event.getClientDatetime()));
 						}
 					});
-				} else if (DocumentConstants.ERROR.equals(name)) {
+				} else if (ERROR.equals(name)) {
 					image.addErrorListener(new Image.ErrorListener() {
 						@Override
 						public void error(Image.ErrorEvent event) {
-							presenter.handleEvent(image, DocumentConstants.IMAGE, ProcessEventTypes.ImageError, action,
-									ComponentUtility.createDefaultEventCallback(event.getServerDatetime(),
-											event.getClientDatetime()));
+							presenter.handleEvent(image, IMAGE, ImageError, action, ComponentUtility
+									.createDefaultEventCallback(event.getServerDatetime(), event.getClientDatetime()));
 						}
 					});
 				}
@@ -738,7 +789,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private Video createVideo(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Video createVideo(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Video component = new Video();
 		SlideComponentUtility.setVideoProperties(component, element, properties, alignmentWrapper);
@@ -754,59 +805,55 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String actionId, final Action action, final SlidePresenter presenter) {
 				final Video video = (Video) component;
 
-				if (DocumentConstants.CLICK.equals(name)) {
+				if (CLICK.equals(name)) {
 					video.addClickListener(new Video.ClickListener() {
 						@Override
 						public void click(final Video.ClickEvent event) {
-							presenter.handleEvent(video, DocumentConstants.VIDEO, ProcessEventTypes.VideoClick, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setTimestamp(event.getServerDatetime());
-											componentEvent.setClientTimestamp(event.getClientDatetime());
+							presenter.handleEvent(video, VIDEO, VideoClick, action, new ComponentEventCallback() {
+								@Override
+								public void initEvent(ComponentEvent componentEvent) {
+									componentEvent.setTimestamp(event.getServerDatetime());
+									componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("x", event.getRelativeX());
-											componentEvent.setProperty("y", event.getRelativeY());
-										}
-									});
+									componentEvent.setProperty("x", event.getRelativeX());
+									componentEvent.setProperty("y", event.getRelativeY());
+								}
+							});
 						}
 					});
-				} else if (DocumentConstants.LOAD.equals(name)) {
+				} else if (LOAD.equals(name)) {
 					video.addCanPlayThroughListener(new Media.CanPlayThroughListener() {
 						@Override
 						public void canPlayThrough(Media.CanPlayThroughEvent event) {
-							presenter.handleEvent(video, DocumentConstants.VIDEO, ProcessEventTypes.VideoLoad, action,
-									ComponentUtility.createDefaultEventCallback(event.getServerDatetime(),
-											event.getClientDatetime()));
+							presenter.handleEvent(video, VIDEO, VideoLoad, action, ComponentUtility
+									.createDefaultEventCallback(event.getServerDatetime(), event.getClientDatetime()));
 						}
 					});
-				} else if (DocumentConstants.START.equals(name)) {
+				} else if (START.equals(name)) {
 					video.addStartListener(new Media.StartListener() {
 						@Override
 						public void start(final Media.StartEvent event) {
-							presenter.handleEvent(video, DocumentConstants.VIDEO, ProcessEventTypes.VideoStart, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setProperty("time", event.getMediaTime());
-										}
-									});
+							presenter.handleEvent(video, VIDEO, VideoStart, action, new ComponentEventCallback() {
+								@Override
+								public void initEvent(ComponentEvent componentEvent) {
+									componentEvent.setProperty("time", event.getMediaTime());
+								}
+							});
 						}
 					});
-				} else if (DocumentConstants.STOP.equals(name)) {
+				} else if (STOP.equals(name)) {
 					video.addStopListener(new Media.StopListener() {
 						@Override
 						public void stop(final Media.StopEvent event) {
-							presenter.handleEvent(video, DocumentConstants.VIDEO, ProcessEventTypes.VideoStop, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setTimestamp(event.getServerDatetime());
-											componentEvent.setClientTimestamp(event.getClientDatetime());
+							presenter.handleEvent(video, VIDEO, VideoStop, action, new ComponentEventCallback() {
+								@Override
+								public void initEvent(ComponentEvent componentEvent) {
+									componentEvent.setTimestamp(event.getServerDatetime());
+									componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("time", event.getMediaTime());
-										}
-									});
+									componentEvent.setProperty("time", event.getMediaTime());
+								}
+							});
 						}
 					});
 				}
@@ -814,7 +861,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private Audio createAudio(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Audio createAudio(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Audio component = new Audio();
 		SlideComponentUtility.setAudioProperties(component, element, properties, alignmentWrapper);
@@ -830,45 +877,42 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String actionId, final Action action, final SlidePresenter presenter) {
 				final Audio audio = (Audio) component;
 
-				if (DocumentConstants.LOAD.equals(name)) {
+				if (LOAD.equals(name)) {
 					audio.addCanPlayThroughListener(new Media.CanPlayThroughListener() {
 						@Override
 						public void canPlayThrough(Media.CanPlayThroughEvent event) {
-							presenter.handleEvent(audio, DocumentConstants.AUDIO, ProcessEventTypes.AudioLoad, action,
-									ComponentUtility.createDefaultEventCallback(event.getServerDatetime(),
-											event.getClientDatetime()));
+							presenter.handleEvent(audio, AUDIO, AudioLoad, action, ComponentUtility
+									.createDefaultEventCallback(event.getServerDatetime(), event.getClientDatetime()));
 						}
 					});
-				} else if (DocumentConstants.START.equals(name)) {
+				} else if (START.equals(name)) {
 					audio.addStartListener(new Media.StartListener() {
 						@Override
 						public void start(final Media.StartEvent event) {
-							presenter.handleEvent(audio, DocumentConstants.AUDIO, ProcessEventTypes.AudioStart, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setTimestamp(event.getServerDatetime());
-											componentEvent.setClientTimestamp(event.getClientDatetime());
+							presenter.handleEvent(audio, AUDIO, AudioStart, action, new ComponentEventCallback() {
+								@Override
+								public void initEvent(ComponentEvent componentEvent) {
+									componentEvent.setTimestamp(event.getServerDatetime());
+									componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("time", event.getMediaTime());
-										}
-									});
+									componentEvent.setProperty("time", event.getMediaTime());
+								}
+							});
 						}
 					});
-				} else if (DocumentConstants.STOP.equals(name)) {
+				} else if (STOP.equals(name)) {
 					audio.addStopListener(new Media.StopListener() {
 						@Override
 						public void stop(final Media.StopEvent event) {
-							presenter.handleEvent(audio, DocumentConstants.AUDIO, ProcessEventTypes.AudioStop, action,
-									new ComponentEventCallback() {
-										@Override
-										public void initEvent(ComponentEvent componentEvent) {
-											componentEvent.setTimestamp(event.getServerDatetime());
-											componentEvent.setClientTimestamp(event.getClientDatetime());
+							presenter.handleEvent(audio, AUDIO, AudioStop, action, new ComponentEventCallback() {
+								@Override
+								public void initEvent(ComponentEvent componentEvent) {
+									componentEvent.setTimestamp(event.getServerDatetime());
+									componentEvent.setClientTimestamp(event.getClientDatetime());
 
-											componentEvent.setProperty("time", event.getMediaTime());
-										}
-									});
+									componentEvent.setProperty("time", event.getMediaTime());
+								}
+							});
 						}
 					});
 				}
@@ -876,7 +920,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private Button createButton(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Button createButton(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Button component = new Button();
 		SlideComponentUtility.setButtonProperties(component, element, properties, alignmentWrapper);
@@ -892,13 +936,12 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String actionId, final Action action, final SlidePresenter presenter) {
 				final Button button = (Button) component;
 
-				if (DocumentConstants.CLICK.equals(name)) {
+				if (CLICK.equals(name)) {
 					button.addClickListener(new Button.ClickListener() {
 						@Override
 						public void buttonClick(Button.ClickEvent event) {
-							presenter.handleEvent(button, DocumentConstants.BUTTON, ProcessEventTypes.ButtonClick,
-									action, ComponentUtility.createDefaultEventCallback(event.getServerDatetime(),
-											event.getClientDatetime()));
+							presenter.handleEvent(button, BUTTON, ButtonClick, action, ComponentUtility
+									.createDefaultEventCallback(event.getServerDatetime(), event.getClientDatetime()));
 						}
 					});
 				}
@@ -906,8 +949,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private ButtonPanel createButtonPanel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private ButtonPanel createButtonPanel(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		ButtonPanel component = new ButtonPanel();
 		SlideComponentUtility.setButtonPanelProperties(component, element, properties, alignmentWrapper);
 		addButtonPanelHandlers(component, element, presenter);
@@ -922,12 +965,12 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String actionId, final Action action, final SlidePresenter presenter) {
 				final ButtonPanel buttonPanel = (ButtonPanel) component;
 
-				if (DocumentConstants.CLICK.equals(name)) {
+				if (CLICK.equals(name)) {
 					buttonPanel.addButtonClickListener(new Button.ClickListener() {
 						@Override
 						public void buttonClick(final Button.ClickEvent event) {
-							presenter.handleEvent(buttonPanel, DocumentConstants.BUTTON_PANEL,
-									ProcessEventTypes.ButtonPanelClick, action, new ComponentEventCallback() {
+							presenter.handleEvent(buttonPanel, BUTTON_PANEL, ButtonPanelClick, action,
+									new ComponentEventCallback() {
 										@Override
 										public void initEvent(ComponentEvent componentEvent) {
 											componentEvent.setTimestamp(event.getServerDatetime());
@@ -947,8 +990,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private SelectPanel createSelectPanel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private SelectPanel createSelectPanel(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		SelectPanel component = new SelectPanel();
 		SlideComponentUtility.setSelectPanelProperties(component, element, properties, alignmentWrapper);
 		addSelectPanelHandlers(component, element, presenter);
@@ -964,12 +1007,12 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String actionId, final Action action, final SlidePresenter presenter) {
 				final SelectPanel selectPanel = (SelectPanel) component;
 
-				if (DocumentConstants.CLICK.equals(name)) {
+				if (CLICK.equals(name)) {
 					selectPanel.addButtonClickListener(new SelectButton.ClickListener() {
 						@Override
 						public void buttonClick(final SelectButton.ClickEvent event) {
-							presenter.handleEvent(selectPanel, DocumentConstants.SELECT_PANEL,
-									ProcessEventTypes.SelectPanelClick, action, new ComponentEventCallback() {
+							presenter.handleEvent(selectPanel, SELECT_PANEL, SelectPanelClick, action,
+									new ComponentEventCallback() {
 										@Override
 										public void initEvent(ComponentEvent componentEvent) {
 											componentEvent.setTimestamp(event.getServerDatetime());
@@ -998,8 +1041,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 			component.addButtonClickListener(new SelectButton.ClickListener() {
 				@Override
 				public void buttonClick(final SelectButton.ClickEvent event) {
-					presenter.handleEvent(component, DocumentConstants.SELECT_PANEL, ProcessEventTypes.SelectPanelClick,
-							null, new ComponentEventCallback() {
+					presenter.handleEvent(component, SELECT_PANEL, SelectPanelClick, null,
+							new ComponentEventCallback() {
 								@Override
 								public void initEvent(ComponentEvent componentEvent) {
 									componentEvent.setTimestamp(event.getServerDatetime());
@@ -1038,15 +1081,15 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		iterateValidators(component, element, new ValidatorCallback() {
 			@Override
 			public void setComponentValidator(Validatable component, Element element, String name, String message) {
-				if (DocumentConstants.EMPTY.equals(name)) {
+				if (EMPTY.equals(name)) {
 					component.addValidator(new SelectPanelEmptyValidator(message));
 				}
 			}
 		});
 	}
 
-	private TextField createTextField(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private TextField createTextField(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		TextField component = new TextField();
 		SlideComponentUtility.setTextFieldProperties(component, element, properties, alignmentWrapper);
 		addTextFieldValidators(component, element);
@@ -1058,13 +1101,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		iterateValidators(component, element, new ValidatorCallback() {
 			@Override
 			public void setComponentValidator(Validatable component, Element element, String name, String message) {
-				if (DocumentConstants.EMPTY.equals(name)) {
+				if (EMPTY.equals(name)) {
 					component.addValidator(new EmptyValidator(message));
-				} else if (DocumentConstants.INTEGER.equals(name)) {
+				} else if (INTEGER.equals(name)) {
 					component.addValidator(new IntegerValidator(message));
-				} else if (DocumentConstants.NUMBER.equals(name)) {
+				} else if (NUMBER.equals(name)) {
 					component.addValidator(new NumberValidator(message));
-				} else if (DocumentConstants.RANGE.equals(name)) {
+				} else if (RANGE.equals(name)) {
 					Double minValue = DocumentUtility.getNumberValidatorMinValue(element);
 					Double maxValue = DocumentUtility.getNumberValidatorMaxValue(element);
 
@@ -1076,7 +1119,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private TextArea createTextArea(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private TextArea createTextArea(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		TextArea component = new TextArea();
 		SlideComponentUtility.setTextAreaProperties(component, element, properties, alignmentWrapper);
@@ -1085,8 +1128,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	private DateField createDateField(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private DateField createDateField(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		DateField component = new DateField();
 		SlideComponentUtility.setDateFieldProperties(component, element, properties, alignmentWrapper);
 		addDateFieldValidators(component, element);
@@ -1098,9 +1141,9 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		iterateValidators(component, element, new ValidatorCallback() {
 			@Override
 			public void setComponentValidator(Validatable component, Element element, String name, String message) {
-				if (DocumentConstants.EMPTY.equals(name)) {
+				if (EMPTY.equals(name)) {
 					component.addValidator(new EmptyValidator(message));
-				} else if (DocumentConstants.RANGE.equals(name)) {
+				} else if (RANGE.equals(name)) {
 					Date minValue = DocumentUtility.getDateValidatorMinValue(element, "yyyy-MM-dd");
 					Date maxValue = DocumentUtility.getDateValidatorMaxValue(element, "yyyy-MM-dd");
 
@@ -1112,7 +1155,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		});
 	}
 
-	private ComboBox createComboBox(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private ComboBox createComboBox(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		ComboBox component = new ComboBox();
 		SlideComponentUtility.setComboBoxProperties(component, element, properties, alignmentWrapper);
@@ -1128,11 +1171,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		if (items != null) {
 			for (Element item : items) {
 				String value = DocumentUtility.getValue(item);
-				if (!Strings.isNullOrEmpty(value)) {
+				if (isNotEmpty(value)) {
 					component.addItem(value);
 
 					String caption = DocumentUtility.getCaption(item);
-					if (!Strings.isNullOrEmpty(caption))
+					if (isNotEmpty(caption))
 						component.setItemCaption(value, caption);
 				}
 			}
@@ -1145,19 +1188,19 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		iterateValidators(component, element, new ValidatorCallback() {
 			@Override
 			public void setComponentValidator(Validatable component, Element element, String name, String message) {
-				if (DocumentConstants.EMPTY.equals(name)) {
+				if (EMPTY.equals(name)) {
 					component.addValidator(new EmptyValidator(message));
 				}
 			}
 		});
 	}
 
-	private TimerLabel createTimerLabel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private TimerLabel createTimerLabel(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		TimerLabel component = new TimerLabel();
 		SlideComponentUtility.setTimerLabelProperties(component, element, properties, alignmentWrapper);
 
-		Component buddy = presenter.getTimer(properties.get(DocumentConstants.TIMER_ID));
+		Component buddy = presenter.getTimer(properties.get(TIMER_ID));
 		if (buddy instanceof Timer) {
 			component.setTimer((Timer) buddy);
 		}
@@ -1165,7 +1208,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	private Label createLabel(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
+	private Label createLabel(Element element, Map<String, String> properties, AlignmentWrapper alignmentWrapper,
 			SlideContainerPresenter presenter) {
 		Label component = new Label();
 		SlideComponentUtility.setLabelProperties(component, element, properties, alignmentWrapper);
@@ -1173,8 +1216,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		return component;
 	}
 
-	private ClientSim createClientSim(Element element, StringMap properties, AlignmentWrapper alignmentWrapper,
-			SlideContainerPresenter presenter) {
+	private ClientSim createClientSim(Element element, Map<String, String> properties,
+			AlignmentWrapper alignmentWrapper, SlideContainerPresenter presenter) {
 		ClientSim component = new ClientSim();
 		SlideComponentUtility.setClientSimProperties(component, element, properties, alignmentWrapper);
 		addClientSimHandlers(component, element, presenter);
@@ -1189,12 +1232,11 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 					String actionId, final Action action, final SlidePresenter presenter) {
 				final ClientSim clientSim = (ClientSim) component;
 
-				if (DocumentConstants.CLIENT.equals(name)) {
+				if (CLIENT.equals(name)) {
 					clientSim.addClientListener(new ClientSim.ClientListener() {
 						@Override
 						public void client(ClientEvent event) {
-							presenter.handleEvent(clientSim, DocumentConstants.CLIENT_SIM, ProcessEventTypes.ClientSimEvent, action,
-									ComponentEventCallback.DEFAULT);
+							presenter.handleEvent(clientSim, CLIENT_SIM, ClientSimEvent, action, DEFAULT);
 						}
 					});
 				}
@@ -1206,7 +1248,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 		String name = element.getShortName();
 		String namespace = element.getNamespace();
 
-		if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(namespace)) {
+		if (isNotEmpty(name) && isNotEmpty(namespace)) {
 			// find registered plugin
 			SlideComponentPlugin componentPlugin = PluginManager.get().getComponentPlugin(namespace, name);
 

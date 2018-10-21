@@ -35,7 +35,6 @@ import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
 
@@ -90,19 +89,9 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 
 	@Override
 	public void init() {
-		userWindowPresenter = new UserWindowPresenter(bus);
-	}
+		super.init();
 
-	@Override
-	public void setMainEventBus(MainEventBus bus) {
-		if (this.bus != null) {
-			this.bus.unregister(this);
-		}
-		
-		super.setMainEventBus(bus);
-		if (this.bus != null) {
-			this.bus.register(this);
-		}
+		userWindowPresenter = new UserWindowPresenter(getBus());
 	}
 
 	@Override
@@ -127,6 +116,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 		addButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
+				User loggedUser = getLoggedUser();
 				if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)
 						&& groupService.findOwnerGroups(loggedUser).size() == 0) {
 					Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
@@ -152,7 +142,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 		selectionType.addValueChangeListener(new Property.ValueChangeListener() {
 			public void valueChange(ValueChangeEvent event) {
 				allSelected = selectionType.getValue().equals(Messages.getString("Caption.Item.All"));
-				bus.post(new MainUIEvent.UserSelectionChangedEvent());
+				getBus().post(new MainUIEvent.UserSelectionChangedEvent());
 			}
 		});
 
@@ -249,6 +239,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 	private void deleteUsers() {
 		Collection<User> users = getSelectedUsers();
 
+		User loggedUser = getLoggedUser();
 		checkDeletionPermission(loggedUser, users);
 		checkSuperuserLeft(loggedUser);
 
@@ -260,7 +251,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 
 			for (Group group : user.getGroups()) {
 				if (group != null) {
-					bus.post(new MainUIEvent.GroupUsersChangedEvent(group));
+					getBus().post(new MainUIEvent.GroupUsersChangedEvent(group));
 				}
 			}
 
@@ -268,7 +259,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 		}
 
 		if (users.contains(loggedUser)) {
-			bus.post(new MainUIEvent.UserLoggedOutEvent());
+			getBus().post(new MainUIEvent.UserLoggedOutEvent());
 		}
 	}
 
@@ -352,6 +343,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
 		List<User> users;
+		User loggedUser = getLoggedUser();
 		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
 			users = userService.findAll();
 		} else {
@@ -388,7 +380,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 		table.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				bus.post(new MainUIEvent.UserSelectionChangedEvent());
+				getBus().post(new MainUIEvent.UserSelectionChangedEvent());
 			}
 		});
 
