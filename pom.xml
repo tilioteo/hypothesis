@@ -10,7 +10,7 @@
 	<name>hypothesis-parent</name>
 
 	<properties>
-		<hypothesis.version>1.5.7-vn-180803_0030</hypothesis.version>
+		<hypothesis.version>1.5.7-vn-190331_0003</hypothesis.version>
 
 		<vaadin.version>7.6.8</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
@@ -20,7 +20,7 @@
 		<project.encoding>UTF-8</project.encoding>
 
 		<junit.version>4.11</junit.version>
-		<dom4j.version>1.6.1</dom4j.version>
+		<dom4j.version>2.1.0</dom4j.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<log4j.version>1.2.17</log4j.version>
 		<validation-api.version>1.1.0.Final</validation-api.version>
@@ -43,6 +43,8 @@
 		<expressions.version>1.0.1</expressions.version>
 		<jcabi.version>1.1</jcabi.version>
 		<slf4j.version>1.7.13</slf4j.version>
+		<apache.commons.version>3.0</apache.commons.version>
+		<cxf.version>3.2.7</cxf.version>
 	</properties>
 
 	<profiles>
@@ -175,7 +177,7 @@
 			</dependency>
 
 			<dependency>
-				<groupId>dom4j</groupId>
+				<groupId>org.dom4j</groupId>
 				<artifactId>dom4j</artifactId>
 				<version>${dom4j.version}</version>
 			</dependency>
@@ -238,6 +240,12 @@
 				<groupId>com.jcabi</groupId>
 				<artifactId>jcabi-manifests</artifactId>
 				<version>${jcabi.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${apache.commons.version}</version>
 			</dependency>
 
 			<dependency>
