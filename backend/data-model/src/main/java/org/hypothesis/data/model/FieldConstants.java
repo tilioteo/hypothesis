@@ -70,6 +70,7 @@ public interface FieldConstants {
 	String EDUCATION = "education";
 	String FIRST_NAME = "first_name";
 	String AUTO_DISABLE = "auto_disable";
+	String TESTING_SUSPENDED = "testing_suspended";
 
 	String PACK_NAME = "pack_name";
 	String BRANCH_NAME = "branch_name";
@@ -94,6 +95,7 @@ public interface FieldConstants {
 	String PROPERTY_USER_ID = "userId"; // used?
 	String PROPERTY_OWNER_ID = "ownerId";
 	String PROPERTY_EVENT_ID = "eventId"; // used?
+	String PROPERTY_TESTING_DATE = "testingDate";
 
 	String NESTED_USER = "user.";
 	String NESTED_USER_ID = NESTED_USER + ID;

@@ -14,7 +14,7 @@ import org.hypothesis.data.service.UserService;
 import org.hypothesis.ws.entity.Pack;
 import org.hypothesis.ws.utility.ConversionUtility;
 
-@WebService(serviceName = "uvnws", targetNamespace = "ws.hypothesis.cz", portName = "uvnPort")
+@WebService(serviceName = "uvnws", targetNamespace = "ws.hypothesis.cz", portName = "uvnws")
 public class UVNWebService {
 
 	@WebMethod

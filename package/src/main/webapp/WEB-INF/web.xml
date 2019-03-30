@@ -11,6 +11,11 @@
 	</context-param>
 
 	<context-param>
+		<param-name>configLocation</param-name>
+		<param-value>/WEB-INF/hypothesis.cfg.xml</param-value>
+	</context-param>
+
+	<context-param>
 		<param-name>hibernateConfigLocation</param-name>
 		<param-value>/WEB-INF/hibernate.cfg.xml</param-value>
 	</context-param>

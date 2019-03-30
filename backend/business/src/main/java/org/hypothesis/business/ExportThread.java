@@ -11,17 +11,17 @@ package org.hypothesis.business;
  *
  */
 public class ExportThread extends Thread {
-	
-	private ExportRunnable runnable;
-	
-	public ExportThread(ThreadGroup threadGroup, ExportRunnable runnable) {
+
+	private SimpleExportRunnable runnable;
+
+	public ExportThread(ThreadGroup threadGroup, SimpleExportRunnable runnable) {
 		super(threadGroup, runnable);
 		this.runnable = runnable;
 	}
 
 	public void cancel() {
-		if (runnable != null) {
-			runnable.setCancelPending(true);
+		if (runnable != null && runnable instanceof CancelableExportRunnable) {
+			((CancelableExportRunnable) runnable).setCancelPending(true);
 		}
 	}
 

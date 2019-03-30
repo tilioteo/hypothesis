@@ -8,8 +8,14 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
+import org.hypothesis.business.data.UserControlData;
+import org.hypothesis.business.data.UserSession;
+import org.hypothesis.business.data.UserTestState;
 import org.hypothesis.data.interfaces.HasStatus;
 import org.hypothesis.data.model.Branch;
 import org.hypothesis.data.model.BranchMap;
@@ -62,6 +68,9 @@ import org.hypothesis.event.model.RenderContentEvent;
 import org.hypothesis.event.model.StartTestEvent;
 import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.server.Messages;
+import org.hypothesis.servlet.BroadcastService;
+import org.hypothesis.utility.UIMessageUtility;
+import org.hypothesis.utility.UserControlDataUtility;
 
 import net.engio.mbassy.listener.Handler;
 
@@ -76,6 +85,10 @@ public class ProcessManager implements Serializable {
 
 	private static final Logger log = Logger.getLogger(ProcessManager.class);
 
+	private static final Set<String> AUDIT_FILTER_EVENTS = Stream.of(ProcessEventTypes.Action,
+			ProcessEventTypes.ClientSimEvent, ProcessEventTypes.Message, ProcessEventTypes.Null)
+			.collect(Collectors.toSet());
+
 	private final BranchManager branchManager;
 	private final TaskManager taskManager;
 
@@ -85,6 +98,7 @@ public class ProcessManager implements Serializable {
 	private final TestService testService;
 	private final BranchService branchService;
 	private final PermissionService permissionService;
+	private final UserControlServiceImpl userControlService;
 
 	private final transient AsynchronousService asynchronousService;
 
@@ -97,10 +111,12 @@ public class ProcessManager implements Serializable {
 	private Branch currentBranch = null;
 	private Task currentTask = null;
 	private Slide currentSlide = null;
-	
+
 	private User currentUser = null;
+	private String mainUID = null;
 
 	private final ProcessEventBus bus;
+	private final ExportVNManager exportVNManager;
 
 	public ProcessManager(ProcessEventBus bus) {
 		this.bus = bus;
@@ -115,9 +131,13 @@ public class ProcessManager implements Serializable {
 		persistenceService = PersistenceService.newInstance();
 		branchService = BranchService.newInstance();
 
+		userControlService = new UserControlServiceImpl();
+
 		asynchronousService = new AsynchronousService(TestService.newInstance(), OutputService.newInstance(),
 				PersistenceService.newInstance(), BranchService.newInstance(), TaskService.newInstance(),
 				SlideService.newInstance());
+
+		exportVNManager = new ExportVNManager();
 	}
 
 	private Event createEvent(AbstractProcessEvent event) {
@@ -135,7 +155,7 @@ public class ProcessManager implements Serializable {
 	private boolean checkUserPack(User user, Pack pack) {
 		Collection<Pack> packs;
 		if (user != null) {
-			//packs = permissionService.findUserPacks(user, true);
+			// packs = permissionService.findUserPacks(user, true);
 			packs = permissionService.getUserPacksVN(user);
 			for (Pack allowedPack : packs) {
 				if (allowedPack.getId().equals(pack.getId()))
@@ -262,11 +282,18 @@ public class ProcessManager implements Serializable {
 	@Handler
 	public void processFinishTest(FinishTestEvent event) {
 		saveRunningEvent(event);
-		
+
 		tryDisablePack();
+
+		exportScores(currentTest.getId());
 
 		currentTest = null;
 		testProcessing = false;
+		setCurrentUser(null);
+	}
+
+	private void exportScores(Long id) {
+		exportVNManager.exportSingleTestScore(id);
 	}
 
 	@Handler
@@ -395,6 +422,7 @@ public class ProcessManager implements Serializable {
 		log.debug(String.format("processPrepareTest: token uid = %s",
 				event.getToken() != null ? event.getToken().getUid() : "NULL"));
 		Token token = event.getToken();
+		mainUID = token.getViewUid();
 
 		SimpleTest test = testService.getUnattendedTest(token.getUser(), token.getPack(), token.isProduction());
 		if (test != null) {
@@ -416,7 +444,7 @@ public class ProcessManager implements Serializable {
 	@Handler
 	public void processStartTest(StartTestEvent event) {
 		saveRunningEvent(event);
-		//tryDisablePack();
+		// tryDisablePack();
 
 		renderSlide();
 	}
@@ -425,7 +453,7 @@ public class ProcessManager implements Serializable {
 		if (currentUser != null && currentUser.getAutoDisable()) {
 			permissionService.deleteUserPermissionVN(currentUser, currentPack);
 		}
-		
+
 	}
 
 	public void processTest(SimpleTest test) {
@@ -574,6 +602,7 @@ public class ProcessManager implements Serializable {
 		Long slideId = currentSlide != null ? currentSlide.getId() : null;
 
 		asynchronousService.saveTestEvent(event, date, slideData, status, testId, branchId, taskId, slideId);
+		updateTestAudit(date, currentUser, event, test, currentPack, currentBranch, currentTask, currentSlide);
 	}
 
 	private void saveActionScore(ActionEvent event) {
@@ -603,6 +632,68 @@ public class ProcessManager implements Serializable {
 		asynchronousService.saveTestScore(score, scoreData, testId, branchId, taskId, slideId);
 	}
 
+	private void updateTestAudit(Date date, User user, Event event, SimpleTest test, Pack pack, Branch branch,
+			Task task, Slide slide) {
+		if (!AUDIT_FILTER_EVENTS.contains(event.getName())) {
+			UserControlData data = userControlService.ensureUserControlData(user);
+			userControlService.updateUserControlDataWithSession(data, mainUID);
+			UserSession session = UserControlDataUtility.getUserSession(data, mainUID);
+			if (session != null) {
+
+				UserTestState state = ensureTestState(session);
+
+				state.setEventTime(date);
+				state.setEventName(event.getName());
+
+				if (pack != null) {
+					state.setPackId(pack.getId());
+					state.setPackName(pack.getName());
+					state.setPackDescription(pack.getDescription());
+				} else {
+					state.setPackId(null);
+					state.setPackName("");
+					state.setPackDescription("");
+				}
+
+				if (branch != null) {
+					state.setBranchName(branch.getId().toString());
+					state.setBranchDescription(branch.getNote());
+				} else {
+					state.setBranchName("");
+					state.setBranchDescription("");
+				}
+
+				if (task != null) {
+					state.setTaskName(task.getName());
+					state.setTaskDescription(task.getNote());
+				} else {
+					state.setTaskName("");
+					state.setTaskDescription("");
+				}
+
+				if (slide != null) {
+					state.setSlideName(slide.getId().toString());
+					state.setSlideDescription(slide.getNote());
+				} else {
+					state.setSlideName("");
+					state.setSlideDescription("");
+				}
+
+				BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
+			}
+		}
+	}
+
+	private UserTestState ensureTestState(UserSession session) {
+		UserTestState state = session.getState();
+		if (state == null) {
+			state = new UserTestState();
+			session.setState(state);
+		}
+
+		return state;
+	}
+
 	public void fireTestError() {
 		bus.post(new ErrorTestEvent());
 	}
@@ -621,6 +712,7 @@ public class ProcessManager implements Serializable {
 	}
 
 	public void setCurrentUser(User user) {
+		SessionManager.setLoggedUser(user);
 		currentUser = user;
 		slideManager.setUserId(user != null ? user.getId() : null);
 	}

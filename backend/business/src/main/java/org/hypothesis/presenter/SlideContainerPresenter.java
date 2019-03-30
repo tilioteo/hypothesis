@@ -4,6 +4,8 @@
  */
 package org.hypothesis.presenter;
 
+import static org.hypothesis.utility.PushUtility.pushCommand;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,7 +46,6 @@ import org.vaadin.special.ui.Timer;
 
 import com.vaadin.server.Extension;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.communication.PushMode;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
@@ -393,19 +394,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
 				if (null == userId || null == receiverId || receiverId.equals(userId)) {
 					// ok - receive this message
-					ui.access(new Runnable() {
-						@Override
-						public void run() {
-							fireEvent(new MessageEvent(message));
-							if (PushMode.MANUAL.equals(ui.getPushConfiguration().getPushMode())) {
-								try {
-									ui.push();
-								} catch (Throwable e) {
-									e.printStackTrace();
-								}
-							}
-						}
-					});
+					pushCommand(ui, () -> fireEvent(new MessageEvent(message)));
 				}
 			}
 		}

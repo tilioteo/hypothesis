@@ -17,6 +17,8 @@ import org.hypothesis.server.SessionUtils;
  */
 @SuppressWarnings("serial")
 public class SessionManager implements Serializable {
+	
+	private static final String MAIN_UID = "MainUID";
 
 	public static void setLoggedUser(User user) {
 		if (user != null) {
@@ -31,11 +33,11 @@ public class SessionManager implements Serializable {
 	}
 
 	public static String getMainUID() {
-		return SessionUtils.getStringAttribute("MainUID");
+		return SessionUtils.getStringAttribute(MAIN_UID);
 	}
 
 	public static void setMainUID(String uid) {
-		SessionUtils.setAttribute("MainUID", uid);
+		SessionUtils.setAttribute(MAIN_UID, uid);
 	}
 
 }

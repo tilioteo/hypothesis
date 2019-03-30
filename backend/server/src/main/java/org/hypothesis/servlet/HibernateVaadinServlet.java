@@ -49,11 +49,13 @@ public class HibernateVaadinServlet extends VaadinServlet implements SessionInit
 	@Override
 	public void sessionInit(SessionInitEvent event) throws ServiceException {
 		log.debug("Session initializing");
+		SessionRegister.register(event.getSession());
 	}
 
 	@Override
 	public void sessionDestroy(SessionDestroyEvent event) {
 		log.debug("Session destroying");
+		SessionRegister.unregister(event.getSession());
 
 		// cleanup all sessions
 		HibernateUtil.cleanup();

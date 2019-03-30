@@ -5,7 +5,10 @@
 package org.hypothesis.data.service;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
@@ -60,7 +63,7 @@ public class UserService implements Serializable {
 		log.debug("addUser");
 		try {
 			userDao.beginTransaction();
-			//user = mergeInit(user);
+			// user = mergeInit(user);
 			user = userDao.merge(user);
 			user = userDao.makePersistent(user);
 			userDao.commit();
@@ -151,6 +154,24 @@ public class UserService implements Serializable {
 		return null;
 	}
 
+	public User get(long id) {
+		log.debug("getUser");
+		try {
+			userDao.clear();
+			userDao.beginTransaction();
+			User usr = userDao.findById(Long.valueOf(id), true);
+			userDao.commit();
+			if (usr == null) {
+				throw new EntityNotFoundException("user id=" + id);
+			}
+			return usr;
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			userDao.rollback();
+		}
+		return null;
+	}
+
 	public User findByUsername(String username) {
 		log.debug("findUserByUsername");
 		try {
@@ -190,8 +211,7 @@ public class UserService implements Serializable {
 		log.debug("findByPasswordAkaBirthNumber");
 		try {
 			userDao.beginTransaction();
-			List<User> users = userDao
-					.findByCriteria(Restrictions.eq(FieldConstants.PASSWORD, password));
+			List<User> users = userDao.findByCriteria(Restrictions.eq(FieldConstants.PASSWORD, password));
 			userDao.commit();
 
 			return users;
@@ -217,6 +237,39 @@ public class UserService implements Serializable {
 			userDao.rollback();
 		}
 		return false;
+	}
+
+	public List<User> findPlannedUsers(Date date) {
+		log.debug("findPlannedUsers");
+		try {
+			userDao.beginTransaction();
+			List<User> users = userDao.findByCriteria(Restrictions.eq(FieldConstants.PROPERTY_TESTING_DATE, date));
+			userDao.commit();
+
+			return users;
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			userDao.rollback();
+		}
+		return null;
+	}
+
+	public void updateUsersTestingSuspended(List<Long> ids, boolean suspend) {
+		log.debug("updateUsersTestingSuspended");
+		if (ids != null && !ids.isEmpty()) {
+			try {
+				userDao.beginTransaction();
+				List<User> users = userDao.findByCriteria(Restrictions.in(FieldConstants.ID, ids));
+				users.forEach(u -> {
+					u.setTestingSuspended(suspend);
+					userDao.makePersistent(u);
+				});
+				userDao.commit();
+			} catch (Throwable e) {
+				log.error(e.getMessage());
+				userDao.rollback();
+			}
+		}
 	}
 
 }

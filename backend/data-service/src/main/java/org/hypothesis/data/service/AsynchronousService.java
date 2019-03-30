@@ -33,7 +33,6 @@ public class AsynchronousService {
 
 	private final AsynchronousCommandExecutor commandExecutor = new AsynchronousCommandExecutor();
 
-	@SuppressWarnings("serial")
 	public AsynchronousService(TestService testService, OutputService outputService,
 			PersistenceService persistenceService, BranchService branchService, TaskService taskService,
 			SlideService slideService) {
@@ -51,7 +50,6 @@ public class AsynchronousService {
 		});
 	}
 
-	@SuppressWarnings("serial")
 	public void saveBranchOutput(final BranchOutput branchOutput) {
 		commandExecutor.add(new Command() {
 			@Override
@@ -61,7 +59,6 @@ public class AsynchronousService {
 		});
 	}
 
-	@SuppressWarnings("serial")
 	public void saveTestEvent(final Event event, final Date date, final String slideData, final Status status,
 			final Long testId, final Long branchId, final Long taskId, final Long slideId) {
 		commandExecutor.add(new Command() {
@@ -120,7 +117,6 @@ public class AsynchronousService {
 		commandExecutor.stop();
 	}
 
-	@SuppressWarnings("serial")
 	public void saveTestScore(final Score score, final String scoreData, final Long testId, final Long branchId,
 			final Long taskId, final Long slideId) {
 		commandExecutor.add(new Command() {

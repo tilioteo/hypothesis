@@ -40,7 +40,6 @@ public class HibernateDao<T, ID extends Serializable> extends AbstractDao<T, ID>
 
 	@Override
 	public void commit() {
-		// flush();
 		HibernateUtil.commitTransaction();
 	}
 

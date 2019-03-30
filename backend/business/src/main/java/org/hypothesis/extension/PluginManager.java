@@ -4,10 +4,10 @@
  */
 package org.hypothesis.extension;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import java.io.File;
-import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -17,14 +17,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.hypothesis.common.ValidationSets;
+import org.hypothesis.configuration.AbstractConfigManager;
 import org.hypothesis.event.model.ProcessEventTypes;
 import org.hypothesis.interfaces.Plugin;
 import org.hypothesis.interfaces.SlideComponentPlugin;
 import org.hypothesis.interfaces.SlideComponentPlugin.ValidParentGroup;
-import org.hypothesis.utility.XmlUtility;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -33,10 +32,11 @@ import org.hypothesis.utility.XmlUtility;
  *
  */
 @SuppressWarnings("serial")
-public class PluginManager implements Serializable {
+public class PluginManager extends AbstractConfigManager {
 
 	private static final Logger log = Logger.getLogger(PluginManager.class);
 
+	private static final String ROOT_NAME = "hypothesis-plugin-configuration";
 	public static final String PLUGIN_CONFIG_LOCATION = "pluginConfigLocation";
 
 	private static PluginManager instance = null;
@@ -58,36 +58,29 @@ public class PluginManager implements Serializable {
 
 	}
 
-	public void initializeFromFile(File file) {
-		if (file != null) {
-			Document document = XmlUtility.readFile(file);
-			if (document != null) {
-				initializeFromDocument(document);
-			} else {
-				log.error("Cannot read plugin configuration from file " + file.getPath());
-			}
-		} else {
-			log.error("Plugin configuration file not specified.");
-		}
+	@Override
+	public void setConfigFile(File file) {
+		super.setConfigFile(file);
+
+		initialize();
 	}
 
-	private void initializeFromDocument(Document document) {
-		Element root = document.getRootElement();
-		if (root.getName().equals("hypothesis-plugin-configuration")) {
+	private void initialize() {
+		Element root = getRootElement();
+		if (root != null) {
 			List<Element> plugins = getPluginElements(root);
 
 			for (Element plugin : plugins) {
 				registerPluginFromElement(plugin);
 			}
-		} else {
-			log.error("Not valid plugin configuration file.");
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<Element> getPluginElements(Element root) {
 
-		return root.selectNodes(String.format("%s//%s", "plugins", "plugin"));
+		return root.selectNodes(String.format("%s//%s", "plugins", "plugin")).stream()//
+				.map(Element.class::cast)//
+				.collect(toList());
 	}
 
 	private void registerPluginFromElement(Element element) {
@@ -165,10 +158,11 @@ public class PluginManager implements Serializable {
 				} else {
 					namespaceElementMap.put(namespace, plugin.getElements());
 				}
-				
+
 				Map<String, Set<ValidParentGroup>> elementParentGroups = plugin.getElementParentGroups();
 				for (String elementName : elementParentGroups.keySet()) {
-					String fullElementName = namespace + org.hypothesis.interfaces.Document.NAMESPACE_SEPARATOR + elementName;
+					String fullElementName = namespace + org.hypothesis.interfaces.Document.NAMESPACE_SEPARATOR
+							+ elementName;
 					Set<ValidParentGroup> parentGroups = elementParentGroups.get(elementName);
 
 					for (ValidParentGroup parentGroup : parentGroups) {
@@ -209,5 +203,15 @@ public class PluginManager implements Serializable {
 		}
 
 		return null;
+	}
+
+	@Override
+	protected Logger getLogger() {
+		return log;
+	}
+
+	@Override
+	protected String getRootName() {
+		return ROOT_NAME;
 	}
 }

@@ -4,15 +4,14 @@
  */
 package org.hypothesis.interfaces;
 
-import java.io.Serializable;
-
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
  *         Hypothesis
  *
  */
-public interface Command extends Serializable {
+@FunctionalInterface
+public interface Command {
 
 	final class Executor {
 
@@ -27,4 +26,11 @@ public interface Command extends Serializable {
 	 * Causes the Command to perform its encapsulated behavior.
 	 */
 	void execute();
+
+	default Command andThen(Command after) {
+		return () -> {
+			execute();
+			Executor.execute(after);
+		};
+	}
 }

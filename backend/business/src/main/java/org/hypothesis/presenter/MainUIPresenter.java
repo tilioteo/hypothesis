@@ -5,11 +5,16 @@
 package org.hypothesis.presenter;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.hypothesis.data.model.User.GUEST;
+import static org.hypothesis.ui.MainUIStyles.LOGIN_VIEW;
 
 import java.util.Date;
 import java.util.UUID;
 
 import org.hypothesis.business.SessionManager;
+import org.hypothesis.business.UserControlServiceImpl;
+import org.hypothesis.business.data.UserControlData;
+import org.hypothesis.business.data.UserSession;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent.GuestAccessRequestedEvent;
@@ -23,9 +28,12 @@ import org.hypothesis.interfaces.LoginPresenter;
 import org.hypothesis.interfaces.MainPresenter;
 import org.hypothesis.navigator.HypothesisNavigator;
 import org.hypothesis.navigator.HypothesisViewType;
+import org.hypothesis.servlet.BroadcastService;
 import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.MainUI;
+import org.hypothesis.utility.UIMessageUtility;
+import org.hypothesis.utility.UserControlDataUtility;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
@@ -49,12 +57,12 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	private final MainEventBus bus;
 
 	private String uid;
-	// private String pid = null;
 
 	private final LoginPresenter loginPresenter;
 	private final MainPresenter mainPresenter;
 
 	private UserService userService;
+	private UserControlServiceImpl userControlService;
 
 	public MainUIPresenter(MainUI ui) {
 		this.ui = ui;
@@ -73,8 +81,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		SessionManager.setMainUID(uid);
 
 		userService = UserService.newInstance();
-
-		// pid = request.getParameter("pid");
+		userControlService = new UserControlServiceImpl();
 
 		updateUIContent();
 	}
@@ -108,7 +115,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		if (user != null) {
 			// Authenticated user
 			ui.setContent(getMainView());
-			ui.removeStyleName("loginview");
+			ui.removeStyleName(LOGIN_VIEW);
 
 			String viewName = getViewName();
 
@@ -124,7 +131,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 			}
 		} else {
 			ui.setContent(getLoginScreen());
-			ui.addStyleName("loginview");
+			ui.addStyleName(LOGIN_VIEW);
 		}
 	}
 
@@ -156,6 +163,14 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	private void setUser(User user) {
 		SessionManager.setLoggedUser(user);
+
+		UserControlData data = userControlService.ensureUserControlData(user);
+
+		userControlService.updateUserControlDataWithSession(data, uid);
+		UserSession session = UserControlDataUtility.getUserSession(data, uid);
+		session.setAddress(Page.getCurrent().getWebBrowser().getAddress());
+
+		BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
 	}
 
 	private boolean userCanLogin(User user) {
@@ -191,13 +206,25 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	@Handler
 	public void guestAccessRequested(final GuestAccessRequestedEvent event) {
-		setUser(User.GUEST);
+		setUser(GUEST);
 
 		updateUIContent();
 	}
 
 	@Handler
 	public void userLoggedOut(final UserLoggedOutEvent event) {
+		User user = SessionManager.getLoggedUser();
+
+		if (user != null) {
+			UserControlData data = userControlService.ensureUserControlData(user);
+			userControlService.updateUserControlData(data);
+
+			UserSession session = UserControlDataUtility.getUserSession(data, uid);
+			if (session != null && (session.getState() == null || session.getState().getPackId() == null)) {
+				data.getSessions().remove(session);
+			}
+		}
+
 		// When the user logs out, current VaadinSession gets closed and the
 		// page gets reloaded on the login screen. Do notice the this doesn't
 		// invalidate the current HttpSession.
@@ -205,6 +232,8 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		VaadinSession.getCurrent().close();
 
 		Page.getCurrent().reload();
+
+		BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
 	}
 
 	@Override

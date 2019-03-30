@@ -184,4 +184,9 @@ public class PackPanel extends Panel {
 			legacyButton.addWindowClosedListener(windowClosedListener);
 		}
 	}
+
+	public synchronized OpenPopupButton getLegacyButton() {
+		return legacyButton;
+	}
+
 }

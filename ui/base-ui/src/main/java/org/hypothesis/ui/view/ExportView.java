@@ -6,7 +6,6 @@ package org.hypothesis.ui.view;
 
 import org.hypothesis.interfaces.ExportPresenter;
 
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
@@ -18,7 +17,7 @@ import com.vaadin.ui.VerticalLayout;
  *
  */
 @SuppressWarnings({ "serial" })
-public class ExportView extends VerticalLayout implements View {
+public class ExportView extends VerticalLayout implements UIView {
 
 	private final ExportPresenter presenter;
 

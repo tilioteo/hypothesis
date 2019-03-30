@@ -59,6 +59,11 @@ public final class User extends SerializableIdObject {
 	 * disable current processed pack
 	 */
 	private boolean autoDisable;
+	
+	/**
+	 * user is temporarily suspended for testing
+	 */
+	private boolean testingSuspended;
 
 	/**
 	 * user account will expire at
@@ -159,6 +164,15 @@ public final class User extends SerializableIdObject {
 
 	public void setAutoDisable(boolean autoDisable) {
 		this.autoDisable = autoDisable;
+	}
+
+	@Column(name = FieldConstants.TESTING_SUSPENDED, nullable = false)
+	public boolean isTestingSuspended() {
+		return testingSuspended;
+	}
+
+	public void setTestingSuspended(boolean testingSuspended) {
+		this.testingSuspended = testingSuspended;
 	}
 
 	@Column(name = FieldConstants.EXPIRE_DATE)

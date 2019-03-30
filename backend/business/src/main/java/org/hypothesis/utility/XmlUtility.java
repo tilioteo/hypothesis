@@ -35,7 +35,6 @@ public class XmlUtility implements Serializable {
 	private static final String ENCODING_UTF8 = "utf-8";
 	public static final String DESCENDANT_FMT = "descendant::%s";
 
-	@SuppressWarnings("unchecked")
 	public static void clearAllChilds(Node parent) {
 		if (parent != null) {
 			for (Iterator<Node> i = parent.selectNodes("").iterator(); i.hasNext();) {
@@ -76,7 +75,6 @@ public class XmlUtility implements Serializable {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Element findElementByNameAndValue(boolean descendant, Element element, String name, String prefix,
 			String uri, String attributeName, String attributeValue) {
 		Element result = null;
@@ -116,7 +114,6 @@ public class XmlUtility implements Serializable {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Node findFirstNodeByName(Node parent, String name) {
 		if (parent != null && name.length() > 0) {
 			for (Iterator<Node> i = parent.selectNodes(String.format(DESCENDANT_FMT, name)).iterator(); i.hasNext();) {
@@ -130,7 +127,6 @@ public class XmlUtility implements Serializable {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List<Node> findNodesByNameStarting(Node parent, String startName) {
 		if (parent != null && startName.length() > 0) {
 			return parent.selectNodes("./*[starts-with(name(), '" + startName + "')]");

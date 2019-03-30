@@ -8,7 +8,6 @@ import org.hypothesis.interfaces.PacksPresenter;
 import org.hypothesis.slide.ui.Mask;
 import org.hypothesis.ui.PackPanel;
 
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -25,12 +24,11 @@ import com.vaadin.ui.themes.ValoTheme;
  *
  */
 @SuppressWarnings("serial")
-public class PacksView extends HorizontalLayout implements View {
+public class PacksView extends HorizontalLayout implements UIView {
 
 	private final PacksPresenter presenter;
 
 	private VerticalLayout mainLayout;
-//	private JavaInfoPanel javaInfoPanel;
 	private Panel mainPanel;
 
 	private Mask mask = null;
@@ -40,19 +38,6 @@ public class PacksView extends HorizontalLayout implements View {
 
 	private Label emptyInfoLabel = null;
 	private String emptyInfoCaption = "emptyInfoCaption";
-
-//	private String checkingJavaInfoCaption = "checkingJavaInfoCaption";
-//	private String javaInstalledCaption = "javaInstalledCaption";
-//	private String javaNotInstalledCaption = "javaNotInstalledCaption";
-//	private String javaInstallLinkCaption = "javaInstallLinkCaption";
-
-//	private final JavaCheckedListener javaCheckedListener = new JavaCheckedListener() {
-//		@Override
-//		public void javaChecked(JavaCheckedEvent event) {
-//			updateJavaInstalled(event.getResult());
-//		}
-//
-//	};
 
 	public PacksView(PacksPresenter presenter) {
 		this.presenter = presenter;
@@ -74,9 +59,6 @@ public class PacksView extends HorizontalLayout implements View {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setSizeFull();
 		panel.setContent(layout);
-
-//		javaInfoPanel = buildJavaInfoPanel();
-//		layout.addComponent(javaInfoPanel);
 
 		mainPanel = buildMainPanel();
 		layout.addComponent(mainPanel);
@@ -106,19 +88,6 @@ public class PacksView extends HorizontalLayout implements View {
 		return layout;
 	}
 
-//	private JavaInfoPanel buildJavaInfoPanel() {
-//		JavaInfoPanel panel = new JavaInfoPanel("1.7.0+");
-//		panel.setWidth(100.0f, Unit.PERCENTAGE);
-//		panel.addStyleName("hidden");
-//
-//		panel.setCheckInfoText(checkingJavaInfoCaption);
-//		panel.setJavaInstalledText(javaInstalledCaption);
-//		panel.setJavaNotInstalledText(javaNotInstalledCaption);
-//		panel.setInstallLinkText(javaInstallLinkCaption);
-//
-//		return panel;
-//	}
-
 	private VerticalLayout buildVerticalPane() {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setWidth(150.0f, Unit.PIXELS);
@@ -131,44 +100,17 @@ public class PacksView extends HorizontalLayout implements View {
 	@Override
 	public void enter(ViewChangeEvent event) {
 		presenter.enter(event);
-
-//		if (javaInfoPanel != null && javaInfoPanel.isVisible() && !javaInfoPanel.isJavaOk()) {
-//			try {
-//				javaInfoPanel.checkJavaVersion();
-//			} catch (Throwable e) {
-//			}
-//		}
 	}
-
-//	private void updateJavaInstalled(boolean javaInstalled) {
-//		if (!javaInstalled) {
-//			javaInfoPanel.removeStyleName("hidden");
-//		}
-//
-//		if (mainLayout != null) {
-//			Iterator<Component> iterator = mainLayout.iterator();
-//			for (; iterator.hasNext();) {
-//				Component component = iterator.next();
-//				if (component instanceof PackPanel) {
-//					((PackPanel) component).setJavaInstalled(javaInstalled);
-//				}
-//			}
-//		}
-//	}
 
 	@Override
 	public void attach() {
 		super.attach();
 
 		presenter.attach();
-
-//		DeployJava.get(getUI()).addJavaCheckedListener(javaCheckedListener);
 	}
 
 	@Override
 	public void detach() {
-//		DeployJava.get(getUI()).removeJavaCheckedListener(javaCheckedListener);
-
 		presenter.detach();
 
 		super.detach();
@@ -221,7 +163,6 @@ public class PacksView extends HorizontalLayout implements View {
 			}
 
 			panel.setHeight(150.0f, Unit.PIXELS);
-//			panel.setJavaInstalled(javaInfoPanel.isJavaOk());
 
 			mainLayout.addComponent(panel);
 		}
@@ -234,33 +175,5 @@ public class PacksView extends HorizontalLayout implements View {
 			emptyInfoLabel.setCaption(caption);
 		}
 	}
-
-//	public void setCheckingJavaInfo(String caption) {
-//		this.checkingJavaInfoCaption = caption;
-//		if (javaInfoPanel != null) {
-//			javaInfoPanel.setCheckInfoText(caption);
-//		}
-//	}
-
-//	public void setJavaInstalledCaption(String caption) {
-//		this.javaInstalledCaption = caption;
-//		if (javaInfoPanel != null) {
-//			javaInfoPanel.setJavaInstalledText(caption);
-//		}
-//	}
-
-//	public void setJavaNotInstalledCaption(String caption) {
-//		this.javaNotInstalledCaption = caption;
-//		if (javaInfoPanel != null) {
-//			javaInfoPanel.setJavaNotInstalledText(caption);
-//		}
-//	}
-
-//	public void setJavaInstalLinkCaption(String caption) {
-//		this.javaInstallLinkCaption = caption;
-//		if (javaInfoPanel != null) {
-//			javaInfoPanel.setInstallLinkText(caption);
-//		}
-//	}
 
 }

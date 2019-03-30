@@ -13,9 +13,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.hypothesis.business.ExportRunnable;
+import org.hypothesis.business.CancelableExportRunnable;
 import org.hypothesis.business.ExportRunnableImpl;
 import org.hypothesis.business.ExportThread;
+import org.hypothesis.business.ThreadUtility;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Pack;
@@ -27,7 +28,6 @@ import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.TestService;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.ExportPresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.view.ExportView;
@@ -96,7 +96,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 	private ExportThread currentExport = null;
 	private ProgressBar exportProgressBar = null;
 
-	private ThreadGroup threadGroup = new ThreadGroup("export-service");
+	private ThreadGroup threadGroup = ThreadUtility.createExportGroup();
 
 	public ExportPresenterImpl() {
 		permissionService = PermissionService.newInstance();
@@ -234,13 +234,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		ExportRunnable runnable = new ExportRunnableImpl(getBus(), testIds);
-		runnable.setFinishCommand(new Command() {
-			@Override
-			public void execute() {
-				HibernateUtil.closeCurrent();
-			}
-		});
+		CancelableExportRunnable runnable = new ExportRunnableImpl(getBus(), testIds, HibernateUtil::closeCurrent);
 
 		currentExport = new ExportThread(threadGroup, runnable);
 		currentExport.start();

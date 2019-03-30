@@ -10,6 +10,8 @@ import java.util.Locale;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hypothesis.configuration.ConfigManager;
 import org.hypothesis.extension.PluginManager;
 import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.LocaleManager;
@@ -29,7 +31,7 @@ public abstract class AbstractUIPresenter implements UIPresenter {
 
 	@Override
 	public void initialize(VaadinRequest request) {
-		initializePlugins(request);
+		initializeConfigurations(request);
 
 		initializeLocales(request);
 	}
@@ -39,19 +41,30 @@ public abstract class AbstractUIPresenter implements UIPresenter {
 		return LocaleManager.getCurrentLocale();
 	}
 
-	private void initializePlugins(VaadinRequest request) {
-
+	private void initializeConfigurations(VaadinRequest request) {
 		WrappedSession session = request.getWrappedSession();
 		HttpSession httpSession = ((WrappedHttpSession) session).getHttpSession();
 		ServletContext servletContext = httpSession.getServletContext();
 
-		String configFileName = servletContext.getInitParameter(PluginManager.PLUGIN_CONFIG_LOCATION);
+		initializeConfig(getFile(servletContext, servletContext.getInitParameter(ConfigManager.CONFIG_LOCATION)));
+		initializePlugins(
+				getFile(servletContext, servletContext.getInitParameter(PluginManager.PLUGIN_CONFIG_LOCATION)));
+	}
 
-		if (configFileName != null && configFileName.length() > 0) {
-			configFileName = servletContext.getRealPath(configFileName);
-			File configFile = new File(configFileName);
-			PluginManager.get().initializeFromFile(configFile);
+	private File getFile(ServletContext servletContext, String relativeFileName) {
+		if (StringUtils.isNotBlank(relativeFileName) && servletContext != null) {
+			String fileName = servletContext.getRealPath(relativeFileName);
+			return new File(fileName);
 		}
+		return null;
+	}
+
+	private void initializeConfig(File configFile) {
+		ConfigManager.get().setConfigFile(configFile);
+	}
+
+	private void initializePlugins(File pluginConfigFile) {
+		PluginManager.get().setConfigFile(pluginConfigFile);
 	}
 
 	private void initializeLocales(VaadinRequest request) {

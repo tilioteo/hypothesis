@@ -75,7 +75,6 @@ public class XmlDocumentReader implements DocumentReader {
 		return namespace.isEmpty() ? element.getName() : namespace + element.getName();
 	}
 
-	@SuppressWarnings("unchecked")
 	private void copyElement(org.dom4j.Element xmlElement, Element element) {
 		copyAttributes(xmlElement, element);
 
@@ -95,7 +94,6 @@ public class XmlDocumentReader implements DocumentReader {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void copyAttributes(org.dom4j.Element xmlElement, Element element) {
 		List<Attribute> xmlAttributes = xmlElement.attributes();
 

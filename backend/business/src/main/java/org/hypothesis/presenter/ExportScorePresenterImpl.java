@@ -9,9 +9,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.hypothesis.business.ExportRunnable;
+import org.hypothesis.business.CancelableExportRunnable;
 import org.hypothesis.business.ExportScoreRunnableImpl;
 import org.hypothesis.business.ExportThread;
+import org.hypothesis.business.ThreadUtility;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Status;
@@ -21,7 +22,6 @@ import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.TestService;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.ExportScorePresenter;
 import org.hypothesis.server.Messages;
 import org.hypothesis.ui.view.ExportScoreView;
@@ -83,7 +83,7 @@ public class ExportScorePresenterImpl extends AbstractMainBusPresenter implement
 	private ExportThread currentExport = null;
 	private ProgressBar exportProgressBar = null;
 
-	private ThreadGroup threadGroup = new ThreadGroup("export-service");
+	private ThreadGroup threadGroup = ThreadUtility.createExportGroup();
 
 	public ExportScorePresenterImpl() {
 		testService = TestService.newInstance();
@@ -219,13 +219,7 @@ public class ExportScorePresenterImpl extends AbstractMainBusPresenter implement
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		ExportRunnable runnable = new ExportScoreRunnableImpl(getBus(), testIds);
-		runnable.setFinishCommand(new Command() {
-			@Override
-			public void execute() {
-				HibernateUtil.closeCurrent();
-			}
-		});
+		CancelableExportRunnable runnable = new ExportScoreRunnableImpl(getBus(), testIds, HibernateUtil::closeCurrent);
 
 		currentExport = new ExportThread(threadGroup, runnable);
 		currentExport.start();

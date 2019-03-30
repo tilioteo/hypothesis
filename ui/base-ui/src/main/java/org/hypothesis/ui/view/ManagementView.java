@@ -6,7 +6,6 @@ package org.hypothesis.ui.view;
 
 import org.hypothesis.interfaces.ManagementPresenter;
 
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
@@ -18,7 +17,7 @@ import com.vaadin.ui.VerticalLayout;
  *
  */
 @SuppressWarnings({ "serial" })
-public class ManagementView extends VerticalLayout implements View {
+public class ManagementView extends VerticalLayout implements UIView {
 
 	private final ManagementPresenter presenter;
 
@@ -36,8 +35,21 @@ public class ManagementView extends VerticalLayout implements View {
 	}
 
 	@Override
+	public void attach() {
+		super.attach();
+
+		presenter.attach();
+	}
+
+	@Override
+	public void detach() {
+		presenter.detach();
+
+		super.detach();
+	}
+
+	@Override
 	public void enter(ViewChangeEvent event) {
 		presenter.enter(event);
 	}
-
 }

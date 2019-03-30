@@ -22,6 +22,8 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 
 	protected final UserService userService;
 
+	private User loggedUser;
+
 	public UserPacksPresenter() {
 		super();
 
@@ -30,12 +32,12 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 
 	@Override
 	protected List<Pack> getPacks() {
-		User loggedUser = getLoggedUser();
+		loggedUser = getLoggedUser();
 		if (loggedUser != null) {
 			try {
-				User user = userService.merge(loggedUser);
+				loggedUser = userService.get(loggedUser.getId());
 
-				return permissionService.getUserPacksVN(user);
+				return permissionService.getUserPacksVN(loggedUser);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -43,20 +45,19 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 
 		return null;
 	}
-	
+
 	@Override
-	protected void refreshView() {
+	public void refreshView() {
 		getView().clearMainLayout();
 
 		List<Pack> packs = getPacks();
-		getPanelBeans().clear();
 
 		if (packs != null && !packs.isEmpty()) {
 			boolean notFirst = false;
 			for (Pack pack : packs) {
 				PackPanel packPanel = createPackPanel(pack);
 				getView().addPackPanel(packPanel);
-				if (notFirst) {
+				if (notFirst || loggedUser.isTestingSuspended()) {
 					packPanel.setEnabled(false);
 					packPanel.addStyleName("disabled");
 				}
@@ -66,8 +67,9 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 			getView().setEmptyInfo();
 		}
 
+		cleanOldTestData(packs);
+
 		getView().markAsDirty();
 	}
-
 
 }
