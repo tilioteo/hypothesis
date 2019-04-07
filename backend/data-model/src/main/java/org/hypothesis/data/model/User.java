@@ -35,7 +35,8 @@ import org.hibernate.annotations.LazyCollectionOption;
  */
 @Entity
 @Table(name = TableConstants.USER_TABLE, uniqueConstraints = {
-		// VN specific - login by surname as user name and identity number as password
+		// VN specific - login by surname as user name and identity number as
+		// password
 		@UniqueConstraint(columnNames = { FieldConstants.USERNAME, FieldConstants.PASSWORD }) })
 @Access(AccessType.PROPERTY)
 public final class User extends SerializableIdObject {
@@ -59,7 +60,7 @@ public final class User extends SerializableIdObject {
 	 * disable current processed pack
 	 */
 	private boolean autoDisable;
-	
+
 	/**
 	 * user is temporarily suspended for testing
 	 */
@@ -86,7 +87,7 @@ public final class User extends SerializableIdObject {
 	 * user can have another user (id of user) as owner
 	 */
 	private Long ownerId;
-	
+
 	private String name;
 	private String gender;
 	private String education;
@@ -112,14 +113,15 @@ public final class User extends SerializableIdObject {
 	public Long getId() {
 		return super.getId();
 	}
-	
+
 	@Override
 	public void setId(Long id) {
 		super.setId(id);
 	}
 
-	// VN specific - login by surname as user name and identity number as password
-	@Column(name = FieldConstants.USERNAME, nullable = false/* , unique = true */)
+	// VN specific - login by surname as user name and identity number as
+	// password
+	@Column(name = FieldConstants.USERNAME, nullable = false/*, unique = true*/)
 	public String getUsername() {
 		return username;
 	}
@@ -155,7 +157,6 @@ public final class User extends SerializableIdObject {
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
-
 
 	@Column(name = FieldConstants.AUTO_DISABLE, nullable = false)
 	public boolean getAutoDisable() {
@@ -205,7 +206,10 @@ public final class User extends SerializableIdObject {
 		this.roles = roles;
 	}
 
-	@ManyToMany(/* targetEntity = Group.class, cascade = { CascadeType.PERSIST, CascadeType.MERGE } */)
+	@ManyToMany(/*
+				 * targetEntity = Group.class, cascade = { CascadeType.PERSIST,
+				 * CascadeType.MERGE }
+				 */)
 	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.GROUP_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
@@ -261,7 +265,7 @@ public final class User extends SerializableIdObject {
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
-	
+
 	@Column(name = FieldConstants.TESTING_DATE)
 	public Date getTestingDate() {
 		return testingDate;
@@ -326,7 +330,12 @@ public final class User extends SerializableIdObject {
 		Date birthDate2 = other.getBirthDate();
 		Date testingDate = getTestingDate();
 		Date testingDate2 = other.getTestingDate();
-		
+		Boolean autoDisable = getAutoDisable();
+		Boolean autoDisable2 = other.getAutoDisable();
+		String name = getName();
+		String name2 = other.getName();
+		Boolean testingSuspended = isTestingSuspended();
+		Boolean testingSuspended2 = other.isTestingSuspended();
 
 		// if id of one instance is null then compare other properties
 		if (id != null && id2 != null && !id.equals(id2)) {
@@ -380,7 +389,7 @@ public final class User extends SerializableIdObject {
 		} else if (!ownerId.equals(ownerId2)) {
 			return false;
 		}
-		
+
 		if (gender == null) {
 			if (gender2 != null) {
 				return false;
@@ -413,6 +422,22 @@ public final class User extends SerializableIdObject {
 			return false;
 		}
 
+		if (!autoDisable.equals(autoDisable2)) {
+			return false;
+		}
+
+		if (name == null) {
+			if (name2 != null) {
+				return false;
+			}
+		} else if (!name.equals(name2)) {
+			return false;
+		}
+
+		if (!testingSuspended.equals(testingSuspended2)) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -429,8 +454,11 @@ public final class User extends SerializableIdObject {
 		// Set<Group> groups = getGroups();
 		String gender = getGender();
 		String education = getEducation();
+		String name = getName();
 		Date birthDate = getBirthDate();
 		Date testingDate = getTestingDate();
+		Boolean autoDisable = getAutoDisable();
+		Boolean testingSuspended = isTestingSuspended();
 
 		final int prime = 61;
 		int result = 1;
@@ -445,8 +473,11 @@ public final class User extends SerializableIdObject {
 		// result = prime * result + groups.hashCode();
 		result = prime * result + (gender != null ? gender.hashCode() : 0);
 		result = prime * result + (education != null ? education.hashCode() : 0);
+		result = prime * result + (name != null ? name.hashCode() : 0);
 		result = prime * result + (birthDate != null ? birthDate.hashCode() : 0);
 		result = prime * result + (testingDate != null ? testingDate.hashCode() : 0);
+		result = prime * result + (autoDisable != null ? autoDisable.hashCode() : 0);
+		result = prime * result + (testingSuspended != null ? testingSuspended.hashCode() : 0);
 		return result;
 	}
 

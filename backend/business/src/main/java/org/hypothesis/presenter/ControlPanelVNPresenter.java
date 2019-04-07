@@ -10,6 +10,8 @@ import static com.vaadin.ui.themes.ValoTheme.LABEL_LARGE;
 import static com.vaadin.ui.themes.ValoTheme.LABEL_LIGHT;
 import static com.vaadin.ui.themes.ValoTheme.PANEL_BORDERLESS;
 import static org.hypothesis.presenter.BroadcastMessages.REFRESH_USER_TEST_STATE;
+import static org.hypothesis.ui.HypothesisTheme.TINYPANEL_PROCESSING;
+import static org.hypothesis.ui.HypothesisTheme.USERPANEL_SUSPENDED;
 import static org.hypothesis.utility.PushUtility.pushCommand;
 
 import java.time.LocalDate;
@@ -48,6 +50,8 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -162,13 +166,14 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 	}
 
 	private Component buildForm() {
-		HorizontalLayout form = new HorizontalLayout();
-		form.setWidth("100%");
+		HorizontalLayout hl = new HorizontalLayout();
+		hl.setWidth("100%");
 
 		dateField = new PopupDateField();
 		dateField.setResolution(DAY);
 		dateField.setDateFormat(Messages.getString("Format.Date"));
 		dateField.setInputPrompt(Messages.getString("Caption.Field.DateOfTesting"));
+		dateField.setCaption(Messages.getString("Caption.Field.DateOfTesting"));
 		dateField.setImmediate(true);
 		dateField.setValidationVisible(false);
 		dateField.setValue(DateUtility.toDate(LocalDate.now()));
@@ -178,19 +183,31 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 				refreshView();
 			}
 		});
-		form.addComponent(dateField);
+
+		FormLayout form = new FormLayout(dateField);
+		form.setMargin(false);
+		form.setSizeFull();
+
+		HorizontalLayout buttons = new HorizontalLayout();
+		buttons.setSizeFull();
 
 		Button enableButton = new Button(Messages.getString("Caption.Button.EnableTesting"));
 		enableButton.addStyleName(BUTTON_SMALL);
 		enableButton.addClickListener(e -> enableTesting(true));
-		form.addComponent(enableButton);
+		buttons.addComponent(enableButton);
 
 		Button disableButton = new Button(Messages.getString("Caption.Button.DisableTesting"));
 		disableButton.addStyleName(BUTTON_SMALL);
 		disableButton.addClickListener(e -> enableTesting(false));
-		form.addComponent(disableButton);
+		buttons.addComponent(disableButton);
+		CssLayout spacer = new CssLayout();
+		buttons.addComponent(spacer);
+		buttons.setExpandRatio(spacer, 1.0f);
 
-		return form;
+		hl.addComponent(form);
+		hl.addComponent(buttons);
+
+		return hl;
 	}
 
 	private void enableTesting(boolean enable) {
@@ -211,7 +228,12 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 		panel.setNamePropertyDataSource(userBeanItem.getItemProperty("name"));
 		panel.setSurnamePropertyDataSource(userBeanItem.getItemProperty("username"));
 
-		userPanels.put(data.getUser().getId(), panel);
+		User user = data.getUser();
+		if (user.isTestingSuspended()) {
+			panel.addStyleName(USERPANEL_SUSPENDED);
+		}
+
+		userPanels.put(user.getId(), panel);
 
 		updatePacksPanel(data, panel);
 
@@ -247,18 +269,28 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 		Panel packsPanel = panel.getPacksPanel();
 		ComponentContainer container = (ComponentContainer) packsPanel.getContent();
 
+		boolean isSuspended = data.getUser().isTestingSuspended();
+
 		container.removeAllComponents();
+		if (isSuspended) {
+			packsPanel.addStyleName(USERPANEL_SUSPENDED);
+		}
+
 		for (Pack pack : data.getPacks()) {
 			TinyPackPanel packPanel = new TinyPackPanel();
 			BeanItem<Pack> packBeanItem = new BeanItem<Pack>(pack);
 			packPanel.setDescriptionPropertyDataSource(packBeanItem.getItemProperty("name"));
+			if (isSuspended) {
+				packPanel.addStyleName(USERPANEL_SUSPENDED);
+			}
 
 			if (!data.getSessions().isEmpty()) {
 				UserSession session = data.getSessions().get(0);
 				if (session.getState() != null && pack.getId().equals(session.getState().getPackId())) {
-					packPanel.addStyleName("info-java");
+					packPanel.removeStyleName(USERPANEL_SUSPENDED);
+					packPanel.addStyleName(TINYPANEL_PROCESSING);
 				} else {
-					packPanel.removeStyleName("info-java");
+					packPanel.removeStyleName(TINYPANEL_PROCESSING);
 				}
 			}
 

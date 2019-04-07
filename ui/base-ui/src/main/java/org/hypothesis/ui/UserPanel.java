@@ -2,6 +2,7 @@ package org.hypothesis.ui;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
+import static com.vaadin.ui.themes.ValoTheme.PANEL_BORDERLESS;
 
 import org.hypothesis.data.model.User;
 
@@ -36,14 +37,12 @@ public class UserPanel extends Panel {
 	private void initPanel() {
 		setContent(buildLayout());
 		setWidth(100, PERCENTAGE);
-		setHeight(100, PIXELS);
+		setHeight(98, PIXELS);
 	}
 
 	private HorizontalLayout buildLayout() {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setSizeFull();
-		// layout.setMargin(true);
-		// layout.setSpacing(true);
 
 		VerticalLayout placeLayout = buildPlaceLayout();
 		layout.addComponent(placeLayout);
@@ -122,15 +121,19 @@ public class UserPanel extends Panel {
 
 		layout.addComponent(packsPanel);
 		layout.addComponent(messageLabel);
+		layout.setExpandRatio(messageLabel, 1.0f);
 
 		return layout;
 	}
 
 	private Panel createPacksPanel() {
 		Panel panel = new Panel();
+		panel.setHeight(70, PIXELS);
+		
 		HorizontalLayout layout = new HorizontalLayout();
-		layout.setHeight(100f, PERCENTAGE);
+		layout.setHeight(100, PERCENTAGE);
 		panel.setContent(layout);
+		panel.addStyleName(PANEL_BORDERLESS);
 
 		return panel;
 	}

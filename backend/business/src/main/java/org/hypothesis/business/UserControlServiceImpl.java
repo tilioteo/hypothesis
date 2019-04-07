@@ -23,9 +23,16 @@ public class UserControlServiceImpl {
 		return SessionRegister.getActiveSessions().stream()//
 				.map(s -> SessionUtils.getAttribute(s, UserControlData.class))//
 				.filter(Objects::nonNull)//
-				.filter(ucd -> user.equals(ucd.getUser()))//
+				.filter(ucd -> user.getId().equals(ucd.getUser().getId()))//
+				.map(ucd -> updateUser(ucd, user))
 				.findFirst().orElseGet(() -> createAndRegisterUserControlData(user));
 	}
+	
+	private static UserControlData updateUser(UserControlData userControlData, User user) {
+		userControlData.setUser(user);
+		return userControlData;
+	}
+
 
 	private static UserControlData createAndRegisterUserControlData(User user) {
 		UserControlData data = new UserControlData(user);
@@ -39,10 +46,7 @@ public class UserControlServiceImpl {
 			updateUserControlData(data);
 
 			if (uid != null) {
-				// UserSession session =
 				ensureUserSession(data, uid);
-				// session.setAddress(VaadinSession.getCurrent().getBrowser().getAddress());
-				// session.setPosition("<N/A>");
 			}
 		}
 

@@ -108,6 +108,7 @@ public class HibernateUtil {
 
 		if (!session.getTransaction().isActive()) {
 			log.trace("Opening database transaction.");
+			session.clear();
 			session.beginTransaction();
 		} else {
 			log.trace("Session already has an active database transaction.");

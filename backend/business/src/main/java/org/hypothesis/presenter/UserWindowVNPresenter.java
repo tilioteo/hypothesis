@@ -140,6 +140,8 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 	private boolean isFirstRoleSelected;
 
+	private boolean initializingFields = true;
+
 	public UserWindowVNPresenter(MainEventBus bus) {
 		super(bus);
 
@@ -318,9 +320,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				@SuppressWarnings("unchecked")
 				@Override
 				public void valueChange(ValueChangeEvent event) {
-					Set<Role> roles = (Set<Role>) rolesField.getValue();
-					if (roles.size() == 1 && roles.contains(ROLE_USER)) {
-						testingSuspendedField.setValue(true);
+					if (!initializingFields) {
+						Set<Role> roles = (Set<Role>) rolesField.getValue();
+						if (roles.size() == 1 && roles.contains(ROLE_USER)) {
+							testingSuspendedField.setValue(true);
+						}
 					}
 				}
 			});
@@ -628,7 +632,10 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		genderField.select(Gender.get(user.getGender()));
 		educationField.setValue(user.getEducation());
 		birthDateField.setValue(user.getBirthDate());
+
 		testingDateField.setValue(user.getTestingDate());
+
+		initializingFields = false;
 
 		// groups
 		// if (groupsField != null) {
@@ -964,6 +971,8 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		detailTable.setVisibleColumns(NAME);
 		detailTable.setColumnHeaders(Messages.getString("Caption.Field.PackSetContent"));
 		detailTable.setSortEnabled(false);
+		detailTable.setSelectable(true);
+		detailTable.setMultiSelect(true);
 
 		hl.addComponent(table);
 		hl.addComponent(detailTable);
@@ -972,7 +981,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		buttonLayout.setWidth(100.0f, PERCENTAGE);
 		buttonLayout.setSpacing(true);
 
-		final Button btnAdd = new Button(Messages.getString("Caption.Field.AddPacks"), new ClickListener() {
+		final Button btnAdd = new Button(Messages.getString("Caption.Button.AddSelectedPackSet"), new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				Object itemId = table.getValue();
@@ -990,10 +999,33 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				btnAdd.setEnabled(table.getValue() != null);
 
 				updateDetailContainer(detailSource, (PackSet) table.getValue());
+				detailTable.setValue(null);
 			}
 		});
 
-		buttonLayout.addComponent(btnAdd);
+		final Button btnAddSelected = new Button(Messages.getString("Caption.Button.AddSelectedPacks"),
+				new ClickListener() {
+					@Override
+					public void buttonClick(ClickEvent event) {
+						@SuppressWarnings("unchecked")
+						Set<Pack> items = (Set<Pack>) detailTable.getValue();
+						if (!items.isEmpty()) {
+							addSelectedPacks(items);
+							detailTable.setValue(null);
+						}
+					}
+				});
+		btnAddSelected.setEnabled(false);
+
+		detailTable.addValueChangeListener(new ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				final Set<?> values = (Set<?>) detailTable.getValue();
+				btnAddSelected.setEnabled(!values.isEmpty());
+			}
+		});
+
+		buttonLayout.addComponents(btnAdd, btnAddSelected);
 
 		vl.addComponent(hl);
 		vl.addComponent(buttonLayout);
@@ -1003,13 +1035,17 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		return vl;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void addSelectedPackSet(PackSet packSet) {
+		packSet = packSetService.merge(packSet);
+
+		addSelectedPacks(packSet.getPacks());
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addSelectedPacks(Collection<Pack> packs) {
 		if (permittedPacks != null && permittedPacks.getContainerDataSource() != null) {
 			BeanItemContainer<Pack> dataSource = (BeanItemContainer<Pack>) permittedPacks.getContainerDataSource();
-			packSet = packSetService.merge(packSet);
-
-			for (Pack pack : packSet.getPacks()) {
+			for (Pack pack : packs) {
 				if (!dataSource.containsId(pack)) {
 					dataSource.addBean(pack);
 				}

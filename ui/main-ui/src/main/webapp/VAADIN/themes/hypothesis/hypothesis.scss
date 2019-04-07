@@ -20,6 +20,8 @@
   $color3: #C0C0C2;
   $color-packpanel: #F7F7F7;
   $color-packpanel-nojava: #CACACA;
+  $color-tinypanel-processing: #DAFFDA;
+  $color-userpanel-suspended: #A4A4A4;
   
   //#A1C2E3
   //#DFE8F6
@@ -110,6 +112,7 @@
     font-weight: bold;
   }
 
+/*
   .v-panel-content-info-nojava {
     @include valo-panel-style($background-color: #FF9090);
     color: white;
@@ -118,6 +121,15 @@
   
   .v-panel-content-info-java {
     @include valo-panel-style($background-color: #DAFFDA);
+  }
+*/
+  
+  .v-panel-content-tinypanel-processing {
+    @include valo-panel-style($background-color: $color-tinypanel-processing);
+  }
+  
+  .v-panel-content-userpanel-suspended {
+    @include valo-panel-style($background-color: $color-userpanel-suspended);
   }
   
   .v-panel-hidden {

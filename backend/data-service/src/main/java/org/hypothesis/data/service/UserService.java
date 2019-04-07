@@ -11,8 +11,10 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.User;
@@ -157,7 +159,6 @@ public class UserService implements Serializable {
 	public User get(long id) {
 		log.debug("getUser");
 		try {
-			userDao.clear();
 			userDao.beginTransaction();
 			User usr = userDao.findById(Long.valueOf(id), true);
 			userDao.commit();
@@ -243,7 +244,11 @@ public class UserService implements Serializable {
 		log.debug("findPlannedUsers");
 		try {
 			userDao.beginTransaction();
-			List<User> users = userDao.findByCriteria(Restrictions.eq(FieldConstants.PROPERTY_TESTING_DATE, date));
+			Criteria criteria = userDao.createCriteria()
+					.add(Restrictions.eq(FieldConstants.PROPERTY_TESTING_DATE, date))
+					.addOrder(Order.asc(FieldConstants.USERNAME));
+			@SuppressWarnings("unchecked")
+			List<User> users = criteria.list();
 			userDao.commit();
 
 			return users;
