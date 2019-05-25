@@ -105,4 +105,5 @@ public interface FieldConstants {
 
 	String NESTED_PACK = "pack.";
 	String NESTED_PACK_ID = NESTED_PACK + ID;
+	String NESTED_PACK_NAME = NESTED_PACK + NAME;
 }

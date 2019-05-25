@@ -408,6 +408,7 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
 		final BeanContainer<Long, Test> dataSource = new BeanContainer<Long, Test>(Test.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_PACK_ID);
+		dataSource.addNestedContainerProperty(FieldConstants.NESTED_PACK_NAME);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_USERNAME);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_NAME);
@@ -423,14 +424,15 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
 			}
 		});
 
-		table.setVisibleColumns(FieldConstants.ID, FieldConstants.NESTED_PACK_ID, FieldConstants.NESTED_USER_ID,
-				FieldConstants.NESTED_USER_USERNAME, FieldConstants.NESTED_USER_NAME,
+		table.setVisibleColumns(FieldConstants.ID, FieldConstants.NESTED_PACK_ID, FieldConstants.NESTED_PACK_NAME,
+				FieldConstants.NESTED_USER_ID, FieldConstants.NESTED_USER_USERNAME, FieldConstants.NESTED_USER_NAME,
 				FieldConstants.NESTED_USER_PASSWORD, FieldConstants.CREATED, FieldConstants.STATUS);
 
 		table.setColumnHeaders(Messages.getString("Caption.Field.TestID"), Messages.getString("Caption.Field.PackID"),
-				Messages.getString("Caption.Field.UserID"), Messages.getString("Caption.Field.Surname"),
-				Messages.getString("Caption.Field.Name"), Messages.getString("Caption.Field.BirthNumber"),
-				Messages.getString("Caption.Field.Created"), Messages.getString("Caption.Field.Status"));
+				Messages.getString("Caption.Field.PackName"), Messages.getString("Caption.Field.UserID"),
+				Messages.getString("Caption.Field.Surname"), Messages.getString("Caption.Field.Name"),
+				Messages.getString("Caption.Field.BirthNumber"), Messages.getString("Caption.Field.Created"),
+				Messages.getString("Caption.Field.Status"));
 
 		table.addValueChangeListener(new ValueChangeListener() {
 			@Override

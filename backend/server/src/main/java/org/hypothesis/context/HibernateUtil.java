@@ -40,19 +40,23 @@ public class HibernateUtil {
 	 * current thread is provided here.
 	 */
 	public static Session getSession() throws NullPointerException {
-		SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
-		if (null == sessions) {
-			sessions = new SessionMap();
-			VaadinSession.getCurrent().setAttribute(SessionMap.class, sessions);
-		}
+		if (VaadinSession.getCurrent() != null) {
+			SessionMap sessions = VaadinSession.getCurrent().getAttribute(SessionMap.class);
+			if (null == sessions) {
+				sessions = new SessionMap();
+				VaadinSession.getCurrent().setAttribute(SessionMap.class, sessions);
+			}
 
-		String threadGroup = Thread.currentThread().getThreadGroup().getName();
-		Session session = sessions.get(threadGroup);
-		if (null == session) {
-			session = sessionFactory.openSession();
-			sessions.put(threadGroup, session);
+			String threadGroup = Thread.currentThread().getThreadGroup().getName();
+			Session session = sessions.get(threadGroup);
+			if (null == session) {
+				session = sessionFactory.openSession();
+				sessions.put(threadGroup, session);
+			}
+			return session;
+		} else {
+			return sessionFactory.openSession();
 		}
-		return session;
 	}
 
 	public static SessionFactory getSessionFactory() throws NullPointerException {
