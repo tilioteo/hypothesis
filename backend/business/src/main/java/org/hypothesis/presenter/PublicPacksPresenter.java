@@ -14,10 +14,12 @@ import java.util.List;
 
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.business.data.TestData;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Token;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.TokenDto;
 import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.TokenService;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
+import org.hypothesis.data.service.impl.TokenServiceImpl;
 import org.hypothesis.event.data.UIMessage;
 import org.hypothesis.interfaces.PacksPresenter;
 import org.hypothesis.server.Messages;
@@ -49,8 +51,8 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
 	private final HashMap<PackPanel, TestData> panelTestData = new HashMap<>();
 
 	public PublicPacksPresenter() {
-		permissionService = PermissionService.newInstance();
-		tokenService = TokenService.newInstance();
+		permissionService = new PermissionServiceImpl();
+		tokenService = new TokenServiceImpl();
 	}
 
 	protected PacksView getView() {
@@ -76,22 +78,23 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
 		refreshView();
 	}
 
-	public Token createToken(Pack pack) {
+	public TokenDto createToken(PackDto pack) {
 		String viewUid = SessionManager.getMainUID();
-		return tokenService.createToken(getLoggedUser(), pack, viewUid, true);
+		return tokenService.create(pack.getId().longValue(), getLoggedUser() != null ? getLoggedUser().getId() : null,
+				viewUid, true);
 	}
 
-	protected List<Pack> getPacks() {
+	protected List<PackDto> getPacks() {
 		return permissionService.getPublishedPacks();
 	}
 
 	public void refreshView() {
 		view.clearMainLayout();
 
-		List<Pack> packs = getPacks();
+		List<PackDto> packs = getPacks();
 
 		if (packs != null && !packs.isEmpty()) {
-			for (Pack pack : packs) {
+			for (PackDto pack : packs) {
 				view.addPackPanel(createPackPanel(pack));
 			}
 		} else {
@@ -103,7 +106,7 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
 		view.markAsDirty();
 	}
 
-	protected void cleanOldTestData(List<Pack> packs) {
+	protected void cleanOldTestData(List<PackDto> packs) {
 		for (TestData testData : panelTestData.values()) {
 			if (!packs.contains(testData.getPack())) {
 				panelTestData.remove(testData);
@@ -111,8 +114,8 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
 		}
 	}
 
-	protected PackPanel createPackPanel(Pack pack) {
-		BeanItem<Pack> beanItem = new BeanItem<>(pack);
+	protected PackPanel createPackPanel(PackDto pack) {
+		BeanItem<PackDto> beanItem = new BeanItem<>(pack);
 		PackPanel panel = new PackPanel();
 		TestData testData = panelTestData.get(panel);
 		if (testData == null) {

@@ -1,18 +1,23 @@
 package org.hypothesis.presenter;
 
+import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
+import static org.hypothesis.utility.UserUtility.userHasAnyRole;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.hypothesis.data.LongItemSorter;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.PackSet;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.PackSetDto;
+import org.hypothesis.data.interfaces.FieldConstants;
 import org.hypothesis.data.service.PackService;
 import org.hypothesis.data.service.PackSetService;
 import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.RoleService;
+import org.hypothesis.data.service.impl.PackServiceImpl;
+import org.hypothesis.data.service.impl.PackSetServiceImpl;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
@@ -83,9 +88,9 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 	public PackSetWindowVNPresenter(MainEventBus bus) {
 		super(bus);
 
-		packSetService = PackSetService.newInstance();
-		permissionService = PermissionService.newInstance();
-		packService = PackService.newInstance();
+		packSetService = new PackSetServiceImpl();
+		permissionService = new PermissionServiceImpl();
+		packService = new PackServiceImpl();
 	}
 
 	private void buildIdField() {
@@ -116,7 +121,7 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			table.addStyleName(ValoTheme.TABLE_SMALL);
 			table.setSelectable(true);
 
-			final BeanItemContainer<Pack> dataSource = new BeanItemContainer<Pack>(Pack.class);
+			final BeanItemContainer<PackDto> dataSource = new BeanItemContainer<PackDto>(PackDto.class);
 
 			table.setContainerDataSource(dataSource);
 
@@ -143,11 +148,11 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 				@Override
 				public void drop(DragAndDropEvent event) {
 					DataBoundTransferable t = (DataBoundTransferable) event.getTransferable();
-					Pack sourceItemId = (Pack) t.getItemId();
+					PackDto sourceItemId = (PackDto) t.getItemId();
 
 					AbstractSelectTargetDetails dropData = (AbstractSelectTargetDetails) event.getTargetDetails();
 
-					Pack targetItemId = (Pack) dropData.getItemIdOver();
+					PackDto targetItemId = (PackDto) dropData.getItemIdOver();
 
 					if (t.getSourceContainer() == dataSource
 							&& (sourceItemId == targetItemId || targetItemId == null)) {
@@ -168,9 +173,9 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			btnUp.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					Pack pack = (Pack) table.getValue();
+					PackDto pack = (PackDto) table.getValue();
 					if (pack != null) {
-						List<Pack> list = dataSource.getItemIds();
+						List<PackDto> list = dataSource.getItemIds();
 						int idx = list.indexOf(pack);
 						if (idx > 0) {
 							dataSource.removeItem(pack);
@@ -183,9 +188,9 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			btnDown.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					Pack pack = (Pack) table.getValue();
+					PackDto pack = (PackDto) table.getValue();
 					if (pack != null) {
-						List<Pack> list = dataSource.getItemIds();
+						List<PackDto> list = dataSource.getItemIds();
 						int idx = list.indexOf(pack);
 						if (idx < list.size() - 1) {
 							dataSource.removeItem(pack);
@@ -202,7 +207,7 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			availTable.addStyleName(ValoTheme.TABLE_SMALL);
 			availTable.setSelectable(true);
 
-			final BeanItemContainer<Pack> availDataSource = new BeanItemContainer<Pack>(Pack.class);
+			final BeanItemContainer<PackDto> availDataSource = new BeanItemContainer<PackDto>(PackDto.class);
 
 			availTable.setContainerDataSource(availDataSource);
 			availDataSource.setItemSorter(new LongItemSorter());
@@ -224,11 +229,11 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 				@Override
 				public void drop(DragAndDropEvent event) {
 					DataBoundTransferable t = (DataBoundTransferable) event.getTransferable();
-					Pack sourceItemId = (Pack) t.getItemId();
+					PackDto sourceItemId = (PackDto) t.getItemId();
 
 					AbstractSelectTargetDetails dropData = (AbstractSelectTargetDetails) event.getTargetDetails();
 
-					Pack targetItemId = (Pack) dropData.getItemIdOver();
+					PackDto targetItemId = (PackDto) dropData.getItemIdOver();
 
 					if (sourceItemId == targetItemId || targetItemId == null) {
 						return;
@@ -250,7 +255,7 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			btnRight.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					Pack pack = (Pack) availTable.getValue();
+					PackDto pack = (PackDto) availTable.getValue();
 					if (pack != null) {
 						availDataSource.removeItem(pack);
 						dataSource.addItem(pack);
@@ -261,7 +266,7 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			btnLeft.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					Pack pack = (Pack) table.getValue();
+					PackDto pack = (PackDto) table.getValue();
 					if (pack != null) {
 						dataSource.removeItem(pack);
 						availDataSource.addItem(pack);
@@ -274,7 +279,7 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			table.addItemClickListener(new ItemClickListener() {
 				@Override
 				public void itemClick(ItemClickEvent event) {
-					Pack pack = (Pack) event.getItemId();
+					PackDto pack = (PackDto) event.getItemId();
 					if (event.isDoubleClick() && pack != null) {
 						dataSource.removeItem(pack);
 						availDataSource.addItem(pack);
@@ -287,7 +292,7 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			availTable.addItemClickListener(new ItemClickListener() {
 				@Override
 				public void itemClick(ItemClickEvent event) {
-					Pack pack = (Pack) event.getItemId();
+					PackDto pack = (PackDto) event.getItemId();
 					if (event.isDoubleClick() && pack != null) {
 						availDataSource.removeItem(pack);
 						dataSource.addItem(pack);
@@ -332,14 +337,14 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 		// true });
 
 		if (WindowState.CREATE == state) {
-			Collection<Pack> allPacks;
-			if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-				allPacks = permissionService.findAllPacks();
+			Collection<PackDto> allPacks;
+			if (userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
+				allPacks = packService.findAll();
 			} else {
-				allPacks = permissionService.findUserPacks2(loggedUser, false);
+				allPacks = permissionService.findUserPacks2(loggedUser.getId(), false);
 			}
 
-			for (Pack pack : allPacks) {
+			for (PackDto pack : allPacks) {
 				availablePacks.addItem(pack);
 			}
 
@@ -349,14 +354,13 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 
 	@Override
 	protected void fillFields() {
-		PackSet packSet = (PackSet) source;
-		packSet = packSetService.merge(packSet);
+		PackSetDto packSet = (PackSetDto) source;
 
 		idField.setValue(packSet.getId().toString());
 		nameField.setValue(packSet.getName());
 
 		// packs
-		List<Pack> packs;
+		List<PackDto> packs;
 
 		if (WindowState.UPDATE == state) {
 			packs = packSet.getPacks();
@@ -364,18 +368,18 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			packs = new LinkedList<>();
 		}
 
-		for (Pack pack : packs) {
+		for (PackDto pack : packs) {
 			packsField.addItem(pack);
 		}
 
-		Collection<Pack> allPacks;
-		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			allPacks = permissionService.findAllPacks();
+		Collection<PackDto> allPacks;
+		if (userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
+			allPacks = packService.findAll();
 		} else {
-			allPacks = permissionService.findUserPacks2(loggedUser, false);
+			allPacks = permissionService.findUserPacks2(loggedUser.getId(), false);
 		}
 
-		for (Pack pack : allPacks) {
+		for (PackDto pack : allPacks) {
 			if (!packs.contains(pack)) {
 				availablePacks.addItem(pack);
 			}
@@ -594,11 +598,11 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 			// }
 		}
 
-		PackSet packSet;
+		PackSetDto packSet;
 		if (WindowState.CREATE == state) {
-			packSet = new PackSet();
+			packSet = new PackSetDto();
 		} else {
-			packSet = (PackSet) source;
+			packSet = (PackSetDto) source;
 		}
 		packSet = savePackSet(packSet);
 		if (packSet != null) {
@@ -612,20 +616,20 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 		committed = true;
 	}
 
-	private PackSet savePackSet(PackSet packSet) {
+	private PackSetDto savePackSet(PackSetDto packSet) {
 		if (nameField.isVisible()) {
 			packSet.setName(nameField.getValue());
 		}
 
 		if (packsField != null && packsField.isVisible() && packsField.isEnabled()) {
-			packSet.removeAllPacks();
+			packSet.getPacks().clear();
 			for (Object itemId : packsField.getItemIds()) {
-				Pack pack = packService.merge((Pack) itemId);
-				packSet.addPack(pack);
+				PackDto pack = (PackDto) itemId;
+				packSet.getPacks().add(pack);
 			}
 		}
 
-		packSet = packSetService.add(packSet);
+		packSet = packSetService.save(packSet);
 
 		return packSet;
 	}
@@ -636,7 +640,7 @@ public class PackSetWindowVNPresenter extends AbstractWindowPresenter {
 		packsField.setValidationVisible(visible);
 	}
 
-	public void showWindow(PackSet packSet) {
+	public void showWindow(PackSetDto packSet) {
 		showWindow(WindowState.UPDATE, packSet);
 	}
 

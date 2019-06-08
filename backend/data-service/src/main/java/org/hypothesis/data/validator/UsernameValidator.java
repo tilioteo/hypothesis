@@ -5,8 +5,9 @@
 package org.hypothesis.data.validator;
 
 import org.hypothesis.data.service.UserService;
-
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.server.Messages;
+
 import com.vaadin.data.Validator;
 
 /**
@@ -23,7 +24,7 @@ public class UsernameValidator implements Validator {
 
 	public UsernameValidator(Long id) {
 		this.id = id;
-		userService = UserService.newInstance();
+		userService = new UserServiceImpl();
 	}
 
 	@Override

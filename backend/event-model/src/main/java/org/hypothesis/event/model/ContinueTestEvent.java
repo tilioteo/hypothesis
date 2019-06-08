@@ -4,8 +4,9 @@
  */
 package org.hypothesis.event.model;
 
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Status;
+import org.hypothesis.data.api.Status;
+import org.hypothesis.data.dto.TestDto;
+
 import com.vaadin.server.ErrorHandler;
 
 /**
@@ -17,13 +18,13 @@ import com.vaadin.server.ErrorHandler;
 @SuppressWarnings("serial")
 public class ContinueTestEvent extends AbstractTestEvent {
 
-	private final SimpleTest test;
+	private final TestDto test;
 
-	public ContinueTestEvent(SimpleTest test) {
+	public ContinueTestEvent(TestDto test) {
 		this(test, null);
 	}
 
-	public ContinueTestEvent(SimpleTest test, ErrorHandler errorHandler) {
+	public ContinueTestEvent(TestDto test, ErrorHandler errorHandler) {
 		super(errorHandler);
 		this.test = test;
 	}
@@ -38,7 +39,7 @@ public class ContinueTestEvent extends AbstractTestEvent {
 		return Status.STARTED;
 	}
 
-	public SimpleTest getTest() {
+	public TestDto getTest() {
 		return test;
 	}
 }

@@ -7,7 +7,7 @@ package org.hypothesis.presenter;
 import java.util.ArrayList;
 
 import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.SimpleUserDto;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
@@ -41,7 +41,7 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 
 	protected Object source = null;
 
-	protected User loggedUser;
+	protected SimpleUserDto loggedUser;
 
 	protected WindowState state;
 
@@ -130,7 +130,7 @@ public abstract class AbstractWindowPresenter implements CloseListener {
 		this.state = state;
 		this.source = source;
 
-		this.loggedUser = SessionManager.getLoggedUser();
+		this.loggedUser = SessionManager.getLoggedUser2();
 
 		createWindow();
 

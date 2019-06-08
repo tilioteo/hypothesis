@@ -1,12 +1,10 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -18,16 +16,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -35,14 +34,13 @@ import org.hibernate.annotations.LazyCollectionOption;
  *         Hypothesis
  *
  */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.TEST_TABLE)
 @Access(AccessType.PROPERTY)
-public class Test extends SerializableIdObject {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5623194129920968655L;
+public class Test implements Serializable, HasId<Long> {
+
+	private Long id;
 
 	/**
 	 * signalize if test data are for production
@@ -78,24 +76,25 @@ public class Test extends SerializableIdObject {
 	 * status code
 	 */
 	private Integer status;
-	private User user;
 
-	private Pack pack;
+	private Long userId;
+
+	private long packId;
 
 	/**
 	 * last processing branch
 	 */
-	private Branch lastBranch;
+	private Long lastBranchId;
 
 	/**
 	 * last processing task
 	 */
-	private Task lastTask;
+	private Long lastTaskId;
 
 	/**
 	 * last processing slide
 	 */
-	private Slide lastSlide;
+	private Long lastSlideId;
 
 	/**
 	 * list of events in running test
@@ -107,26 +106,17 @@ public class Test extends SerializableIdObject {
 	 */
 	private List<Score> scores = new LinkedList<>();
 
-	protected Test() {
-		super();
-	}
-
-	/*
-	 * public Test(Pack pack, User user) { this(); production = false; this.pack
-	 * = pack; this.user = user; lastBranch = null; lastTask = null; lastSlide =
-	 * null;
-	 * 
-	 * created = new Date(); started = null; finished = null; broken = null;
-	 * lastAccess = created; setStatus(Status.CREATED); }
-	 */
-
 	@Override
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.TEST_GENERATOR)
 	@SequenceGenerator(name = TableConstants.TEST_GENERATOR, sequenceName = TableConstants.TEST_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.PRODUCTION, nullable = false)
@@ -134,8 +124,8 @@ public class Test extends SerializableIdObject {
 		return production;
 	}
 
-	public void setProduction(Boolean production) {
-		this.production = production != null ? production : false;
+	public void setProduction(boolean production) {
+		this.production = production;
 	}
 
 	@Column(name = FieldConstants.CREATED, nullable = false)
@@ -143,7 +133,7 @@ public class Test extends SerializableIdObject {
 		return created;
 	}
 
-	protected void setCreated(Date created) {
+	public void setCreated(Date created) {
 		this.created = created;
 	}
 
@@ -184,84 +174,61 @@ public class Test extends SerializableIdObject {
 	}
 
 	@Column(name = FieldConstants.STATUS, nullable = false)
-	protected Integer getStatusInternal() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	protected void setStatusInternal(Integer status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
-	@Transient
-	public Status getStatus() {
-		return Status.get(getStatusInternal());
+	@Column(name = FieldConstants.USER_ID)
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setStatus(Status status) {
-		if (status != null) {
-			setStatusInternal(status.getCode());
-		} else {
-			setStatusInternal(null);
-		}
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	@ManyToOne(/* cascade = { CascadeType.PERSIST, CascadeType.MERGE } */)
-	@JoinColumn(name = FieldConstants.USER_ID)
-	// @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public User getUser() {
-		return user;
+	@Column(name = FieldConstants.PACK_ID, nullable = false)
+	public long getPackId() {
+		return packId;
 	}
 
-	protected void setUser(User user) {
-		this.user = user;
+	public void setPackId(long packId) {
+		this.packId = packId;
 	}
 
-	@ManyToOne(/* cascade = { CascadeType.PERSIST, CascadeType.MERGE } */)
-	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
-	// @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public Pack getPack() {
-		return pack;
+	@Column(name = FieldConstants.LAST_BRANCH_ID)
+	public Long getLastBranchId() {
+		return lastBranchId;
 	}
 
-	protected void setPack(Pack pack) {
-		this.pack = pack;
+	public void setLastBranchId(Long branchId) {
+		this.lastBranchId = branchId;
 	}
 
-	@ManyToOne(/* cascade = { CascadeType.PERSIST, CascadeType.MERGE } */)
-	@JoinColumn(name = FieldConstants.LAST_BRANCH_ID)
-	// @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public Branch getLastBranch() {
-		return lastBranch;
+	@Column(name = FieldConstants.LAST_TASK_ID)
+	public Long getLastTaskId() {
+		return lastTaskId;
 	}
 
-	public void setLastBranch(Branch branch) {
-		this.lastBranch = branch;
+	public void setLastTaskId(Long taskId) {
+		this.lastTaskId = taskId;
 	}
 
-	@ManyToOne(/* cascade = { CascadeType.PERSIST, CascadeType.MERGE } */)
-	@JoinColumn(name = FieldConstants.LAST_TASK_ID)
-	// @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public Task getLastTask() {
-		return lastTask;
+	@Column(name = FieldConstants.LAST_SLIDE_ID)
+	public Long getLastSlideId() {
+		return lastSlideId;
 	}
 
-	public void setLastTask(Task task) {
-		this.lastTask = task;
-	}
-
-	@ManyToOne(/* cascade = { CascadeType.PERSIST, CascadeType.MERGE } */)
-	@JoinColumn(name = FieldConstants.LAST_SLIDE_ID)
-	// @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public Slide getLastSlide() {
-		return lastSlide;
-	}
-
-	public void setLastSlide(Slide slide) {
-		this.lastSlide = slide;
+	public void setLastSlideId(Long slideId) {
+		this.lastSlideId = slideId;
 	}
 
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.EVENT_ID) )
+	@JoinTable(name = TableConstants.TEST_EVENT_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.EVENT_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = FieldConstants.RANK)
@@ -269,22 +236,12 @@ public class Test extends SerializableIdObject {
 		return events;
 	}
 
-	protected void setEvents(List<Event> list) {
+	public void setEvents(List<Event> list) {
 		this.events = list;
 	}
 
-	public final void addEvent(Event event) {
-		if (event != null) {
-			getEvents().add(event);
-		}
-	}
-
-	public final void removeEvent(Event event) {
-		getEvents().remove(event);
-	}
-
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.TEST_SCORE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.SCORE_ID) )
+	@JoinTable(name = TableConstants.TEST_SCORE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.TEST_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.SCORE_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = FieldConstants.RANK)
@@ -292,186 +249,56 @@ public class Test extends SerializableIdObject {
 		return scores;
 	}
 
-	protected void setScores(List<Score> list) {
+	public void setScores(List<Score> list) {
 		this.scores = list;
 	}
 
 	@Override
+	public int hashCode() {
+		return getId() == null ? 0 : getId().hashCode();
+	}
+
+	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+		if (obj instanceof Test == false)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+
+		final Test other = (Test) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(isProduction(), other.isProduction()))
 			return false;
-		}
-		Test other = (Test) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		boolean production = isProduction();
-		boolean production2 = other.isProduction();
-		Date created = getCreated();
-		Date created2 = other.getCreated();
-		Date started = getStarted();
-		Date started2 = other.getStarted();
-		Date finished = getFinished();
-		Date finished2 = other.getFinished();
-		Date broken = getBroken();
-		Date broken2 = other.getBroken();
-		Date lastAccess = getLastAccess();
-		Date lastAccess2 = other.getLastAccess();
-		Integer status = getStatusInternal();
-		Integer status2 = other.getStatusInternal();
-		User user = getUser();
-		User user2 = other.getUser();
-		Pack pack = getPack();
-		Pack pack2 = other.getPack();
-		Branch lastBranch = getLastBranch();
-		Branch lastBranch2 = other.getLastBranch();
-		Task lastTask = getLastTask();
-		Task lastTask2 = other.getLastTask();
-		Slide lastSlide = getLastSlide();
-		Slide lastSlide2 = other.getLastSlide();
-		// List<Event> events = getEvents();
-		// List<Event> events2 = other.getEvents();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
+		if (!Objects.equals(getCreated(), other.getCreated()))
 			return false;
-		}
-
-		if (production != production2) {
+		if (!Objects.equals(getStarted(), other.getStarted()))
 			return false;
-		}
-
-		if (created == null) {
-			if (created2 != null) {
-				return false;
-			}
-		} else if (!created.equals(created2)) {
+		if (!Objects.equals(getFinished(), other.getFinished()))
 			return false;
-		}
-
-		if (started == null) {
-			if (started2 != null) {
-				return false;
-			}
-		} else if (!started.equals(started2)) {
+		if (!Objects.equals(getBroken(), other.getBroken()))
 			return false;
-		}
-
-		if (finished == null) {
-			if (finished2 != null) {
-				return false;
-			}
-		} else if (!finished.equals(finished2)) {
+		if (!Objects.equals(getLastAccess(), other.getLastAccess()))
 			return false;
-		}
-
-		if (broken == null) {
-			if (broken2 != null) {
-				return false;
-			}
-		} else if (!broken.equals(broken2)) {
+		if (!Objects.equals(getStatus(), other.getStatus()))
 			return false;
-		}
-
-		if (lastAccess == null) {
-			if (lastAccess2 != null) {
-				return false;
-			}
-		} else if (!lastAccess.equals(lastAccess2)) {
+		if (!Objects.equals(getUserId(), other.getUserId()))
 			return false;
-		}
-
-		if (status == null) {
-			if (status2 != null) {
-				return false;
-			}
-		} else if (!status.equals(status2)) {
+		if (!Objects.equals(getPackId(), other.getPackId()))
 			return false;
-		}
-
-		if (user == null) {
-			if (user2 != null) {
-				return false;
-			}
-		} else if (!user.equals(user2)) {
+		if (!Objects.equals(getLastBranchId(), other.getLastBranchId()))
 			return false;
-		}
-
-		if (pack == null) {
-			if (pack2 != null) {
-				return false;
-			}
-		} else if (!pack.equals(pack2)) {
+		if (!Objects.equals(getLastTaskId(), other.getLastTaskId()))
 			return false;
-		}
-
-		if (lastBranch == null) {
-			if (lastBranch2 != null) {
-				return false;
-			}
-		} else if (!lastBranch.equals(lastBranch2)) {
+		if (!Objects.equals(getLastSlideId(), other.getLastSlideId()))
 			return false;
-		}
-
-		if (lastTask == null) {
-			if (lastTask2 != null) {
-				return false;
-			}
-		} else if (!lastTask.equals(lastTask2)) {
-			return false;
-		}
-
-		if (lastSlide == null) {
-			if (lastSlide2 != null) {
-				return false;
-			}
-		} else if (!lastSlide.equals(lastSlide2)) {
-			return false;
-		}
-
 		return true;
 	}
 
 	@Override
-	public int hashCode() {
-		Long id = getId();
-		boolean production = isProduction();
-		Date created = getCreated();
-		Date started = getStarted();
-		Date finished = getFinished();
-		Date broken = getBroken();
-		Date lastAccess = getLastAccess();
-		Integer status = getStatusInternal();
-		User user = getUser();
-		Pack pack = getPack();
-		Branch lastBranch = getLastBranch();
-		Task lastTask = getLastTask();
-		Slide lastSlide = getLastSlide();
-		List<Event> events = getEvents();
-
-		final int prime = 53;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (production ? 1 : 0);
-		result = prime * result + (created != null ? created.hashCode() : 0);
-		result = prime * result + (started != null ? started.hashCode() : 0);
-		result = prime * result + (finished != null ? finished.hashCode() : 0);
-		result = prime * result + (broken != null ? broken.hashCode() : 0);
-		result = prime * result + (lastAccess != null ? lastAccess.hashCode() : 0);
-		result = prime * result + (status != null ? status.hashCode() : 0);
-		result = prime * result + (user != null ? user.hashCode() : 0);
-		result = prime * result + (pack != null ? pack.hashCode() : 0);
-		result = prime * result + (lastBranch != null ? lastBranch.hashCode() : 0);
-		result = prime * result + (lastTask != null ? lastTask.hashCode() : 0);
-		result = prime * result + (lastSlide != null ? lastSlide.hashCode() : 0);
-		result = prime * result + events.hashCode();
-		return result;
+	public String toString() {
+		return "Test [id=" + id + ", production=" + production + ", created=" + created + ", started=" + started
+				+ ", finished=" + finished + ", broken=" + broken + ", lastAccess=" + lastAccess + ", status=" + status
+				+ ", userId=" + userId + ", packId=" + packId + ", lastBranchId=" + lastBranchId + ", lastTaskId="
+				+ lastTaskId + ", lastSlideId=" + lastSlideId + "]";
 	}
 
 }

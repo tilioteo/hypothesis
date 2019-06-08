@@ -5,7 +5,7 @@ import org.hypothesis.business.UserControlServiceImpl;
 import org.hypothesis.business.data.TestData;
 import org.hypothesis.business.data.UserControlData;
 import org.hypothesis.business.data.UserTestState;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.SimpleUserDto;
 import org.hypothesis.interfaces.PacksPresenter;
 import org.hypothesis.servlet.BroadcastService;
 import org.hypothesis.utility.UIMessageUtility;
@@ -29,7 +29,7 @@ public class LegacyButtonWindowClosedListener implements WindowClosedListener {
 		presenter.refreshView();
 		presenter.unmaskView();
 
-		User user = SessionManager.getLoggedUser();
+		SimpleUserDto user = SessionManager.getLoggedUser2();
 		String uid = SessionManager.getMainUID();
 
 		UserControlServiceImpl userControlService = new UserControlServiceImpl();

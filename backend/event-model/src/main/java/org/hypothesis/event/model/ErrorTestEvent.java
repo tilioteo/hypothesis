@@ -4,7 +4,8 @@
  */
 package org.hypothesis.event.model;
 
-import org.hypothesis.data.model.Status;
+import org.hypothesis.data.api.Status;
+
 import com.vaadin.server.ErrorHandler;
 
 /**

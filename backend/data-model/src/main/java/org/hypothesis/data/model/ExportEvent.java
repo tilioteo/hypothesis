@@ -4,19 +4,23 @@
  */
 package org.hypothesis.data.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 import org.hibernate.annotations.Synchronize;
 import org.hibernate.annotations.Type;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -24,46 +28,46 @@ import org.hibernate.annotations.Type;
  *         Hypothesis
  *
  */
+@SuppressWarnings("serial")
 @Entity
-@Subselect("SELECT e."+FieldConstants.ID+
-		",e."+FieldConstants.TIMESTAMP+
-		",e."+FieldConstants.CLIENT_TIMESTAMP+
-		",e."+FieldConstants.TYPE+
-		",e."+FieldConstants.NAME+
-		",e."+FieldConstants.XML_DATA+
-		",e."+FieldConstants.BRANCH_ID+
-		",e."+FieldConstants.TASK_ID+
-		",e."+FieldConstants.SLIDE_ID+
-		",t."+FieldConstants.ID+" "+FieldConstants.TEST_ID+
-		",t."+FieldConstants.USER_ID+
-		",t."+FieldConstants.PACK_ID+
-		",t."+FieldConstants.CREATED+
-		",p."+FieldConstants.NAME+" "+FieldConstants.PACK_NAME+
-		",b."+FieldConstants.NOTE+" "+FieldConstants.BRANCH_NAME+
-		",ta."+FieldConstants.NAME+" "+FieldConstants.TASK_NAME+
-		",s."+FieldConstants.NOTE+" "+FieldConstants.SLIDE_NAME+
-		" FROM "+TableConstants.EVENT_TABLE+" e JOIN "+
-		TableConstants.TEST_EVENT_TABLE+" te ON te."+FieldConstants.EVENT_ID+"=e."+FieldConstants.ID+" JOIN "+
-		TableConstants.TEST_TABLE+" t ON te."+FieldConstants.TEST_ID+"=t."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.PACK_TABLE+" p ON t."+FieldConstants.PACK_ID+"=p."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.BRANCH_TABLE+" b ON e."+FieldConstants.BRANCH_ID+"=b."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.TASK_TABLE+" ta ON e."+FieldConstants.TASK_ID+"=ta."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.SLIDE_TABLE+" s ON e."+FieldConstants.SLIDE_ID+"=s."+FieldConstants.ID)
+@Subselect("SELECT e." + FieldConstants.ID + //
+		",e." + FieldConstants.TIMESTAMP + //
+		",e." + FieldConstants.CLIENT_TIMESTAMP + //
+		",e." + FieldConstants.TYPE + //
+		",e." + FieldConstants.NAME + //
+		",e." + FieldConstants.XML_DATA + //
+		",e." + FieldConstants.BRANCH_ID + //
+		",e." + FieldConstants.TASK_ID + //
+		",e." + FieldConstants.SLIDE_ID + //
+		",t." + FieldConstants.ID + " " + FieldConstants.TEST_ID + //
+		",t." + FieldConstants.USER_ID + //
+		",t." + FieldConstants.PACK_ID + //
+		",t." + FieldConstants.CREATED + //
+		",p." + FieldConstants.NAME + " " + FieldConstants.PACK_NAME + //
+		",b." + FieldConstants.NOTE + " " + FieldConstants.BRANCH_NAME + //
+		",ta." + FieldConstants.NAME + " " + FieldConstants.TASK_NAME + //
+		",s." + FieldConstants.NOTE + " " + FieldConstants.SLIDE_NAME + //
+		" FROM " + TableConstants.EVENT_TABLE + " e JOIN " + //
+		TableConstants.TEST_EVENT_TABLE + " te ON te." + FieldConstants.EVENT_ID + "=e." + FieldConstants.ID + " JOIN "
+		+ //
+		TableConstants.TEST_TABLE + " t ON te." + FieldConstants.TEST_ID + "=t." + FieldConstants.ID + " LEFT JOIN " + //
+		TableConstants.PACK_TABLE + " p ON t." + FieldConstants.PACK_ID + "=p." + FieldConstants.ID + " LEFT JOIN " + //
+		TableConstants.BRANCH_TABLE + " b ON e." + FieldConstants.BRANCH_ID + "=b." + FieldConstants.ID + " LEFT JOIN "
+		+ //
+		TableConstants.TASK_TABLE + " ta ON e." + FieldConstants.TASK_ID + "=ta." + FieldConstants.ID + " LEFT JOIN " + //
+		TableConstants.SLIDE_TABLE + " s ON e." + FieldConstants.SLIDE_ID + "=s." + FieldConstants.ID)
 @Synchronize({ TableConstants.EVENT_TABLE, TableConstants.TEST_TABLE, TableConstants.TEST_EVENT_TABLE,
 		TableConstants.PACK_TABLE, TableConstants.BRANCH_TABLE, TableConstants.TASK_TABLE, TableConstants.SLIDE_TABLE })
 @Immutable
 @Access(AccessType.PROPERTY)
-public class ExportEvent extends SerializableIdObject {
+public class ExportEvent implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4342703994277025881L;
+	private long id;
 
 	/**
 	 * timestamp of event
 	 */
-	private Long timeStamp;
+	private long timeStamp;
 
 	/**
 	 * client timestamp of event (if possible)
@@ -144,20 +148,24 @@ public class ExportEvent extends SerializableIdObject {
 	@Id
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
+	}
+
+	protected void setId(long id) {
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.TIMESTAMP, nullable = false)
-	protected Long getTimeStamp() {
+	public long getTimeStamp() {
 		return timeStamp;
 	}
 
-	protected void setTimeStamp(Long timeStamp) {
+	protected void setTimeStamp(long timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 
 	@Column(name = FieldConstants.CLIENT_TIMESTAMP)
-	protected Long getClientTimeStamp() {
+	public Long getClientTimeStamp() {
 		return clientTimeStamp;
 	}
 
@@ -292,13 +300,61 @@ public class ExportEvent extends SerializableIdObject {
 		this.created = created;
 	}
 
-	@Transient
-	public final Date getDatetime() {
-		return new Date(getTimeStamp());
+	@Override
+	public int hashCode() {
+		return getId() == null ? 0 : getId().hashCode();
 	}
 
-	@Transient
-	public final Date getClientDatetime() {
-		return getClientTimeStamp() != null ? new Date(getClientTimeStamp()) : null;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ExportEvent == false)
+			return false;
+
+		final ExportEvent other = (ExportEvent) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getTimeStamp(), other.getTimeStamp()))
+			return false;
+		if (!Objects.equals(getClientTimeStamp(), other.getClientTimeStamp()))
+			return false;
+		if (!Objects.equals(getType(), other.getType()))
+			return false;
+		if (!Objects.equals(getName(), other.getName()))
+			return false;
+		if (!Objects.equals(getData(), other.getData()))
+			return false;
+		if (!Objects.equals(getBranchId(), other.getBranchId()))
+			return false;
+		if (!Objects.equals(getBranchName(), other.getBranchName()))
+			return false;
+		if (!Objects.equals(getTaskId(), other.getTaskId()))
+			return false;
+		if (!Objects.equals(getTaskName(), other.getTaskName()))
+			return false;
+		if (!Objects.equals(getSlideId(), other.getSlideId()))
+			return false;
+		if (!Objects.equals(getSlideName(), other.getSlideName()))
+			return false;
+		if (!Objects.equals(getTestId(), other.getTestId()))
+			return false;
+		if (!Objects.equals(getUserId(), other.getUserId()))
+			return false;
+		if (!Objects.equals(getPackId(), other.getPackId()))
+			return false;
+		if (!Objects.equals(getPackName(), other.getPackName()))
+			return false;
+		if (!Objects.equals(getCreated(), other.getCreated()))
+			return false;
+		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "ExportEvent [id=" + id + ", timeStamp=" + timeStamp + ", clientTimeStamp=" + clientTimeStamp + ", type="
+				+ type + ", name=" + name + ", branchId=" + branchId + ", branchName=" + branchName + ", taskId="
+				+ taskId + ", taskName=" + taskName + ", slideId=" + slideId + ", slideName=" + slideName + ", testId="
+				+ testId + ", userId=" + userId + ", packId=" + packId + ", packName=" + packName + ", created="
+				+ created + ", data=" + data + "]";
+	}
+
 }

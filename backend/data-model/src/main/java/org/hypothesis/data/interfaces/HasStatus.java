@@ -6,7 +6,7 @@ package org.hypothesis.data.interfaces;
 
 import java.io.Serializable;
 
-import org.hypothesis.data.model.Status;
+import org.hypothesis.data.api.Status;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

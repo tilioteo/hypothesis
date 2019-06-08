@@ -5,7 +5,7 @@
 package org.hypothesis.presenter;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.hypothesis.data.model.User.GUEST;
+import static org.hypothesis.data.api.Users.GUEST;
 import static org.hypothesis.ui.MainUIStyles.LOGIN_VIEW;
 
 import java.util.Date;
@@ -15,8 +15,9 @@ import org.hypothesis.business.SessionManager;
 import org.hypothesis.business.UserControlServiceImpl;
 import org.hypothesis.business.data.UserControlData;
 import org.hypothesis.business.data.UserSession;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.SimpleUserDto;
 import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent.GuestAccessRequestedEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidLoginEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.InvalidUserPermissionEvent;
@@ -80,7 +81,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		uid = UUID.randomUUID().toString().replaceAll("-", "");
 		SessionManager.setMainUID(uid);
 
-		userService = UserService.newInstance();
+		userService = new UserServiceImpl();
 		userControlService = new UserControlServiceImpl();
 
 		updateUIContent();
@@ -110,7 +111,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	 * Otherwise login view is shown.
 	 */
 	private void updateUIContent() {
-		User user = SessionManager.getLoggedUser();
+		SimpleUserDto user = SessionManager.getLoggedUser2();
 
 		if (user != null) {
 			// Authenticated user
@@ -122,7 +123,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 			if (isNotEmpty(viewName) && userCanAccessView(user, viewName)) {
 				ui.getNavigator().navigateTo(viewName);
 			} else {
-				if (!User.GUEST.equals(user)) {
+				if (!GUEST.equals(user)) {
 					ui.getNavigator().navigateTo(HypothesisViewType.PACKS.getViewName());
 					// VN specific - removed public packs
 					// } else {
@@ -135,7 +136,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		}
 	}
 
-	private boolean userCanAccessView(User user, String viewName) {
+	private boolean userCanAccessView(SimpleUserDto user, String viewName) {
 		HypothesisViewType viewType = HypothesisViewType.getByViewName(viewName);
 		if (viewType != null) {
 			return viewType.isAllowed(user.getRoles());
@@ -161,8 +162,8 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		return fragment;
 	}
 
-	private void setUser(User user) {
-		SessionManager.setLoggedUser(user);
+	private void setUser(SimpleUserDto user) {
+		SessionManager.setLoggedUser2(user);
 
 		UserControlData data = userControlService.ensureUserControlData(user);
 
@@ -173,7 +174,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
 	}
 
-	private boolean userCanLogin(User user) {
+	private boolean userCanLogin(SimpleUserDto user) {
 		if (user != null) {
 			if (user.getEnabled() != null && user.getEnabled().booleanValue()) {
 				Date expired = user.getExpireDate();
@@ -189,7 +190,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	@Handler
 	public void userLoginRequested(final UserLoginRequestedEvent event) {
-		User user = userService.findByUsernamePassword(event.getUserName(), event.getPassword());
+		SimpleUserDto user = userService.findByUsernameAndPassword(event.getUserName(), event.getPassword());
 
 		if (user != null) {
 
@@ -213,7 +214,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
 	@Handler
 	public void userLoggedOut(final UserLoggedOutEvent event) {
-		User user = SessionManager.getLoggedUser();
+		SimpleUserDto user = SessionManager.getLoggedUser2();
 
 		if (user != null) {
 			UserControlData data = userControlService.ensureUserControlData(user);
@@ -228,7 +229,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 		// When the user logs out, current VaadinSession gets closed and the
 		// page gets reloaded on the login screen. Do notice the this doesn't
 		// invalidate the current HttpSession.
-		SessionManager.setLoggedUser(null);
+		SessionManager.setLoggedUser2(null);
 		VaadinSession.getCurrent().close();
 
 		Page.getCurrent().reload();

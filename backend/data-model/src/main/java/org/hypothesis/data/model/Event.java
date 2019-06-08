@@ -1,10 +1,7 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -13,33 +10,26 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.SecondaryTables;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- *         Database entity for test event event is every action during test
- *         running
- * 
- */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.EVENT_TABLE)
+@SecondaryTables({ @SecondaryTable(name = TableConstants.TEST_EVENT_TABLE, pkJoinColumns = {
+		@PrimaryKeyJoinColumn(name = FieldConstants.EVENT_ID, referencedColumnName = FieldConstants.ID) }) })
 @Access(AccessType.PROPERTY)
-public final class Event extends SerializableIdObject {
+public class Event implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1958866075625431131L;
+	private Long id;
 
 	/**
 	 * server timestamp of event
@@ -54,7 +44,7 @@ public final class Event extends SerializableIdObject {
 	/**
 	 * code of event type
 	 */
-	private Long type;
+	private long type;
 
 	/**
 	 * human readable name
@@ -69,38 +59,22 @@ public final class Event extends SerializableIdObject {
 	/**
 	 * current processing branch
 	 */
-	private Branch branch;
+	private Long branchId;
 
 	/**
 	 * current processing task
 	 */
-	private Task task;
+	private Long taskId;
 
 	/**
 	 * current processing slide
 	 */
-	private Slide slide;
+	private Long slideId;
 
 	/**
 	 * linked test
 	 */
-	private Test test;
-
-	protected Event() {
-		super();
-	}
-
-	public Event(long type, String name, Date datetime) {
-		this(type, name, datetime, null);
-	}
-
-	public Event(long type, String name, Date datetime, Date clientDatetime) {
-		this();
-		this.type = type;
-		this.name = name;
-		this.timeStamp = datetime != null ? datetime.getTime() : null;
-		this.clientTimeStamp = clientDatetime != null ? clientDatetime.getTime() : null;
-	}
+	private Long testId;
 
 	@Override
 	@Id
@@ -108,15 +82,19 @@ public final class Event extends SerializableIdObject {
 	@SequenceGenerator(name = TableConstants.EVENT_GENERATOR, sequenceName = TableConstants.EVENT_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.TIMESTAMP, nullable = false)
-	protected Long getTimeStamp() {
+	public Long getTimeStamp() {
 		return timeStamp;
 	}
 
-	protected void setTimeStamp(Long timeStamp) {
+	public void setTimeStamp(Long timeStamp) {
 		this.timeStamp = timeStamp;
 	}
 
@@ -130,11 +108,11 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Column(name = FieldConstants.TYPE, nullable = false)
-	public Long getType() {
+	public long getType() {
 		return type;
 	}
 
-	protected void setType(Long type) {
+	public void setType(long type) {
 		this.type = type;
 	}
 
@@ -143,7 +121,7 @@ public final class Event extends SerializableIdObject {
 		return name;
 	}
 
-	protected void setName(String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
@@ -157,169 +135,81 @@ public final class Event extends SerializableIdObject {
 		this.data = data;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.BRANCH_ID)
-	public Branch getBranch() {
-		return branch;
+	@Column(name = FieldConstants.BRANCH_ID)
+	public Long getBranchId() {
+		return branchId;
 	}
 
-	public void setBranch(Branch branch) {
-		this.branch = branch;
+	public void setBranchId(Long branchId) {
+		this.branchId = branchId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.TASK_ID)
-	public Task getTask() {
-		return task;
+	@Column(name = FieldConstants.TASK_ID)
+	public Long getTaskId() {
+		return taskId;
 	}
 
-	public void setTask(Task task) {
-		this.task = task;
+	public void setTaskId(Long taskId) {
+		this.taskId = taskId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.SLIDE_ID)
-	public Slide getSlide() {
-		return slide;
+	@Column(name = FieldConstants.SLIDE_ID)
+	public Long getSlideId() {
+		return slideId;
 	}
 
-	public void setSlide(Slide slide) {
-		this.slide = slide;
+	public void setSlideId(Long slideId) {
+		this.slideId = slideId;
 	}
 
-	@ManyToOne
-	@JoinTable(name = TableConstants.TEST_EVENT_TABLE, joinColumns = {
-			@JoinColumn(name = FieldConstants.EVENT_ID, insertable = false, updatable = false) }, inverseJoinColumns = {
-					@JoinColumn(name = FieldConstants.TEST_ID, insertable = false, updatable = false) })
-	public Test getTest() {
-		return test;
+	@Column(name = FieldConstants.TEST_ID, table = TableConstants.TEST_EVENT_TABLE, insertable = false, updatable = false)
+	public Long getTestId() {
+		return testId;
 	}
 
-	protected void setTest(Test test) {
-		this.test = test;
-	}
-
-	@Transient
-	public final Date getDatetime() {
-		return new Date(getTimeStamp());
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Event)) {
-			return false;
-		}
-		Event other = (Event) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		Long timeStamp = getTimeStamp();
-		Long timeStamp2 = other.getTimeStamp();
-		Long type = getType();
-		Long type2 = other.getType();
-		String name = getName();
-		String name2 = other.getName();
-		String xmlData = getData();
-		String xmlData2 = other.getData();
-		Branch branch = getBranch();
-		Branch branch2 = other.getBranch();
-		Task task = getTask();
-		Task task2 = other.getTask();
-		Slide slide = getSlide();
-		Slide slide2 = other.getSlide();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
-			return false;
-		}
-
-		if (timeStamp == null) {
-			if (timeStamp2 != null) {
-				return false;
-			}
-		} else if (!timeStamp.equals(timeStamp2)) {
-			return false;
-		}
-
-		if (type == null) {
-			if (type2 != null) {
-				return false;
-			}
-		} else if (!type.equals(type2)) {
-			return false;
-		}
-
-		if (name == null) {
-			if (name2 != null) {
-				return false;
-			}
-		} else if (!name.equals(name2)) {
-			return false;
-		}
-
-		if (xmlData == null) {
-			if (xmlData2 != null) {
-				return false;
-			}
-		} else if (!xmlData.equals(xmlData2)) {
-			return false;
-		}
-
-		if (branch == null) {
-			if (branch2 != null) {
-				return false;
-			}
-		} else if (!branch.equals(branch2)) {
-			return false;
-		}
-
-		if (task == null) {
-			if (task2 != null) {
-				return false;
-			}
-		} else if (!task.equals(task2)) {
-			return false;
-		}
-
-		if (slide == null) {
-			if (slide2 != null) {
-				return false;
-			}
-		} else if (!slide.equals(slide2)) {
-			return false;
-		}
-
-		return true;
+	public void setTestId(Long testId) {
+		this.testId = testId;
 	}
 
 	@Override
 	public int hashCode() {
-		Long id = getId();
-		Long timeStamp = getTimeStamp();
-		Long type = getType();
-		String name = getName();
-		String xmlData = getData();
-		Branch branch = getBranch();
-		Task task = getTask();
-		Slide slide = getSlide();
+		return getId() == null ? 0 : getId().hashCode();
+	}
 
-		final int prime = 11;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (timeStamp != null ? timeStamp.hashCode() : 0);
-		result = prime * result + (type != null ? type.hashCode() : 0);
-		result = prime * result + (name != null ? name.hashCode() : 0);
-		result = prime * result + (xmlData != null ? xmlData.hashCode() : 0);
-		result = prime * result + (branch != null ? branch.hashCode() : 0);
-		result = prime * result + (task != null ? task.hashCode() : 0);
-		result = prime * result + (slide != null ? slide.hashCode() : 0);
-		return result;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Event == false)
+			return false;
+
+		final Event other = (Event) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getTimeStamp(), other.getTimeStamp()))
+			return false;
+		if (!Objects.equals(getClientTimeStamp(), other.getClientTimeStamp()))
+			return false;
+		if (!Objects.equals(getType(), other.getType()))
+			return false;
+		if (!Objects.equals(getName(), other.getName()))
+			return false;
+		if (!Objects.equals(getData(), other.getData()))
+			return false;
+		if (!Objects.equals(getBranchId(), other.getBranchId()))
+			return false;
+		if (!Objects.equals(getTaskId(), other.getTaskId()))
+			return false;
+		if (!Objects.equals(getSlideId(), other.getSlideId()))
+			return false;
+		if (!Objects.equals(getTestId(), other.getTestId()))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Event [id=" + id + ", timeStamp=" + timeStamp + ", clientTimeStamp=" + clientTimeStamp + ", type="
+				+ type + ", name=" + name + ", branchId=" + branchId + ", taskId=" + taskId + ", slideId=" + slideId
+				+ ", testId=" + testId + ", data=" + data + "]";
 	}
 
 }

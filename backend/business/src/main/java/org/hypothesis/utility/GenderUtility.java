@@ -3,7 +3,7 @@
  */
 package org.hypothesis.utility;
 
-import org.hypothesis.data.model.Gender;
+import org.hypothesis.data.api.Gender;
 import org.hypothesis.server.Messages;
 
 /**

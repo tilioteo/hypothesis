@@ -4,11 +4,14 @@
  */
 package org.hypothesis.navigator;
 
+import static org.hypothesis.data.api.Roles.ROLE_MANAGER;
+import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
+import static org.hypothesis.data.api.Roles.ROLE_USER;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hypothesis.data.model.Role;
-import org.hypothesis.data.service.RoleService;
+import org.hypothesis.data.dto.RoleDto;
 import org.hypothesis.interfaces.ViewPresenter;
 import org.hypothesis.presenter.ControlPanelVNPresenter;
 import org.hypothesis.presenter.ExportPresenterImpl;
@@ -29,25 +32,25 @@ import com.vaadin.server.Resource;
  *
  */
 public enum HypothesisViewType {
-	PACKS("/packs", "Caption.View.Packs", UserPacksPresenter.class, FontAwesome.BARS, true, new Role[] {RoleService.ROLE_USER, RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
+	PACKS("/packs", "Caption.View.Packs", UserPacksPresenter.class, FontAwesome.BARS, true, new String[] {ROLE_USER, ROLE_MANAGER, ROLE_SUPERUSER}),
 	// VN specific - removed public packs
-	//PUBLIC("/public", "Caption.View.Public", PublicPacksPresenter.class, FontAwesome.EYE, true, new Role[] {null, RoleService.ROLE_USER, RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	USERS("/users", "Caption.View.Users", UserManagementVNPresenter.class, FontAwesome.USER, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	GROUPS("/groups", "Caption.View.Groups", GroupManagementPresenter.class, FontAwesome.GROUP, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	PACK_SETS("/sets", "Caption.View.PackSets", PackSetManagementVNPresenter.class, FontAwesome.BOOK, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	CONTROL("/control", "Caption.View.ControlPanel", ControlPanelVNPresenter.class, FontAwesome.LIST, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	EXPORT("/export", "Caption.View.Export", ExportPresenterImpl.class, FontAwesome.TABLE, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	SCORES("/scores", "Caption.View.Scores", ExportScoreVNPresenterImpl.class, FontAwesome.BAR_CHART, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER}),
-	SLIDES("/slides", "Caption.View.Slides", SlideManagementPresenterImpl.class, FontAwesome.FILE_CODE_O, true, new Role[] {RoleService.ROLE_MANAGER, RoleService.ROLE_SUPERUSER});
+	//PUBLIC("/public", "Caption.View.Public", PublicPacksPresenter.class, FontAwesome.EYE, true, new String[] {null, ROLE_USER, ROLE_MANAGER, ROLE_SUPERUSER}),
+	USERS("/users", "Caption.View.Users", UserManagementVNPresenter.class, FontAwesome.USER, true, new String[] {ROLE_MANAGER, ROLE_SUPERUSER}),
+	GROUPS("/groups", "Caption.View.Groups", GroupManagementPresenter.class, FontAwesome.GROUP, true, new String[] {ROLE_MANAGER, ROLE_SUPERUSER}),
+	PACK_SETS("/sets", "Caption.View.PackSets", PackSetManagementVNPresenter.class, FontAwesome.BOOK, true, new String[] {ROLE_MANAGER, ROLE_SUPERUSER}),
+	CONTROL("/control", "Caption.View.ControlPanel", ControlPanelVNPresenter.class, FontAwesome.LIST, true, new String[] {ROLE_MANAGER, ROLE_SUPERUSER}),
+	EXPORT("/export", "Caption.View.Export", ExportPresenterImpl.class, FontAwesome.TABLE, true, new String[] {ROLE_MANAGER, ROLE_SUPERUSER}),
+	SCORES("/scores", "Caption.View.Scores", ExportScoreVNPresenterImpl.class, FontAwesome.BAR_CHART, true, new String[] {ROLE_MANAGER, ROLE_SUPERUSER}),
+	SLIDES("/slides", "Caption.View.Slides", SlideManagementPresenterImpl.class, FontAwesome.FILE_CODE_O, true, new String[] {ROLE_MANAGER, ROLE_SUPERUSER});
 
 	private final String viewName;
 	private final String caption;
 	private final Class<? extends ViewPresenter> presenterClass;
 	private final Resource icon;
 	private final boolean stateful;
-	private final Set<Role> roles;
+	private final Set<String> roles;
 
-	HypothesisViewType(final String viewName, final String caption, final Class<? extends ViewPresenter> presenterClass, final Resource icon, final boolean stateful, final Role[] roles) {
+	HypothesisViewType(final String viewName, final String caption, final Class<? extends ViewPresenter> presenterClass, final Resource icon, final boolean stateful, final String[] roles) {
 		this.viewName = viewName;
 		this.caption = caption;
 		this.presenterClass = presenterClass;
@@ -58,8 +61,8 @@ public enum HypothesisViewType {
 		initRoles(roles);
 	}
 
-	private void initRoles(Role[] roles) {
-		for (Role role : roles) {
+	private void initRoles(String[] roles) {
+		for (String role : roles) {
 			this.roles.add(role);
 		}
 	}
@@ -84,12 +87,12 @@ public enum HypothesisViewType {
 		return stateful;
 	}
 
-	public boolean isAllowed(Set<Role> checkRoles) {
+	public boolean isAllowed(Set<RoleDto> checkRoles) {
 		if (null == checkRoles || checkRoles.isEmpty()) {
 			return roles.contains(null);
 		} else {
-			for (Role checkRole : checkRoles) {
-				if (roles.contains(checkRole)) {
+			for (RoleDto checkRole : checkRoles) {
+				if (roles.contains(checkRole.getName())) {
 					return true;
 				}
 			}

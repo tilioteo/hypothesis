@@ -7,7 +7,8 @@ package org.hypothesis.ui.table;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hypothesis.data.model.FieldConstants;
+import org.hypothesis.data.interfaces.FieldConstants;
+
 import com.vaadin.data.Item;
 import com.vaadin.ui.Table;
 

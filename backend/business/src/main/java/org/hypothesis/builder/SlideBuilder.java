@@ -7,7 +7,7 @@ package org.hypothesis.builder;
 import java.io.Serializable;
 
 import org.hypothesis.data.DocumentReader;
-import org.hypothesis.data.model.Slide;
+import org.hypothesis.data.dto.SlideDto;
 import org.hypothesis.ui.SlideContainer;
 
 /**
@@ -19,12 +19,13 @@ import org.hypothesis.ui.SlideContainer;
 @SuppressWarnings("serial")
 public class SlideBuilder implements Serializable {
 
-	public static SlideContainer buildSlideContainer(Slide entity, DocumentReader reader) {
-		
+	public static SlideContainer buildSlideContainer(SlideDto entity, DocumentReader reader) {
+
 		SlideContainerFactory factory = new SlideContainerFactoryImpl();
 
 		if (entity != null && reader != null) {
-			SlideContainer container = factory.buildSlideContainer(entity.getTemplateXmlData(), entity.getData(), reader);
+			SlideContainer container = factory.buildSlideContainer(entity.getTemplate().getData(), entity.getData(),
+					reader);
 			if (container != null) {
 				container.setData(entity.getId());
 			}

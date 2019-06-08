@@ -4,22 +4,30 @@
  */
 package org.hypothesis.presenter;
 
+import static org.hypothesis.data.api.Roles.ROLE_MANAGER;
+import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
+import static org.hypothesis.utility.UserUtility.userHasAnyRole;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.GroupPermission;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.GroupDto;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.UserDto;
+import org.hypothesis.data.interfaces.FieldConstants;
 import org.hypothesis.data.service.GroupService;
+import org.hypothesis.data.service.PackService;
 import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.GroupServiceImpl;
+import org.hypothesis.data.service.impl.PackServiceImpl;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.data.validator.GroupNameValidator;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
@@ -65,6 +73,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 	private final GroupService groupService;
 	private final UserService userService;
 	private final PermissionService permissionService;
+	private final PackService packService;
 
 	private TextField idField;
 	private TextField nameField;
@@ -75,9 +84,10 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 	public GroupWindowPresenter(MainEventBus bus) {
 		super(bus);
 
-		groupService = GroupService.newInstance();
-		userService = UserService.newInstance();
-		permissionService = PermissionService.newInstance();
+		groupService = new GroupServiceImpl();
+		userService = new UserServiceImpl();
+		permissionService = new PermissionServiceImpl();
+		packService = new PackServiceImpl();
 	}
 
 	private void buildIdField() {
@@ -127,7 +137,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
 				@Override
 				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					User user = (User) itemId;
+					UserDto user = (UserDto) itemId;
 					return Messages.getString("Caption.Item.UserDescription", user.getUsername(), user.getId());
 				}
 			});
@@ -169,7 +179,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
 				@Override
 				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					Pack pack = (Pack) itemId;
+					PackDto pack = (PackDto) itemId;
 					return Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
 							pack.getDescription());
 				}
@@ -209,8 +219,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		buildNoteField();
 		addField(form, noteField);
 
-		buildUsersField(
-				!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
+		buildUsersField(!(userHasAnyRole(loggedUser, ROLE_SUPERUSER, ROLE_MANAGER)));
 		addField(form, usersField);
 		// TODO: upozornit, ze uzivatel nema zadne uzivatele?
 
@@ -242,26 +251,25 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		if (state.equals(WindowState.CREATE)) {
 			nameField.addValidator(new GroupNameValidator(null));
 		} else if (state.equals(WindowState.UPDATE)) {
-			nameField.addValidator(new GroupNameValidator(((Group) source).getId()));
+			nameField.addValidator(new GroupNameValidator(((GroupDto) source).getId()));
 		}
 
 		// note
 		buildNoteField();
 
 		// users
-		Collection<User> users;
+		Collection<UserDto> users;
 
-		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+		if (userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
 			users = userService.findAll();
 		} else {
-			users = userService.findOwnerUsers(loggedUser);
+			users = userService.findOwnerUsers(loggedUser.getId());
 		}
 
 		if (!users.isEmpty()) {
-			buildUsersField(
-					!(loggedUser.hasRole(RoleService.ROLE_SUPERUSER) || loggedUser.hasRole(RoleService.ROLE_MANAGER)));
+			buildUsersField(userHasAnyRole(loggedUser, ROLE_SUPERUSER, ROLE_MANAGER));
 
-			for (User user : users) {
+			for (UserDto user : users) {
 				Table table = usersField;
 				table.addItem(user);
 				Item row = table.getItem(user);
@@ -276,16 +284,16 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		// enabled packs
 		buildPacksField();
 
-		Collection<Pack> packs;
-		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			packs = permissionService.findAllPacks();
+		Collection<PackDto> packs;
+		if (userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
+			packs = packService.findAll();
 		} else {
-			packs = permissionService.findUserPacks2(loggedUser, false);
+			packs = permissionService.findUserPacks2(loggedUser.getId(), false);
 		}
 
 		// TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
 
-		for (Pack pack : packs) {
+		for (PackDto pack : packs) {
 			Table table = packsField;
 			table.addItem(pack);
 			Item row = table.getItem(pack);
@@ -300,8 +308,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void fillFields() {
-		Group group = (Group) source;
-		group = groupService.merge(group);
+		GroupDto group = (GroupDto) source;
 
 		idField.setValue(group.getId().toString());
 		nameField.setValue(group.getName());
@@ -309,7 +316,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 
 		// users
 		if (usersField != null) {
-			Set<User> users;
+			Set<UserDto> users;
 
 			if (state.equals(WindowState.UPDATE)) {
 				users = group.getUsers();
@@ -319,7 +326,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 
 			for (Object itemId : usersField.getItemIds()) {
 				Item row = usersField.getItem(itemId);
-				User user = userService.merge((User) itemId);
+				UserDto user = (UserDto) itemId;
 
 				if (users.contains(user)) {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(true);
@@ -330,17 +337,17 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		// packs
-		Set<Pack> packs;
+		List<PackDto> packs;
 
 		if (state.equals(WindowState.UPDATE)) {
-			packs = permissionService.getGroupPacks(group);
+			packs = permissionService.getGroupPacks(group.getId());
 		} else {
-			packs = new HashSet<>();
+			packs = new ArrayList<>();
 		}
 
 		for (Object itemId : packsField.getItemIds()) {
 			Item row = packsField.getItem(itemId);
-			Pack pack = (Pack) itemId;
+			PackDto pack = (PackDto) itemId;
 
 			if (packs.contains(pack)) {
 				row.getItemProperty(FieldConstants.SELECTED).setValue(true);
@@ -503,7 +510,7 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		if (state.equals(WindowState.MULTIUPDATE)) {
-			for (Group group : (Collection<Group>) source) {
+			for (GroupDto group : (Collection<GroupDto>) source) {
 				group = saveGroup(group);
 				if (group != null) {
 					bus.post(new MainUIEvent.GroupAddedEvent(group));
@@ -511,11 +518,11 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			}
 
 		} else {
-			Group group;
+			GroupDto group;
 			if (state.equals(WindowState.CREATE)) {
-				group = new Group();
+				group = new GroupDto();
 			} else {
-				group = (Group) source;
+				group = (GroupDto) source;
 			}
 			group = saveGroup(group);
 			if (group != null) {
@@ -524,8 +531,8 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 		}
 	}
 
-	private Group saveGroup(Group group) {
-		User updatedLoggedUser = null;
+	private GroupDto saveGroup(GroupDto group) {
+		UserDto updatedLoggedUser = null;
 
 		if (state.equals(WindowState.CREATE)) {
 			group.setOwnerId(loggedUser.getId());
@@ -543,17 +550,17 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 
 			for (Object itemId : usersField.getItemIds()) {
 				Item item = usersField.getItem(itemId);
-				User user = userService.merge((User) itemId);
+				UserDto user = (UserDto) itemId;
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (selected == null) {
 					if (state.equals(WindowState.MULTIUPDATE)) {
-						group.removeUser(user);
+						group.getUsers().remove(user);
 					}
 				} else if (selected.equals(true)) {
-					group.addUser(user);
+					group.getUsers().add(user);
 				} else if (selected.equals(false)) {
-					group.removeUser(user);
+					group.getUsers().remove(user);
 				}
 
 				if (user != null) {
@@ -566,35 +573,35 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
 			}
 		}
 
-		group = groupService.add(group);
+		group = groupService.save(group);
 
 		if (packsField.isVisible()) {
-			permissionService.deleteGroupPermissions(group);
-
+			final Set<PackDto> packs = new HashSet<>();
 			for (Object itemId : packsField.getItemIds()) {
 				Item item = packsField.getItem(itemId);
-				Pack pack = (Pack) itemId;
+				PackDto pack = (PackDto) itemId;
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (selected != null && selected.equals(true)) {
-					permissionService.addGroupPermission(new GroupPermission(group, pack));
+					packs.add(pack);
 				}
 			}
+			permissionService.setGroupPermissions(group.getId(), packs);
 		}
 
 		if (updatedLoggedUser != null) {
-			SessionManager.setLoggedUser(updatedLoggedUser);
+			SessionManager.setLoggedUser2(userService.getSimpleById(updatedLoggedUser.getId()));
 			bus.post(new MainUIEvent.UserPacksChangedEvent(updatedLoggedUser));
 		}
 
 		return group;
 	}
 
-	public void showWindow(Group group) {
+	public void showWindow(GroupDto group) {
 		showWindow(WindowState.UPDATE, group);
 	}
 
-	public void showWindow(Collection<Group> groups) {
+	public void showWindow(Collection<GroupDto> groups) {
 		showWindow(WindowState.MULTIUPDATE, groups);
 	}
 

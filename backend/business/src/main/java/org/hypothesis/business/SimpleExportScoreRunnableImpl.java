@@ -1,18 +1,20 @@
 package org.hypothesis.business;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.hypothesis.data.model.ExportScore;
+import org.hypothesis.data.dto.ExportScoreDto;
 import org.hypothesis.data.service.ExportService;
+import org.hypothesis.data.service.impl.ExportServiceImpl;
 
 public class SimpleExportScoreRunnableImpl implements SimpleExportRunnable {
 
@@ -39,11 +41,9 @@ public class SimpleExportScoreRunnableImpl implements SimpleExportRunnable {
 	}
 
 	private String createExportFile() {
-		ExportService exportService = ExportService.newInstance();
-		List<Long> testIds = Stream.of(testId).collect(Collectors.toList());
-
+		ExportService exportService = new ExportServiceImpl();
 		try {
-			List<ExportScore> scores = exportService.findExportScoresByTestId(testIds);
+			List<ExportScoreDto> scores = exportService.findExportScoresByTestIds(Stream.of(testId).collect(toSet()));
 
 			if (scores != null && StringUtils.isNotBlank(path)) {
 				try {

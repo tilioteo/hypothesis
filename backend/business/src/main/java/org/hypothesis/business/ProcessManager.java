@@ -4,11 +4,15 @@
  */
 package org.hypothesis.business;
 
+import static org.hypothesis.utility.ObjectUtility.getId;
+
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,28 +20,30 @@ import org.apache.log4j.Logger;
 import org.hypothesis.business.data.UserControlData;
 import org.hypothesis.business.data.UserSession;
 import org.hypothesis.business.data.UserTestState;
+import org.hypothesis.data.api.Status;
+import org.hypothesis.data.dto.BranchDto;
+import org.hypothesis.data.dto.BranchKeyMap;
+import org.hypothesis.data.dto.BranchPathMap;
+import org.hypothesis.data.dto.EventDto;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.ScoreDto;
+import org.hypothesis.data.dto.SimpleUserDto;
+import org.hypothesis.data.dto.SlideDto;
+import org.hypothesis.data.dto.SlideOrderDto;
+import org.hypothesis.data.dto.TaskDto;
+import org.hypothesis.data.dto.TestDto;
+import org.hypothesis.data.dto.TokenDto;
 import org.hypothesis.data.interfaces.HasStatus;
-import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.BranchMap;
-import org.hypothesis.data.model.BranchOutput;
-import org.hypothesis.data.model.Event;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Score;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.data.model.SlideOrder;
-import org.hypothesis.data.model.Status;
-import org.hypothesis.data.model.Task;
-import org.hypothesis.data.model.Token;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.AsynchronousService;
 import org.hypothesis.data.service.BranchService;
 import org.hypothesis.data.service.OutputService;
 import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.PersistenceService;
-import org.hypothesis.data.service.SlideService;
-import org.hypothesis.data.service.TaskService;
+import org.hypothesis.data.service.SlideOrderService;
 import org.hypothesis.data.service.TestService;
+import org.hypothesis.data.service.impl.BranchServiceImpl;
+import org.hypothesis.data.service.impl.OutputServiceImpl;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
+import org.hypothesis.data.service.impl.SlideOrderServiceImpl;
+import org.hypothesis.data.service.impl.TestServiceImpl;
 import org.hypothesis.event.data.ScoreData;
 import org.hypothesis.event.data.ScoreData.Source;
 import org.hypothesis.event.model.AbstractProcessEvent;
@@ -94,29 +100,33 @@ public class ProcessManager implements Serializable {
 
 	private final SlideManager slideManager;
 
-	private final PersistenceService persistenceService;
 	private final TestService testService;
 	private final BranchService branchService;
 	private final PermissionService permissionService;
+	private final OutputService outputService;
+	private final SlideOrderService slideOrderService;
 	private final UserControlServiceImpl userControlService;
-
-	private final transient AsynchronousService asynchronousService;
 
 	private boolean testProcessing = false;
 	private boolean slideProcessing = false;
 	private boolean autoSlideShow = true;
 
-	private SimpleTest currentTest = null;
-	private Pack currentPack = null;
-	private Branch currentBranch = null;
-	private Task currentTask = null;
-	private Slide currentSlide = null;
+	private TestDto currentTest = null;
+	private PackDto currentPack = null;
+	private BranchDto currentBranch = null;
+	private TaskDto currentTask = null;
+	private SlideDto currentSlide = null;
 
-	private User currentUser = null;
+	private BranchPathMap branchPathMap = null;
+
+	// private User currentUser = null;
+	private SimpleUserDto currentUser = null;
 	private String mainUID = null;
 
 	private final ProcessEventBus bus;
 	private final ExportVNManager exportVNManager;
+
+	private ExecutorService executorService;
 
 	public ProcessManager(ProcessEventBus bus) {
 		this.bus = bus;
@@ -126,50 +136,56 @@ public class ProcessManager implements Serializable {
 		taskManager = new TaskManager();
 		slideManager = new SlideManager();
 
-		permissionService = PermissionService.newInstance();
-		testService = permissionService.getTestManager();
-		persistenceService = PersistenceService.newInstance();
-		branchService = BranchService.newInstance();
+		permissionService = new PermissionServiceImpl();
+		testService = new TestServiceImpl();
+		branchService = new BranchServiceImpl();
+		outputService = new OutputServiceImpl();
+		slideOrderService = new SlideOrderServiceImpl();
 
 		userControlService = new UserControlServiceImpl();
 
-		asynchronousService = new AsynchronousService(TestService.newInstance(), OutputService.newInstance(),
-				PersistenceService.newInstance(), BranchService.newInstance(), TaskService.newInstance(),
-				SlideService.newInstance());
+		/*
+		 * asynchronousService = new
+		 * AsynchronousService(TestService.newInstance(),
+		 * OutputService.newInstance(), PersistenceService.newInstance(),
+		 * BranchService.newInstance(), TaskService.newInstance(),
+		 * SlideService.newInstance());
+		 */
 
 		exportVNManager = new ExportVNManager();
 	}
 
-	private Event createEvent(AbstractProcessEvent event) {
+	private EventDto createEvent(AbstractProcessEvent event) {
 		if (event != null && event.getName() != null) {
 			ProcessEventType processEvent = ProcessEventTypes.get(event.getName());
 
 			if (processEvent != null) {
-				return new Event(processEvent.getId(), event.getName(), event.getTimestamp());
+				final EventDto eventDto = new EventDto();
+				eventDto.setType(processEvent.getId());
+				eventDto.setName(event.getName());
+				eventDto.setTimeStamp(event.getTimestamp());
+				return eventDto;
 			}
 		}
 
 		return null;
 	}
 
-	private boolean checkUserPack(User user, Pack pack) {
-		Collection<Pack> packs;
-		if (user != null) {
-			// packs = permissionService.findUserPacks(user, true);
-			packs = permissionService.getUserPacksVN(user);
-			for (Pack allowedPack : packs) {
-				if (allowedPack.getId().equals(pack.getId()))
-					return true;
-			}
-		}
+	/*
+	 * private boolean checkUserPack(User user, Pack pack) { Collection<Pack>
+	 * packs; if (user != null) { // packs =
+	 * permissionService.findUserPacks(user, true); packs =
+	 * permissionService.getUserPacksVN(user); for (Pack allowedPack : packs) {
+	 * if (allowedPack.getId().equals(pack.getId())) return true; } }
+	 * 
+	 * packs = permissionService.getPublishedPacks(); for (Pack allowedPack :
+	 * packs) { if (allowedPack.getId().equals(pack.getId())) return true; }
+	 * 
+	 * return false; }
+	 */
 
-		packs = permissionService.getPublishedPacks();
-		for (Pack allowedPack : packs) {
-			if (allowedPack.getId().equals(pack.getId()))
-				return true;
-		}
-
-		return false;
+	private boolean checkUserPack(Long userId, long packId) {
+		return permissionService.userCanAccess(userId, packId);
 	}
 
 	@Handler
@@ -206,19 +222,19 @@ public class ProcessManager implements Serializable {
 		currentTest = event.getTest();
 		saveRunningEvent(event);
 
-		persistenceService.merge(branchManager.find(currentTest.getLastBranch()));
+		branchManager.findById(currentTest.getLastBranchId());
 		currentBranch = branchManager.current();
 
 		if (currentBranch != null) {
 
-			taskManager.setListFromParent(currentBranch);
-			persistenceService.merge(taskManager.find(currentTest.getLastTask()));
+			taskManager.setList(currentBranch.getTasks());
+			taskManager.findById(currentTest.getLastTaskId());
 			currentTask = taskManager.current();
 
 			if (currentTask != null) {
 
 				setSlideManagerParent(currentTask);
-				slideManager.find(currentTest.getLastSlide());
+				slideManager.findById(currentTest.getLastSlideId());
 				currentSlide = slideManager.current();
 
 				if (currentSlide != null) {
@@ -289,6 +305,7 @@ public class ProcessManager implements Serializable {
 
 		currentTest = null;
 		testProcessing = false;
+		// setCurrentUser(null);
 		setCurrentUser(null);
 	}
 
@@ -300,16 +317,16 @@ public class ProcessManager implements Serializable {
 	public void processNextBranch(NextBranchEvent event) {
 		saveRunningEvent(event);
 
-		BranchMap branchMap = branchService.getBranchMap(currentPack, currentBranch);
-		Branch nextBranch = branchManager.getNextBranch(branchMap);
+		BranchKeyMap branchMap = branchPathMap.get(currentBranch.getId());
+		BranchDto nextBranch = branchManager.getNextBranch(branchMap);
 
 		if (nextBranch != null) {
-			currentBranch = persistenceService.merge(nextBranch);
+			currentBranch = nextBranch;
 
 			if (currentBranch != null) {
 
-				taskManager.setListFromParent(currentBranch);
-				currentTask = persistenceService.merge(taskManager.current());
+				taskManager.setList(currentBranch.getTasks());
+				currentTask = taskManager.current();
 
 				if (currentTask != null) {
 
@@ -341,10 +358,10 @@ public class ProcessManager implements Serializable {
 		int nextIndex = taskManager.getNextSlideIndex(currentSlide);
 		if (nextIndex == 0) { //
 			currentSlide = slideManager.next();
-		} else if (nextIndex < 0 || nextIndex > slideManager.getCount()) {
+		} else if (nextIndex < 0 || nextIndex > slideManager.size()) {
 			currentSlide = null;
 		} else {
-			currentSlide = slideManager.get(nextIndex - 1);
+			currentSlide = slideManager.findByIndex(nextIndex - 1);
 		}
 
 		if (currentSlide != null) {
@@ -359,7 +376,7 @@ public class ProcessManager implements Serializable {
 	public void processPriorSlide(PriorSlideEvent event) {
 		saveRunningEvent(event);
 
-		Slide slide = slideManager.prior();
+		SlideDto slide = slideManager.prior();
 
 		if (slide != null) {
 			currentSlide = slide;
@@ -377,7 +394,7 @@ public class ProcessManager implements Serializable {
 	public void processNextTask(NextTaskEvent event) {
 		saveRunningEvent(event);
 
-		currentTask = persistenceService.merge(taskManager.next());
+		currentTask = taskManager.next();
 		if (currentTask != null) {
 
 			setSlideManagerParent(currentTask);
@@ -394,22 +411,20 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	private void setSlideManagerParent(Task task) {
-		slideManager.setListFromParent(task);
+	private void setSlideManagerParent(TaskDto task) {
+		slideManager.setList(task.getSlides());
 
 		if (task != null && task.isRandomized()) {
 			setTaskSlidesRandomOrder(currentTest, task);
 		}
 	}
 
-	private void setTaskSlidesRandomOrder(SimpleTest test, Task task) {
+	private void setTaskSlidesRandomOrder(TestDto test, TaskDto task) {
 		List<Integer> order = null;
-		SlideOrder slideOrder = testService.findTaskSlideOrder(test, task);
+		SlideOrderDto slideOrder = slideOrderService.findSlideOrder(test.getId(), task.getId());
 		if (null == slideOrder) {
-			slideOrder = new SlideOrder(test, task);
 			order = slideManager.createRandomOrder();
-			slideOrder.setOrder(order);
-			testService.updateSlideOrder(slideOrder);
+			slideOrder = slideOrderService.saveSlideOrder(test.getId(), task.getId(), order);
 		} else {
 			order = slideOrder.getOrder();
 		}
@@ -420,13 +435,13 @@ public class ProcessManager implements Serializable {
 	@Handler
 	public void processPrepareTest(PrepareTestEvent event) {
 		log.debug(String.format("processPrepareTest: token uid = %s",
-				event.getToken() != null ? event.getToken().getUid() : "NULL"));
-		Token token = event.getToken();
+				event.getToken() != null ? event.getToken().getId() : "NULL"));
+		TokenDto token = event.getToken();
 		mainUID = token.getViewUid();
 
-		SimpleTest test = testService.getUnattendedTest(token.getUser(), token.getPack(), token.isProduction());
+		TestDto test = testService.getUnattendedTest(getId(token.getUser()), token.getPackId(), token.isProduction());
 		if (test != null) {
-			token.getUser();
+			branchPathMap = branchService.getBranchPathMap(test.getPack().getId());
 
 			if (event.isStartAllowed()) {
 				log.debug(String.format("Test start allowed (test id = %s).",
@@ -449,28 +464,36 @@ public class ProcessManager implements Serializable {
 		renderSlide();
 	}
 
+	/*
+	 * private void tryDisablePack() { if (currentUser != null &&
+	 * currentUser.getAutoDisable()) {
+	 * permissionService.deleteUserPermissionVN(currentUser, currentPack); }
+	 * 
+	 * }
+	 */
+
 	private void tryDisablePack() {
-		if (currentUser != null && currentUser.getAutoDisable()) {
-			permissionService.deleteUserPermissionVN(currentUser, currentPack);
+		if (currentUser != null && currentUser.isAutoDisable()) {
+			permissionService.disableForVN(currentUser.getId(), currentPack.getId());
 		}
 
 	}
 
-	public void processTest(SimpleTest test) {
+	public void processTest(TestDto test) {
 		log.debug(String.format("processTest: %s", test != null ? test.getId() : "NULL"));
 		if (!testProcessing) {
 			testProcessing = true;
 
 			currentTest = test;
 
-			currentPack = persistenceService.merge(test.getPack());
+			currentPack = test.getPack();
 
-			branchManager.setListFromParent(currentPack);
-			currentBranch = persistenceService.merge(branchManager.current());
+			branchManager.setList(currentPack.getBranches());
+			currentBranch = branchManager.current();
 
 			if (currentBranch != null) {
-				taskManager.setListFromParent(currentBranch);
-				currentTask = persistenceService.merge(taskManager.current());
+				taskManager.setList(currentBranch.getTasks());
+				currentTask = taskManager.current();
 
 				if (currentTask != null) {
 					setSlideManagerParent(currentTask);
@@ -513,10 +536,21 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	public void processToken(Token token, boolean startAllowed) {
+	/*
+	 * public void processToken(Token token, boolean startAllowed) { if (token
+	 * != null) { setCurrentUser(token.getUser()); if
+	 * (checkUserPack(token.getUserId, token.getPackId())) { bus.post(new
+	 * PrepareTestEvent(token, startAllowed)); } else { bus.post(new
+	 * ErrorNotificationEvent(Messages.getString(
+	 * "Message.Error.InsufficientRights"))); } } else {
+	 * log.debug("Invalid token."); setCurrentUser(null); bus.post(new
+	 * ErrorNotificationEvent(Messages.getString("Message.Error.Token"))); } }
+	 */
+
+	public void processToken(TokenDto token, boolean startAllowed) {
 		if (token != null) {
 			setCurrentUser(token.getUser());
-			if (checkUserPack(token.getUser(), token.getPack())) {
+			if (checkUserPack(getId(token.getUser()), token.getPackId())) {
 				bus.post(new PrepareTestEvent(token, startAllowed));
 			} else {
 				bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.InsufficientRights")));
@@ -542,18 +576,13 @@ public class ProcessManager implements Serializable {
 	}
 
 	private void saveBranchOutput() {
-		String data = branchManager.getSerializedData();
-
-		BranchOutput branchOutput = new BranchOutput(currentTest, currentBranch);
-		branchOutput.setData(data);
-		branchOutput.setOutput(data);
-
-		asynchronousService.saveBranchOutput(branchOutput);
+		async(() -> outputService.saveBranchOutput(currentBranch.getId(), currentTest.getId(),
+				branchManager.getSerializedData()));
 	}
 
 	private void saveUserProcessEvent(AbstractUserEvent processEvent) {
 		if (currentTest != null) {
-			Event event = createEvent(processEvent);
+			EventDto event = createEvent(processEvent);
 
 			if (event != null) {
 				if (processEvent instanceof ActionEvent) {
@@ -569,7 +598,7 @@ public class ProcessManager implements Serializable {
 
 	private void saveRunningEvent(AbstractRunningEvent processEvent) {
 		if (currentTest != null) {
-			Event event = createEvent(processEvent);
+			EventDto event = createEvent(processEvent);
 
 			if (event != null) {
 				Status status = processEvent instanceof HasStatus ? ((HasStatus) processEvent).getStatus() : null;
@@ -579,35 +608,40 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	private void updateActionEventData(Event event, ActionEvent actionEvent) {
+	private void updateActionEventData(EventDto event, ActionEvent actionEvent) {
 		event.setData(slideManager.getActionData(actionEvent));
 	}
 
-	private void updateComponentEventData(Event event, ComponentEvent componentEvent) {
+	private void updateComponentEventData(EventDto event, ComponentEvent componentEvent) {
 		event.setData(slideManager.getComponentData(componentEvent));
 
 		Date clientTimestamp = componentEvent.getClientTimestamp();
 		if (clientTimestamp != null) {
-			event.setClientTimeStamp(clientTimestamp.getTime());
+			event.setClientTimeStamp(clientTimestamp);
 		}
 	}
 
-	private void saveTestEvent(SimpleTest test, Event event, Date date, Status status) {
+	private void saveTestEvent(TestDto test, EventDto event, Date date, Status status) {
 		String slideData = event.getType().equals(ProcessEventTypes.getFinishSlideEventId())
 				? slideManager.getSerializedSlideData() : null;
 
-		Long testId = test != null ? test.getId() : null;
-		Long branchId = currentBranch != null ? currentBranch.getId() : null;
-		Long taskId = currentTask != null ? currentTask.getId() : null;
-		Long slideId = currentSlide != null ? currentSlide.getId() : null;
+		event.setTestId(test.getId());
+		event.setBranchId(getId(currentBranch));
+		event.setTaskId(getId(currentTask));
+		event.setSlideId(getId(currentSlide));
+		event.setTimeStamp(date);
+		event.setData(slideData);
 
-		asynchronousService.saveTestEvent(event, date, slideData, status, testId, branchId, taskId, slideId);
+		async(() -> testService.saveEvent(event, status));
+
 		updateTestAudit(date, currentUser, event, test, currentPack, currentBranch, currentTask, currentSlide);
 	}
 
 	private void saveActionScore(ActionEvent event) {
 		if (!event.getAction().getScores().isEmpty()) {
-			Score score = new Score(event.getAction().getId(), event.getTimestamp());
+			ScoreDto score = new ScoreDto();
+			score.setName(event.getAction().getId());
+			score.setTimeStamp(event.getTimestamp());
 			saveScore(currentTest, score,
 					new ScoreData(Source.ACTION, event.getAction().getId(), event.getAction().getScores()));
 		}
@@ -615,25 +649,26 @@ public class ProcessManager implements Serializable {
 
 	private void saveSlideScore(FinishSlideEvent event) {
 		if (!slideManager.getScores().isEmpty()) {
-			Long slideId = currentSlide != null ? currentSlide.getId() : null;
-			Score score = new Score(event.getName(), event.getTimestamp());
+			Long slideId = getId(currentSlide);
+			ScoreDto score = new ScoreDto();
+			score.setName(event.getName());
+			score.setTimeStamp(event.getTimestamp());
 			saveScore(currentTest, score, new ScoreData(Source.SLIDE, slideId.toString(), slideManager.getScores()));
 		}
 	}
 
-	private void saveScore(SimpleTest test, Score score, ScoreData data) {
-		String scoreData = slideManager.getScoreData(data);
+	private void saveScore(TestDto test, ScoreDto score, ScoreData data) {
+		score.setData(slideManager.getScoreData(data));
+		score.setTestId(test.getId());
+		score.setBranchId(getId(currentBranch));
+		score.setTaskId(getId(currentTask));
+		score.setSlideId(getId(currentSlide));
 
-		Long testId = test != null ? test.getId() : null;
-		Long branchId = currentBranch != null ? currentBranch.getId() : null;
-		Long taskId = currentTask != null ? currentTask.getId() : null;
-		Long slideId = currentSlide != null ? currentSlide.getId() : null;
-
-		asynchronousService.saveTestScore(score, scoreData, testId, branchId, taskId, slideId);
+		async(() -> testService.saveScore(score));
 	}
 
-	private void updateTestAudit(Date date, User user, Event event, SimpleTest test, Pack pack, Branch branch,
-			Task task, Slide slide) {
+	private void updateTestAudit(Date date, SimpleUserDto user, EventDto event, TestDto test, PackDto pack,
+			BranchDto branch, TaskDto task, SlideDto slide) {
 		if (!AUDIT_FILTER_EVENTS.contains(event.getName())) {
 			UserControlData data = userControlService.ensureUserControlData(user);
 			userControlService.updateUserControlDataWithSession(data, mainUID);
@@ -684,6 +719,31 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
+	private void async(Runnable runnable) {
+		if (executorService == null) {
+			executorService = Executors.newSingleThreadExecutor();
+		}
+
+		executorService.submit(runnable);
+	}
+
+	private void shutdownExecutorService() {
+		if (executorService != null) {
+			try {
+				log.info("Attempting to shutdown executor service.");
+				executorService.shutdown();
+				executorService.awaitTermination(10, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				log.error("Executor service interupted after 10 seconds.");
+			} finally {
+				if (!executorService.isTerminated()) {
+					log.error("Terminating executor service.");
+				}
+				executorService.shutdownNow();
+			}
+		}
+	}
+
 	private UserTestState ensureTestState(UserSession session) {
 		UserTestState state = session.getState();
 		if (state == null) {
@@ -711,14 +771,20 @@ public class ProcessManager implements Serializable {
 		}
 	}
 
-	public void setCurrentUser(User user) {
-		SessionManager.setLoggedUser(user);
+	/*
+	 * public void setCurrentUser(User user) {
+	 * SessionManager.setLoggedUser(user); currentUser = user;
+	 * slideManager.setUserId(user != null ? user.getId() : null); }
+	 */
+
+	public void setCurrentUser(SimpleUserDto user) {
+		SessionManager.setLoggedUser2(user);
 		currentUser = user;
-		slideManager.setUserId(user != null ? user.getId() : null);
+		slideManager.setUserId(getId(user));
 	}
 
 	public void clean() {
-		asynchronousService.cleanup();
 		bus.unregister(this);
+		shutdownExecutorService();
 	}
 }

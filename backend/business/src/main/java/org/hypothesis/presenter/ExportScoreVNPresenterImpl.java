@@ -4,6 +4,11 @@
  */
 package org.hypothesis.presenter;
 
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toSet;
+import static org.hypothesis.data.api.Roles.ROLE_MANAGER;
+import static org.hypothesis.utility.UserUtility.userHasAnyRole;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -16,13 +21,12 @@ import org.hypothesis.business.ExportScoreRunnableImpl;
 import org.hypothesis.business.ExportThread;
 import org.hypothesis.business.ThreadUtility;
 import org.hypothesis.context.HibernateUtil;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Status;
-import org.hypothesis.data.model.Test;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.RoleService;
+import org.hypothesis.data.api.Status;
+import org.hypothesis.data.dto.SimpleUserDto;
+import org.hypothesis.data.dto.TestDto;
+import org.hypothesis.data.interfaces.FieldConstants;
 import org.hypothesis.data.service.TestService;
-import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.TestServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.ExportScorePresenter;
 import org.hypothesis.server.Messages;
@@ -72,7 +76,6 @@ import net.engio.mbassy.listener.Handler;
 public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter implements ExportScorePresenter {
 
 	private final TestService testService;
-	private final UserService userService;
 
 	private VerticalLayout content;
 	private VerticalLayout testSelection;
@@ -92,8 +95,7 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
 	private ThreadGroup threadGroup = ThreadUtility.createExportGroup();
 
 	public ExportScoreVNPresenterImpl() {
-		testService = TestService.newInstance();
-		userService = UserService.newInstance();
+		testService = new TestServiceImpl();
 
 	}
 
@@ -233,7 +235,8 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		CancelableExportRunnable runnable = new ExportScoreRunnableImpl(getBus(), testIds, HibernateUtil::closeCurrent);
+		CancelableExportRunnable runnable = new ExportScoreRunnableImpl(getBus(), testIds.stream().collect(toSet()),
+				HibernateUtil::closeCurrent);
 
 		currentExport = new ExportThread(threadGroup, runnable);
 		currentExport.start();
@@ -371,14 +374,9 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
 		// testSelection.setSpacing(true);
 
 		// MANAGER see only tests created by himself and his users
-		List<User> users = null;
-		User loggedUser = getLoggedUser();
-		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			users = userService.findOwnerUsers(loggedUser);
-			users.add(loggedUser);
-		}
-
-		List<Test> tests = testService.findTestScoresBy(users, dateFrom, dateTo);
+		SimpleUserDto loggedUser = getLoggedUser();
+		List<TestDto> tests = userHasAnyRole(loggedUser, ROLE_MANAGER)
+				? testService.findManagedScoresOverview(loggedUser.getId(), dateFrom, dateTo) : emptyList();
 
 		if (tests.isEmpty()) {
 			Label label = new Label(Messages.getString("Caption.Label.NoTestsFound"));
@@ -393,7 +391,7 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
 		}
 	}
 
-	private Component buildTestsTable(Collection<Test> tests) {
+	private Component buildTestsTable(Collection<TestDto> tests) {
 		table = new FilterTable();
 
 		table.setSizeFull();
@@ -405,7 +403,7 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
 
 		table.setSortContainerPropertyId(FieldConstants.ID);
 
-		final BeanContainer<Long, Test> dataSource = new BeanContainer<Long, Test>(Test.class);
+		final BeanContainer<Long, TestDto> dataSource = new BeanContainer<Long, TestDto>(TestDto.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_PACK_ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_PACK_NAME);
@@ -419,7 +417,7 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
 		table.addGeneratedColumn(FieldConstants.STATUS, new ColumnGenerator() {
 			@Override
 			public Object generateCell(CustomTable source, Object itemId, Object columnId) {
-				Test test = dataSource.getItem(itemId).getBean();
+				TestDto test = dataSource.getItem(itemId).getBean();
 				return getStatusName(test.getStatus());
 			}
 		});

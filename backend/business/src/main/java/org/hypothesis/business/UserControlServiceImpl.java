@@ -4,8 +4,9 @@ import java.util.Objects;
 
 import org.hypothesis.business.data.UserControlData;
 import org.hypothesis.business.data.UserSession;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.SimpleUserDto;
 import org.hypothesis.data.service.PermissionService;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
 import org.hypothesis.server.SessionUtils;
 import org.hypothesis.servlet.SessionRegister;
 
@@ -14,27 +15,25 @@ public class UserControlServiceImpl {
 	private final PermissionService permissionService;
 
 	public UserControlServiceImpl() {
-		permissionService = PermissionService.newInstance();
+		permissionService = new PermissionServiceImpl();
 	}
 
-	public UserControlData ensureUserControlData(User user) {
+	public UserControlData ensureUserControlData(SimpleUserDto user) {
 		Objects.requireNonNull(user, "User cannot be null.");
 
 		return SessionRegister.getActiveSessions().stream()//
 				.map(s -> SessionUtils.getAttribute(s, UserControlData.class))//
 				.filter(Objects::nonNull)//
 				.filter(ucd -> user.getId().equals(ucd.getUser().getId()))//
-				.map(ucd -> updateUser(ucd, user))
-				.findFirst().orElseGet(() -> createAndRegisterUserControlData(user));
+				.map(ucd -> updateUser(ucd, user)).findFirst().orElseGet(() -> createAndRegisterUserControlData(user));
 	}
-	
-	private static UserControlData updateUser(UserControlData userControlData, User user) {
+
+	private static UserControlData updateUser(UserControlData userControlData, SimpleUserDto user) {
 		userControlData.setUser(user);
 		return userControlData;
 	}
 
-
-	private static UserControlData createAndRegisterUserControlData(User user) {
+	private static UserControlData createAndRegisterUserControlData(SimpleUserDto user) {
 		UserControlData data = new UserControlData(user);
 		SessionUtils.setAttribute(UserControlData.class, data);
 
@@ -55,9 +54,9 @@ public class UserControlServiceImpl {
 
 	public UserControlData updateUserControlData(UserControlData data) {
 		if (data != null) {
-			User user = data.getUser();
+			SimpleUserDto user = data.getUser();
 
-			data.setPacks(permissionService.getUserPacksVN(user));
+			data.setPacks(permissionService.getUserPacksVN(user.getId()));
 		}
 
 		return data;

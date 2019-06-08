@@ -13,7 +13,9 @@ import java.util.List;
 import org.hypothesis.common.utility.DocumentUtility;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
+import org.hypothesis.data.dto.MessageDto;
 import org.hypothesis.data.service.MessageService;
+import org.hypothesis.data.service.impl.MessageServiceImpl;
 import org.hypothesis.event.data.Message;
 import org.hypothesis.interfaces.Document;
 import org.hypothesis.interfaces.DocumentConstants;
@@ -33,11 +35,11 @@ public class MessageManager implements Serializable {
 	private final DocumentReader reader = new XmlDocumentReader();
 
 	public MessageManager() {
-		messageService = MessageService.newInstance();
+		messageService = new MessageServiceImpl();
 	}
 
 	public Message createMessage(String uid, Long userId) {
-		org.hypothesis.data.model.Message entity = messageService.findMessageByUid(uid);
+		MessageDto entity = messageService.findById(uid);
 
 		if (entity != null) {
 			Document document = reader.readString(entity.getData());

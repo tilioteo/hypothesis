@@ -10,10 +10,9 @@ import org.apache.log4j.Logger;
 import org.hypothesis.builder.BranchBuilder;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
-import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.BranchMap;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Slide;
+import org.hypothesis.data.dto.BranchDto;
+import org.hypothesis.data.dto.BranchKeyMap;
+import org.hypothesis.data.dto.SlideDto;
 import org.hypothesis.interfaces.ExchangeVariable;
 
 /**
@@ -23,13 +22,13 @@ import org.hypothesis.interfaces.ExchangeVariable;
  *
  */
 @SuppressWarnings("serial")
-public class BranchManager extends KeySetManager<Pack, Branch, Long> {
+public class BranchManager extends KeySetManager<BranchDto, Long> {
 
 	private static final Logger log = Logger.getLogger(BranchManager.class);
 
 	private final DocumentReader reader = new XmlDocumentReader();
 
-	private Branch current = null;
+	private BranchDto current = null;
 	private BranchController controller = null;
 
 	public BranchManager() {
@@ -37,8 +36,8 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 	}
 
 	@Override
-	public Branch current() {
-		Branch branch = super.current();
+	public BranchDto current() {
+		BranchDto branch = super.current();
 
 		if (current != branch) {
 			current = branch;
@@ -52,51 +51,31 @@ public class BranchManager extends KeySetManager<Pack, Branch, Long> {
 
 		return current;
 	}
-	
+
 	private void buildBranchController() {
 		log.debug("Building branch controller.");
 
 		controller = BranchBuilder.buildBranchController(current, reader);
 	}
 
-	/*
-	 * @Override public Branch find(Branch item) { if (item != current) {
-	 * super.find(item); } return current(); }
-	 */
-
-	/*
-	 * @Override public Branch get(Long key) { clearBranchRelatives();
-	 * super.get(key); return current(); }
-	 */
-
-	/*
-	 * public String getSerializedData() { return nextKey; }
-	 */
-
-	/*
-	 * @Override public void setCurrent(Branch item) { if (item !=
-	 * super.current()) { clearBranchRelatives(); super.setCurrent(item);
-	 * buildBranch(); } }
-	 */
-
 	public BranchController getController() {
 		return controller;
 	}
 
-	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
+	public void addSlideOutputs(SlideDto slide, Map<Integer, ExchangeVariable> outputValues) {
 		if (controller != null) {
 			controller.addSlideOutputs(slide, outputValues);
 		}
 	}
 
-	public Branch getNextBranch(BranchMap branchMap) {
+	public BranchDto getNextBranch(BranchKeyMap branchMap) {
 		if (branchMap != null && controller != null) {
 			String key = controller.getNextBranchKey();
-			
-			Branch branch = branchMap.get(key);
-			
-			if (branch != null) {
-				find(branch);
+
+			Long branchId = branchMap.get(key);
+
+			if (branchId != null) {
+				findById(branchId);
 				return current();
 			}
 		}

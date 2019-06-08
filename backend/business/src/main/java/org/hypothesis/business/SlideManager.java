@@ -14,8 +14,7 @@ import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.DocumentWriter;
 import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.data.XmlDocumentWriter;
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.data.model.Task;
+import org.hypothesis.data.dto.SlideDto;
 import org.hypothesis.evaluation.IndexedExpression;
 import org.hypothesis.evaluation.Variable;
 import org.hypothesis.event.data.ScoreData;
@@ -33,14 +32,14 @@ import com.vaadin.ui.Component;
  *
  */
 @SuppressWarnings("serial")
-public class SlideManager extends ListManager<Task, Slide> {
+public class SlideManager extends ListManager<SlideDto, Long> {
 
 	private static final Logger log = Logger.getLogger(SlideManager.class);
 
 	private final DocumentReader reader = new XmlDocumentReader();
 	private final DocumentWriter writer = new XmlDocumentWriter();
 
-	private Slide current = null;
+	private SlideDto current = null;
 	private SlideContainer container = null;
 
 	private final HashMap<Integer, Object> nextInputValues = new HashMap<>();
@@ -52,8 +51,8 @@ public class SlideManager extends ListManager<Task, Slide> {
 	}
 
 	@Override
-	public Slide current() {
-		Slide slide = super.current();
+	public SlideDto current() {
+		SlideDto slide = super.current();
 
 		if (current != slide) {
 			current = slide;
@@ -86,10 +85,10 @@ public class SlideManager extends ListManager<Task, Slide> {
 	}
 
 	@Override
-	public Slide next() {
+	public SlideDto next() {
 		// save output value for next slide
 		saveOutputValuesForNext();
-		Slide next = super.next();
+		SlideDto next = super.next();
 
 		// there is not another next slide, then clear nextInputValue
 		if (next == null) {
@@ -100,8 +99,8 @@ public class SlideManager extends ListManager<Task, Slide> {
 	}
 
 	@Override
-	public Slide get(int index) {
-		current = super.get(index);
+	public SlideDto prior() {
+
 		buildSlideContainer();
 
 		return current;
@@ -151,7 +150,7 @@ public class SlideManager extends ListManager<Task, Slide> {
 		}
 	}
 
-	public Slide getSlide() {
+	public SlideDto getSlide() {
 		return current;
 	}
 

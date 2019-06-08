@@ -16,13 +16,13 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.hypothesis.builder.SlideDataParser;
-import org.hypothesis.data.model.ExportScore;
+import org.hypothesis.data.dto.ExportScoreDto;
 import org.hypothesis.server.Messages;
 import org.hypothesis.utility.GenderUtility;
 
 public class ScoreExportDataBuilder {
 
-	public static void exportScoresToExcelFile(final List<ExportScore> scores, final File file,
+	public static void exportScoresToExcelFile(final List<ExportScoreDto> scores, final File file,
 			final AtomicBoolean cancelPending, final Consumer<Float> progressConsumer) throws IOException {
 		if (scores != null && file != null) {
 			int progress = 0;
@@ -84,7 +84,7 @@ public class ScoreExportDataBuilder {
 			int outputValueCol = 24;
 
 			int rowNr = 1;
-			for (ExportScore score : scores) {
+			for (ExportScoreDto score : scores) {
 				if (cancelPending != null && cancelPending.get()) {
 					workbook.close();
 					file.delete();
@@ -93,7 +93,7 @@ public class ScoreExportDataBuilder {
 
 				Long testId = score.getTestId();
 				Long userId = score.getUserId();
-				Date scoreDate = score.getDatetime();
+				Date scoreDate = score.getTimeStamp();
 				long scoreTime = scoreDate.getTime();
 				String scoreName = score.getName();
 				Long branchId = score.getBranchId();
@@ -106,7 +106,7 @@ public class ScoreExportDataBuilder {
 				String firstName = score.getFirstName();
 				String username = score.getUsername();
 				String pasword = score.getPassword();
-				String gender = score.getGender();
+				String gender = score.getGender().getCode();
 				String dateOfBirth = DateFormatUtils.format(score.getBirthDate(),
 						Messages.getString("Format.Export.Date"));
 				String education = score.getEducation();

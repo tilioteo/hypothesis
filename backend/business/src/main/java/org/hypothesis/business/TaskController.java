@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.data.model.Task;
+import org.hypothesis.data.dto.SlideDto;
+import org.hypothesis.data.dto.TaskDto;
 import org.hypothesis.evaluation.Node;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.Evaluator;
@@ -40,7 +40,7 @@ public class TaskController implements Serializable, Evaluator {
 		nodes.put(slideId, node);
 	}
 
-	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
+	public void addSlideOutputs(SlideDto slide, Map<Integer, ExchangeVariable> outputValues) {
 		if (!nodes.isEmpty() && slide != null && slide.getId() != null && !outputValues.isEmpty()) {
 			// copy map of variables because it will be erased at the slide
 			// finish
@@ -53,7 +53,7 @@ public class TaskController implements Serializable, Evaluator {
 		}
 	}
 
-	public int getNextSlideIndex(Task task, Slide slide) {
+	public int getNextSlideIndex(TaskDto task, SlideDto slide) {
 		if (task != null && !task.isRandomized() && slide != null) {
 			Node node = nodes.get(slide.getId());
 

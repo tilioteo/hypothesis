@@ -5,7 +5,7 @@
 package org.hypothesis.navigator;
 
 import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.SimpleUserDto;
 import org.hypothesis.event.interfaces.MainUIEvent.PostViewChangeEvent;
 import org.hypothesis.eventbus.MainEventBus;
 
@@ -45,7 +45,7 @@ public class HypothesisNavigator extends Navigator {
 			public boolean beforeViewChange(final ViewChangeEvent event) {
 				HypothesisViewType view = HypothesisViewType.getByViewName(event.getViewName());
 
-				User user = SessionManager.getLoggedUser();
+				SimpleUserDto user = SessionManager.getLoggedUser2();
 				if (user != null) {
 					return view.isAllowed(user.getRoles());
 				}

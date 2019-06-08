@@ -4,7 +4,7 @@ import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.server.Sizeable.Unit.PIXELS;
 import static com.vaadin.ui.themes.ValoTheme.PANEL_BORDERLESS;
 
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.SimpleUserDto;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.HorizontalLayout;
@@ -15,7 +15,7 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class UserPanel extends Panel {
 
-	private final User user;
+	private final SimpleUserDto user;
 	private Panel packsPanel;
 
 	private Label positionLabel;
@@ -25,12 +25,12 @@ public class UserPanel extends Panel {
 	private Label statusLabel;
 	private Label messageLabel;
 
-	public UserPanel(User user) {
+	public UserPanel(SimpleUserDto user) {
 		this.user = user;
 		initPanel();
 	}
 
-	public User getUser() {
+	public SimpleUserDto getUser() {
 		return user;
 	}
 
@@ -129,7 +129,7 @@ public class UserPanel extends Panel {
 	private Panel createPacksPanel() {
 		Panel panel = new Panel();
 		panel.setHeight(70, PIXELS);
-		
+
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setHeight(100, PERCENTAGE);
 		panel.setContent(layout);

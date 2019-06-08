@@ -5,8 +5,9 @@
 package org.hypothesis.data.validator;
 
 import org.hypothesis.data.service.GroupService;
-
+import org.hypothesis.data.service.impl.GroupServiceImpl;
 import org.hypothesis.server.Messages;
+
 import com.vaadin.data.Validator;
 
 /**
@@ -22,7 +23,7 @@ public class GroupNameValidator implements Validator {
 	private final Long id;
 
 	public GroupNameValidator(Long id) {
-		groupService = GroupService.newInstance();
+		groupService = new GroupServiceImpl();
 		this.id = id;
 	}
 

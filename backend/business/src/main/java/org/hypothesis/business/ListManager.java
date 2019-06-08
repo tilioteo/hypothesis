@@ -4,12 +4,18 @@
  */
 package org.hypothesis.business;
 
+import static java.util.Collections.emptyMap;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.hypothesis.data.interfaces.HasList;
+import org.hypothesis.data.interfaces.HasId;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -18,98 +24,77 @@ import org.hypothesis.data.interfaces.HasList;
  *
  */
 @SuppressWarnings("serial")
-public class ListManager<T extends HasList<E>, E> implements Serializable {
+public class ListManager<E extends HasId<ID>, ID> implements Serializable {
 
-	private LinkedList<E> list = new LinkedList<>();
-	private int index = -1;
+	private Map<ID, Integer> indexByidMap;
+	private Map<Integer, E> elementByindexMap;
 
-	private T parent = null;
-	private E element = null;
+	private Integer index;
+
+	private E element;
 
 	private Random randomGenerator;
 
-	private E getByInternalIndex() {
-		if (index >= 0 && index < list.size()) {
-			element = list.get(index);
-		} else {
-			element = null;
-		}
-		return element;
+	public ListManager() {
+		reset();
 	}
 
-	public T getParent() {
-		return parent;
+	public int size() {
+		return indexByidMap.size();
 	}
 
-	public int getCount() {
-		return list.size();
+	public E findById(ID id) {
+		index = indexByidMap.get(id);
+		return getByInternalIndex();
+	}
+
+	public E findByIndex(int index) {
+		this.index = index;
+		return getByInternalIndex();
 	}
 
 	public E current() {
 		return getByInternalIndex();
 	}
 
-	public E get(int index) {
-		if (index >= 0 && index < list.size()) {
-			this.index = index;
-		} else {
-			this.index = -1;
-		}
-		return getByInternalIndex();
-	}
-
-	public E find(E item) {
-		index = list.indexOf(item);
-		return getByInternalIndex();
-	}
-
 	public E next() {
-		if (index < list.size()) {
+		if (index != null) {
 			++index;
 		}
 		return getByInternalIndex();
 	}
 
 	public E prior() {
-		if (index >= 0) {
+		if (index != null) {
 			--index;
 		}
 		return getByInternalIndex();
 	}
 
-	/*
-	 * set current element - for test purpose only
-	 * 
-	 * @param element
-	 */
-	/*
-	 * public void setCurrent(E element) { this.element = element; }
-	 */
+	public void setList(List<E> list) {
+		reset();
 
-	public void setListFromParent(T parent) {
-		this.parent = parent;
-		list.clear();
-		index = -1;
-		randomGenerator = new Random();
-		if (parent != null) {
-			for (E item : parent.getList()) {
-				if (item != null) {
-					list.add(item);
-				}
-			}
+		if (isNotEmpty(list)) {
+			indexByidMap = new HashMap<>();
+			elementByindexMap = new HashMap<>();
+			AtomicInteger aInt = new AtomicInteger(0);
 
-			if (list.size() > 0) {
-				index = 0;
-				getByInternalIndex();
-			}
+			list.forEach(e -> {
+				indexByidMap.put(e.getId(), aInt.get());
+				elementByindexMap.put(aInt.getAndIncrement(), e);
+			});
+			randomGenerator = new Random();
+
+			index = 0;
+			getByInternalIndex();
 		}
 	}
 
 	public List<Integer> createRandomOrder() {
-		LinkedList<Integer> order = new LinkedList<>();
+		List<Integer> order = new LinkedList<>();
 
-		while (order.size() < list.size()) {
-			Integer random = randomGenerator.nextInt(list.size());
+		while (order.size() < size()) {
+			int random = randomGenerator.nextInt(size());
 			if (!order.contains(random)) {
 				order.add(random);
 			}
@@ -119,21 +104,47 @@ public class ListManager<T extends HasList<E>, E> implements Serializable {
 	}
 
 	public void setOrder(List<Integer> order) {
-		if (order.size() > 0 && list.size() > 0) {
-			LinkedList<E> tempList = new LinkedList<>();
+		if (isNotEmpty(order) && !indexByidMap.isEmpty()) {
+			List<E> tempList = new LinkedList<>();
 
-			int size = Math.min(order.size(), list.size());
+			int size = Math.min(order.size(), size());
 			for (int i = 0; i < size; ++i) {
-				tempList.add(list.get(order.get(i)));
+				tempList.add(elementByindexMap.get(order.get(i)));
 			}
 
-			for (int i = size; i < list.size(); ++i) {
-				tempList.add(list.get(i));
+			for (int i = size; i < size(); ++i) {
+				tempList.add(elementByindexMap.get(i));
 			}
 
-			this.list = tempList;
+			setList(tempList);
 		}
-		index = 0;
+	}
+
+	protected void setIndex(int index) {
+		if (index >= 0 && index < size()) {
+			this.index = index;
+		}
+	}
+
+	private void reset() {
+		indexByidMap = emptyMap();
+		elementByindexMap = emptyMap();
+		index = null;
+		element = null;
+	}
+
+	private E getByInternalIndex() {
+		if (index != null && indexInBounds(index)) {
+			element = elementByindexMap.get(index);
+		} else {
+			element = null;
+			index = null;
+		}
+		return element;
+	}
+
+	private boolean indexInBounds(int index) {
+		return index >= 0 && index < size();
 	}
 
 }

@@ -1,11 +1,8 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
 
-import java.util.LinkedList;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -21,31 +18,25 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hypothesis.data.interfaces.HasList;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.PACK_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Pack extends SerializableIdObject implements HasList<Branch> {
+public class Pack implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3225002856411893041L;
+	private Long id;
 
-	private String name = "";
-	private String description = "";
+	private String name;
+
+	private String description;
 
 	/**
 	 * pack is published to users
@@ -55,16 +46,18 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	/**
 	 * pack requires java to run
 	 */
-	private Boolean javaRequired = true;
+	// not used
+	// private Boolean javaRequired = true;
 
 	private String note;
-	
-	private Pack enableAfter;
+
+	// not used
+	// private Pack enableAfter;
 
 	/**
 	 * list of contained branches
 	 */
-	private List<Branch> branches = new LinkedList<>();
+	private List<Branch> branches;
 
 	@Override
 	@Id
@@ -72,7 +65,11 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	@SequenceGenerator(name = TableConstants.PACK_GENERATOR, sequenceName = TableConstants.PACK_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.NAME, nullable = false, unique = true)
@@ -94,21 +91,12 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	}
 
 	@Column(name = FieldConstants.PUBLISHED)
-	public Boolean isPublished() {
+	public Boolean getPublished() {
 		return published;
 	}
 
 	public void setPublished(Boolean published) {
 		this.published = published;
-	}
-
-	@Column(name = FieldConstants.JAVA_REQUIRED)
-	public Boolean isJavaRequired() {
-		return javaRequired;
-	}
-
-	public void setJavaRequired(Boolean javaRequired) {
-		this.javaRequired = javaRequired;
 	}
 
 	@Column(name = FieldConstants.NOTE)
@@ -119,20 +107,9 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 	public void setNote(String note) {
 		this.note = note;
 	}
-	
-//	@ManyToOne(/* cascade = { CascadeType.PERSIST, CascadeType.MERGE } */)
-//	@JoinColumn(name = FieldConstants.ENABLE_AFTER_PACK_ID, nullable = false)
-//	// @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-//	public Pack getEnableAfter() {
-//		return enableAfter;
-//	}
-//
-//	public void setEnableAfter(Pack pack) {
-//		this.enableAfter = pack;
-//	}
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.PACK_BRANCH_TABLE, joinColumns = @JoinColumn(name = FieldConstants.PACK_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.BRANCH_ID) )
+	@JoinTable(name = TableConstants.PACK_BRANCH_TABLE, joinColumns = @JoinColumn(name = FieldConstants.PACK_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.BRANCH_ID))
 	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@OrderColumn(name = FieldConstants.RANK)
@@ -140,112 +117,38 @@ public final class Pack extends SerializableIdObject implements HasList<Branch> 
 		return branches;
 	}
 
-	protected void setBranches(List<Branch> list) {
+	public void setBranches(List<Branch> list) {
 		this.branches = list;
-	}
-
-	@Transient
-	public final List<Branch> getList() {
-		return getBranches();
-	}
-
-	public final void addBranch(Branch b) {
-		getBranches().add(b);
-	}
-
-	public final void removeBranch(Branch b) {
-		getBranches().remove(b);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Pack)) {
-			return false;
-		}
-		Pack other = (Pack) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		String name = getName();
-		String name2 = other.getName();
-		String description = getDescription();
-		String description2 = other.getDescription();
-		Boolean published = isPublished();
-		Boolean published2 = other.isPublished();
-		String note = getNote();
-		String note2 = other.getNote();
-		// List<Branch> branches = getBranches();
-		// List<Branch> branches2 = other.getBranches();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
-			return false;
-		}
-
-		if (name == null) {
-			if (name2 != null) {
-				return false;
-			}
-		} else if (!name.equals(name2)) {
-			return false;
-		}
-
-		if (description == null) {
-			if (description2 != null) {
-				return false;
-			}
-		} else if (!description.equals(description2)) {
-			return false;
-		}
-
-		if (published == null) {
-			if (published2 != null) {
-				return false;
-			}
-		} else if (!published.equals(published2)) {
-			return false;
-		}
-
-		if (note == null) {
-			if (note2 != null) {
-				return false;
-			}
-		} else if (!note.equals(note2)) {
-			return false;
-		}
-
-		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		Long id = getId();
-		String name = getName();
-		String description = getDescription();
-		Boolean published = isPublished();
-		String note = getNote();
-		List<Branch> branches = getBranches();
+		return getId() == null ? 0 : getId().hashCode();
+	}
 
-		final int prime = 19;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (name != null ? name.hashCode() : 0);
-		result = prime * result + (description != null ? description.hashCode() : 0);
-		result = prime * result + (published != null ? published.hashCode() : 0);
-		result = prime * result + (note != null ? note.hashCode() : 0);
-		result = prime * result + branches.hashCode();
-		return result;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Pack == false)
+			return false;
+
+		final Pack other = (Pack) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getName(), other.getName()))
+			return false;
+		if (!Objects.equals(getDescription(), other.getDescription()))
+			return false;
+		if (!Objects.equals(getPublished(), other.getPublished()))
+			return false;
+		if (!Objects.equals(getNote(), other.getNote()))
+			return false;
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return getName();
+		return "Pack [id=" + id + ", name=" + name + ", description=" + description + ", published=" + published
+				+ ", note=" + note + "]";
 	}
 
 }

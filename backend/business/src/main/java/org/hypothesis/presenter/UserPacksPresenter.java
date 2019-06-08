@@ -6,9 +6,10 @@ package org.hypothesis.presenter;
 
 import java.util.List;
 
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.SimpleUserDto;
 import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.ui.PackPanel;
 
 /**
@@ -22,22 +23,22 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 
 	protected final UserService userService;
 
-	private User loggedUser;
+	private SimpleUserDto loggedUser;
 
 	public UserPacksPresenter() {
 		super();
 
-		userService = UserService.newInstance();
+		userService = new UserServiceImpl();
 	}
 
 	@Override
-	protected List<Pack> getPacks() {
+	protected List<PackDto> getPacks() {
 		loggedUser = getLoggedUser();
 		if (loggedUser != null) {
 			try {
-				loggedUser = userService.get(loggedUser.getId());
+				loggedUser = userService.getSimpleById(loggedUser.getId());
 
-				return permissionService.getUserPacksVN(loggedUser);
+				return permissionService.getUserPacksVN(loggedUser.getId());
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
@@ -50,11 +51,11 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 	public void refreshView() {
 		getView().clearMainLayout();
 
-		List<Pack> packs = getPacks();
+		List<PackDto> packs = getPacks();
 
 		if (packs != null && !packs.isEmpty()) {
 			boolean notFirst = false;
-			for (Pack pack : packs) {
+			for (PackDto pack : packs) {
 				PackPanel packPanel = createPackPanel(pack);
 				getView().addPackPanel(packPanel);
 				if (notFirst || loggedUser.isTestingSuspended()) {

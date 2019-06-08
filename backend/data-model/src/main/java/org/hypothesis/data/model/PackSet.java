@@ -1,7 +1,8 @@
 package org.hypothesis.data.model;
 
-import java.util.LinkedList;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -17,35 +18,28 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import org.hypothesis.data.interfaces.HasList;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.PACK_SET_TABLE)
 @Access(AccessType.PROPERTY)
-public class PackSet extends SerializableIdObject implements HasList<Pack> {
+public class PackSet implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4836797614782216511L;
+	private Long id;
 
-	private String name = "";
+	private String name;
 
 	/**
 	 * list of contained packs
 	 */
-	private List<Pack> packs = new LinkedList<>();
+	private List<Pack> packs;
 
 	@Override
 	@Id
@@ -53,7 +47,11 @@ public class PackSet extends SerializableIdObject implements HasList<Pack> {
 	@SequenceGenerator(name = TableConstants.PACK_SET_GENERATOR, sequenceName = TableConstants.PACK_SET_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.NAME, nullable = false)
@@ -74,79 +72,31 @@ public class PackSet extends SerializableIdObject implements HasList<Pack> {
 		return packs;
 	}
 
-	protected void setPacks(List<Pack> list) {
+	public void setPacks(List<Pack> list) {
 		this.packs = list;
-	}
-
-	@Transient
-	public final List<Pack> getList() {
-		return getPacks();
-	}
-
-	public final void addPack(Pack p) {
-		getPacks().add(p);
-	}
-
-	public final void removePack(Pack p) {
-		getPacks().remove(p);
-	}
-
-	public final void removeAllPacks() {
-		getPacks().clear();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-
-		PackSet other = (PackSet) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		String name = getName();
-		String name2 = other.getName();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
-			return false;
-		}
-
-		if (name == null) {
-			if (name2 != null) {
-				return false;
-			}
-		} else if (!name.equals(name2)) {
-			return false;
-		}
-
-		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		Long id = getId();
-		String name = getName();
-		List<Pack> packs = getPacks();
+		return getId() == null ? 0 : getId().hashCode();
+	}
 
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (name != null ? name.hashCode() : 0);
-		result = prime * result + packs.hashCode();
-		return result;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof PackSet == false)
+			return false;
+
+		final PackSet other = (PackSet) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getName(), other.getName()))
+			return false;
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return getName();
+		return "PackSet [id=" + id + ", name=" + name + "]";
 	}
+
 }

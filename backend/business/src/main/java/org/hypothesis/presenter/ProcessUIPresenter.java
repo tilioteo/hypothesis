@@ -6,9 +6,10 @@ package org.hypothesis.presenter;
 
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ProcessManager;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Token;
+import org.hypothesis.data.dto.TestDto;
+import org.hypothesis.data.dto.TokenDto;
 import org.hypothesis.data.service.TokenService;
+import org.hypothesis.data.service.impl.TokenServiceImpl;
 import org.hypothesis.event.interfaces.ProcessViewEvent.ProcessViewEndEvent;
 import org.hypothesis.event.model.AbstractNotificationEvent;
 import org.hypothesis.event.model.AfterFinishSlideEvent;
@@ -71,20 +72,20 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	private final TokenService tokenService;
 	private ProcessManager processManager;
 
-	private SimpleTest preparedTest = null;
+	private TestDto preparedTest = null;
 
 	public ProcessUIPresenter(ProcessUI ui) {
 		this.ui = ui;
 
 		bus = ProcessEventBus.createInstance(this);
 
-		tokenService = TokenService.newInstance();
+		tokenService = new TokenServiceImpl();
 	}
 
 	@Override
 	public void initialize(VaadinRequest request) {
 		log.debug("ProcessUIPresenter initialization");
-		
+
 		super.initialize(request);
 
 		processManager = new ProcessManager(bus);
@@ -165,7 +166,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	}
 
 	private void followToken(String tokenUid) {
-		Token token = tokenService.findTokenByUid(tokenUid);
+		TokenDto token = tokenService.findById(tokenUid);
 		processManager.setAutoSlideShow(false);
 		// TODO maybe in the future send broadcast message to main view
 		/*

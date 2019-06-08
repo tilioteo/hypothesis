@@ -1,8 +1,7 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -11,47 +10,28 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- *         Database entity for group permitions this entity holds information of
- *         which user group has permition to pack
- * 
- */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.GROUP_PERMISSION_TABLE, uniqueConstraints = {
 		@UniqueConstraint(columnNames = { FieldConstants.GROUP_ID, FieldConstants.PACK_ID }) })
 @Access(AccessType.PROPERTY)
-public final class GroupPermission extends SerializableIdObject {
+public class GroupPermission implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8331070869109730350L;
+	private Long id;
 
-	private Group group;
-	private Pack pack;
+	private long groupId;
 
-	protected GroupPermission() {
-		super();
-	}
-
-	public GroupPermission(Group group, Pack pack) {
-		this();
-		this.group = group;
-		this.pack = pack;
-	}
+	private long packId;
 
 	@Override
 	@Id
@@ -59,86 +39,55 @@ public final class GroupPermission extends SerializableIdObject {
 	@SequenceGenerator(name = TableConstants.GROUP_PERMISSION_GENERATOR, sequenceName = TableConstants.GROUP_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.GROUP_ID, nullable = false)
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	@Column(name = FieldConstants.GROUP_ID, nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	public Group getGroup() {
-		return group;
+	public long getGroupId() {
+		return groupId;
 	}
 
-	protected void setGroup(Group group) {
-		this.group = group;
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
-	public Pack getPack() {
-		return pack;
+	@Column(name = FieldConstants.PACK_ID, nullable = false)
+	public long getPackId() {
+		return packId;
 	}
 
-	protected void setPack(Pack pack) {
-		this.pack = pack;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof GroupPermission)) {
-			return false;
-		}
-		GroupPermission other = (GroupPermission) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		Group group = getGroup();
-		Group group2 = other.getGroup();
-		Pack pack = getPack();
-		Pack pack2 = other.getPack();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
-			return false;
-		}
-
-		if (group == null) {
-			if (group2 != null) {
-				return false;
-			}
-		} else if (!group.equals(group2)) {
-			return false;
-		}
-
-		if (pack == null) {
-			if (pack2 != null) {
-				return false;
-			}
-		} else if (!pack.equals(pack2)) {
-			return false;
-		}
-
-		return true;
+	public void setPackId(long packId) {
+		this.packId = packId;
 	}
 
 	@Override
 	public int hashCode() {
-		Long id = getId();
-		Group group = getGroup();
-		Pack pack = getPack();
+		return getId() == null ? 0 : getId().hashCode();
+	}
 
-		final int prime = 17;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (group != null ? group.hashCode() : 0);
-		result = prime * result + (pack != null ? pack.hashCode() : 0);
-		return result;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof GroupPermission == false)
+			return false;
+
+		final GroupPermission other = (GroupPermission) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getGroupId(), other.getGroupId()))
+			return false;
+		if (!Objects.equals(getPackId(), other.getPackId()))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "GroupPermission [id=" + id + ", groupId=" + groupId + ", packId=" + packId + "]";
 	}
 
 }

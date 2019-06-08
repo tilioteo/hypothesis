@@ -1,11 +1,8 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Access;
@@ -26,35 +23,29 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.USER_TABLE, uniqueConstraints = {
 		// VN specific - login by surname as user name and identity number as
 		// password
 		@UniqueConstraint(columnNames = { FieldConstants.USERNAME, FieldConstants.PASSWORD }) })
 @Access(AccessType.PROPERTY)
-public final class User extends SerializableIdObject {
+public class User implements Serializable, HasId<Long> {
 
-	public static final User GUEST = new User("Guest");
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8876650436162678841L;
+	private Long id;
 
 	private String username;
+
 	private String password;
 
 	/**
 	 * user account is enabled
 	 */
-	private Boolean enabled = true;
+	private boolean enabled;
 
 	/**
 	 * disable current processed pack
@@ -74,87 +65,75 @@ public final class User extends SerializableIdObject {
 	private String note;
 
 	/**
-	 * user has roles
-	 */
-	private Set<Role> roles = new HashSet<>();
-
-	/**
-	 * user belongs to groups
-	 */
-	private Set<Group> groups = new HashSet<>();
-
-	/**
 	 * user can have another user (id of user) as owner
 	 */
 	private Long ownerId;
 
 	private String name;
+
 	private String gender;
+
 	private String education;
+
 	private Date birthDate;
+
 	private Date testingDate;
 
-	protected User(String username) {
-		this.username = username;
-	}
-
-	public User() {
-
-	}
+	/**
+	 * user has roles
+	 */
+	private Set<Role> roles;
 
 	/**
-	 * database id is generated
+	 * user belongs to groups
 	 */
+	private Set<Group> groups;
+
 	@Override
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.USER_GENERATOR)
 	@SequenceGenerator(name = TableConstants.USER_GENERATOR, sequenceName = TableConstants.USER_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
 	}
 
-	@Override
 	public void setId(Long id) {
-		super.setId(id);
+		this.id = id;
 	}
 
 	// VN specific - login by surname as user name and identity number as
 	// password
-	@Column(name = FieldConstants.USERNAME, nullable = false/*, unique = true*/)
+	@Column(name = FieldConstants.USERNAME, nullable = false/*
+															 * , unique = true
+															 */)
 	public String getUsername() {
 		return username;
 	}
 
-	/**
-	 * user name must be unique and not null
-	 * 
-	 * @param username
-	 */
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	@Column(name = FieldConstants.PASSWORD, nullable = false)
-	public String getPassword() {
-		return password;
 	}
 
 	/**
 	 * password cannot be null
 	 * 
-	 * @param password
 	 */
+	@Column(name = FieldConstants.PASSWORD, nullable = false)
+	public String getPassword() {
+		return password;
+	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
 
 	@Column(name = FieldConstants.ENABLED, nullable = false)
-	public Boolean getEnabled() {
+	public boolean getEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -192,33 +171,6 @@ public final class User extends SerializableIdObject {
 
 	public void setNote(String note) {
 		this.note = note;
-	}
-
-	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = TableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.ROLE_ID))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.FALSE)
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	protected void setRoles(Set<Role> roles) {
-		this.roles = roles;
-	}
-
-	@ManyToMany(/*
-				 * targetEntity = Group.class, cascade = { CascadeType.PERSIST,
-				 * CascadeType.MERGE }
-				 */)
-	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.GROUP_ID))
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.TRUE)
-	public Set<Group> getGroups() {
-		return groups;
-	}
-
-	protected void setGroups(Set<Group> groups) {
-		this.groups = groups;
 	}
 
 	@Column(name = FieldConstants.OWNER_ID, nullable = true)
@@ -275,215 +227,88 @@ public final class User extends SerializableIdObject {
 		this.testingDate = testingDate;
 	}
 
-	public final void addRole(Role role) {
-		getRoles().add(role);
+	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = TableConstants.USER_ROLE_TABLE, joinColumns = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns = @JoinColumn(name = FieldConstants.ROLE_ID))
+	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	public Set<Role> getRoles() {
+		return roles;
 	}
 
-	public final void removeRole(Role role) {
-		getRoles().remove(role);
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
 	}
 
-	public final void addGroup(Group group) {
-		getGroups().add(group);
+	/*
+	 * @ManyToMany(fetch = FetchType.LAZY)
+	 * 
+	 * @JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns
+	 * = @JoinColumn(name = FieldConstants.USER_ID), inverseJoinColumns
+	 * = @JoinColumn(name = FieldConstants.GROUP_ID))
+	 * 
+	 * @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	 * 
+	 * @LazyCollection(LazyCollectionOption.TRUE)
+	 */
+	@ManyToMany(mappedBy = "users")
+	public Set<Group> getGroups() {
+		return groups;
 	}
 
-	public final void removeGroup(Group group) {
-		getGroups().remove(group);
+	public void setGroups(Set<Group> groups) {
+		this.groups = groups;
 	}
 
-	public final boolean hasRole(Role role) {
-		return getRoles().contains(role);
+	@Override
+	public int hashCode() {
+		return getId() == null ? 0 : getId().hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+		if (obj instanceof User == false)
 			return false;
-		}
-		if (!(obj instanceof User)) {
-			return false;
-		}
-		User other = (User) obj;
 
-		Long id = getId();
-		Long id2 = other.getId();
-		String username = getUsername();
-		String username2 = other.getUsername();
-		String password = getPassword();
-		String password2 = other.getPassword();
-		Boolean enabled = getEnabled();
-		Boolean enabled2 = other.getEnabled();
-		Date expireDate = getExpireDate();
-		Date expireDate2 = other.getExpireDate();
-		String note = getNote();
-		String note2 = other.getNote();
-		Long ownerId = getOwnerId();
-		Long ownerId2 = other.getOwnerId();
-		String gender = getGender();
-		String gender2 = other.getGender();
-		String education = getEducation();
-		String education2 = other.getEducation();
-		Date birthDate = getBirthDate();
-		Date birthDate2 = other.getBirthDate();
-		Date testingDate = getTestingDate();
-		Date testingDate2 = other.getTestingDate();
-		Boolean autoDisable = getAutoDisable();
-		Boolean autoDisable2 = other.getAutoDisable();
-		String name = getName();
-		String name2 = other.getName();
-		Boolean testingSuspended = isTestingSuspended();
-		Boolean testingSuspended2 = other.isTestingSuspended();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
+		final User other = (User) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getUsername(), other.getUsername()))
 			return false;
-		}
-
-		if (username == null) {
-			if (username2 != null) {
-				return false;
-			}
-		} else if (!username.equals(username2)) {
+		if (!Objects.equals(getPassword(), other.getPassword()))
 			return false;
-		}
-
-		if (password == null) {
-			if (password2 != null) {
-				return false;
-			}
-		} else if (!password.equals(password2)) {
+		if (!Objects.equals(getEnabled(), other.getEnabled()))
 			return false;
-		}
-
-		if (enabled == null) {
-			if (enabled2 != null) {
-				return false;
-			}
-		} else if (!enabled.equals(enabled2)) {
+		if (!Objects.equals(getAutoDisable(), other.getAutoDisable()))
 			return false;
-		}
-
-		if (expireDate == null) {
-			if (expireDate2 != null) {
-				return false;
-			}
-		} else if (!expireDate.equals(expireDate2)) {
+		if (!Objects.equals(isTestingSuspended(), other.isTestingSuspended()))
 			return false;
-		}
-
-		if (note == null) {
-			if (note2 != null) {
-				return false;
-			}
-		} else if (!note.equals(note2)) {
+		if (!Objects.equals(getExpireDate(), other.getExpireDate()))
 			return false;
-		}
-
-		if (ownerId == null) {
-			if (ownerId2 != null) {
-				return false;
-			}
-		} else if (!ownerId.equals(ownerId2)) {
+		if (!Objects.equals(getNote(), other.getNote()))
 			return false;
-		}
-
-		if (gender == null) {
-			if (gender2 != null) {
-				return false;
-			}
-		} else if (!gender.equals(gender2)) {
+		if (!Objects.equals(getOwnerId(), other.getOwnerId()))
 			return false;
-		}
-
-		if (education == null) {
-			if (education2 != null) {
-				return false;
-			}
-		} else if (!education.equals(education2)) {
+		if (!Objects.equals(getName(), other.getName()))
 			return false;
-		}
-
-		if (birthDate == null) {
-			if (birthDate2 != null) {
-				return false;
-			}
-		} else if (!birthDate.equals(birthDate2)) {
+		if (!Objects.equals(getGender(), other.getGender()))
 			return false;
-		}
-
-		if (testingDate == null) {
-			if (testingDate2 != null) {
-				return false;
-			}
-		} else if (!testingDate.equals(testingDate2)) {
+		if (!Objects.equals(getEducation(), other.getEducation()))
 			return false;
-		}
-
-		if (!autoDisable.equals(autoDisable2)) {
+		if (!Objects.equals(getBirthDate(), other.getBirthDate()))
 			return false;
-		}
-
-		if (name == null) {
-			if (name2 != null) {
-				return false;
-			}
-		} else if (!name.equals(name2)) {
+		if (!Objects.equals(getTestingDate(), other.getTestingDate()))
 			return false;
-		}
-
-		if (!testingSuspended.equals(testingSuspended2)) {
+		if (!Objects.equals(getUsername(), other.getUsername()))
 			return false;
-		}
 
 		return true;
 	}
 
 	@Override
-	public int hashCode() {
-		Long id = getId();
-		String username = getUsername();
-		String password = getPassword();
-		Boolean enabled = getEnabled();
-		Date expireDate = getExpireDate();
-		String note = getNote();
-		Long ownerId = getOwnerId();
-		Set<Role> roles = getRoles();
-		// Set<Group> groups = getGroups();
-		String gender = getGender();
-		String education = getEducation();
-		String name = getName();
-		Date birthDate = getBirthDate();
-		Date testingDate = getTestingDate();
-		Boolean autoDisable = getAutoDisable();
-		Boolean testingSuspended = isTestingSuspended();
-
-		final int prime = 61;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (username != null ? username.hashCode() : 0);
-		result = prime * result + (password != null ? password.hashCode() : 0);
-		result = prime * result + (enabled != null ? enabled.hashCode() : 0);
-		result = prime * result + (expireDate != null ? expireDate.hashCode() : 0);
-		result = prime * result + (note != null ? note.hashCode() : 0);
-		result = prime * result + (ownerId != null ? ownerId.hashCode() : 0);
-		result = prime * result + roles.hashCode();
-		// result = prime * result + groups.hashCode();
-		result = prime * result + (gender != null ? gender.hashCode() : 0);
-		result = prime * result + (education != null ? education.hashCode() : 0);
-		result = prime * result + (name != null ? name.hashCode() : 0);
-		result = prime * result + (birthDate != null ? birthDate.hashCode() : 0);
-		result = prime * result + (testingDate != null ? testingDate.hashCode() : 0);
-		result = prime * result + (autoDisable != null ? autoDisable.hashCode() : 0);
-		result = prime * result + (testingSuspended != null ? testingSuspended.hashCode() : 0);
-		return result;
-	}
-
-	@Override
 	public String toString() {
-		return getUsername();
+		return "User [id=" + id + ", username=" + username + ", enabled=" + enabled + ", autoDisable=" + autoDisable
+				+ ", testingSuspended=" + testingSuspended + ", expireDate=" + expireDate + ", ownerId=" + ownerId
+				+ ", testingDate=" + testingDate + ", roles=" + roles + "]";
 	}
 
 }

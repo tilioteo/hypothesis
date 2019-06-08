@@ -18,38 +18,45 @@ import static com.vaadin.ui.themes.ValoTheme.OPTIONGROUP_HORIZONTAL;
 import static com.vaadin.ui.themes.ValoTheme.PANEL_BORDERLESS;
 import static com.vaadin.ui.themes.ValoTheme.TABLE_SMALL;
 import static com.vaadin.ui.themes.ValoTheme.WINDOW_BOTTOM_TOOLBAR;
-import static org.hypothesis.data.model.FieldConstants.ID;
-import static org.hypothesis.data.model.FieldConstants.NAME;
-import static org.hypothesis.data.model.FieldConstants.ORDER;
-import static org.hypothesis.data.model.Gender.FEMALE;
-import static org.hypothesis.data.model.Gender.MALE;
-import static org.hypothesis.data.service.RoleService.ROLE_MANAGER;
-import static org.hypothesis.data.service.RoleService.ROLE_SUPERUSER;
-import static org.hypothesis.data.service.RoleService.ROLE_USER;
+import static java.util.function.Function.identity;
+import static org.hypothesis.data.api.Gender.FEMALE;
+import static org.hypothesis.data.api.Gender.MALE;
+import static org.hypothesis.data.api.Roles.ROLE_MANAGER;
+import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
+import static org.hypothesis.data.api.Roles.ROLE_USER;
+import static org.hypothesis.data.interfaces.FieldConstants.ID;
+import static org.hypothesis.data.interfaces.FieldConstants.NAME;
+import static org.hypothesis.data.interfaces.FieldConstants.ORDER;
 import static org.hypothesis.presenter.WindowState.CREATE;
 import static org.hypothesis.presenter.WindowState.MULTIUPDATE;
 import static org.hypothesis.presenter.WindowState.UPDATE;
+import static org.hypothesis.utility.UserUtility.userHasAnyRole;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.LongItemSorter;
-import org.hypothesis.data.model.Gender;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.PackSet;
-import org.hypothesis.data.model.Role;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.model.UserPermission;
+import org.hypothesis.data.api.Gender;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.PackSetDto;
+import org.hypothesis.data.dto.RoleDto;
+import org.hypothesis.data.dto.UserDto;
 import org.hypothesis.data.service.PackSetService;
 import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.PackSetServiceImpl;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
+import org.hypothesis.data.service.impl.RoleServiceImpl;
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.data.validator.RoleValidator;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
@@ -142,14 +149,18 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 	private boolean initializingFields = true;
 
+	private final Map<String, RoleDto> allRoles;
+
 	public UserWindowVNPresenter(MainEventBus bus) {
 		super(bus);
 
 		// groupService = GroupService.newInstance();
-		userService = UserService.newInstance();
-		roleService = RoleService.newInstance();
-		permissionService = PermissionService.newInstance();
-		packSetService = PackSetService.newInstance();
+		userService = new UserServiceImpl();
+		roleService = new RoleServiceImpl();
+		permissionService = new PermissionServiceImpl();
+		packSetService = new PackSetServiceImpl();
+
+		allRoles = roleService.findAll().stream().collect(Collectors.toMap(RoleDto::getName, identity()));
 	}
 
 	private void buildIdField() {
@@ -198,7 +209,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	}
 
 	private void processPeronalNumber(String value) {
-		List<User> oldUsers = userService.findByPasswordAkaBirthNumber(value);
+		List<UserDto> oldUsers = userService.findByPasswordAkaBirthNumberVN(value);
 		if (!oldUsers.isEmpty()) {
 			if (oldUsers.size() == 1) {
 				source = oldUsers.get(0);
@@ -244,8 +255,9 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				@Override
 				public void valueChange(ValueChangeEvent event) {
 					if (CREATE == state && !isFirstRoleSelected) {
-						Set<Role> roles = (Set<Role>) event.getProperty().getValue();
-						if (roles.size() == 1 && roles.contains(ROLE_USER)) {
+						Set<RoleDto> roles = (Set<RoleDto>) event.getProperty().getValue();
+						if (roles.size() == 1
+								&& roles.stream().map(RoleDto::getName).anyMatch(name -> name.equals(ROLE_USER))) {
 							isFirstRoleSelected = true;
 							autoDisableField.setValue(true);
 						}
@@ -253,7 +265,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				}
 			});
 
-			BeanItemContainer<Role> dataSource = new BeanItemContainer<Role>(Role.class);
+			BeanItemContainer<RoleDto> dataSource = new BeanItemContainer<RoleDto>(RoleDto.class);
 			rolesField.setContainerDataSource(dataSource);
 		}
 	}
@@ -321,7 +333,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 				@Override
 				public void valueChange(ValueChangeEvent event) {
 					if (!initializingFields) {
-						Set<Role> roles = (Set<Role>) rolesField.getValue();
+						Set<RoleDto> roles = (Set<RoleDto>) rolesField.getValue();
 						if (roles.size() == 1 && roles.contains(ROLE_USER)) {
 							testingSuspendedField.setValue(true);
 						}
@@ -516,12 +528,12 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		// roles
 		buildRolesField();
 
-		BeanItemContainer<Role> rolesSource = (BeanItemContainer<Role>) ((AbstractSelect) rolesField)
+		BeanItemContainer<RoleDto> rolesSource = (BeanItemContainer<RoleDto>) ((AbstractSelect) rolesField)
 				.getContainerDataSource();
 		rolesSource.addAll(roleService.findAll());
 		rolesSource.sort(new Object[] { ID }, new boolean[] { true });
 
-		if (!loggedUser.hasRole(ROLE_SUPERUSER)) {
+		if (!userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
 			rolesField.select(ROLE_USER);
 			rolesField.setEnabled(false);
 		} else if (CREATE != state) {
@@ -530,7 +542,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			rolesField.addValidator(new RoleValidator(source, loggedUser));
 		}
 
-		if (!loggedUser.hasRole(ROLE_SUPERUSER)) {
+		if (!userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
 			rolesField.setItemEnabled(ROLE_SUPERUSER, false);
 			rolesField.setItemEnabled(ROLE_MANAGER, false);
 			rolesField.setItemEnabled(ROLE_USER, false);
@@ -558,8 +570,8 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		buildTestingDateField();
 
 		if (WindowState.CREATE == state) {
-			Set<Role> roles = new HashSet<>();
-			roles.add(ROLE_USER);
+			Set<RoleDto> roles = new HashSet<>();
+			roles.add(allRoles.get(ROLE_USER));
 			rolesField.setValue(roles);
 
 			testingDateField.setValue(DateUtility.toDate(LocalDate.now()));
@@ -617,8 +629,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 	@Override
 	protected void fillFields() {
-		User user = (User) source;
-		user = userService.merge(user);
+		UserDto user = (UserDto) source;
 
 		idField.setValue(user.getId().toString());
 		usernameField.setValue(user.getUsername());
@@ -626,7 +637,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		passwordField.setValue(user.getPassword());
 		rolesField.setValue(user.getRoles());
 		enabledField.setValue(user.getEnabled());
-		autoDisableField.setValue(user.getAutoDisable());
+		autoDisableField.setValue(user.isAutoDisable());
 		testingSuspendedField.setValue(user.isTestingSuspended());
 		noteField.setValue(user.getNote());
 		genderField.select(Gender.get(user.getGender()));
@@ -804,7 +815,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		table.addStyleName(TABLE_SMALL);
 		table.setSelectable(true);
 
-		final BeanItemContainer<Pack> dataSource = new BeanItemContainer<Pack>(Pack.class);
+		final BeanItemContainer<PackDto> dataSource = new BeanItemContainer<PackDto>(PackDto.class);
 
 		table.setContainerDataSource(dataSource);
 
@@ -831,11 +842,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			@Override
 			public void drop(DragAndDropEvent event) {
 				DataBoundTransferable t = (DataBoundTransferable) event.getTransferable();
-				Pack sourceItemId = (Pack) t.getItemId();
+				PackDto sourceItemId = (PackDto) t.getItemId();
 
 				AbstractSelectTargetDetails dropData = (AbstractSelectTargetDetails) event.getTargetDetails();
 
-				Pack targetItemId = (Pack) dropData.getItemIdOver();
+				PackDto targetItemId = (PackDto) dropData.getItemIdOver();
 
 				if (sourceItemId == targetItemId || targetItemId == null) {
 					return;
@@ -862,9 +873,9 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		btnUp.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Pack pack = (Pack) table.getValue();
+				PackDto pack = (PackDto) table.getValue();
 				if (pack != null) {
-					List<Pack> list = dataSource.getItemIds();
+					List<PackDto> list = dataSource.getItemIds();
 					int idx = list.indexOf(pack);
 					if (idx > 0) {
 						dataSource.removeItem(pack);
@@ -877,9 +888,9 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		btnDown.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Pack pack = (Pack) table.getValue();
+				PackDto pack = (PackDto) table.getValue();
 				if (pack != null) {
-					List<Pack> list = dataSource.getItemIds();
+					List<PackDto> list = dataSource.getItemIds();
 					int idx = list.indexOf(pack);
 					if (idx < list.size() - 1) {
 						dataSource.removeItem(pack);
@@ -892,7 +903,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		btnDelete.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(ClickEvent event) {
-				Pack pack = (Pack) table.getValue();
+				PackDto pack = (PackDto) table.getValue();
 				if (pack != null) {
 					dataSource.removeItem(pack);
 				}
@@ -909,8 +920,8 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 
 		// fill table
 		if (UPDATE == state) {
-			List<Pack> packs = permissionService.getUserPacksVN((User) source);
-			for (Pack pack : packs) {
+			List<PackDto> packs = permissionService.getUserPacksVN(((UserDto) source).getId());
+			for (PackDto pack : packs) {
 				dataSource.addBean(pack);
 			}
 		}
@@ -944,13 +955,12 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		table.addStyleName(TABLE_SMALL);
 		table.setSelectable(true);
 
-		BeanItemContainer<PackSet> dataSource = new BeanItemContainer<PackSet>(PackSet.class);
+		BeanItemContainer<PackSetDto> dataSource = new BeanItemContainer<PackSetDto>(PackSetDto.class);
 
-		final BeanItemContainer<Pack> detailSource = new BeanItemContainer<Pack>(Pack.class);
+		final BeanItemContainer<PackDto> detailSource = new BeanItemContainer<PackDto>(PackDto.class);
 
-		List<PackSet> packSets = packSetService.findAll();
-		for (PackSet packSet : packSets) {
-			packSet = packSetService.merge(packSet);
+		List<PackSetDto> packSets = packSetService.findAll();
+		for (PackSetDto packSet : packSets) {
 			dataSource.addBean(packSet);
 		}
 		table.setContainerDataSource(dataSource);
@@ -986,7 +996,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			public void buttonClick(ClickEvent event) {
 				Object itemId = table.getValue();
 				if (itemId != null) {
-					addSelectedPackSet((PackSet) itemId);
+					addSelectedPackSet((PackSetDto) itemId);
 				}
 
 			}
@@ -998,7 +1008,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			public void valueChange(ValueChangeEvent event) {
 				btnAdd.setEnabled(table.getValue() != null);
 
-				updateDetailContainer(detailSource, (PackSet) table.getValue());
+				updateDetailContainer(detailSource, (PackSetDto) table.getValue());
 				detailTable.setValue(null);
 			}
 		});
@@ -1008,7 +1018,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 					@Override
 					public void buttonClick(ClickEvent event) {
 						@SuppressWarnings("unchecked")
-						Set<Pack> items = (Set<Pack>) detailTable.getValue();
+						Set<PackDto> items = (Set<PackDto>) detailTable.getValue();
 						if (!items.isEmpty()) {
 							addSelectedPacks(items);
 							detailTable.setValue(null);
@@ -1035,17 +1045,16 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		return vl;
 	}
 
-	private void addSelectedPackSet(PackSet packSet) {
-		packSet = packSetService.merge(packSet);
-
+	private void addSelectedPackSet(PackSetDto packSet) {
 		addSelectedPacks(packSet.getPacks());
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addSelectedPacks(Collection<Pack> packs) {
+	private void addSelectedPacks(Collection<PackDto> packs) {
 		if (permittedPacks != null && permittedPacks.getContainerDataSource() != null) {
-			BeanItemContainer<Pack> dataSource = (BeanItemContainer<Pack>) permittedPacks.getContainerDataSource();
-			for (Pack pack : packs) {
+			BeanItemContainer<PackDto> dataSource = (BeanItemContainer<PackDto>) permittedPacks
+					.getContainerDataSource();
+			for (PackDto pack : packs) {
 				if (!dataSource.containsId(pack)) {
 					dataSource.addBean(pack);
 				}
@@ -1053,11 +1062,10 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		}
 	}
 
-	private void updateDetailContainer(BeanItemContainer<Pack> container, PackSet packSet) {
+	private void updateDetailContainer(BeanItemContainer<PackDto> container, PackSetDto packSet) {
 		if (container != null && packSet != null) {
-			packSet = packSetService.merge(packSet);
 			container.removeAllItems();
-			for (Pack pack : packSet.getPacks()) {
+			for (PackDto pack : packSet.getPacks()) {
 				container.addBean(pack);
 			}
 		}
@@ -1267,7 +1275,8 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		}
 
 		if (CREATE == state) {
-			final User oldUser = userService.findByUsernamePassword(usernameField.getValue(), passwordField.getValue());
+			final UserDto oldUser = userService.findFullByUsernamePassword(usernameField.getValue(),
+					passwordField.getValue());
 			if (oldUser != null) {
 				ConfirmDialog.show(UI.getCurrent(), Messages.getString("Caption.Dialog.ConfirmReplace"),
 						Messages.getString("Caption.Confirm.User.OverwriteExisting"),
@@ -1278,7 +1287,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 								if (dialog.isConfirmed()) {
 									state = UPDATE;
 									source = oldUser;
-									loggedUser = SessionManager.getLoggedUser();
+									loggedUser = SessionManager.getLoggedUser2();
 
 									commitFormWithMessage();
 								}
@@ -1290,7 +1299,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		}
 
 		if (MULTIUPDATE == state) {
-			for (User user : (Collection<User>) source) {
+			for (UserDto user : (Collection<UserDto>) source) {
 				user = saveUser(user);
 				if (user != null) {
 					bus.post(new MainUIEvent.UserAddedEvent(user));
@@ -1298,11 +1307,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 			}
 
 		} else {
-			User user;
+			UserDto user;
 			if (CREATE == state) {
-				user = new User();
+				user = new UserDto();
 			} else {
-				user = (User) source;
+				user = (UserDto) source;
 			}
 			user = saveUser(user);
 			if (user != null) {
@@ -1314,7 +1323,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private User saveUser(User user) {
+	private UserDto saveUser(UserDto user) {
 		boolean savingLoggedUser = user.equals(loggedUser);
 
 		if (CREATE == state) {
@@ -1331,16 +1340,16 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		}
 
 		if (rolesField.isVisible()) {
-			Set<Role> roles = new HashSet<>();
-			for (Role role : user.getRoles()) {
+			Set<RoleDto> roles = new HashSet<>();
+			for (RoleDto role : user.getRoles()) {
 				roles.add(role);
 			}
-			for (Role role : roles) {
-				user.removeRole(role);
+			for (RoleDto role : roles) {
+				user.getRoles().remove(role);
 			}
-			roles = (Set<Role>) rolesField.getValue();
-			for (Role role : roles) {
-				user.addRole(role);
+			roles = (Set<RoleDto>) rolesField.getValue();
+			for (RoleDto role : roles) {
+				user.getRoles().add(role);
 			}
 		}
 
@@ -1404,23 +1413,22 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		// }
 		// }
 
-		user = userService.add(user);
+		user = userService.save(user);
 
 		if (permittedPacks.isVisible()) {
-			permissionService.deleteUserPermissions(user);
-
-			int rank = 1;
+			final Set<PackDto> packs = new HashSet<>();
 			for (Object itemId : permittedPacks.getItemIds()) {
-				Pack pack = (Pack) itemId;
-				permissionService.addUserPermission(new UserPermission(user, pack, true, 0, rank++));
+				PackDto pack = (PackDto) itemId;
+				packs.add(pack);
 			}
+			permissionService.setUserPermissions(user.getId(), packs, null);
 		}
 
 		if (savingLoggedUser && rolesField.isVisible()) {
-			Set<Role> oldRoles = loggedUser.getRoles();
-			Set<Role> newRoles = user.getRoles();
+			Set<RoleDto> oldRoles = loggedUser.getRoles();
+			Set<RoleDto> newRoles = user.getRoles();
 
-			SessionManager.setLoggedUser(user);
+			SessionManager.setLoggedUser2(userService.getSimpleById(user.getId()));
 
 			if (!oldRoles.equals(newRoles)) {
 				// Superuser/Manager -> User degradation
@@ -1456,11 +1464,11 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter {
 		// packsField.setValidationVisible(visible);
 	}
 
-	public void showWindow(User user) {
+	public void showWindow(UserDto user) {
 		showWindow(UPDATE, user);
 	}
 
-	public void showWindow(Collection<User> users) {
+	public void showWindow(Collection<UserDto> users) {
 		showWindow(MULTIUPDATE, users);
 	}
 }

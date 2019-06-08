@@ -17,12 +17,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.hypothesis.builder.SlideDataParser;
-import org.hypothesis.data.model.ExportEvent;
+import org.hypothesis.data.dto.ExportEventDto;
 import org.hypothesis.server.Messages;
 
 public class RawExportDataBuilder {
 
-	public static void exportEventsToExcelFile(final List<ExportEvent> events, final File file,
+	public static void exportEventsToExcelFile(final List<ExportEventDto> events, final File file,
 			final AtomicBoolean cancelPending, final Consumer<Float> progressConsumer) throws IOException {
 		if (events != null && file != null) {
 			int progress = 0;
@@ -107,7 +107,7 @@ public class RawExportDataBuilder {
 			int branchCount = 0;
 			int slideCount = 0;
 
-			for (ExportEvent event : events) {
+			for (ExportEventDto event : events) {
 				if (cancelPending != null && cancelPending.get()) {
 					workbook.close();
 					file.delete();
@@ -116,8 +116,8 @@ public class RawExportDataBuilder {
 
 				Long testId = event.getTestId();
 				Long userId = event.getUserId();
-				Date eventDate = event.getDatetime();
-				Date clientDate = event.getClientDatetime();
+				Date eventDate = event.getTimeStamp();
+				Date clientDate = event.getClientTimeStamp();
 				long eventTime = eventDate.getTime();
 				String eventName = event.getName();
 				Long branchId = event.getBranchId();

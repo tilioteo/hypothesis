@@ -4,6 +4,11 @@
  */
 package org.hypothesis.presenter;
 
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toSet;
+import static org.hypothesis.data.api.Roles.ROLE_MANAGER;
+import static org.hypothesis.utility.UserUtility.userHasAnyRole;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,15 +23,15 @@ import org.hypothesis.business.ExportRunnableImpl;
 import org.hypothesis.business.ExportThread;
 import org.hypothesis.business.ThreadUtility;
 import org.hypothesis.context.HibernateUtil;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Status;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.api.Status;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.SimpleUserDto;
+import org.hypothesis.data.dto.TestDto;
+import org.hypothesis.data.interfaces.FieldConstants;
 import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.TestService;
-import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
+import org.hypothesis.data.service.impl.TestServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.ExportPresenter;
 import org.hypothesis.server.Messages;
@@ -75,10 +80,9 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 
 	private final PermissionService permissionService;
 	private final TestService testService;
-	private final UserService userService;
 
 	private final List<String> sortedPacks = new ArrayList<>();
-	private final HashMap<String, Pack> packMap = new HashMap<>();
+	private final HashMap<String, PackDto> packMap = new HashMap<>();
 
 	private VerticalLayout content;
 	private VerticalLayout testSelection;
@@ -99,10 +103,8 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 	private ThreadGroup threadGroup = ThreadUtility.createExportGroup();
 
 	public ExportPresenterImpl() {
-		permissionService = PermissionService.newInstance();
-		testService = TestService.newInstance();
-		userService = UserService.newInstance();
-
+		permissionService = new PermissionServiceImpl();
+		testService = new TestServiceImpl();
 	}
 
 	@Override
@@ -234,7 +236,8 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 			testIds = (Collection<Long>) table.getValue();
 		}
 
-		CancelableExportRunnable runnable = new ExportRunnableImpl(getBus(), testIds, HibernateUtil::closeCurrent);
+		CancelableExportRunnable runnable = new ExportRunnableImpl(getBus(), testIds.stream().collect(toSet()),
+				HibernateUtil::closeCurrent);
 
 		currentExport = new ExportThread(threadGroup, runnable);
 		currentExport.start();
@@ -318,7 +321,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 					dateFieldFrom.validate();
 					dateFieldTo.validate();
 
-					Pack pack = packMap.get(packsSelect.getValue());
+					PackDto pack = packMap.get(packsSelect.getValue());
 					Date dateFrom = (Date) dateFieldFrom.getValue();
 					Date dateTo = (Date) dateFieldTo.getValue();
 
@@ -338,13 +341,13 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 	}
 
 	private void initPacksSources() {
-		Set<Pack> packs = permissionService.findUserPacks2(getLoggedUser(), false);
+		List<PackDto> packs = permissionService.findUserPacks2(getLoggedUser().getId(), false);
 
 		sortedPacks.clear();
 		packMap.clear();
 
 		if (packs != null) {
-			for (Pack pack : packs) {
+			for (PackDto pack : packs) {
 				String key = Messages.getString("Caption.Item.PackSelect", pack.getName(), pack.getId(),
 						pack.getDescription());
 				sortedPacks.add(key);
@@ -355,21 +358,17 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 		}
 	}
 
-	protected void showTests(Pack pack, Date dateFrom, Date dateTo) {
+	protected void showTests(PackDto pack, Date dateFrom, Date dateTo) {
 		testSelection.removeAllComponents();
 		// testSelection.setSpacing(true);
 
 		// MANAGER see only tests created by himself and his users
-		List<User> users = null;
-		User loggedUser = getLoggedUser();
-		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			users = userService.findOwnerUsers(loggedUser);
-			users.add(loggedUser);
-		}
+		SimpleUserDto loggedUser = getLoggedUser();
+		List<TestDto> tests = userHasAnyRole(loggedUser, ROLE_MANAGER)
+				? testService.findManagedTestsOverview(loggedUser.getId(), pack.getId(), dateFrom, dateTo)
+				: emptyList();
 
-		List<SimpleTest> tests = testService.findTestsBy(pack, users, dateFrom, dateTo);
-
-		if (tests.size() == 0) {
+		if (tests.isEmpty()) {
 			Label label = new Label(Messages.getString("Caption.Label.NoTestsFound"));
 			label.setSizeUndefined();
 			testSelection.addComponent(label);
@@ -382,7 +381,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 		}
 	}
 
-	private Table buildTestsTable(Collection<SimpleTest> tests) {
+	private Table buildTestsTable(Collection<TestDto> tests) {
 		table = new Table();
 		table.setSelectable(true);
 		table.setMultiSelect(true);
@@ -392,7 +391,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 
 		table.setSortContainerPropertyId(FieldConstants.ID);
 
-		final BeanContainer<Long, SimpleTest> dataSource = new BeanContainer<Long, SimpleTest>(SimpleTest.class);
+		final BeanContainer<Long, TestDto> dataSource = new BeanContainer<Long, TestDto>(TestDto.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_ID);
 		dataSource.addNestedContainerProperty(FieldConstants.NESTED_USER_USERNAME);
@@ -402,7 +401,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 		table.addGeneratedColumn(FieldConstants.USER_ID, new ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
-				SimpleTest test = dataSource.getItem(itemId).getBean();
+				TestDto test = dataSource.getItem(itemId).getBean();
 				return test.getUser() != null ? test.getUser().getId() : null;
 			}
 		});
@@ -410,7 +409,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 		table.addGeneratedColumn(FieldConstants.USERNAME, new ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
-				SimpleTest test = dataSource.getItem(itemId).getBean();
+				TestDto test = dataSource.getItem(itemId).getBean();
 				return test.getUser() != null ? test.getUser().getUsername() : null;
 			}
 		});
@@ -418,7 +417,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 		table.addGeneratedColumn(FieldConstants.STATUS, new ColumnGenerator() {
 			@Override
 			public Object generateCell(Table source, Object itemId, Object columnId) {
-				SimpleTest test = dataSource.getItem(itemId).getBean();
+				TestDto test = dataSource.getItem(itemId).getBean();
 				Status status = test.getStatus();
 				if (status != null) {
 					switch (status) {

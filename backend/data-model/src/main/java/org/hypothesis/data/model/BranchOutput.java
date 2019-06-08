@@ -1,8 +1,7 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -11,12 +10,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -24,25 +24,23 @@ import org.hibernate.annotations.Type;
  *         Hypothesis
  *
  */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.BRANCH_OUTPUT_TABLE)
 @Access(AccessType.PROPERTY)
-public final class BranchOutput extends SerializableIdObject {
+public class BranchOutput implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8648019934698732389L;
+	private Long id;
 
 	/**
 	 * processing branch
 	 */
-	private Branch branch;
+	private long branchId;
 
 	/**
 	 * processing test
 	 */
-	private SimpleTest test;
+	private long testId;
 
 	/**
 	 * saved data
@@ -54,43 +52,35 @@ public final class BranchOutput extends SerializableIdObject {
 	 */
 	private String output;
 
-	protected BranchOutput() {
-		super();
-	}
-
-	public BranchOutput(SimpleTest test, Branch branch) {
-		this();
-		this.test = test;
-		this.branch = branch;
-	}
-
 	@Override
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = TableConstants.BRANCH_OUTPUT_GENERATOR)
 	@SequenceGenerator(name = TableConstants.BRANCH_OUTPUT_GENERATOR, sequenceName = TableConstants.BRANCH_OUTPUT_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.BRANCH_ID, nullable = false)
-	public Branch getBranch() {
-		return branch;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public void setBranch(Branch branch) {
-		this.branch = branch;
+	@Column(name = FieldConstants.BRANCH_ID, nullable = false)
+	public long getBranchId() {
+		return branchId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.TEST_ID, nullable = false)
-	public SimpleTest getTest() {
-		return test;
+	public void setBranchId(long branchId) {
+		this.branchId = branchId;
 	}
 
-	public void setTest(SimpleTest test) {
-		this.test = test;
+	@Column(name = FieldConstants.TEST_ID, nullable = false)
+	public long getTestId() {
+		return testId;
+	}
+
+	public void setTestId(long testId) {
+		this.testId = testId;
 	}
 
 	@Column(name = FieldConstants.XML_DATA)
@@ -114,84 +104,32 @@ public final class BranchOutput extends SerializableIdObject {
 
 	@Override
 	public int hashCode() {
-		Long id = getId();
-		Branch branch = getBranch();
-		SimpleTest test = getTest();
-		String xmlData = getData();
-		String output = getOutput();
-
-		final int prime = 5;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (branch != null ? branch.hashCode() : 0);
-		result = prime * result + (output != null ? output.hashCode() : 0);
-		result = prime * result + (test != null ? test.hashCode() : 0);
-		result = prime * result + (xmlData != null ? xmlData.hashCode() : 0);
-		return result;
+		return getId() == null ? 0 : getId().hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+		if (obj instanceof BranchOutput == false)
 			return false;
-		}
-		if (!(obj instanceof BranchOutput)) {
+
+		final BranchOutput other = (BranchOutput) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getBranchId(), other.getBranchId()))
 			return false;
-		}
-		BranchOutput other = (BranchOutput) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		Branch branch = getBranch();
-		Branch branch2 = other.getBranch();
-		SimpleTest test = getTest();
-		SimpleTest test2 = other.getTest();
-		String xmlData = getData();
-		String xmlData2 = other.getData();
-		String output = getOutput();
-		String output2 = other.getOutput();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
+		if (!Objects.equals(getTestId(), other.getTestId()))
 			return false;
-		}
-
-		if (branch == null) {
-			if (branch2 != null) {
-				return false;
-			}
-		} else if (!branch.equals(branch2)) {
+		if (!Objects.equals(getData(), other.getData()))
 			return false;
-		}
-
-		if (output == null) {
-			if (output2 != null) {
-				return false;
-			}
-		} else if (!output.equals(output2)) {
+		if (!Objects.equals(getOutput(), other.getOutput()))
 			return false;
-		}
-
-		if (test == null) {
-			if (test2 != null) {
-				return false;
-			}
-		} else if (!test.equals(test2)) {
-			return false;
-		}
-
-		if (xmlData == null) {
-			if (xmlData2 != null) {
-				return false;
-			}
-		} else if (!xmlData.equals(xmlData2)) {
-			return false;
-		}
-
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "BranchOutput [id=" + id + ", branchId=" + branchId + ", testId=" + testId + ", output=" + output
+				+ ", data=" + data + "]";
 	}
 
 }

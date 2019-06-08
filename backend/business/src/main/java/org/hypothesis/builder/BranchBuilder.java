@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 import org.hypothesis.business.BranchController;
 import org.hypothesis.data.DocumentReader;
-import org.hypothesis.data.model.Branch;
+import org.hypothesis.data.dto.BranchDto;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -19,13 +19,13 @@ import org.hypothesis.data.model.Branch;
 @SuppressWarnings("serial")
 public class BranchBuilder implements Serializable {
 
-	public static BranchController buildBranchController(Branch entity, DocumentReader reader) {
+	public static BranchController buildBranchController(BranchDto dto, DocumentReader reader) {
 
 		BranchControllerFactory factory = new BranchControllerFactoryImpl();
 
-		if (entity != null && reader != null) {
+		if (dto != null && reader != null) {
 
-			return factory.buildBranchController(entity.getData(), reader);
+			return factory.buildBranchController(dto.getData(), reader);
 		}
 
 		return null;

@@ -4,13 +4,17 @@
  */
 package org.hypothesis.business;
 
+import static java.util.Collections.emptyMap;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
+
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hypothesis.data.interfaces.HasId;
-import org.hypothesis.data.interfaces.HasList;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -19,70 +23,51 @@ import org.hypothesis.data.interfaces.HasList;
  *
  */
 @SuppressWarnings("serial")
-public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implements Serializable {
+public class KeySetManager<E extends HasId<ID>, ID> implements Serializable {
 
-	private final LinkedHashMap<K, E> keyset = new LinkedHashMap<>();
+	private Map<ID, E> elementByIdMap;
 
-	private K key = null;
-	private E element = null;
+	private ID id;
 
-	private E getByInternalKey() {
-		if (key != null) {
-			element = keyset.get(key);
-		} else {
-			element = null;
-		}
-		return element;
+	private E element;
+
+	public KeySetManager() {
+		reset();
+	}
+
+	public E findById(ID id) {
+		this.id = id;
+		return getByIdInternal();
 	}
 
 	public E current() {
-		return getByInternalKey();
+		return getByIdInternal();
 	}
 
-	public E find(E item) {
-		key = null;
-		element = null;
+	public void setList(List<E> list) {
+		reset();
 
-		for (K k : keyset.keySet()) {
-			E e = keyset.get(k);
-			if (e == item) {
-				key = k;
-				element = e;
-				break;
-			}
+		if (isNotEmpty(list)) {
+			elementByIdMap = list.stream()//
+					.collect(toMap(k -> k.getId(), identity(), (u, v) -> v, LinkedHashMap::new));
+			id = elementByIdMap.keySet().stream().findFirst().orElse(null);
+			getByIdInternal();
+		}
+	}
+
+	private void reset() {
+		elementByIdMap = emptyMap();
+		id = null;
+		element = null;
+	}
+
+	private E getByIdInternal() {
+		if (id != null && elementByIdMap.containsKey(id)) {
+			element = elementByIdMap.get(id);
+		} else {
+			element = null;
+			id = null;
 		}
 		return element;
-	}
-
-	public E get(K key) {
-		this.key = key;
-		return getByInternalKey();
-	}
-
-	/*
-	 * set current element - for test purpose only
-	 * 
-	 * @param element
-	 */
-	/*
-	 * protected void setCurrent(E element) { this.element = element; }
-	 */
-
-	public void setListFromParent(T parent) {
-		keyset.clear();
-		key = null;
-		if (parent != null) {
-			for (E item : parent.getList()) {
-				if (item != null) {
-					keyset.put(item.getId(), item);
-				}
-			}
-			if (keyset.size() > 0) {
-				List<E> list = new ArrayList<E>(keyset.values());
-				find(list.get(0));
-			} else {
-				element = null;
-			}
-		}
 	}
 }

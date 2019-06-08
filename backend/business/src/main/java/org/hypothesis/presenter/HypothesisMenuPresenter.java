@@ -4,9 +4,16 @@
  */
 package org.hypothesis.presenter;
 
+import static org.hypothesis.data.api.Roles.ROLE_MANAGER;
+import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
+import static org.hypothesis.data.api.Users.GUEST;
+import static org.hypothesis.utility.UserUtility.userHasAnyRole;
+
 import org.hypothesis.business.SessionManager;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.RoleService;
+import org.hypothesis.data.dto.SimpleUserDto;
+import org.hypothesis.data.dto.UserDto;
+import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.event.interfaces.MainUIEvent.ProfileUpdatedEvent;
 import org.hypothesis.eventbus.MainEventBus;
@@ -50,11 +57,13 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 
 	private final MainEventBus bus;
 	private final UserSettingsWindowPresenter userSettingsWindowPresenter;
+	private final UserService userService;
 
 	public HypothesisMenuPresenter(MainEventBus bus) {
 		this.bus = bus;
 
 		userSettingsWindowPresenter = new UserSettingsWindowPresenter(bus);
+		userService = new UserServiceImpl();
 	}
 
 	@Override
@@ -86,25 +95,25 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 		return menuContent;
 	}
 
-	private User getCurrentUser() {
-		return SessionManager.getLoggedUser();
+	private SimpleUserDto getCurrentUser() {
+		return SessionManager.getLoggedUser2();
 	}
 
 	private Component buildUserMenu() {
-		final User user = getCurrentUser();
+		final SimpleUserDto user = getCurrentUser();
 
 		final MenuBar settings = new MenuBar();
 		settings.addStyleName("user-menu");
 		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
 
-		if (!User.GUEST.equals(user)
+		if (!GUEST.equals(user)
 				// NOTE: VN specific - disable user profile editing
-				&& (user.getRoles().contains(RoleService.ROLE_MANAGER)
-				|| user.getRoles().contains(RoleService.ROLE_SUPERUSER))) {
+				&& userHasAnyRole(user, ROLE_MANAGER, ROLE_SUPERUSER)) {
 			settingsItem.addItem(Messages.getString("Caption.Menu.EditProfile"), new Command() {
 				@Override
 				public void menuSelected(final MenuItem selectedItem) {
-					userSettingsWindowPresenter.showWindow(user);
+					UserDto userDto = userService.getById(user.getId());
+					userSettingsWindowPresenter.showWindow(userDto);
 				}
 			});
 
@@ -112,7 +121,7 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 		}
 
 		String itemCaption = Messages.getString("Caption.Menu.Logout");
-		if (User.GUEST.equals(user)) {
+		if (GUEST.equals(user)) {
 			itemCaption = Messages.getString("Caption.Menu.LoginOther");
 			user.setUsername(Messages.getString("Caption.User.Guest"));
 		}
@@ -155,7 +164,7 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 		menuItemsLayout.setHeight(100.0f, Unit.PERCENTAGE);
 
 		for (final HypothesisViewType view : HypothesisViewType.values()) {
-			User user = getCurrentUser();
+			SimpleUserDto user = getCurrentUser();
 
 			if (user != null) {
 				if (view.isAllowed(user.getRoles())) {
@@ -184,7 +193,7 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 	}
 
 	private void updateUserName() {
-		User user = getCurrentUser();
+		SimpleUserDto user = getCurrentUser();
 		settingsItem.setText(user.getUsername());
 	}
 

@@ -1,71 +1,66 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;
 import org.hibernate.annotations.Synchronize;
 import org.hibernate.annotations.Type;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- */
+@SuppressWarnings("serial")
 @Entity
-@Subselect("SELECT s."+FieldConstants.ID+
-		",s."+FieldConstants.TIMESTAMP+
-		",s."+FieldConstants.NAME+
-		",s."+FieldConstants.XML_DATA+
-		",s."+FieldConstants.BRANCH_ID+
-		",s."+FieldConstants.TASK_ID+
-		",s."+FieldConstants.SLIDE_ID+
-		",t."+FieldConstants.ID+" "+FieldConstants.TEST_ID+
-		",t."+FieldConstants.USER_ID+
-		",t."+FieldConstants.PACK_ID+
-		",t."+FieldConstants.CREATED+
-		",p."+FieldConstants.NAME+" "+FieldConstants.PACK_NAME+
-		",b."+FieldConstants.NOTE+" "+FieldConstants.BRANCH_NAME+
-		",ta."+FieldConstants.NAME+" "+FieldConstants.TASK_NAME+
-		",sl."+FieldConstants.NOTE+" "+FieldConstants.SLIDE_NAME+
-		",u."+FieldConstants.USERNAME+
-		",u."+FieldConstants.PASSWORD+
-		",u."+FieldConstants.NAME+" "+FieldConstants.FIRST_NAME+
-		",u."+FieldConstants.GENDER+
-		",u."+FieldConstants.EDUCATION+
-		",u."+FieldConstants.BIRTH_DATE+
-		",u."+FieldConstants.NOTE+
-		" FROM "+TableConstants.SCORE_TABLE+" s JOIN "+
-		TableConstants.TEST_SCORE_TABLE+" ts ON ts."+FieldConstants.SCORE_ID+"=s."+FieldConstants.ID+" JOIN "+
-		TableConstants.TEST_TABLE+" t ON ts."+FieldConstants.TEST_ID+"=t."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.PACK_TABLE+" p ON t."+FieldConstants.PACK_ID+"=p."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.BRANCH_TABLE+" b ON s."+FieldConstants.BRANCH_ID+"=b."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.TASK_TABLE+" ta ON s."+FieldConstants.TASK_ID+"=ta."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.SLIDE_TABLE+" sl ON s."+FieldConstants.SLIDE_ID+"=sl."+FieldConstants.ID+" LEFT JOIN "+
-		TableConstants.USER_TABLE+" u ON t."+FieldConstants.USER_ID+"=u."+FieldConstants.ID)
+@Subselect("SELECT s." + FieldConstants.ID + //
+		",s." + FieldConstants.TIMESTAMP + //
+		",s." + FieldConstants.NAME + //
+		",s." + FieldConstants.XML_DATA + //
+		",s." + FieldConstants.BRANCH_ID + //
+		",s." + FieldConstants.TASK_ID + //
+		",s." + FieldConstants.SLIDE_ID + //
+		",t." + FieldConstants.ID + " " + FieldConstants.TEST_ID + //
+		",t." + FieldConstants.USER_ID + //
+		",t." + FieldConstants.PACK_ID + //
+		",t." + FieldConstants.CREATED + //
+		",p." + FieldConstants.NAME + " " + FieldConstants.PACK_NAME + //
+		",b." + FieldConstants.NOTE + " " + FieldConstants.BRANCH_NAME + //
+		",ta." + FieldConstants.NAME + " " + FieldConstants.TASK_NAME + //
+		",sl." + FieldConstants.NOTE + " " + FieldConstants.SLIDE_NAME + //
+		",u." + FieldConstants.USERNAME + //
+		",u." + FieldConstants.PASSWORD + //
+		",u." + FieldConstants.NAME + " " + FieldConstants.FIRST_NAME + //
+		",u." + FieldConstants.GENDER + //
+		",u." + FieldConstants.EDUCATION + //
+		",u." + FieldConstants.BIRTH_DATE + //
+		",u." + FieldConstants.NOTE + //
+		" FROM " + TableConstants.SCORE_TABLE + " s JOIN " + //
+		TableConstants.TEST_SCORE_TABLE + " ts ON ts." + FieldConstants.SCORE_ID + "=s." + FieldConstants.ID + " JOIN "
+		+ //
+		TableConstants.TEST_TABLE + " t ON ts." + FieldConstants.TEST_ID + "=t." + FieldConstants.ID + " LEFT JOIN " + //
+		TableConstants.PACK_TABLE + " p ON t." + FieldConstants.PACK_ID + "=p." + FieldConstants.ID + " LEFT JOIN " + //
+		TableConstants.BRANCH_TABLE + " b ON s." + FieldConstants.BRANCH_ID + "=b." + FieldConstants.ID + " LEFT JOIN "
+		+ //
+		TableConstants.TASK_TABLE + " ta ON s." + FieldConstants.TASK_ID + "=ta." + FieldConstants.ID + " LEFT JOIN " + //
+		TableConstants.SLIDE_TABLE + " sl ON s." + FieldConstants.SLIDE_ID + "=sl." + FieldConstants.ID + " LEFT JOIN "
+		+ //
+		TableConstants.USER_TABLE + " u ON t." + FieldConstants.USER_ID + "=u." + FieldConstants.ID) //
 @Synchronize({ TableConstants.SCORE_TABLE, TableConstants.TEST_TABLE, TableConstants.TEST_SCORE_TABLE,
 		TableConstants.PACK_TABLE, TableConstants.BRANCH_TABLE, TableConstants.TASK_TABLE, TableConstants.SLIDE_TABLE,
 		TableConstants.USER_TABLE })
 @Immutable
 @Access(AccessType.PROPERTY)
-public class ExportScore extends SerializableIdObject {
+public class ExportScore implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6353743831733014773L;
+	private long id;
 
 	/**
 	 * timestamp of event
@@ -136,24 +131,34 @@ public class ExportScore extends SerializableIdObject {
 	 * timestamp test created at
 	 */
 	private Date created;
-	
+
 	private String firstName;
+
 	private String username;
+
 	private String password;
+
 	private String gender;
+
 	private String education;
+
 	private Date birthDate;
+
 	private String note;
 
 	@Override
 	@Id
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
+	}
+
+	protected void setId(long id) {
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.TIMESTAMP, nullable = false)
-	protected Long getTimeStamp() {
+	public Long getTimeStamp() {
 		return timeStamp;
 	}
 
@@ -284,7 +289,7 @@ public class ExportScore extends SerializableIdObject {
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
+	protected void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
@@ -293,7 +298,7 @@ public class ExportScore extends SerializableIdObject {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	protected void setUsername(String username) {
 		this.username = username;
 	}
 
@@ -302,7 +307,7 @@ public class ExportScore extends SerializableIdObject {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	protected void setPassword(String password) {
 		this.password = password;
 	}
 
@@ -311,7 +316,7 @@ public class ExportScore extends SerializableIdObject {
 		return gender;
 	}
 
-	public void setGender(String gender) {
+	protected void setGender(String gender) {
 		this.gender = gender;
 	}
 
@@ -320,7 +325,7 @@ public class ExportScore extends SerializableIdObject {
 		return education;
 	}
 
-	public void setEducation(String education) {
+	protected void setEducation(String education) {
 		this.education = education;
 	}
 
@@ -329,7 +334,7 @@ public class ExportScore extends SerializableIdObject {
 		return birthDate;
 	}
 
-	public void setBirthDate(Date birthDate) {
+	protected void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
 
@@ -338,13 +343,76 @@ public class ExportScore extends SerializableIdObject {
 		return note;
 	}
 
-	public void setNote(String note) {
+	protected void setNote(String note) {
 		this.note = note;
 	}
 
-	@Transient
-	public final Date getDatetime() {
-		return new Date(getTimeStamp());
+	@Override
+	public int hashCode() {
+		return getId() == null ? 0 : getId().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ExportScore == false)
+			return false;
+
+		final ExportScore other = (ExportScore) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getTimeStamp(), other.getTimeStamp()))
+			return false;
+		if (!Objects.equals(getName(), other.getName()))
+			return false;
+		if (!Objects.equals(getData(), other.getData()))
+			return false;
+		if (!Objects.equals(getBranchId(), other.getBranchId()))
+			return false;
+		if (!Objects.equals(getBranchName(), other.getBranchName()))
+			return false;
+		if (!Objects.equals(getTaskId(), other.getTaskId()))
+			return false;
+		if (!Objects.equals(getTaskName(), other.getTaskName()))
+			return false;
+		if (!Objects.equals(getSlideId(), other.getSlideId()))
+			return false;
+		if (!Objects.equals(getSlideName(), other.getSlideName()))
+			return false;
+		if (!Objects.equals(getTestId(), other.getTestId()))
+			return false;
+		if (!Objects.equals(getUserId(), other.getUserId()))
+			return false;
+		if (!Objects.equals(getPackId(), other.getPackId()))
+			return false;
+		if (!Objects.equals(getPackName(), other.getPackName()))
+			return false;
+		if (!Objects.equals(getCreated(), other.getCreated()))
+			return false;
+		if (!Objects.equals(getFirstName(), other.getFirstName()))
+			return false;
+		if (!Objects.equals(getUsername(), other.getUsername()))
+			return false;
+		if (!Objects.equals(getPassword(), other.getPassword()))
+			return false;
+		if (!Objects.equals(getGender(), other.getGender()))
+			return false;
+		if (!Objects.equals(getEducation(), other.getEducation()))
+			return false;
+		if (!Objects.equals(getBirthDate(), other.getBirthDate()))
+			return false;
+		if (!Objects.equals(getNote(), other.getNote()))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ExportScore [id=" + id + ", timeStamp=" + timeStamp + ", name=" + name + ", branchId=" + branchId
+				+ ", branchName=" + branchName + ", taskId=" + taskId + ", taskName=" + taskName + ", slideId="
+				+ slideId + ", slideName=" + slideName + ", testId=" + testId + ", userId=" + userId + ", packId="
+				+ packId + ", packName=" + packName + ", created=" + created + ", firstName=" + firstName
+				+ ", username=" + username + ", password=" + password + ", gender=" + gender + ", education="
+				+ education + ", birthDate=" + birthDate + ", note=" + note + ", data=" + data + "]";
 	}
 
 }

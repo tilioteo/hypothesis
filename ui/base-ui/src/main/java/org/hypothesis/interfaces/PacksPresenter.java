@@ -4,8 +4,8 @@
  */
 package org.hypothesis.interfaces;
 
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Token;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.TokenDto;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -16,10 +16,12 @@ import org.hypothesis.data.model.Token;
 public interface PacksPresenter extends ViewPresenter {
 
 	boolean isTestRunning();
-	
+
 	void maskView();
+
 	void unmaskView();
+
 	void refreshView();
-	
-	Token createToken(Pack pack);
+
+	TokenDto createToken(PackDto pack);
 }

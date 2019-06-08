@@ -1,8 +1,7 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -11,38 +10,33 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.USER_PERMISSION_TABLE, uniqueConstraints = {
 		@UniqueConstraint(columnNames = { FieldConstants.USER_ID, FieldConstants.PACK_ID }) })
 @Access(AccessType.PROPERTY)
-public final class UserPermission extends SerializableIdObject {
+public class UserPermission implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8331070869109730350L;
+	private Long id;
 
-	private User user;
-	private Pack pack;
+	private long userId;
+
+	private long packId;
+
 	/**
 	 * explicit enable or disable this pack for user
 	 */
-	private Boolean enabled;
+	private boolean enabled;
 
 	/**
 	 * enable number of pass through this pack default value is 1, because more
@@ -50,37 +44,8 @@ public final class UserPermission extends SerializableIdObject {
 	 * 
 	 */
 	private Integer pass; // default 1, null - unlimited
-	
+
 	private Integer rank;
-
-	protected UserPermission() {
-		super();
-	}
-
-	public UserPermission(User user, Pack pack) {
-		this(user, pack, true);
-	}
-
-	public UserPermission(User user, Pack pack, boolean enabled) {
-		this(user, pack, enabled, 1);
-	}
-
-	public UserPermission(User user, Pack pack, boolean enabled, Integer pass) {
-		this(user, pack, enabled, pass, 0);
-	}
-
-	public UserPermission(User user, Pack pack, boolean enabled, Integer pass, Integer rank) {
-		this();
-		this.user = user;
-		this.pack = pack;
-		this.enabled = enabled;
-		this.pass = pass;
-		this.rank = rank;
-	}
-
-	public UserPermission(User user, Pack pack, Integer pass) {
-		this(user, pack, true, pass);
-	}
 
 	@Override
 	@Id
@@ -88,36 +53,38 @@ public final class UserPermission extends SerializableIdObject {
 	@SequenceGenerator(name = TableConstants.USER_PERMISSION_GENERATOR, sequenceName = TableConstants.USER_PERMISSION_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.USER_ID, nullable = false)
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	@Column(name = FieldConstants.USER_ID, nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	public User getUser() {
-		return user;
+	public long getUserId() {
+		return userId;
 	}
 
-	protected void setUser(User user) {
-		this.user = user;
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
-	public Pack getPack() {
-		return pack;
+	@Column(name = FieldConstants.PACK_ID, nullable = false)
+	public long getPackId() {
+		return packId;
 	}
 
-	protected void setPack(Pack pack) {
-		this.pack = pack;
+	public void setPackId(long packId) {
+		this.packId = packId;
 	}
 
 	@Column(name = FieldConstants.ENABLED, nullable = false)
-	public Boolean getEnabled() {
+	public boolean getEnabled() {
 		return enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
+	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -140,97 +107,35 @@ public final class UserPermission extends SerializableIdObject {
 	}
 
 	@Override
+	public int hashCode() {
+		return getId() == null ? 0 : getId().hashCode();
+	}
+
+	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+		if (obj instanceof UserPermission == false)
 			return false;
-		}
-		if (!(obj instanceof UserPermission)) {
+
+		final UserPermission other = (UserPermission) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getUserId(), other.getUserId()))
 			return false;
-		}
-		UserPermission other = (UserPermission) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		User user = getUser();
-		User user2 = other.getUser();
-		Pack pack = getPack();
-		Pack pack2 = other.getPack();
-		Boolean enabled = getEnabled();
-		Boolean enabled2 = other.getEnabled();
-		Integer pass = getPass();
-		Integer pass2 = other.getPass();
-		Integer rank = getRank();
-		Integer rank2 = other.getRank();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
+		if (!Objects.equals(getPackId(), other.getPackId()))
 			return false;
-		}
-
-		if (user == null) {
-			if (user2 != null) {
-				return false;
-			}
-		} else if (!user.equals(user2)) {
+		if (!Objects.equals(getEnabled(), other.getEnabled()))
 			return false;
-		}
-
-		if (pack == null) {
-			if (pack2 != null) {
-				return false;
-			}
-		} else if (!pack.equals(pack2)) {
+		if (!Objects.equals(getPass(), other.getPass()))
 			return false;
-		}
-
-		if (enabled == null) {
-			if (enabled2 != null) {
-				return false;
-			}
-		} else if (!enabled.equals(enabled2)) {
+		if (!Objects.equals(getRank(), other.getRank()))
 			return false;
-		}
-
-		if (pass == null) {
-			if (pass2 != null) {
-				return false;
-			}
-		} else if (!pass.equals(pass2)) {
-			return false;
-		}
-
-		if (rank == null) {
-			if (rank2 != null) {
-				return false;
-			}
-		} else if (!rank.equals(rank2)) {
-			return false;
-		}
-
 		return true;
 	}
 
 	@Override
-	public int hashCode() {
-		Long id = getId();
-		User user = getUser();
-		Pack pack = getPack();
-		Boolean enabled = getEnabled();
-		Integer pass = getPass();
-		Integer rank = getRank();
-
-		final int prime = 67;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (user != null ? user.hashCode() : 0);
-		result = prime * result + (pack != null ? pack.hashCode() : 0);
-		result = prime * result + (enabled != null ? enabled.hashCode() : 0);
-		result = prime * result + (pass != null ? pass.hashCode() : 0);
-		result = prime * result + (rank != null ? rank.hashCode() : 0);
-		return result;
+	public String toString() {
+		return "UserPermission [id=" + id + ", userId=" + userId + ", packId=" + packId + ", enabled=" + enabled
+				+ ", pass=" + pass + ", rank=" + rank + "]";
 	}
 
 }

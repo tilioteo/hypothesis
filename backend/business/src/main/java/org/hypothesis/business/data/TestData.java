@@ -6,7 +6,7 @@ package org.hypothesis.business.data;
 
 import java.io.Serializable;
 
-import org.hypothesis.data.model.Pack;
+import org.hypothesis.data.dto.PackDto;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -16,11 +16,11 @@ import org.hypothesis.data.model.Pack;
  */
 @SuppressWarnings("serial")
 public class TestData implements Serializable {
-	
-	private Pack pack;
+
+	private PackDto pack;
 	private boolean running = false;
-	
-	public TestData(Pack pack) {
+
+	public TestData(PackDto pack) {
 		this.pack = pack;
 	}
 
@@ -32,7 +32,7 @@ public class TestData implements Serializable {
 		this.running = running;
 	}
 
-	public Pack getPack() {
+	public PackDto getPack() {
 		return pack;
 	}
 }

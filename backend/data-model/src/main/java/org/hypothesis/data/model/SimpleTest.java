@@ -1,10 +1,8 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -13,26 +11,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- */
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
+
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.TEST_TABLE)
 @Access(AccessType.PROPERTY)
-public class SimpleTest extends SerializableIdObject {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5623194129920968655L;
+public class SimpleTest implements Serializable, HasId<Long> {
+
+	private Long id;
 
 	/**
 	 * signalize if test data are for production
@@ -68,47 +60,25 @@ public class SimpleTest extends SerializableIdObject {
 	 * status code
 	 */
 	private Integer status;
-	private User user;
 
-	private Pack pack;
+	private Long userId;
+
+	private long packId;
 
 	/**
 	 * last processing branch
 	 */
-	private Branch lastBranch;
+	private Long lastBranchId;
 
 	/**
 	 * last processing task
 	 */
-	private Task lastTask;
+	private Long lastTaskId;
 
 	/**
 	 * last processing slide
 	 */
-	private Slide lastSlide;
-
-	public static final SimpleTest DUMMY_TEST = new SimpleTest();
-
-	protected SimpleTest() {
-		super();
-	}
-
-	public SimpleTest(Pack pack, User user) {
-		this();
-		production = false;
-		this.pack = pack;
-		this.user = user;
-		lastBranch = null;
-		lastTask = null;
-		lastSlide = null;
-
-		created = new Date();
-		started = null;
-		finished = null;
-		broken = null;
-		lastAccess = created;
-		setStatus(Status.CREATED);
-	}
+	private Long lastSlideId;
 
 	@Override
 	@Id
@@ -116,7 +86,11 @@ public class SimpleTest extends SerializableIdObject {
 	@SequenceGenerator(name = TableConstants.TEST_GENERATOR, sequenceName = TableConstants.TEST_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.PRODUCTION, nullable = false)
@@ -133,7 +107,7 @@ public class SimpleTest extends SerializableIdObject {
 		return created;
 	}
 
-	protected void setCreated(Date created) {
+	public void setCreated(Date created) {
 		this.created = created;
 	}
 
@@ -174,253 +148,105 @@ public class SimpleTest extends SerializableIdObject {
 	}
 
 	@Column(name = FieldConstants.STATUS, nullable = false)
-	protected Integer getStatusInternal() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	protected void setStatusInternal(Integer status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
-	@Transient
-	public final Status getStatus() {
-		return Status.get(getStatusInternal());
+	@Column(name = FieldConstants.USER_ID)
+	public Long getUserId() {
+		return userId;
 	}
 
-	public final void setStatus(Status status) {
-		if (status != null) {
-			setStatusInternal(status.getCode());
-		} else {
-			setStatusInternal(null);
-		}
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.USER_ID)
-	public User getUser() {
-		return user;
+	@Column(name = FieldConstants.PACK_ID, nullable = false)
+	public long getPackId() {
+		return packId;
 	}
 
-	protected void setUser(User user) {
-		this.user = user;
+	public void setPackId(long packId) {
+		this.packId = packId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
-	public Pack getPack() {
-		return pack;
+	@Column(name = FieldConstants.LAST_BRANCH_ID)
+	public Long getLastBranchId() {
+		return lastBranchId;
 	}
 
-	protected void setPack(Pack pack) {
-		this.pack = pack;
+	public void setLastBranchId(Long branchId) {
+		this.lastBranchId = branchId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.LAST_BRANCH_ID)
-	public Branch getLastBranch() {
-		return lastBranch;
+	@Column(name = FieldConstants.LAST_TASK_ID)
+	public Long getLastTaskId() {
+		return lastTaskId;
 	}
 
-	public void setLastBranch(Branch branch) {
-		this.lastBranch = branch;
+	public void setLastTaskId(Long taskId) {
+		this.lastTaskId = taskId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.LAST_TASK_ID)
-	public Task getLastTask() {
-		return lastTask;
+	@Column(name = FieldConstants.LAST_SLIDE_ID)
+	public Long getLastSlideId() {
+		return lastSlideId;
 	}
 
-	public void setLastTask(Task task) {
-		this.lastTask = task;
-	}
-
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.LAST_SLIDE_ID)
-	public Slide getLastSlide() {
-		return lastSlide;
-	}
-
-	public void setLastSlide(Slide slide) {
-		this.lastSlide = slide;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		SimpleTest other = (SimpleTest) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		boolean production = isProduction();
-		boolean production2 = other.isProduction();
-		Date created = getCreated();
-		Date created2 = other.getCreated();
-		Date started = getStarted();
-		Date started2 = other.getStarted();
-		Date finished = getFinished();
-		Date finished2 = other.getFinished();
-		Date broken = getBroken();
-		Date broken2 = other.getBroken();
-		Date lastAccess = getLastAccess();
-		Date lastAccess2 = other.getLastAccess();
-		Integer status = getStatusInternal();
-		Integer status2 = other.getStatusInternal();
-		User user = getUser();
-		User user2 = other.getUser();
-		Pack pack = getPack();
-		Pack pack2 = other.getPack();
-		Branch lastBranch = getLastBranch();
-		Branch lastBranch2 = other.getLastBranch();
-		Task lastTask = getLastTask();
-		Task lastTask2 = other.getLastTask();
-		Slide lastSlide = getLastSlide();
-		Slide lastSlide2 = other.getLastSlide();
-		// List<Event> events = getEvents();
-		// List<Event> events2 = other.getEvents();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
-			return false;
-		}
-
-		if (production != production2) {
-			return false;
-		}
-
-		if (created == null) {
-			if (created2 != null) {
-				return false;
-			}
-		} else if (!created.equals(created2)) {
-			return false;
-		}
-
-		if (started == null) {
-			if (started2 != null) {
-				return false;
-			}
-		} else if (!started.equals(started2)) {
-			return false;
-		}
-
-		if (finished == null) {
-			if (finished2 != null) {
-				return false;
-			}
-		} else if (!finished.equals(finished2)) {
-			return false;
-		}
-
-		if (broken == null) {
-			if (broken2 != null) {
-				return false;
-			}
-		} else if (!broken.equals(broken2)) {
-			return false;
-		}
-
-		if (lastAccess == null) {
-			if (lastAccess2 != null) {
-				return false;
-			}
-		} else if (!lastAccess.equals(lastAccess2)) {
-			return false;
-		}
-
-		if (status == null) {
-			if (status2 != null) {
-				return false;
-			}
-		} else if (!status.equals(status2)) {
-			return false;
-		}
-
-		if (user == null) {
-			if (user2 != null) {
-				return false;
-			}
-		} else if (!user.equals(user2)) {
-			return false;
-		}
-
-		if (pack == null) {
-			if (pack2 != null) {
-				return false;
-			}
-		} else if (!pack.equals(pack2)) {
-			return false;
-		}
-
-		if (lastBranch == null) {
-			if (lastBranch2 != null) {
-				return false;
-			}
-		} else if (!lastBranch.equals(lastBranch2)) {
-			return false;
-		}
-
-		if (lastTask == null) {
-			if (lastTask2 != null) {
-				return false;
-			}
-		} else if (!lastTask.equals(lastTask2)) {
-			return false;
-		}
-
-		if (lastSlide == null) {
-			if (lastSlide2 != null) {
-				return false;
-			}
-		} else if (!lastSlide.equals(lastSlide2)) {
-			return false;
-		}
-
-		return true;
+	public void setLastSlideId(Long slideId) {
+		this.lastSlideId = slideId;
 	}
 
 	@Override
 	public int hashCode() {
-		Long id = getId();
-		boolean production = isProduction();
-		Date created = getCreated();
-		Date started = getStarted();
-		Date finished = getFinished();
-		Date broken = getBroken();
-		Date lastAccess = getLastAccess();
-		Integer status = getStatusInternal();
-		User user = getUser();
-		Pack pack = getPack();
-		Branch lastBranch = getLastBranch();
-		Task lastTask = getLastTask();
-		Slide lastSlide = getLastSlide();
-		// List<Event> events = getEvents();
+		return getId() == null ? 0 : getId().hashCode();
+	}
 
-		final int prime = 53;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (production ? 1 : 0);
-		result = prime * result + (created != null ? created.hashCode() : 0);
-		result = prime * result + (started != null ? started.hashCode() : 0);
-		result = prime * result + (finished != null ? finished.hashCode() : 0);
-		result = prime * result + (broken != null ? broken.hashCode() : 0);
-		result = prime * result + (lastAccess != null ? lastAccess.hashCode() : 0);
-		result = prime * result + (status != null ? status.hashCode() : 0);
-		result = prime * result + (user != null ? user.hashCode() : 0);
-		result = prime * result + (pack != null ? pack.hashCode() : 0);
-		result = prime * result + (lastBranch != null ? lastBranch.hashCode() : 0);
-		result = prime * result + (lastTask != null ? lastTask.hashCode() : 0);
-		result = prime * result + (lastSlide != null ? lastSlide.hashCode() : 0);
-		// result = prime * result + events.hashCode();
-		return result;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof SimpleTest == false)
+			return false;
+
+		final SimpleTest other = (SimpleTest) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(isProduction(), other.isProduction()))
+			return false;
+		if (!Objects.equals(getCreated(), other.getCreated()))
+			return false;
+		if (!Objects.equals(getStarted(), other.getStarted()))
+			return false;
+		if (!Objects.equals(getFinished(), other.getFinished()))
+			return false;
+		if (!Objects.equals(getBroken(), other.getBroken()))
+			return false;
+		if (!Objects.equals(getLastAccess(), other.getLastAccess()))
+			return false;
+		if (!Objects.equals(getStatus(), other.getStatus()))
+			return false;
+		if (!Objects.equals(getUserId(), other.getUserId()))
+			return false;
+		if (!Objects.equals(getPackId(), other.getPackId()))
+			return false;
+		if (!Objects.equals(getLastBranchId(), other.getLastBranchId()))
+			return false;
+		if (!Objects.equals(getLastTaskId(), other.getLastTaskId()))
+			return false;
+		if (!Objects.equals(getLastSlideId(), other.getLastSlideId()))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "SimpleTest [id=" + id + ", production=" + production + ", created=" + created + ", started=" + started
+				+ ", finished=" + finished + ", broken=" + broken + ", lastAccess=" + lastAccess + ", status=" + status
+				+ ", userId=" + userId + ", packId=" + packId + ", lastBranchId=" + lastBranchId + ", lastTaskId="
+				+ lastTaskId + ", lastSlideId=" + lastSlideId + "]";
 	}
 
 }

@@ -10,9 +10,8 @@ import org.apache.log4j.Logger;
 import org.hypothesis.builder.TaskBuilder;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
-import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.data.model.Task;
+import org.hypothesis.data.dto.SlideDto;
+import org.hypothesis.data.dto.TaskDto;
 import org.hypothesis.interfaces.ExchangeVariable;
 
 /**
@@ -22,13 +21,13 @@ import org.hypothesis.interfaces.ExchangeVariable;
  *
  */
 @SuppressWarnings("serial")
-public class TaskManager extends ListManager<Branch, Task> {
+public class TaskManager extends ListManager<TaskDto, Long> {
 
 	private static final Logger log = Logger.getLogger(TaskManager.class);
 
 	private final DocumentReader reader = new XmlDocumentReader();
 
-	private Task current = null;
+	private TaskDto current = null;
 	private TaskController controller = null;
 
 	public TaskManager() {
@@ -36,8 +35,8 @@ public class TaskManager extends ListManager<Branch, Task> {
 	}
 
 	@Override
-	public Task current() {
-		Task task = super.current();
+	public TaskDto current() {
+		TaskDto task = super.current();
 
 		if (current != task) {
 			current = task;
@@ -51,9 +50,9 @@ public class TaskManager extends ListManager<Branch, Task> {
 
 		return current;
 	}
-	
+
 	@Override
-	public Task next() {
+	public TaskDto next() {
 		super.next();
 
 		return current();
@@ -65,17 +64,17 @@ public class TaskManager extends ListManager<Branch, Task> {
 		controller = TaskBuilder.buildTaskController(current, reader);
 	}
 
-	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
+	public void addSlideOutputs(SlideDto slide, Map<Integer, ExchangeVariable> outputValues) {
 		if (controller != null) {
 			controller.addSlideOutputs(slide, outputValues);
 		}
 	}
 
-	public int getNextSlideIndex(Slide slide) {
+	public int getNextSlideIndex(SlideDto slide) {
 		if (controller != null) {
 			controller.getNextSlideIndex(current, slide);
 		}
-		
+
 		return 0;
 	}
 

@@ -27,9 +27,10 @@ import org.hypothesis.business.VNAddressPositionManager;
 import org.hypothesis.business.data.UserControlData;
 import org.hypothesis.business.data.UserSession;
 import org.hypothesis.business.data.UserTestState;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.SimpleUserDto;
 import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.event.data.UIMessage;
 import org.hypothesis.interfaces.ControlPresenter;
 import org.hypothesis.server.Messages;
@@ -69,7 +70,7 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 	private final HashMap<Long, UserPanel> userPanels = new HashMap<>();
 
 	private UserControlServiceImpl userControlService = new UserControlServiceImpl();
-	private final UserService userService = UserService.newInstance();
+	private final UserService userService = new UserServiceImpl();
 
 	private boolean isEmptyInfo = false;
 
@@ -211,9 +212,9 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 	}
 
 	private void enableTesting(boolean enable) {
-		List<Long> ids = userPanels.values().stream().map(UserPanel::getUser).map(User::getId)
+		List<Long> ids = userPanels.values().stream().map(UserPanel::getUser).map(SimpleUserDto::getId)
 				.collect(Collectors.toList());
-		userService.updateUsersTestingSuspended(ids, !enable);
+		userService.updateUsersTestingSuspendedVN(ids, !enable);
 
 		ids.forEach(id -> BroadcastService.broadcast(UIMessageUtility.createRefreshUserPacksViewMessage(id)));
 
@@ -224,11 +225,11 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 		UserPanel panel = new UserPanel(data.getUser());
 		updateUserPanel(data, panel);
 
-		BeanItem<User> userBeanItem = new BeanItem<>(data.getUser());
+		BeanItem<SimpleUserDto> userBeanItem = new BeanItem<>(data.getUser());
 		panel.setNamePropertyDataSource(userBeanItem.getItemProperty("name"));
 		panel.setSurnamePropertyDataSource(userBeanItem.getItemProperty("username"));
 
-		User user = data.getUser();
+		SimpleUserDto user = data.getUser();
 		if (user.isTestingSuspended()) {
 			panel.addStyleName(USERPANEL_SUSPENDED);
 		}
@@ -276,9 +277,9 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 			packsPanel.addStyleName(USERPANEL_SUSPENDED);
 		}
 
-		for (Pack pack : data.getPacks()) {
+		for (PackDto pack : data.getPacks()) {
 			TinyPackPanel packPanel = new TinyPackPanel();
-			BeanItem<Pack> packBeanItem = new BeanItem<Pack>(pack);
+			BeanItem<PackDto> packBeanItem = new BeanItem<PackDto>(pack);
 			packPanel.setDescriptionPropertyDataSource(packBeanItem.getItemProperty("name"));
 			if (isSuspended) {
 				packPanel.addStyleName(USERPANEL_SUSPENDED);
@@ -324,7 +325,7 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 		userPanels.clear();
 
 		if (dateField.getValue() != null) {
-			List<User> users = userService.findPlannedUsers(dateField.getValue());
+			List<SimpleUserDto> users = userService.findPlannedUsersVN(dateField.getValue());
 			List<UserControlData> data = users.stream()//
 					.map(userControlService::ensureUserControlData)//
 					.map(userControlService::updateUserControlData)//

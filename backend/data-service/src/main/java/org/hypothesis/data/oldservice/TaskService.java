@@ -1,0 +1,46 @@
+/**
+ * Apache Licence Version 2.0
+ * Please read the LICENCE file
+ */
+package org.hypothesis.data.oldservice;
+
+import org.apache.log4j.Logger;
+import org.hypothesis.data.dao.HibernateDao;
+import org.hypothesis.data.oldmodel.Task;
+
+/**
+ * @author Kamil Morong, Tilioteo Ltd
+ * 
+ *         Hypothesis
+ *
+ */
+@Deprecated
+public class TaskService {
+
+	private static final Logger log = Logger.getLogger(TaskService.class);
+
+	private final HibernateDao<Task, Long> taskDao;
+
+	public static TaskService newInstance() {
+		return new TaskService(new HibernateDao<Task, Long>(Task.class));
+	}
+
+	protected TaskService(HibernateDao<Task, Long> taskDao) {
+		this.taskDao = taskDao;
+	}
+
+	public Task findById(Long id) {
+		log.debug("TaskService::findById(" + (id != null ? id : "NULL") + ")");
+		try {
+			taskDao.beginTransaction();
+
+			Task task = taskDao.findById(id, false);
+			taskDao.commit();
+			return task;
+		} catch (Throwable e) {
+			log.error(e.getMessage());
+			taskDao.rollback();
+		}
+		return null;
+	}
+}

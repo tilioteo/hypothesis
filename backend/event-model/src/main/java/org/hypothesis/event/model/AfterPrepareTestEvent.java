@@ -4,7 +4,8 @@
  */
 package org.hypothesis.event.model;
 
-import org.hypothesis.data.model.SimpleTest;
+import org.hypothesis.data.dto.TestDto;
+
 import com.vaadin.server.ErrorHandler;
 
 /**
@@ -16,13 +17,13 @@ import com.vaadin.server.ErrorHandler;
 @SuppressWarnings("serial")
 public class AfterPrepareTestEvent extends AbstractProcessEvent {
 
-	private final SimpleTest test;
+	private final TestDto test;
 
-	public AfterPrepareTestEvent(SimpleTest source) {
+	public AfterPrepareTestEvent(TestDto source) {
 		this(source, null);
 	}
 
-	public AfterPrepareTestEvent(SimpleTest test, ErrorHandler errorHandler) {
+	public AfterPrepareTestEvent(TestDto test, ErrorHandler errorHandler) {
 		super(errorHandler);
 		this.test = test;
 	}
@@ -32,7 +33,7 @@ public class AfterPrepareTestEvent extends AbstractProcessEvent {
 		return ProcessEventTypes.Null;
 	}
 
-	public SimpleTest getTest() {
+	public TestDto getTest() {
 		return test;
 	}
 

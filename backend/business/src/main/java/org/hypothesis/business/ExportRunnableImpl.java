@@ -10,13 +10,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
-import org.hypothesis.data.model.ExportEvent;
+import org.hypothesis.data.dto.ExportEventDto;
 import org.hypothesis.data.service.ExportService;
+import org.hypothesis.data.service.impl.ExportServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.Command;
@@ -41,13 +42,13 @@ public class ExportRunnableImpl implements CancelableExportRunnable {
 	private volatile int progress;
 
 	private final AtomicBoolean cancelPending = new AtomicBoolean(false);
-	private final Collection<Long> testIds;
+	private final Set<Long> testIds;
 
 	private final MainEventBus bus;
 
 	private final Command finishCommand;
 
-	public ExportRunnableImpl(MainEventBus bus, final Collection<Long> testIds, Command finishCommand) {
+	public ExportRunnableImpl(MainEventBus bus, final Set<Long> testIds, Command finishCommand) {
 		this.bus = bus;
 		this.testIds = testIds;
 		this.finishCommand = finishCommand;
@@ -108,10 +109,10 @@ public class ExportRunnableImpl implements CancelableExportRunnable {
 	}
 
 	private InputStream getExportFile() {
-		ExportService exportService = ExportService.newInstance();
+		final ExportService exportService = new ExportServiceImpl();
 
 		try {
-			List<ExportEvent> events = exportService.findExportEventsByTestId(testIds);
+			List<ExportEventDto> events = exportService.findExportEventsByTestIds(testIds);
 
 			if (events != null) {
 				try {

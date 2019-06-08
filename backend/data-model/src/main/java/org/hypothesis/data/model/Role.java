@@ -1,8 +1,7 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -14,32 +13,19 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- */
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
+
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.ROLE_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Role extends SerializableIdObject {
+public class Role implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -713813038487970375L;
+	private Long id;
 
 	private String name;
-
-	protected Role() {
-		super();
-	}
-
-	public Role(String name) {
-		this();
-		this.name = name;
-	}
 
 	@Override
 	@Id
@@ -47,7 +33,11 @@ public final class Role extends SerializableIdObject {
 	@SequenceGenerator(name = TableConstants.ROLE_GENERATOR, sequenceName = TableConstants.ROLE_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.NAME, nullable = false, unique = true)
@@ -60,54 +50,26 @@ public final class Role extends SerializableIdObject {
 	}
 
 	@Override
+	public int hashCode() {
+		return getId() == null ? 0 : getId().hashCode();
+	}
+
+	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+		if (obj instanceof Role == false)
 			return false;
-		}
-		if (!(obj instanceof Role)) {
+
+		final Role other = (Role) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getName(), other.getName()))
 			return false;
-		}
-		Role other = (Role) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		String name = getName();
-		String name2 = other.getName();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
-			return false;
-		}
-
-		if (name == null) {
-			if (name2 != null) {
-				return false;
-			}
-		} else if (!name.equals(name2)) {
-			return false;
-		}
-
 		return true;
 	}
 
 	@Override
-	public int hashCode() {
-		Long id = getId();
-		String name = getName();
-
-		final int prime = 23;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (name != null ? name.hashCode() : 0);
-		return result;
-	}
-
-	@Override
 	public String toString() {
-		return getName();
+		return "Role [name=" + name + "]";
 	}
 
 }

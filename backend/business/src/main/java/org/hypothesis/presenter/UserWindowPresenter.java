@@ -4,26 +4,37 @@
  */
 package org.hypothesis.presenter;
 
+import static java.util.stream.Collectors.toSet;
+import static org.hypothesis.data.api.Roles.ROLE_MANAGER;
+import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
+import static org.hypothesis.data.api.Roles.ROLE_USER;
+import static org.hypothesis.utility.UserUtility.userHasAnyRole;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.GroupPermission;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Role;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.model.UserPermission;
+import org.hypothesis.data.dto.GroupDto;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.RoleDto;
+import org.hypothesis.data.dto.UserDto;
+import org.hypothesis.data.interfaces.FieldConstants;
 import org.hypothesis.data.service.GroupService;
+import org.hypothesis.data.service.PackService;
 import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.GroupServiceImpl;
+import org.hypothesis.data.service.impl.PackServiceImpl;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
+import org.hypothesis.data.service.impl.RoleServiceImpl;
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.data.validator.RoleValidator;
 import org.hypothesis.data.validator.UsernameValidator;
 import org.hypothesis.event.interfaces.MainUIEvent;
@@ -86,6 +97,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	private final UserService userService;
 	private final RoleService roleService;
 	private final PermissionService permissionService;
+	private final PackService packService;
 
 	private TextField idField;
 	private TextField usernameField;
@@ -104,10 +116,11 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	public UserWindowPresenter(MainEventBus bus) {
 		super(bus);
 
-		groupService = GroupService.newInstance();
-		userService = UserService.newInstance();
-		roleService = RoleService.newInstance();
-		permissionService = PermissionService.newInstance();
+		groupService = new GroupServiceImpl();
+		userService = new UserServiceImpl();
+		roleService = new RoleServiceImpl();
+		permissionService = new PermissionServiceImpl();
+		packService = new PackServiceImpl();
 	}
 
 	private void buildIdField() {
@@ -175,7 +188,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			rolesField.setItemCaptionPropertyId(FieldConstants.NAME);
 			rolesField.setMultiSelect(true);
 
-			BeanItemContainer<Role> dataSource = new BeanItemContainer<Role>(Role.class);
+			BeanItemContainer<RoleDto> dataSource = new BeanItemContainer<RoleDto>(RoleDto.class);
 			rolesField.setContainerDataSource(dataSource);
 
 			// rolesField.setRequired(true);
@@ -224,14 +237,14 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 
 				@Override
 				public void onStateChanged(Object itemId, boolean checked) {
-					_updatePacksByGroup((Group) itemId, checked);
+					_updatePacksByGroup((GroupDto) itemId, checked);
 				}
 			});
 
 			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
 				@Override
 				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					Group group = (Group) itemId;
+					GroupDto group = (GroupDto) itemId;
 					return Messages.getString("Caption.Item.GroupDescription", group.getName(), group.getId());
 				}
 			});
@@ -254,36 +267,35 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void _updatePacksByGroup(Group group, boolean checked) {
+	private void _updatePacksByGroup(GroupDto group, boolean checked) {
 		Map<Object, DoubleCheckerColumnGenerator.ButtonsHolder> map = (Map<Object, ButtonsHolder>) packsField.getData();
 		if (map != null) {
-			Set<Pack> enabledPacks;
-			Set<Pack> disabledPacks;
-			Set<Pack> groupPacks = new HashSet<>();
-			User user = (User) source;
+			List<PackDto> enabledPacks;
+			List<PackDto> disabledPacks;
+			Set<PackDto> groupPacks = new HashSet<>();
+			UserDto user = (UserDto) source;
 			if (WindowState.UPDATE == state) {
-				enabledPacks = permissionService.getUserPacks(user, true, null);
-				disabledPacks = permissionService.getUserPacks(user, false, null);
+				enabledPacks = permissionService.getUserPacks(user.getId(), true);
+				disabledPacks = permissionService.getUserPacks(user.getId(), false);
 			} else {
-				enabledPacks = new HashSet<>();
-				disabledPacks = new HashSet<>();
+				enabledPacks = new ArrayList<>();
+				disabledPacks = new ArrayList<>();
 			}
 
-			Set<Group> groups = user.getGroups();
+			Set<GroupDto> groups = user.getGroups();
 			if (checked) {
 				groups.add(group);
 			} else {
 				groups.remove(group);
 			}
 			if (WindowState.MULTIUPDATE != state && !groups.isEmpty()) {
-				for (GroupPermission groupPermission : permissionService.getGroupsPermissions(groups)) {
-					groupPacks.add(groupPermission.getPack());
-				}
+				groupPacks
+						.addAll(permissionService.getGroupPacks(groups.stream().map(GroupDto::getId).collect(toSet())));
 			}
 
 			for (Object itemId : packsField.getItemIds()) {
 				Item row = packsField.getItem(itemId);
-				Pack pack = (Pack) itemId;
+				PackDto pack = (PackDto) itemId;
 
 				Status state = Status.NONE;
 
@@ -333,7 +345,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
 				@Override
 				public String generateDescription(Component source, Object itemId, Object propertyId) {
-					Pack pack = (Pack) itemId;
+					PackDto pack = (PackDto) itemId;
 					return Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
 							pack.getDescription());
 				}
@@ -361,7 +373,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		if (WindowState.CREATE == state) {
 			usernameField.addValidator(new UsernameValidator(null));
 		} else if (WindowState.UPDATE == state) {
-			usernameField.addValidator(new UsernameValidator(((User) source).getId()));
+			usernameField.addValidator(new UsernameValidator(((UserDto) source).getId()));
 		}
 
 		// username generator
@@ -374,13 +386,13 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		// roles
 		buildRolesField();
 
-		BeanItemContainer<Role> rolesSource = (BeanItemContainer<Role>) ((AbstractSelect) rolesField)
+		BeanItemContainer<RoleDto> rolesSource = (BeanItemContainer<RoleDto>) ((AbstractSelect) rolesField)
 				.getContainerDataSource();
 		rolesSource.addAll(roleService.findAll());
 		rolesSource.sort(new Object[] { FieldConstants.ID }, new boolean[] { true });
 
-		if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			rolesField.select(RoleService.ROLE_USER);
+		if (!userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
+			rolesField.select(ROLE_USER);
 			rolesField.setEnabled(false);
 		} else if (WindowState.CREATE != state) {
 			rolesField.setRequired(true);
@@ -398,18 +410,18 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		buildNoteField();
 
 		// groups
-		Collection<Group> groups;
+		Collection<GroupDto> groups;
 
-		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+		if (userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
 			groups = groupService.findAll();
 		} else {
-			groups = groupService.findOwnerGroups(loggedUser);
+			groups = groupService.findOwnerGroups(loggedUser.getId());
 		}
 
 		if (!groups.isEmpty()) {
-			buildGroupsField(!loggedUser.hasRole(RoleService.ROLE_SUPERUSER));
+			buildGroupsField(!userHasAnyRole(loggedUser, ROLE_SUPERUSER));
 
-			for (Group group : groups) {
+			for (GroupDto group : groups) {
 				groupsField.addItem(group);
 				Item row = groupsField.getItem(group);
 				row.getItemProperty(FieldConstants.NAME).setValue(group.getName());
@@ -422,16 +434,16 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		// packs
 		buildPacksField();
 
-		Collection<Pack> packs;
-		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
-			packs = permissionService.findAllPacks();
+		Collection<PackDto> packs;
+		if (userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
+			packs = packService.findAll();
 		} else {
-			packs = permissionService.findUserPacks2(loggedUser, false);
+			packs = permissionService.findUserPacks2(loggedUser.getId(), false);
 		}
 
 		// TODO: upozornit, pokud nema uzivatel pristupne zadne packy?
 
-		for (Pack pack : packs) {
+		for (PackDto pack : packs) {
 			packsField.addItem(pack);
 			Item row = packsField.getItem(pack);
 			row.getItemProperty(FieldConstants.NAME).setValue(pack.getName());
@@ -444,8 +456,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void fillFields() {
-		User user = (User) source;
-		user = userService.merge(user);
+		UserDto user = (UserDto) source;
 
 		idField.setValue(user.getId().toString());
 		usernameField.setValue(user.getUsername());
@@ -457,7 +468,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 
 		// groups
 		if (groupsField != null) {
-			Set<Group> groups;
+			Set<GroupDto> groups;
 
 			if (WindowState.UPDATE == state) {
 				groups = user.getGroups();
@@ -467,7 +478,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 
 			for (Object itemId : groupsField.getItemIds()) {
 				Item row = groupsField.getItem(itemId);
-				Group group = groupService.merge((Group) itemId);
+				GroupDto group = (GroupDto) itemId;
 
 				if (groups.contains(group)) {
 					row.getItemProperty(FieldConstants.SELECTED).setValue(true);
@@ -478,27 +489,26 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		// packs
-		Set<Pack> enabledPacks;
-		Set<Pack> disabledPacks;
-		Set<Pack> groupPacks = new HashSet<>();
+		List<PackDto> enabledPacks;
+		List<PackDto> disabledPacks;
+		Set<PackDto> groupPacks = new HashSet<>();
 
 		if (WindowState.UPDATE == state) {
-			enabledPacks = permissionService.getUserPacks(user, true, null);
-			disabledPacks = permissionService.getUserPacks(user, false, null);
+			enabledPacks = permissionService.getUserPacks(user.getId(), true);
+			disabledPacks = permissionService.getUserPacks(user.getId(), false);
 		} else {
-			enabledPacks = new HashSet<>();
-			disabledPacks = new HashSet<>();
+			enabledPacks = new ArrayList<>();
+			disabledPacks = new ArrayList<>();
 		}
 
 		if (WindowState.MULTIUPDATE != state && !user.getGroups().isEmpty()) {
-			for (GroupPermission groupPermission : permissionService.getGroupsPermissions(user.getGroups())) {
-				groupPacks.add(groupPermission.getPack());
-			}
+			groupPacks.addAll(
+					permissionService.getGroupPacks(user.getGroups().stream().map(GroupDto::getId).collect(toSet())));
 		}
 
 		for (Object itemId : packsField.getItemIds()) {
 			Item row = packsField.getItem(itemId);
-			Pack pack = (Pack) itemId;
+			PackDto pack = (PackDto) itemId;
 
 			Status state = Status.NONE;
 
@@ -801,7 +811,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		if (WindowState.MULTIUPDATE == state) {
-			for (User user : (Collection<User>) source) {
+			for (UserDto user : (Collection<UserDto>) source) {
 				user = saveUser(user, true);
 				if (user != null) {
 					bus.post(new MainUIEvent.UserAddedEvent(user));
@@ -813,7 +823,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			int count = Integer.valueOf(generatedCountField.getValue());
 
 			for (int i = 1; i <= count; i++) {
-				User user = new User();
+				UserDto user = new UserDto();
 				user.setUsername(
 						String.format("%s-%03d-%s", usernameGroup, i, generateString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", 4)));
 				user.setPassword(generateString("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 8));
@@ -821,11 +831,11 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			}
 
 		} else {
-			User user;
+			UserDto user;
 			if (WindowState.CREATE == state) {
-				user = new User();
+				user = new UserDto();
 			} else {
-				user = (User) source;
+				user = (UserDto) source;
 			}
 			user = saveUser(user, true);
 			if (user != null) {
@@ -835,7 +845,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private User saveUser(User user, boolean includeGenerableFields) {
+	private UserDto saveUser(UserDto user, boolean includeGenerableFields) {
 		boolean savingLoggedUser = user.equals(loggedUser);
 
 		if (WindowState.CREATE == state) {
@@ -850,16 +860,16 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		}
 
 		if (rolesField.isVisible()) {
-			Set<Role> roles = new HashSet<>();
-			for (Role role : user.getRoles()) {
+			Set<RoleDto> roles = new HashSet<>();
+			for (RoleDto role : user.getRoles()) {
 				roles.add(role);
 			}
-			for (Role role : roles) {
-				user.removeRole(role);
+			for (RoleDto role : roles) {
+				user.getRoles().remove(role);
 			}
-			roles = (Set<Role>) rolesField.getValue();
-			for (Role role : roles) {
-				user.addRole(role);
+			roles = (Set<RoleDto>) rolesField.getValue();
+			for (RoleDto role : roles) {
+				user.getRoles().add(role);
 			}
 		}
 
@@ -878,17 +888,17 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		if (groupsField != null && groupsField.isVisible() && groupsField.isEnabled()) {
 			for (Object itemId : groupsField.getItemIds()) {
 				Item item = groupsField.getItem(itemId);
-				Group group = groupService.merge((Group) itemId);
+				GroupDto group = (GroupDto) itemId;
 				Boolean selected = (Boolean) item.getItemProperty(FieldConstants.SELECTED).getValue();
 
 				if (selected == null) {
 					if (WindowState.MULTIUPDATE == state) {
-						user.removeGroup(group);
+						user.getGroups().remove(group);
 					}
 				} else if (selected.equals(true)) {
-					user.addGroup(group);
+					user.getGroups().add(group);
 				} else if (selected.equals(false)) {
-					user.removeGroup(group);
+					user.getGroups().remove(group);
 				}
 
 				if (group != null) {
@@ -897,38 +907,43 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 			}
 		}
 
-		user = userService.add(user);
+		user = userService.save(user);
 
 		if (packsField.isVisible()) {
-			permissionService.deleteUserPermissions(user);
-
+			final Set<PackDto> enabledPacks = new HashSet<>();
+			final Set<PackDto> disabledPacks = new HashSet<>();
 			for (Object itemId : packsField.getItemIds()) {
 				Item item = packsField.getItem(itemId);
-				Pack pack = (Pack) itemId;
+				PackDto pack = (PackDto) itemId;
 				Status state = (Status) item.getItemProperty(FieldConstants.TEST_STATE).getValue();
 
 				if (state != null && state != Status.NONE && state != Status.ENABLED_INHERITED) {
 					boolean enabled = state == Status.ENABLED
 							|| !(state == Status.DISABLED || state == Status.DISABLED_OVERRIDE);
-					permissionService.addUserPermission(new UserPermission(user, pack, enabled));
+
+					if (enabled) {
+						enabledPacks.add(pack);
+					} else {
+						disabledPacks.add(pack);
+					}
 				}
 			}
+			permissionService.setUserPermissions(user.getId(), enabledPacks, disabledPacks);
 		}
 
 		if (savingLoggedUser && rolesField.isVisible()) {
-			Set<Role> oldRoles = loggedUser.getRoles();
-			Set<Role> newRoles = user.getRoles();
+			Set<RoleDto> oldRoles = loggedUser.getRoles();
+			Set<RoleDto> newRoles = user.getRoles();
 
-			SessionManager.setLoggedUser(user);
+			SessionManager.setLoggedUser2(userService.getSimpleById(user.getId()));
 
 			if (!oldRoles.equals(newRoles)) {
 				// Superuser/Manager -> User degradation
-				if (!newRoles.contains(RoleService.ROLE_MANAGER) && !newRoles.contains(RoleService.ROLE_SUPERUSER)) {
+				if (!newRoles.contains(ROLE_MANAGER) && !newRoles.contains(ROLE_SUPERUSER)) {
 					bus.post(new MainUIEvent.UserLoggedOutEvent());
 
 					// Superuser -> Manager degradation
-				} else if (oldRoles.contains(RoleService.ROLE_SUPERUSER)
-						&& !newRoles.contains(RoleService.ROLE_SUPERUSER)) {
+				} else if (oldRoles.contains(ROLE_SUPERUSER) && !newRoles.contains(ROLE_SUPERUSER)) {
 					bus.post(new MainUIEvent.ProfileUpdatedEvent());
 					// TODO: zmena vypisu skupin
 				}
@@ -965,11 +980,11 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 		return new String(text);
 	}
 
-	public void showWindow(User user) {
+	public void showWindow(UserDto user) {
 		showWindow(WindowState.UPDATE, user);
 	}
 
-	public void showWindow(Collection<User> users) {
+	public void showWindow(Collection<UserDto> users) {
 		showWindow(WindowState.MULTIUPDATE, users);
 	}
 

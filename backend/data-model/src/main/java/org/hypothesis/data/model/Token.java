@@ -1,20 +1,19 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.UUID;
+import java.util.Objects;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -25,23 +24,21 @@ import javax.persistence.Table;
  *         isolated application
  * 
  */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.TOKEN_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Token extends SerializableUidObject {
+public class Token implements Serializable, HasId<String> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4687653172248782423L;
+	private String id;
 
 	/**
 	 * run test in production or testing mode
 	 */
 	private boolean production;
 
-	private User user;
-	private Pack pack;
+	private Long userId;
+	private long packId;
 
 	private String viewUid;
 
@@ -50,30 +47,15 @@ public final class Token extends SerializableUidObject {
 	 */
 	private Date datetime;
 
-	protected Token() {
-		super();
-	}
-
-	/**
-	 * constructor will generate unique id for token
-	 * 
-	 * @param user
-	 * @param pack
-	 */
-	public Token(User user, Pack pack, String viewUid) {
-		this();
-		this.uid = UUID.randomUUID().toString().replaceAll("-", "");
-		this.user = user;
-		this.pack = pack;
-		this.viewUid = viewUid;
-		this.datetime = new Date();
-	}
-
 	@Override
 	@Id
 	@Column(name = FieldConstants.UID)
-	public String getUid() {
-		return uid;
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.PRODUCTION, nullable = false)
@@ -85,25 +67,22 @@ public final class Token extends SerializableUidObject {
 		this.production = production != null ? production : false;
 	}
 
-	@ManyToOne(/* cascade = { CascadeType.PERSIST, CascadeType.MERGE } */)
-	@JoinColumn(name = FieldConstants.USER_ID)
-	// @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	public User getUser() {
-		return user;
+	@Column(name = FieldConstants.USER_ID)
+	public Long getUserId() {
+		return userId;
 	}
 
-	protected void setUser(User user) {
-		this.user = user;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	@ManyToOne
-	@JoinColumn(name = FieldConstants.PACK_ID, nullable = false)
-	public Pack getPack() {
-		return pack;
+	@Column(name = FieldConstants.PACK_ID, nullable = false)
+	public long getPackId() {
+		return packId;
 	}
 
-	protected void setPack(Pack pack) {
-		this.pack = pack;
+	public void setPackId(long packId) {
+		this.packId = packId;
 	}
 
 	@Column(name = FieldConstants.VIEW_UID)
@@ -111,7 +90,7 @@ public final class Token extends SerializableUidObject {
 		return viewUid;
 	}
 
-	protected void setViewUid(String viewUid) {
+	public void setViewUid(String viewUid) {
 		this.viewUid = viewUid;
 	}
 
@@ -120,89 +99,40 @@ public final class Token extends SerializableUidObject {
 		return datetime;
 	}
 
-	protected void setDatetime(Date datetime) {
+	public void setDatetime(Date datetime) {
 		this.datetime = datetime;
 	}
 
 	@Override
+	public int hashCode() {
+		return getId() == null ? 0 : getId().hashCode();
+	}
+
+	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
+		if (obj instanceof Token == false)
 			return false;
-		}
-		if (!(obj instanceof Token)) {
+
+		final Token other = (Token) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(isProduction(), other.isProduction()))
 			return false;
-		}
-		Token other = (Token) obj;
-
-		String uid = getUid();
-		String uid2 = other.getUid();
-		boolean production = isProduction();
-		boolean production2 = other.isProduction();
-		User user = getUser();
-		User user2 = other.getUser();
-		Pack pack = getPack();
-		Pack pack2 = other.getPack();
-		Date datetime = getDatetime();
-		Date datetime2 = other.getDatetime();
-
-		if (uid == null) {
-			if (uid2 != null) {
-				return false;
-			}
-		} else if (!uid.equals(uid2)) {
+		if (!Objects.equals(getUserId(), other.getUserId()))
 			return false;
-		}
-
-		if (production != production2) {
+		if (!Objects.equals(getPackId(), other.getPackId()))
 			return false;
-		}
-
-		if (user == null) {
-			if (user2 != null) {
-				return false;
-			}
-		} else if (!user.equals(user2)) {
+		if (!Objects.equals(getViewUid(), other.getViewUid()))
 			return false;
-		}
-
-		if (pack == null) {
-			if (pack2 != null) {
-				return false;
-			}
-		} else if (!pack.equals(pack2)) {
+		if (!Objects.equals(getDatetime(), other.getDatetime()))
 			return false;
-		}
-
-		if (datetime == null) {
-			if (datetime2 != null) {
-				return false;
-			}
-		} else if (!datetime.equals(datetime2)) {
-			return false;
-		}
-
 		return true;
 	}
 
 	@Override
-	public int hashCode() {
-		String uid = getUid();
-		boolean production = isProduction();
-		User user = getUser();
-		Pack pack = getPack();
-		Date datetime = getDatetime();
-
-		final int prime = 59;
-		int result = 1;
-		result = prime * result + (uid != null ? uid.hashCode() : 0);
-		result = prime * result + (production ? 1 : 0);
-		result = prime * result + (user != null ? user.hashCode() : 0);
-		result = prime * result + (pack != null ? pack.hashCode() : 0);
-		result = prime * result + (datetime != null ? datetime.hashCode() : 0);
-		return result;
+	public String toString() {
+		return "Token [id=" + id + ", production=" + production + ", userId=" + userId + ", packId=" + packId
+				+ ", viewUid=" + viewUid + ", datetime=" + datetime + "]";
 	}
 
 }

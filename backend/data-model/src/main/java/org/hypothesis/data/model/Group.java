@@ -1,10 +1,7 @@
-/**
- * Apache Licence Version 2.0
- * Please read the LICENCE file
- */
 package org.hypothesis.data.model;
 
-import java.util.HashSet;
+import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Access;
@@ -20,34 +17,28 @@ import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import org.hypothesis.data.interfaces.FieldConstants;
+import org.hypothesis.data.interfaces.HasId;
+import org.hypothesis.data.interfaces.TableConstants;
 
-/**
- * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
- */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = TableConstants.GROUP_TABLE)
 @Access(AccessType.PROPERTY)
-public final class Group extends SerializableIdObject {
+public class Group implements Serializable, HasId<Long> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2666394472480823648L;
+	private Long id;
 
 	private String name;
+
 	private String note;
+
 	private Long ownerId;
 
 	/**
 	 * set of users which belong to group
 	 */
-	private Set<User> users = new HashSet<>();
+	private Set<User> users;
 
 	@Override
 	@Id
@@ -55,12 +46,11 @@ public final class Group extends SerializableIdObject {
 	@SequenceGenerator(name = TableConstants.GROUP_GENERATOR, sequenceName = TableConstants.GROUP_SEQUENCE, initialValue = 1, allocationSize = 1)
 	@Column(name = FieldConstants.ID)
 	public Long getId() {
-		return super.getId();
+		return id;
 	}
 
-	@Override
 	public void setId(Long id) {
-		super.setId(id);
+		this.id = id;
 	}
 
 	@Column(name = FieldConstants.NAME, nullable = false, unique = true)
@@ -81,7 +71,7 @@ public final class Group extends SerializableIdObject {
 		this.note = note;
 	}
 
-	@Column(name = FieldConstants.OWNER_ID, nullable = false)
+	@Column(name = FieldConstants.OWNER_ID)
 	public Long getOwnerId() {
 		return ownerId;
 	}
@@ -90,110 +80,55 @@ public final class Group extends SerializableIdObject {
 		this.ownerId = ownerId;
 	}
 
-	@ManyToMany(targetEntity = User.class/*
-											 * , cascade = {CascadeType.PERSIST,
-											 * CascadeType.MERGE }
-											 */)
-	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = @JoinColumn(name = FieldConstants.GROUP_ID) , inverseJoinColumns = @JoinColumn(name = FieldConstants.USER_ID) )
-	@Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
-	@LazyCollection(LazyCollectionOption.TRUE)
+	/*
+	 * @ManyToMany(targetEntity = User.class, fetch = FetchType.LAZY,
+	 * mappedBy="groups")
+	 * 
+	 * @JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns
+	 * = @JoinColumn(name = FieldConstants.GROUP_ID), inverseJoinColumns
+	 * = @JoinColumn(name = FieldConstants.USER_ID))
+	 * 
+	 * @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+	 * 
+	 * @LazyCollection(LazyCollectionOption.TRUE)
+	 */
+	@ManyToMany
+	@JoinTable(name = TableConstants.GROUP_USER_TABLE, joinColumns = {
+			@JoinColumn(name = FieldConstants.GROUP_ID) }, inverseJoinColumns = {
+					@JoinColumn(name = FieldConstants.USER_ID) })
 	public Set<User> getUsers() {
 		return users;
 	}
 
-	protected void setUsers(Set<User> set) {
+	public void setUsers(Set<User> set) {
 		this.users = set;
-	}
-
-	public final void addUser(User user) {
-		getUsers().add(user);
-	}
-
-	public final void removeUser(User user) {
-		getUsers().remove(user);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Group)) {
-			return false;
-		}
-		Group other = (Group) obj;
-
-		Long id = getId();
-		Long id2 = other.getId();
-		String name = getName();
-		String name2 = other.getName();
-		String note = getNote();
-		String note2 = other.getNote();
-		Long ownerId = getOwnerId();
-		Long ownerId2 = other.getOwnerId();
-		// Set<User> users = getUsers();
-		// Set<User> users2 = other.getUsers();
-
-		// if id of one instance is null then compare other properties
-		if (id != null && id2 != null && !id.equals(id2)) {
-			return false;
-		}
-
-		if (name == null) {
-			if (name2 != null) {
-				return false;
-			}
-		} else if (!name.equals(name2)) {
-			return false;
-		}
-
-		if (note == null) {
-			if (note2 != null) {
-				return false;
-			}
-		} else if (!note.equals(note2)) {
-			return false;
-		}
-
-		if (ownerId == null) {
-			if (ownerId2 != null) {
-				return false;
-			}
-		} else if (!ownerId.equals(ownerId2)) {
-			return false;
-		}
-
-		/*
-		 * if (getUsers() == null) { if (other.getUsers() != null) return false;
-		 * } else if (!getUsers().equals(other.getUsers())) return false;
-		 */
-		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		Long id = getId();
-		String name = getName();
-		String note = getNote();
-		Long ownerId = getOwnerId();
-		// Set<User> users = getUsers();
+		return getId() == null ? 0 : getId().hashCode();
+	}
 
-		final int prime = 13;
-		int result = 1;
-		result = prime * result + (id != null ? id.hashCode() : 0);
-		result = prime * result + (name != null ? name.hashCode() : 0);
-		result = prime * result + (note != null ? note.hashCode() : 0);
-		result = prime * result + (ownerId != null ? ownerId.hashCode() : 0);
-		// result = prime * result + users.hashCode();
-		return result;
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Group == false)
+			return false;
+
+		final Group other = (Group) obj;
+		if (getId() != null || other.getId() != null)
+			return Objects.equals(getId(), other.getId());
+		if (!Objects.equals(getName(), other.getName()))
+			return false;
+		if (!Objects.equals(getNote(), other.getNote()))
+			return false;
+		if (!Objects.equals(getOwnerId(), other.getOwnerId()))
+			return false;
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return getName();
+		return "Group [id=" + id + ", name=" + name + ", note=" + note + ", ownerId=" + ownerId + "]";
 	}
 
 }

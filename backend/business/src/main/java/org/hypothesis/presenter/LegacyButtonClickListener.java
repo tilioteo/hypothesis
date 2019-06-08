@@ -1,7 +1,7 @@
 package org.hypothesis.presenter;
 
 import org.hypothesis.business.data.TestData;
-import org.hypothesis.data.model.Token;
+import org.hypothesis.data.dto.TokenDto;
 import org.hypothesis.interfaces.PacksPresenter;
 import org.hypothesis.utility.UrlUtility;
 import org.vaadin.button.ui.OpenPopupButton;
@@ -24,11 +24,11 @@ public class LegacyButtonClickListener implements ClickListener {
 	@Override
 	public void buttonClick(ClickEvent event) {
 		if (!presenter.isTestRunning()) {
-			Token token = presenter.createToken(data.getPack());
+			TokenDto token = presenter.createToken(data.getPack());
 
 			if (token != null) {
 				presenter.maskView();
-				button.setUrl(UrlUtility.constructStartUrl(token.getUid()));
+				button.setUrl(UrlUtility.constructStartUrl(token.getId()));
 				data.setRunning(true);
 			}
 		}

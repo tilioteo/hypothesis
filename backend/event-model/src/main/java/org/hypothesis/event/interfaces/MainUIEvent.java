@@ -4,9 +4,9 @@
  */
 package org.hypothesis.event.interfaces;
 
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.PackSet;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.GroupDto;
+import org.hypothesis.data.dto.PackSetDto;
+import org.hypothesis.data.dto.UserDto;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -71,13 +71,13 @@ public interface MainUIEvent extends HypothesisEvent {
 	}
 
 	final class UserAddedEvent implements MainUIEvent {
-		private final User user;
+		private final UserDto user;
 
-		public UserAddedEvent(final User user) {
+		public UserAddedEvent(final UserDto user) {
 			this.user = user;
 		}
 
-		public User getUser() {
+		public UserDto getUser() {
 			return user;
 		}
 	}
@@ -86,25 +86,25 @@ public interface MainUIEvent extends HypothesisEvent {
 	}
 
 	final class GroupUsersChangedEvent implements MainUIEvent {
-		private final Group group;
+		private final GroupDto group;
 
-		public GroupUsersChangedEvent(final Group group) {
+		public GroupUsersChangedEvent(final GroupDto group) {
 			this.group = group;
 		}
 
-		public Group getGroup() {
+		public GroupDto getGroup() {
 			return group;
 		}
 	}
 
 	final class GroupAddedEvent implements MainUIEvent {
-		private final Group group;
+		private final GroupDto group;
 
-		public GroupAddedEvent(final Group group) {
+		public GroupAddedEvent(final GroupDto group) {
 			this.group = group;
 		}
 
-		public Group getGroup() {
+		public GroupDto getGroup() {
 			return group;
 		}
 	}
@@ -113,25 +113,25 @@ public interface MainUIEvent extends HypothesisEvent {
 	}
 
 	final class UserGroupsChangedEvent implements MainUIEvent {
-		private final User user;
+		private final UserDto user;
 
-		public UserGroupsChangedEvent(final User user) {
+		public UserGroupsChangedEvent(final UserDto user) {
 			this.user = user;
 		}
 
-		public User getUser() {
+		public UserDto getUser() {
 			return user;
 		}
 	}
 
 	final class UserPacksChangedEvent implements MainUIEvent {
-		private final User user;
+		private final UserDto user;
 
-		public UserPacksChangedEvent(final User user) {
+		public UserPacksChangedEvent(final UserDto user) {
 			this.user = user;
 		}
 
-		public User getUser() {
+		public UserDto getUser() {
 			return user;
 		}
 	}
@@ -167,25 +167,25 @@ public interface MainUIEvent extends HypothesisEvent {
 	}
 
 	final class PackSetAddedEvent implements MainUIEvent {
-		private final PackSet packSet;
+		private final PackSetDto packSet;
 
-		public PackSetAddedEvent(final PackSet packSet) {
+		public PackSetAddedEvent(final PackSetDto packSet) {
 			this.packSet = packSet;
 		}
 
-		public PackSet getPackSet() {
+		public PackSetDto getPackSet() {
 			return packSet;
 		}
 	}
 
 	final class PackSetChangedEvent implements MainUIEvent {
-		private final PackSet packSet;
+		private final PackSetDto packSet;
 
-		public PackSetChangedEvent(final PackSet packSet) {
+		public PackSetChangedEvent(final PackSetDto packSet) {
 			this.packSet = packSet;
 		}
 
-		public PackSet getPackSet() {
+		public PackSetDto getPackSet() {
 			return packSet;
 		}
 	}

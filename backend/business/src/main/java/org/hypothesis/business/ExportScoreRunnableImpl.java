@@ -10,13 +10,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
-import org.hypothesis.data.model.ExportScore;
+import org.hypothesis.data.dto.ExportScoreDto;
 import org.hypothesis.data.service.ExportService;
+import org.hypothesis.data.service.impl.ExportServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.Command;
@@ -39,13 +40,13 @@ public class ExportScoreRunnableImpl implements CancelableExportRunnable {
 	private static final Logger log = Logger.getLogger(ExportRunnableImpl.class);
 
 	private final AtomicBoolean cancelPending = new AtomicBoolean(false);
-	private final Collection<Long> testIds;
+	private final Set<Long> testIds;
 
 	private final MainEventBus bus;
 
 	private final Command finishCommand;
 
-	public ExportScoreRunnableImpl(MainEventBus bus, final Collection<Long> testIds, Command finishCommand) {
+	public ExportScoreRunnableImpl(MainEventBus bus, final Set<Long> testIds, Command finishCommand) {
 		this.bus = bus;
 		this.testIds = testIds;
 		this.finishCommand = finishCommand;
@@ -106,10 +107,10 @@ public class ExportScoreRunnableImpl implements CancelableExportRunnable {
 	}
 
 	private InputStream getExportFile() {
-		ExportService exportService = ExportService.newInstance();
+		final ExportService exportService = new ExportServiceImpl();
 
 		try {
-			List<ExportScore> scores = exportService.findExportScoresByTestId(testIds);
+			List<ExportScoreDto> scores = exportService.findExportScoresByTestIds(testIds);
 
 			if (scores != null) {
 				try {

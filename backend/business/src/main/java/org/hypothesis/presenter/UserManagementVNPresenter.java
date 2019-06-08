@@ -4,6 +4,9 @@
  */
 package org.hypothesis.presenter;
 
+import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
+import static org.hypothesis.utility.UserUtility.userHasAnyRole;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,15 +17,18 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.hypothesis.data.CaseInsensitiveItemSorter;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Role;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.GroupDto;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.RoleDto;
+import org.hypothesis.data.dto.SimpleUserDto;
+import org.hypothesis.data.dto.UserDto;
+import org.hypothesis.data.interfaces.FieldConstants;
 import org.hypothesis.data.service.GroupService;
 import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.RoleService;
 import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.GroupServiceImpl;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.server.Messages;
 import org.tepi.filtertable.FilterDecorator;
@@ -72,9 +78,9 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 	private UserWindowVNPresenter userWindowPresenter;
 
 	public UserManagementVNPresenter() {
-		permissionService = PermissionService.newInstance();
-		userService = UserService.newInstance();
-		groupService = GroupService.newInstance();
+		permissionService = new PermissionServiceImpl();
+		userService = new UserServiceImpl();
+		groupService = new GroupServiceImpl();
 	}
 
 	@Override
@@ -106,9 +112,9 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		addButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				User loggedUser = getLoggedUser();
-				if (!loggedUser.hasRole(RoleService.ROLE_SUPERUSER)
-						&& groupService.findOwnerGroups(loggedUser).isEmpty()) {
+				SimpleUserDto loggedUser = getLoggedUser();
+				if (!userHasAnyRole(loggedUser, ROLE_SUPERUSER)
+						&& groupService.findOwnerGroups(loggedUser.getId()).isEmpty()) {
 					Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
 				} else {
 					userWindowPresenter.showWindow();
@@ -131,7 +137,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		updateButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				Collection<User> users = getSelectedUsers();
+				Collection<UserDto> users = getSelectedUsers();
 
 				if (!users.isEmpty()) {
 					if (users.size() == 1) {
@@ -156,19 +162,19 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 	}
 
 	private void deleteUsers() {
-		Collection<User> users = getSelectedUsers();
+		Collection<UserDto> users = getSelectedUsers();
 
-		User loggedUser = getLoggedUser();
+		SimpleUserDto loggedUser = getLoggedUser();
 		checkDeletionPermission(loggedUser, users);
 		checkSuperuserLeft(loggedUser);
 
-		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
-			User user = iterator.next();
+		for (Iterator<UserDto> iterator = users.iterator(); iterator.hasNext();) {
+			UserDto user = iterator.next();
 			// user = userService.merge(user);
 
 			userService.delete(user);
 
-			for (Group group : user.getGroups()) {
+			for (GroupDto group : user.getGroups()) {
 				if (group != null) {
 					getBus().post(new MainUIEvent.GroupUsersChangedEvent(group));
 				}
@@ -182,10 +188,10 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		}
 	}
 
-	private void checkDeletionPermission(User currentUser, Collection<User> users) {
+	private void checkDeletionPermission(SimpleUserDto currentUser, Collection<UserDto> users) {
 		String exceptionMessage = Messages.getString("Message.Error.SuperuserDelete");
 
-		if (currentUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+		if (userHasAnyRole(currentUser, ROLE_SUPERUSER)) {
 			return;
 		}
 
@@ -193,29 +199,29 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 			throw new UnsupportedOperationException(exceptionMessage);
 		}
 
-		for (Iterator<User> iterator = users.iterator(); iterator.hasNext();) {
-			User user = iterator.next();
-			if (user.hasRole(RoleService.ROLE_SUPERUSER)) {
+		for (Iterator<UserDto> iterator = users.iterator(); iterator.hasNext();) {
+			UserDto user = iterator.next();
+			if (userHasAnyRole(user, ROLE_SUPERUSER)) {
 				throw new UnsupportedOperationException(exceptionMessage);
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void checkSuperuserLeft(User currentUser) {
+	private void checkSuperuserLeft(SimpleUserDto currentUser) {
 		String exceptionMessage = Messages.getString("Message.Error.SuperuserLeft");
 
 		if (allSelected) {
 			throw new UnsupportedOperationException(exceptionMessage);
 		}
 
-		if (currentUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+		if (userHasAnyRole(currentUser, ROLE_SUPERUSER)) {
 			boolean superuserLeft = false;
 			for (Iterator<Long> iterator = ((Collection<Long>) table.getItemIds()).iterator(); iterator.hasNext();) {
 				Long id = iterator.next();
 				if (!table.isSelected(id)) {
-					User user = ((BeanItem<User>) table.getItem(id)).getBean();
-					if (user.hasRole(RoleService.ROLE_SUPERUSER)) {
+					UserDto user = ((BeanItem<UserDto>) table.getItem(id)).getBean();
+					if (userHasAnyRole(user, ROLE_SUPERUSER)) {
 						superuserLeft = true;
 						break;
 					}
@@ -240,10 +246,10 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 	}
 
 	@SuppressWarnings("unchecked")
-	private Collection<User> getSelectedUsers() {
-		Collection<User> users = new HashSet<>();
+	private Collection<UserDto> getSelectedUsers() {
+		Collection<UserDto> users = new HashSet<>();
 		for (Long id : getSelectedUserIds()) {
-			users.add(((BeanItem<User>) table.getItem(id)).getBean());
+			users.add(((BeanItem<UserDto>) table.getItem(id)).getBean());
 		}
 		return users;
 	}
@@ -258,18 +264,17 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		table.setColumnCollapsingAllowed(true);
 		table.setSortContainerPropertyId(FieldConstants.USERNAME);
 
-		BeanContainer<Long, User> dataSource = new BeanContainer<Long, User>(User.class);
+		BeanContainer<Long, UserDto> dataSource = new BeanContainer<Long, UserDto>(UserDto.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
-		List<User> users;
-		User loggedUser = getLoggedUser();
-		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+		List<UserDto> users;
+		SimpleUserDto loggedUser = getLoggedUser();
+		if (userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
 			users = userService.findAll();
 		} else {
-			users = userService.findOwnerUsers(loggedUser);
+			users = userService.findOwnerUsers(loggedUser.getId());
 		}
-		for (User user : users) {
-			user = userService.merge(user);
+		for (UserDto user : users) {
 			dataSource.addBean(user);
 		}
 		table.setContainerDataSource(dataSource);
@@ -307,7 +312,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (event.isDoubleClick()) {
-					User user = ((BeanItem<User>) event.getItem()).getBean();
+					UserDto user = ((BeanItem<UserDto>) event.getItem()).getBean();
 					userWindowPresenter.showWindow(user);
 				}
 			}
@@ -321,12 +326,11 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 	@Override
 	public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 		if (columnId.equals(FieldConstants.ROLES)) {
-			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
-			user = userService.merge(user);
+			UserDto user = ((BeanItem<UserDto>) source.getItem(itemId)).getBean();
 
-			Set<Role> roles = user.getRoles();
+			Set<RoleDto> roles = user.getRoles();
 			List<String> sortedRoles = new ArrayList<>();
-			for (Role role : roles) {
+			for (RoleDto role : roles) {
 				sortedRoles.add(role.getName());
 			}
 			Collections.sort(sortedRoles);
@@ -358,12 +362,12 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		}
 
 		else if (columnId.equals(FieldConstants.AVAILABLE_PACKS)) {
-			User user = ((BeanItem<User>) source.getItem(itemId)).getBean();
+			UserDto user = ((BeanItem<UserDto>) source.getItem(itemId)).getBean();
 
-			List<Pack> packs = permissionService.getUserPacksVN(user);
+			List<PackDto> packs = permissionService.getUserPacksVN(user.getId());
 			List<String> sortedPacks = new ArrayList<>();
 			List<String> sortedPackDescs = new ArrayList<>();
-			for (Pack pack : packs) {
+			for (PackDto pack : packs) {
 				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", pack.getName(), pack.getId()));
 				sortedPackDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
 						pack.getDescription()));
@@ -417,8 +421,8 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void addUserIntoTable(final MainUIEvent.UserAddedEvent event) {
-		User user = event.getUser();
-		BeanContainer<Long, User> container = (BeanContainer<Long, User>) table.getContainerDataSource();
+		UserDto user = event.getUser();
+		BeanContainer<Long, UserDto> container = (BeanContainer<Long, UserDto>) table.getContainerDataSource();
 
 		container.removeItem(user.getId());
 		container.addItem(user.getId(), user);
@@ -429,8 +433,8 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void changeUserGroups(final MainUIEvent.UserGroupsChangedEvent event) {
-		User user = event.getUser();
-		BeanContainer<Long, User> container = (BeanContainer<Long, User>) table.getContainerDataSource();
+		UserDto user = event.getUser();
+		BeanContainer<Long, UserDto> container = (BeanContainer<Long, UserDto>) table.getContainerDataSource();
 
 		container.removeItem(user.getId());
 		container.addItem(user.getId(), user);

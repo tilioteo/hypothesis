@@ -6,8 +6,9 @@ package org.hypothesis.presenter;
 
 import java.io.Serializable;
 
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.UserDto;
 import org.hypothesis.data.service.UserService;
+import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.server.Messages;
@@ -45,11 +46,11 @@ public class UserSettingsWindowPresenter implements Serializable {
 	private Window window;
 
 	private final UserService userService;
-	private User user;
+	private UserDto user;
 
 	private final MainEventBus bus;
 
-	private BeanFieldGroup<User> fieldGroup;
+	private BeanFieldGroup<UserDto> fieldGroup;
 
 	@PropertyId("username")
 	private TextField usernameField;
@@ -62,7 +63,7 @@ public class UserSettingsWindowPresenter implements Serializable {
 
 		this.bus = bus;
 
-		userService = UserService.newInstance();
+		userService = new UserServiceImpl();
 	}
 
 	private void buildContent() {
@@ -72,7 +73,7 @@ public class UserSettingsWindowPresenter implements Serializable {
 		content.addComponent(buildForm());
 		content.addComponent(buildFooter());
 
-		fieldGroup = new BeanFieldGroup<User>(User.class);
+		fieldGroup = new BeanFieldGroup<UserDto>(UserDto.class);
 		fieldGroup.bindMemberFields(this);
 		fieldGroup.setItemDataSource(user);
 
@@ -102,8 +103,8 @@ public class UserSettingsWindowPresenter implements Serializable {
 			public void buttonClick(ClickEvent event) {
 				try {
 					fieldGroup.commit();
-					User user = fieldGroup.getItemDataSource().getBean();
-					userService.add(user);
+					UserDto user = fieldGroup.getItemDataSource().getBean();
+					userService.save(user);
 
 					Notification success = new Notification(Messages.getString("Message.Info.ProfileUpdated"));
 					success.setDelayMsec(2000);
@@ -148,7 +149,7 @@ public class UserSettingsWindowPresenter implements Serializable {
 		buildContent();
 	}
 
-	public void showWindow(User user) {
+	public void showWindow(UserDto user) {
 		this.user = user;
 
 		createWindow();

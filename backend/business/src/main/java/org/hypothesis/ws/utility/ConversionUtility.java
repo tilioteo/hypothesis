@@ -1,20 +1,21 @@
 package org.hypothesis.ws.utility;
 
+import org.hypothesis.data.dto.PackDto;
 import org.hypothesis.ws.entity.Pack;
 
 public class ConversionUtility {
-	
-	public static Pack entityToWs(org.hypothesis.data.model.Pack entity) {
-		if (entity != null) {
+
+	public static Pack dtoToWs(PackDto dto) {
+		if (dto != null) {
 			Pack pack = new Pack();
-			pack.setId(entity.getId());
-			pack.setName(entity.getName());
-			pack.setDescription(entity.getDescription());
-			pack.setNote(entity.getNote());
-			
+			pack.setId(dto.getId());
+			pack.setName(dto.getName());
+			pack.setDescription(dto.getDescription());
+			pack.setNote(dto.getNote());
+
 			return pack;
 		}
-		
+
 		return null;
 	}
 

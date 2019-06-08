@@ -4,6 +4,9 @@
  */
 package org.hypothesis.presenter;
 
+import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
+import static org.hypothesis.utility.UserUtility.userHasAnyRole;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,13 +25,15 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.hypothesis.data.CaseInsensitiveItemSorter;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Group;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.User;
+import org.hypothesis.data.dto.GroupDto;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.SimpleUserDto;
+import org.hypothesis.data.dto.UserDto;
+import org.hypothesis.data.interfaces.FieldConstants;
 import org.hypothesis.data.service.GroupService;
 import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.RoleService;
+import org.hypothesis.data.service.impl.GroupServiceImpl;
+import org.hypothesis.data.service.impl.PermissionServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.server.Messages;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -74,8 +79,8 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 	private GroupWindowPresenter groupWindowPresenter;
 
 	public GroupManagementPresenter() {
-		permissionService = PermissionService.newInstance();
-		groupService = GroupService.newInstance();
+		permissionService = new PermissionServiceImpl();
+		groupService = new GroupServiceImpl();
 	}
 
 	@Override
@@ -141,7 +146,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 		updateButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				Collection<Group> groups = getSelectedGroups();
+				Collection<GroupDto> groups = getSelectedGroups();
 
 				if (groups.size() == 1) {
 					groupWindowPresenter.showWindow(groups.iterator().next());
@@ -200,9 +205,9 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 			row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
 			row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
 
-			for (Iterator<Group> i = getSelectedGroups().iterator(); i.hasNext();) {
+			for (Iterator<GroupDto> i = getSelectedGroups().iterator(); i.hasNext();) {
 				row = sheet.createRow(rowNr++);
-				Group group = i.next();
+				GroupDto group = i.next();
 				row.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(group.getId());
 				row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(group.getName());
 			}
@@ -220,13 +225,12 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 	}
 
 	private void deleteGroups() {
-		Collection<Group> groups = getSelectedGroups();
+		Collection<GroupDto> groups = getSelectedGroups();
 
-		for (Iterator<Group> iterator = groups.iterator(); iterator.hasNext();) {
-			Group group = iterator.next();
-			group = groupService.merge(group);
-			Set<User> users = new HashSet<>();
-			for (User user : group.getUsers()) {
+		for (Iterator<GroupDto> iterator = groups.iterator(); iterator.hasNext();) {
+			GroupDto group = iterator.next();
+			Set<UserDto> users = new HashSet<>();
+			for (UserDto user : group.getUsers()) {
 				users.add(user);
 			}
 
@@ -236,7 +240,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 
 			groupService.delete(group);
 
-			for (User user : users) {
+			for (UserDto user : users) {
 				if (user != null) {
 					getBus().post(new MainUIEvent.UserGroupsChangedEvent(user));
 				}
@@ -258,10 +262,10 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 	}
 
 	@SuppressWarnings("unchecked")
-	private Collection<Group> getSelectedGroups() {
-		Collection<Group> groups = new HashSet<>();
+	private Collection<GroupDto> getSelectedGroups() {
+		Collection<GroupDto> groups = new HashSet<>();
 		for (Long id : getSelectedGroupIds()) {
-			groups.add(((BeanItem<Group>) table.getItem(id)).getBean());
+			groups.add(((BeanItem<GroupDto>) table.getItem(id)).getBean());
 		}
 		return groups;
 	}
@@ -277,18 +281,17 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 		table.setColumnCollapsingAllowed(true);
 		table.setSortContainerPropertyId(FieldConstants.NAME);
 
-		BeanContainer<Long, Group> dataSource = new BeanContainer<Long, Group>(Group.class);
+		BeanContainer<Long, GroupDto> dataSource = new BeanContainer<Long, GroupDto>(GroupDto.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
-		List<Group> groups;
-		User loggedUser = getLoggedUser();
-		if (loggedUser.hasRole(RoleService.ROLE_SUPERUSER)) {
+		List<GroupDto> groups;
+		SimpleUserDto loggedUser = getLoggedUser();
+		if (userHasAnyRole(loggedUser, ROLE_SUPERUSER)) {
 			groups = groupService.findAll();
 		} else {
-			groups = groupService.findOwnerGroups(loggedUser);
+			groups = groupService.findOwnerGroups(loggedUser.getId());
 		}
-		for (Group group : groups) {
-			group = groupService.merge(group);
+		for (GroupDto group : groups) {
 			dataSource.addBean(group);
 		}
 		table.setContainerDataSource(dataSource);
@@ -317,7 +320,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (event.isDoubleClick()) {
-					Group group = ((BeanItem<Group>) event.getItem()).getBean();
+					GroupDto group = ((BeanItem<GroupDto>) event.getItem()).getBean();
 					groupWindowPresenter.showWindow(group);
 				}
 			}
@@ -331,12 +334,11 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 	@Override
 	public Object generateCell(Table source, Object itemId, Object columnId) {
 		if (columnId.equals(FieldConstants.USERS)) {
-			Group group = ((BeanItem<Group>) source.getItem(itemId)).getBean();
-			group = groupService.merge(group);
+			GroupDto group = ((BeanItem<GroupDto>) source.getItem(itemId)).getBean();
 
-			Set<User> users = group.getUsers();
+			Set<UserDto> users = group.getUsers();
 			List<String> sortedUsers = new ArrayList<>();
-			for (User user : users) {
+			for (UserDto user : users) {
 				sortedUsers.add(user.getUsername());
 			}
 			Collections.sort(sortedUsers);
@@ -363,12 +365,12 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 		}
 
 		else if (columnId.equals(FieldConstants.AVAILABLE_PACKS)) {
-			Group group = ((BeanItem<Group>) source.getItem(itemId)).getBean();
+			GroupDto group = ((BeanItem<GroupDto>) source.getItem(itemId)).getBean();
 
-			Set<Pack> packs = permissionService.getGroupPacks(group);
+			List<PackDto> packs = permissionService.getGroupPacks(group.getId());
 			List<String> sortedPacks = new ArrayList<>();
 			List<String> sortedPackDescs = new ArrayList<>();
-			for (Pack pack : packs) {
+			for (PackDto pack : packs) {
 				sortedPacks.add(Messages.getString("Caption.Item.PackLabel", pack.getName(), pack.getId()));
 				sortedPackDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
 						pack.getDescription()));
@@ -424,9 +426,9 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void addGroupIntoTable(final MainUIEvent.GroupAddedEvent event) {
-		Group group = event.getGroup();
+		GroupDto group = event.getGroup();
 		if (group != null) {
-			BeanContainer<Long, Group> container = (BeanContainer<Long, Group>) table.getContainerDataSource();
+			BeanContainer<Long, GroupDto> container = (BeanContainer<Long, GroupDto>) table.getContainerDataSource();
 
 			container.removeItem(group.getId());
 			container.addItem(group.getId(), group);
@@ -438,8 +440,8 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void changeGroupUsers(final MainUIEvent.GroupUsersChangedEvent event) {
-		Group group = event.getGroup();
-		BeanContainer<Long, Group> container = (BeanContainer<Long, Group>) table.getContainerDataSource();
+		GroupDto group = event.getGroup();
+		BeanContainer<Long, GroupDto> container = (BeanContainer<Long, GroupDto>) table.getContainerDataSource();
 
 		container.removeItem(group.getId());
 		container.addItem(group.getId(), group);

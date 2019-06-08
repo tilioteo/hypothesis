@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hypothesis.data.model.Slide;
+import org.hypothesis.data.dto.SlideDto;
 import org.hypothesis.evaluation.AbstractBasePath;
 import org.hypothesis.evaluation.DefaultPath;
 import org.hypothesis.evaluation.Path;
@@ -40,7 +40,7 @@ public class BranchController implements Serializable {
 		}
 	}
 
-	public void addSlideOutputs(Slide slide, Map<Integer, ExchangeVariable> outputValues) {
+	public void addSlideOutputs(SlideDto slide, Map<Integer, ExchangeVariable> outputValues) {
 		if (slide != null && slide.getId() != null && !outputValues.isEmpty()) {
 			// copy map of variables because it will be erased at the slide
 			// finish

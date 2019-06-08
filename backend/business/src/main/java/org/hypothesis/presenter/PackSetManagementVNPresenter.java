@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hypothesis.data.CaseInsensitiveItemSorter;
-import org.hypothesis.data.model.FieldConstants;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.PackSet;
+import org.hypothesis.data.dto.PackDto;
+import org.hypothesis.data.dto.PackSetDto;
+import org.hypothesis.data.interfaces.FieldConstants;
 import org.hypothesis.data.service.PackSetService;
+import org.hypothesis.data.service.impl.PackSetServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.presenter.UserManagementVNPresenter.UserTableFilterDecorator;
 import org.hypothesis.server.Messages;
@@ -49,7 +50,7 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
 	private PackSetWindowVNPresenter packSetWindowPresenter;
 
 	public PackSetManagementVNPresenter() {
-		packSetService = PackSetService.newInstance();
+		packSetService = new PackSetServiceImpl();
 	}
 
 	@Override
@@ -100,7 +101,7 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
 		updateButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				PackSet packSet = getSelectedPackSet();
+				PackSetDto packSet = getSelectedPackSet();
 
 				if (packSet != null) {
 					packSetWindowPresenter.showWindow(packSet);
@@ -112,8 +113,8 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
 	}
 
 	@SuppressWarnings("unchecked")
-	private PackSet getSelectedPackSet() {
-		return ((BeanItem<PackSet>) table.getItem(table.getValue())).getBean();
+	private PackSetDto getSelectedPackSet() {
+		return ((BeanItem<PackSetDto>) table.getItem(table.getValue())).getBean();
 	}
 
 	@Override
@@ -136,12 +137,11 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
 		table.setColumnCollapsingAllowed(true);
 		table.setSortContainerPropertyId(FieldConstants.USERNAME);
 
-		BeanContainer<Long, PackSet> dataSource = new BeanContainer<Long, PackSet>(PackSet.class);
+		BeanContainer<Long, PackSetDto> dataSource = new BeanContainer<Long, PackSetDto>(PackSetDto.class);
 		dataSource.setBeanIdProperty(FieldConstants.ID);
 
-		List<PackSet> packSets = packSetService.findAll();
-		for (PackSet packSet : packSets) {
-			packSet = packSetService.merge(packSet);
+		List<PackSetDto> packSets = packSetService.findAll();
+		for (PackSetDto packSet : packSets) {
 			dataSource.addBean(packSet);
 		}
 		table.setContainerDataSource(dataSource);
@@ -173,7 +173,7 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
 			@Override
 			public void itemClick(ItemClickEvent event) {
 				if (event.isDoubleClick()) {
-					PackSet packSet = ((BeanItem<PackSet>) event.getItem()).getBean();
+					PackSetDto packSet = ((BeanItem<PackSetDto>) event.getItem()).getBean();
 					packSetWindowPresenter.showWindow(packSet);
 				}
 			}
@@ -187,12 +187,12 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
 	public Object generateCell(CustomTable source, Object itemId, Object columnId) {
 		if (columnId.equals(FieldConstants.AVAILABLE_PACKS)) {
 			@SuppressWarnings("unchecked")
-			PackSet packSet = ((BeanItem<PackSet>) source.getItem(itemId)).getBean();
+			PackSetDto packSet = ((BeanItem<PackSetDto>) source.getItem(itemId)).getBean();
 
-			List<Pack> packs = packSet.getPacks();
+			List<PackDto> packs = packSet.getPacks();
 			List<String> packNames = new ArrayList<>();
 			List<String> packDescs = new ArrayList<>();
-			for (Pack pack : packs) {
+			for (PackDto pack : packs) {
 				packNames.add(Messages.getString("Caption.Item.PackLabel", pack.getName(), pack.getId()));
 				packDescs.add(Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
 						pack.getDescription()));
@@ -236,8 +236,8 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void addPackSetIntoTable(final MainUIEvent.PackSetAddedEvent event) {
-		PackSet packSet = event.getPackSet();
-		BeanContainer<Long, PackSet> container = (BeanContainer<Long, PackSet>) table.getContainerDataSource();
+		PackSetDto packSet = event.getPackSet();
+		BeanContainer<Long, PackSetDto> container = (BeanContainer<Long, PackSetDto>) table.getContainerDataSource();
 
 		container.addItem(packSet.getId(), packSet);
 
@@ -247,8 +247,8 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
 	@SuppressWarnings("unchecked")
 	@Handler
 	public void changePackSet(final MainUIEvent.PackSetChangedEvent event) {
-		PackSet packSet = event.getPackSet();
-		BeanContainer<Long, PackSet> container = (BeanContainer<Long, PackSet>) table.getContainerDataSource();
+		PackSetDto packSet = event.getPackSet();
+		BeanContainer<Long, PackSetDto> container = (BeanContainer<Long, PackSetDto>) table.getContainerDataSource();
 
 		container.removeItem(packSet.getId());
 		container.addItem(packSet.getId(), packSet);

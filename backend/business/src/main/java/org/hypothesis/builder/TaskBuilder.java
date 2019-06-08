@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 import org.hypothesis.business.TaskController;
 import org.hypothesis.data.DocumentReader;
-import org.hypothesis.data.model.Task;
+import org.hypothesis.data.dto.TaskDto;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -19,13 +19,13 @@ import org.hypothesis.data.model.Task;
 @SuppressWarnings("serial")
 public class TaskBuilder implements Serializable {
 
-	public static TaskController buildTaskController(Task entity, DocumentReader reader) {
+	public static TaskController buildTaskController(TaskDto dto, DocumentReader reader) {
 
 		TaskControllerFactory factory = new TaskControllerFactoryImpl();
 
-		if (entity != null && reader != null) {
+		if (dto != null && reader != null) {
 
-			return factory.buildTaskController(entity.getData(), reader);
+			return factory.buildTaskController(dto.getData(), reader);
 		}
 
 		return null;
