@@ -30,6 +30,28 @@ public class GroupServiceImpl implements GroupService {
 	private final GroupConverter groupConverter = new GroupConverter();
 
 	@Override
+	public synchronized GroupDto getById(long groupId) {
+		log.debug("getById");
+
+		try {
+			begin();
+
+			Group group = getByIdInternal(groupId);
+
+			final GroupDto dto = groupConverter.toDto(group);
+			commit();
+
+			return dto;
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			rollback();
+		}
+
+		return null;
+	}
+
+	@Override
 	public synchronized List<GroupDto> findAll() {
 		log.debug("findAll");
 		try {
@@ -139,6 +161,16 @@ public class GroupServiceImpl implements GroupService {
 			rollback();
 		}
 		return false;
+	}
+
+	private Group getByIdInternal(long groupId) {
+		Group group = dao.findById(Long.valueOf(groupId), false);
+
+		if (group == null) {
+			throw new EntityNotFoundException("group id=" + groupId);
+		}
+
+		return group;
 	}
 
 }

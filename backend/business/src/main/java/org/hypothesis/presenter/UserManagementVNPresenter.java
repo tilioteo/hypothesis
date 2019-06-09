@@ -4,6 +4,7 @@
  */
 package org.hypothesis.presenter;
 
+import static java.util.stream.Collectors.toSet;
 import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
 import static org.hypothesis.utility.UserUtility.userHasAnyRole;
 
@@ -14,7 +15,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.hypothesis.data.CaseInsensitiveItemSorter;
 import org.hypothesis.data.dto.GroupDto;
@@ -137,15 +140,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		updateButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				Collection<UserDto> users = getSelectedUsers();
-
-				if (!users.isEmpty()) {
-					if (users.size() == 1) {
-						userWindowPresenter.showWindow(users.iterator().next());
-					} else {
-						userWindowPresenter.showWindow(users);
-					}
-				}
+				editUsers(getSelectedUsers());
 			}
 		});
 		return updateButton;
@@ -313,7 +308,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 			public void itemClick(ItemClickEvent event) {
 				if (event.isDoubleClick()) {
 					UserDto user = ((BeanItem<UserDto>) event.getItem()).getBean();
-					userWindowPresenter.showWindow(user);
+					editUsers(Stream.of(user).collect(toSet()));
 				}
 			}
 		});
@@ -446,6 +441,22 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
 		boolean toolsEnabled = allSelected || itemsSelected;
 		buttonGroup.setEnabled(toolsEnabled);
+	}
+
+	private void editUsers(Collection<UserDto> users) {
+		if (!users.isEmpty()) {
+			final Set<UserDto> freshUsers = users.stream()//
+					.map(UserDto::getId)//
+					.map(userService::getById)//
+					.filter(Objects::nonNull)//
+					.collect(toSet());
+
+			if (freshUsers.size() == 1) {
+				userWindowPresenter.showWindow(freshUsers.iterator().next());
+			} else {
+				userWindowPresenter.showWindow(freshUsers);
+			}
+		}
 	}
 
 	public static class UserTableFilterDecorator implements FilterDecorator {

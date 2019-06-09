@@ -4,6 +4,7 @@
  */
 package org.hypothesis.presenter;
 
+import static java.util.stream.Collectors.toSet;
 import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
 import static org.hypothesis.utility.UserUtility.userHasAnyRole;
 
@@ -18,7 +19,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -146,13 +149,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 		updateButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				Collection<GroupDto> groups = getSelectedGroups();
-
-				if (groups.size() == 1) {
-					groupWindowPresenter.showWindow(groups.iterator().next());
-				} else {
-					groupWindowPresenter.showWindow(groups);
-				}
+				editGroups(getSelectedGroups());
 			}
 		});
 		return updateButton;
@@ -321,7 +318,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 			public void itemClick(ItemClickEvent event) {
 				if (event.isDoubleClick()) {
 					GroupDto group = ((BeanItem<GroupDto>) event.getItem()).getBean();
-					groupWindowPresenter.showWindow(group);
+					editGroups(Stream.of(group).collect(toSet()));
 				}
 			}
 		});
@@ -453,6 +450,22 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 		boolean itemsSelected = ((Set<Object>) table.getValue()).size() > 0;
 		boolean toolsEnabled = allSelected || itemsSelected;
 		buttonGroup.setEnabled(toolsEnabled);
+	}
+
+	private void editGroups(Collection<GroupDto> groups) {
+		if (!groups.isEmpty()) {
+			final Set<GroupDto> freshGroups = groups.stream()//
+					.map(GroupDto::getId)//
+					.map(groupService::getById)//
+					.filter(Objects::nonNull)//
+					.collect(toSet());
+
+			if (freshGroups.size() == 1) {
+				groupWindowPresenter.showWindow(freshGroups.iterator().next());
+			} else {
+				groupWindowPresenter.showWindow(freshGroups);
+			}
+		}
 	}
 
 }

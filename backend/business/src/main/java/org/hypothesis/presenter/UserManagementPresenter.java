@@ -4,6 +4,7 @@
  */
 package org.hypothesis.presenter;
 
+import static java.util.stream.Collectors.toSet;
 import static org.hypothesis.data.api.Roles.ROLE_SUPERUSER;
 import static org.hypothesis.utility.UserUtility.userHasAnyRole;
 
@@ -21,7 +22,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -163,13 +166,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 		updateButton.addClickListener(new ClickListener() {
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				Collection<UserDto> users = getSelectedUsers();
-
-				if (users.size() == 1) {
-					userWindowPresenter.showWindow(users.iterator().next());
-				} else {
-					userWindowPresenter.showWindow(users);
-				}
+				editUsers(getSelectedUsers());
 			}
 		});
 		return updateButton;
@@ -396,7 +393,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 			public void itemClick(ItemClickEvent event) {
 				if (event.isDoubleClick()) {
 					UserDto user = ((BeanItem<UserDto>) event.getItem()).getBean();
-					userWindowPresenter.showWindow(user);
+					editUsers(Stream.of(user).collect(toSet()));
 				}
 			}
 		});
@@ -578,6 +575,22 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 		boolean itemsSelected = !((Set<Object>) table.getValue()).isEmpty();
 		boolean toolsEnabled = allSelected || itemsSelected;
 		buttonGroup.setEnabled(toolsEnabled);
+	}
+
+	private void editUsers(Collection<UserDto> users) {
+		if (!users.isEmpty()) {
+			final Set<UserDto> freshUsers = users.stream()//
+					.map(UserDto::getId)//
+					.map(userService::getById)//
+					.filter(Objects::nonNull)//
+					.collect(toSet());
+
+			if (freshUsers.size() == 1) {
+				userWindowPresenter.showWindow(freshUsers.iterator().next());
+			} else {
+				userWindowPresenter.showWindow(freshUsers);
+			}
+		}
 	}
 
 }

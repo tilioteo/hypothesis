@@ -125,6 +125,7 @@ public class HibernateUtil {
 		if (session.getTransaction().isActive()) {
 			log.trace("Committing active database transaction.");
 			session.getTransaction().commit();
+			session.flush();
 		} else {
 			log.trace("Session has no active database transaction to commit.");
 		}
