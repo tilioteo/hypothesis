@@ -267,11 +267,11 @@ public class ExportEventDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "ExportEventDto [timeStamp=" + timeStamp + ", clientTimeStamp=" + clientTimeStamp + ", type=" + type
-				+ ", name=" + name + ", data=" + data + ", branchId=" + branchId + ", branchName=" + branchName
-				+ ", taskId=" + taskId + ", taskName=" + taskName + ", slideId=" + slideId + ", slideName=" + slideName
-				+ ", testId=" + testId + ", userId=" + userId + ", packId=" + packId + ", packName=" + packName
-				+ ", created=" + created + "]";
+		return "ExportEventDto [id=" + getId() + ", timeStamp=" + timeStamp + ", clientTimeStamp=" + clientTimeStamp
+				+ ", type=" + type + ", name=" + name + ", data=" + data + ", branchId=" + branchId + ", branchName="
+				+ branchName + ", taskId=" + taskId + ", taskName=" + taskName + ", slideId=" + slideId + ", slideName="
+				+ slideName + ", testId=" + testId + ", userId=" + userId + ", packId=" + packId + ", packName="
+				+ packName + ", created=" + created + "]";
 	}
 
 }

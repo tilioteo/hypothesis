@@ -238,7 +238,7 @@ public class TestDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "TestDto [id=" + getId() + "production=" + production + ", created=" + created + ", started=" + started
+		return "TestDto [id=" + getId() + ", production=" + production + ", created=" + created + ", started=" + started
 				+ ", finished=" + finished + ", broken=" + broken + ", lastAccess=" + lastAccess + ", status=" + status
 				+ ", user=" + user + ", pack=" + pack + ", lastBranchId=" + lastBranchId + ", lastTaskId=" + lastTaskId
 				+ ", lastSlideId=" + lastSlideId + ", events=" + events + ", scores=" + scores + "]";

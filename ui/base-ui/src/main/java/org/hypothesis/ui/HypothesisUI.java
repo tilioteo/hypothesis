@@ -12,8 +12,14 @@ import org.vaadin.special.ui.NonVisualComponent;
 import org.vaadin.special.ui.ShortcutKey;
 import org.vaadin.special.ui.Timer;
 
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.JavaScriptFunction;
+
+import elemental.json.JsonArray;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -33,6 +39,24 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler 
 	 * List of timers in this UI.
 	 */
 	private final LinkedHashSet<ShortcutKey> shortcuts = new LinkedHashSet<>();
+
+	@Override
+	protected void init(VaadinRequest request) {
+		super.init(request);
+
+		JavaScript.getCurrent().addFunction("aboutToClose", new JavaScriptFunction() {
+
+			@Override
+			public void call(JsonArray arguments) {
+				System.out.println("Window/Tab is Closed.");
+				// TODO Call Method to Clean the Resource before window/Tab
+				// Close.
+				
+			}
+		});
+		Page.getCurrent().getJavaScript().execute(
+				"window.onbeforeunload = function (e) { var e = e || window.event; aboutToClose(); return; };");
+	}
 
 	@Override
 	public void setContent(Component content) {
@@ -107,7 +131,7 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler 
 	@Override
 	public boolean removeTimer(AbstractComponent timer) throws IllegalArgumentException {
 		if (timer instanceof Timer) {
-			Timer t = (Timer)timer;
+			Timer t = (Timer) timer;
 			if (!timers.remove(t)) {
 				// Timer timer is not in this UI.
 				return false;

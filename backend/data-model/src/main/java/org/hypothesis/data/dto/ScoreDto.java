@@ -127,7 +127,7 @@ public class ScoreDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "ScoreDto [id=" + getId() + "timeStamp=" + timeStamp + ", name=" + name + ", data=" + data
+		return "ScoreDto [id=" + getId() + ", timeStamp=" + timeStamp + ", name=" + name + ", data=" + data
 				+ ", branchId=" + branchId + ", taskId=" + taskId + ", slideId=" + slideId + ", testId=" + testId + "]";
 	}
 

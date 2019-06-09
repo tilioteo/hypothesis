@@ -157,9 +157,9 @@ public class EventDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "EventDto [id=" + getId() + "timeStamp=" + timeStamp + ", clientTimeStamp=" + clientTimeStamp + ", type="
-				+ type + ", name=" + name + ", data=" + data + ", branchId=" + branchId + ", taskId=" + taskId
-				+ ", slideId=" + slideId + ", testId=" + testId + "]";
+		return "EventDto [id=" + getId() + ", timeStamp=" + timeStamp + ", clientTimeStamp=" + clientTimeStamp
+				+ ", type=" + type + ", name=" + name + ", data=" + data + ", branchId=" + branchId + ", taskId="
+				+ taskId + ", slideId=" + slideId + ", testId=" + testId + "]";
 	}
 
 }

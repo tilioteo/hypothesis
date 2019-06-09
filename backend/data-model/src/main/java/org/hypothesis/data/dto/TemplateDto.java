@@ -62,7 +62,7 @@ public class TemplateDto extends EntityDto<String> {
 
 	@Override
 	public String toString() {
-		return "TemplateDto [id=" + getId() + "note=" + note + ", data=" + data + "]";
+		return "TemplateDto [id=" + getId() + ", note=" + note + ", data=" + data + "]";
 	}
 
 }

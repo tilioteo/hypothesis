@@ -86,7 +86,7 @@ public class TokenDto extends EntityDto<String> {
 
 	@Override
 	public String toString() {
-		return "TokenDto [id=" + getId() + "production=" + production + ", packId=" + packId + ", viewUid=" + viewUid
+		return "TokenDto [id=" + getId() + ", production=" + production + ", packId=" + packId + ", viewUid=" + viewUid
 				+ ", user=" + user + "]";
 	}
 

@@ -79,7 +79,7 @@ public class BranchDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "BranchDto [id=" + getId() + "note=" + note + ", data=" + data + ", tasks=" + tasks + "]";
+		return "BranchDto [id=" + getId() + ", note=" + note + ", data=" + data + ", tasks=" + tasks + "]";
 	}
 
 }

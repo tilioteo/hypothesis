@@ -43,7 +43,6 @@ import org.hypothesis.data.service.impl.PermissionServiceImpl;
 import org.hypothesis.data.service.impl.UserServiceImpl;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.server.Messages;
-import org.hypothesis.utility.UserUtility;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.vaadin.data.Property;
@@ -125,8 +124,8 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 			@Override
 			public void buttonClick(final ClickEvent event) {
 				SimpleUserDto loggedUser = getLoggedUser();
-				if (!UserUtility.userHasAnyRole(loggedUser, Roles.ROLE_SUPERUSER)
-						&& groupService.findOwnerGroups(loggedUser.getId()).size() == 0) {
+				if (!userHasAnyRole(loggedUser, Roles.ROLE_SUPERUSER)
+						&& groupService.findOwnerGroups(loggedUser.getId()).isEmpty()) {
 					Notification.show(Messages.getString("Message.Error.CreateGroup"), Type.WARNING_MESSAGE);
 				} else {
 					userWindowPresenter.showWindow();

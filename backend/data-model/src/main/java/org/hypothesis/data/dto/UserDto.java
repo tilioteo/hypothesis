@@ -145,7 +145,7 @@ public class UserDto extends SimpleUserDto {
 
 	@Override
 	public String toString() {
-		return "UserDto [id=" + getId() + "username=" + getUsername() + "password=" + password + ", name=" + name
+		return "UserDto [id=" + getId() + ", username=" + getUsername() + "password=" + password + ", name=" + name
 				+ ", note=" + note + ", enabled=" + getEnabled() + ", ownerId=" + ownerId + ", autoDisable="
 				+ isAutoDisable() + ", testingSuspended=" + isTestingSuspended() + ", expireDate=" + getExpireDate()
 				+ ", gender=" + gender + ", education=" + education + ", birthDate=" + birthDate + ", testingDate="

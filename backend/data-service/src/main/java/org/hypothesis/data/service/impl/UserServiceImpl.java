@@ -294,7 +294,25 @@ public class UserServiceImpl implements UserService {
 	public synchronized UserDto save(UserDto user) {
 		log.debug("save");
 
-		throw new UnsupportedOperationException("Not implemented yet.");
+		if (user != null) {
+			try {
+				begin();
+
+				User entity = new User();
+				userConverter.fillEntity(user, entity, true);
+
+				dao.makePersistent(entity);
+				final UserDto dto = userConverter.toDto(entity);
+
+				commit();
+				return dto;
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				rollback();
+			}
+		}
+
+		return null;
 	}
 
 	@Override

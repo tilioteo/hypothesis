@@ -104,7 +104,7 @@ public class TaskDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "TaskDto [id=" + getId() + "name=" + name + ", note=" + note + ", randomized=" + randomized + ", data="
+		return "TaskDto [id=" + getId() + ", name=" + name + ", note=" + note + ", randomized=" + randomized + ", data="
 				+ data + ", slides=" + slides + "]";
 	}
 

@@ -77,7 +77,7 @@ public class SlideDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "SlideDto [id=" + getId() + "note=" + note + ", data=" + data + ", template=" + template + "]";
+		return "SlideDto [id=" + getId() + ", note=" + note + ", data=" + data + ", template=" + template + "]";
 	}
 
 }

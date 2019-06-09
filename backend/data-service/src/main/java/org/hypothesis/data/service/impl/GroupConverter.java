@@ -54,7 +54,7 @@ class GroupConverter {
 			return;
 		}
 
-		// entity.setId(dto.getId());
+		entity.setId(dto.getId());
 		entity.setName(dto.getName());
 		entity.setNote(dto.getNote());
 		entity.setOwnerId(dto.getOwnerId());
@@ -65,6 +65,14 @@ class GroupConverter {
 						? userDao.findById(u.getId(), false)//
 						: userConverter.toNewEntity(u, true))//
 				.collect(toSet()));
+	}
+
+	public Group toNewEntity(GroupDto dto) {
+		final Group group = new Group();
+
+		fillEntity(dto, group);
+
+		return group;
 	}
 
 }

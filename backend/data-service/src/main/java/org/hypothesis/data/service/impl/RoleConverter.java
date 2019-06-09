@@ -18,4 +18,17 @@ class RoleConverter {
 		return dto;
 	}
 
+	public static Role toEntity(RoleDto dto) {
+		if (dto == null) {
+			return null;
+		}
+
+		final Role role = new Role();
+
+		role.setId(dto.getId());
+		role.setName(dto.getName());
+
+		return role;
+	}
+
 }

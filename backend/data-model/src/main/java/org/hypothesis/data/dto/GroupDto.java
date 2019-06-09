@@ -85,7 +85,7 @@ public class GroupDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "GroupDto [id=" + getId() + "name=" + name + ", note=" + note + ", ownerId=" + ownerId + ", users="
+		return "GroupDto [id=" + getId() + ", name=" + name + ", note=" + note + ", ownerId=" + ownerId + ", users="
 				+ users + "]";
 	}
 

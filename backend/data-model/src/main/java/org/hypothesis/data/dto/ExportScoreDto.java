@@ -344,12 +344,12 @@ public class ExportScoreDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "ExportScoreDto [timeStamp=" + timeStamp + ", name=" + name + ", data=" + data + ", branchId=" + branchId
-				+ ", branchName=" + branchName + ", taskId=" + taskId + ", taskName=" + taskName + ", slideId="
-				+ slideId + ", slideName=" + slideName + ", testId=" + testId + ", userId=" + userId + ", packId="
-				+ packId + ", packName=" + packName + ", created=" + created + ", firstName=" + firstName
-				+ ", username=" + username + ", password=" + password + ", gender=" + gender + ", education="
-				+ education + ", birthDate=" + birthDate + ", note=" + note + "]";
+		return "ExportScoreDto [id=" + getId() + ", timeStamp=" + timeStamp + ", name=" + name + ", data=" + data
+				+ ", branchId=" + branchId + ", branchName=" + branchName + ", taskId=" + taskId + ", taskName="
+				+ taskName + ", slideId=" + slideId + ", slideName=" + slideName + ", testId=" + testId + ", userId="
+				+ userId + ", packId=" + packId + ", packName=" + packName + ", created=" + created + ", firstName="
+				+ firstName + ", username=" + username + ", password=" + password + ", gender=" + gender
+				+ ", education=" + education + ", birthDate=" + birthDate + ", note=" + note + "]";
 	}
 
 }

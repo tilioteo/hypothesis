@@ -4,13 +4,17 @@ import static java.util.stream.Collectors.toSet;
 
 import java.util.Objects;
 
+import org.hypothesis.data.dao.HibernateDao;
 import org.hypothesis.data.dto.SimpleUserDto;
 import org.hypothesis.data.dto.UserDto;
+import org.hypothesis.data.model.Group;
 import org.hypothesis.data.model.User;
 
 class UserConverter {
 
 	private final GroupConverter groupConverter = new GroupConverter(this);
+
+	private final HibernateDao<Group, Long> groupDao = new HibernateDao<Group, Long>(Group.class);
 
 	public SimpleUserDto toSimpleDto(User user) {
 		final SimpleUserDto dto = new SimpleUserDto();
@@ -47,6 +51,7 @@ class UserConverter {
 		dto.setAutoDisable(user.getAutoDisable());
 		dto.setTestingSuspended(user.isTestingSuspended());
 		dto.setExpireDate(user.getExpireDate());
+
 		dto.setRoles(user.getRoles().stream()//
 				.filter(Objects::nonNull)//
 				.map(RoleConverter::toDto)//
@@ -62,6 +67,7 @@ class UserConverter {
 			return;
 		}
 
+		entity.setId(dto.getId());
 		entity.setUsername(dto.getUsername());
 		entity.setEnabled(dto.getEnabled());
 		entity.setAutoDisable(dto.isAutoDisable());
@@ -76,8 +82,18 @@ class UserConverter {
 		entity.setPassword(dto.getPassword());
 		entity.setTestingDate(dto.getTestingDate());
 
-		if (deep) {
+		entity.setRoles(dto.getRoles().stream()//
+				.filter(Objects::nonNull)//
+				.map(RoleConverter::toEntity)//
+				.collect(toSet()));
 
+		if (deep) {
+			entity.setGroups(dto.getGroups().stream()//
+					.filter(Objects::nonNull)//
+					.map(g -> (g.getId() != null)//
+							? groupDao.findById(g.getId(), false)//
+							: groupConverter.toNewEntity(g))//
+					.collect(toSet()));
 		}
 	}
 

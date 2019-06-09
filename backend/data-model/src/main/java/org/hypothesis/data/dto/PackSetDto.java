@@ -56,7 +56,7 @@ public class PackSetDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "PackSetDto [id=" + getId() + "name=" + name + ", packs=" + packs + "]";
+		return "PackSetDto [id=" + getId() + ", name=" + name + ", packs=" + packs + "]";
 	}
 
 }

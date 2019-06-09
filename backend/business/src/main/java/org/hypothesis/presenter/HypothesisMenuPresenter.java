@@ -106,9 +106,9 @@ public class HypothesisMenuPresenter implements MenuPresenter {
 		settings.addStyleName("user-menu");
 		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.jpg"), null);
 
-		if (!GUEST.equals(user)
+		if (!(GUEST.equals(user)
 				// NOTE: VN specific - disable user profile editing
-				&& userHasAnyRole(user, ROLE_MANAGER, ROLE_SUPERUSER)) {
+|| userHasAnyRole(user, ROLE_MANAGER, ROLE_SUPERUSER))) {
 			settingsItem.addItem(Messages.getString("Caption.Menu.EditProfile"), new Command() {
 				@Override
 				public void menuSelected(final MenuItem selectedItem) {

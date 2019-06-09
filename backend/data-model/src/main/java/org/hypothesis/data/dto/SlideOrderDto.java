@@ -66,7 +66,7 @@ public class SlideOrderDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "SlideOrderDto [id=" + getId() + "testId=" + testId + ", taskId=" + taskId + ", order=" + order + "]";
+		return "SlideOrderDto [id=" + getId() + ", testId=" + testId + ", taskId=" + taskId + ", order=" + order + "]";
 	}
 
 }

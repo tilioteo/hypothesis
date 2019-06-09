@@ -53,7 +53,7 @@ public class MessageDto extends EntityDto<String> {
 
 	@Override
 	public String toString() {
-		return "MessageDto [id=" + getId() + "data=" + data + ", note=" + note + "]";
+		return "MessageDto [id=" + getId() + ", data=" + data + ", note=" + note + "]";
 	}
 
 }

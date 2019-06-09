@@ -134,7 +134,7 @@ public class SimpleUserDto extends EntityDto<Long> {
 
 	@Override
 	public String toString() {
-		return "SimpleUserDto [id=" + getId() + "username=" + username + ", enabled=" + enabled + ", autoDisable="
+		return "SimpleUserDto [id=" + getId() + ", username=" + username + ", enabled=" + enabled + ", autoDisable="
 				+ autoDisable + ", testingSuspended=" + testingSuspended + ", expireDate=" + expireDate + ", roles="
 				+ roles + ", groups=" + groups + "]";
 	}
