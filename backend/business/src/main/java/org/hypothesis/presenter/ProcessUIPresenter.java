@@ -143,14 +143,19 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 		if (bus != null) {
 			bus.unregister(this);
 		}
-
-		processManager.requestBreakTest();
-		processManager.clean();
 	}
 
 	@Override
 	public void close() {
 		ProcessEventBus.destroyInstance(this);
+	}
+	
+	@Override
+	public void cleanup() {
+		processManager.requestBreakTest();
+		processManager.clean();
+
+		super.cleanup();
 	}
 
 	private void initParameters(VaadinRequest request) {

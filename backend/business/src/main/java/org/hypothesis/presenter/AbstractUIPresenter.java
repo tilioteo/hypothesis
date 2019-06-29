@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.configuration.ConfigManager;
+import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.extension.PluginManager;
 import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.LocaleManager;
@@ -39,6 +40,11 @@ public abstract class AbstractUIPresenter implements UIPresenter {
 	@Override
 	public Locale getCurrentLocale() {
 		return LocaleManager.getCurrentLocale();
+	}
+	
+	@Override
+	public void cleanup() {
+		HibernateUtil.cleanup();
 	}
 
 	private void initializeConfigurations(VaadinRequest request) {

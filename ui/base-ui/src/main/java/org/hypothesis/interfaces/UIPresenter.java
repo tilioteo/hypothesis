@@ -23,5 +23,7 @@ public interface UIPresenter extends ComponentPresenter {
 	void refresh(VaadinRequest request);
 
 	Locale getCurrentLocale();
+	
+	void cleanup();
 
 }
