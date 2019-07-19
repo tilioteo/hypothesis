@@ -91,9 +91,11 @@ public class AsynchronousCommandExecutor extends ArrayBlockingQueue<Command> imp
 	}
 
 	public synchronized void stop() {
-		stopped = true;
-		suspended = false;
-		notify();
+		if (!stopped) {
+			stopped = true;
+			suspended = false;
+			notify();
+		}
 	}
 
 	public synchronized void suspend() {

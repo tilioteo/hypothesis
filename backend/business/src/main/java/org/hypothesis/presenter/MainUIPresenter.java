@@ -15,6 +15,7 @@ import org.hypothesis.business.SessionManager;
 import org.hypothesis.business.UserControlServiceImpl;
 import org.hypothesis.business.data.UserControlData;
 import org.hypothesis.business.data.UserSession;
+import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent.GuestAccessRequestedEvent;
@@ -268,6 +269,11 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 	@Override
 	public void setBus(MainEventBus bus) {
 		// noop
+	}
+
+	@Override
+	public void cleanup() {
+		HibernateUtil.closeCurrent();		
 	}
 
 }

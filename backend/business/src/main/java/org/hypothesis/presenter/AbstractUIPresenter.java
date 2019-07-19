@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.configuration.ConfigManager;
+import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.extension.PluginManager;
 import org.hypothesis.interfaces.UIPresenter;
 import org.hypothesis.server.LocaleManager;

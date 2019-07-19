@@ -91,6 +91,7 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
 		List<Pack> packs = getPacks();
 
 		if (packs != null && !packs.isEmpty()) {
+			view.removeEmptyInfo();
 			for (Pack pack : packs) {
 				view.addPackPanel(createPackPanel(pack));
 			}

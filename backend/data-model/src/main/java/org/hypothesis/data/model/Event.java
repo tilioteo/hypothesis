@@ -112,7 +112,7 @@ public final class Event extends SerializableIdObject {
 	}
 
 	@Column(name = FieldConstants.TIMESTAMP, nullable = false)
-	protected Long getTimeStamp() {
+	public Long getTimeStamp() {
 		return timeStamp;
 	}
 

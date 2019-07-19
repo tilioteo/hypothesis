@@ -6,6 +6,7 @@ package org.hypothesis.presenter;
 
 import org.apache.log4j.Logger;
 import org.hypothesis.business.ProcessManager;
+import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Token;
 import org.hypothesis.data.service.TokenService;
@@ -143,7 +144,6 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 			bus.unregister(this);
 		}
 
-		processManager.requestBreakTest();
 		processManager.clean();
 	}
 
@@ -319,5 +319,12 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
 	public ProcessEventBus getProcessEventBus() {
 		return bus;
 	}
+
+	@Override
+	public void cleanup() {
+		processManager.requestBreakTest();
+		HibernateUtil.closeCurrent();
+	}
+
 
 }

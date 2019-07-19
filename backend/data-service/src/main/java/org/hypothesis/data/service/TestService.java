@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -17,10 +16,8 @@ import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hypothesis.data.model.Event;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Score;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.SlideOrder;
 import org.hypothesis.data.model.Status;
@@ -42,23 +39,17 @@ public class TestService implements Serializable {
 
 	private final HibernateDao<SimpleTest, Long> simpleTestDao;
 	private final HibernateDao<Test, Long> testDao;
-	private final HibernateDao<Event, Long> eventDao;
-	private final HibernateDao<Score, Long> scoreDao;
 	private final HibernateDao<SlideOrder, Long> slideOrderDao;
 
 	public static TestService newInstance() {
 		return new TestService(new HibernateDao<SimpleTest, Long>(SimpleTest.class),
-				new HibernateDao<Test, Long>(Test.class), new HibernateDao<Event, Long>(Event.class),
-				new HibernateDao<Score, Long>(Score.class), new HibernateDao<SlideOrder, Long>(SlideOrder.class));
+				new HibernateDao<Test, Long>(Test.class), new HibernateDao<SlideOrder, Long>(SlideOrder.class));
 	}
 
 	protected TestService(HibernateDao<SimpleTest, Long> simpleTestDao, HibernateDao<Test, Long> testDao,
-			HibernateDao<Event, Long> eventDao, HibernateDao<Score, Long> scoreDao,
 			HibernateDao<SlideOrder, Long> slideOrderDao) {
 		this.simpleTestDao = simpleTestDao;
 		this.testDao = testDao;
-		this.eventDao = eventDao;
-		this.scoreDao = scoreDao;
 		this.slideOrderDao = slideOrderDao;
 	}
 
@@ -268,7 +259,7 @@ public class TestService implements Serializable {
 		}
 	}
 
-	public void saveEvent(Event event, SimpleTest test) {
+	/*public void saveEvent(Event event, SimpleTest test) {
 		if (event != null && test != null) {
 			log.debug(String.format("saveEvent, test id = %s, event id = %s",
 					test.getId() != null ? test.getId() : "NULL", event.getId() != null ? event.getId() : "NULL"));
@@ -316,7 +307,7 @@ public class TestService implements Serializable {
 		query.setParameter("eventId", event.getId());
 		query.setParameter("rank", rank);
 		query.executeUpdate();
-	}
+	}*/
 
 	public SlideOrder findTaskSlideOrder(SimpleTest test, Task task) {
 		log.debug("findTaskSlideOrder");
@@ -354,7 +345,7 @@ public class TestService implements Serializable {
 		}
 	}
 
-	public void saveScore(Score score, SimpleTest test) {
+	/*public void saveScore(Score score, SimpleTest test) {
 		if (score != null && test != null) {
 			log.debug(String.format("saveScore, test id = %s, score id = %s",
 					test.getId() != null ? test.getId() : "NULL", score.getId() != null ? score.getId() : "NULL"));
@@ -374,9 +365,150 @@ public class TestService implements Serializable {
 				scoreDao.rollback();
 			}
 		}
+	}*/
+	
+	public void saveTestEvent(final long testId, final Status status, final long timeStamp, final Long clientTimeStamp,
+			final long type, final String name, final String data, final Long branchId, final Long taskId,
+			final Long slideId) {
+		try {
+			simpleTestDao.beginTransaction();
+			
+			SQLQuery query = prepareNewEventQuery(testId, timeStamp, clientTimeStamp, type, name, data, branchId, taskId,
+					slideId);
+			query.executeUpdate();
+
+			query = prepareTestEventJoinQuery(testId);
+			query.executeUpdate();
+
+			query = prepareUpdateTestQuery(testId, new Date(timeStamp), status, branchId, taskId, slideId);
+			query.executeUpdate();
+			
+			simpleTestDao.commit();
+			log.debug("event save finished");
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			simpleTestDao.rollback();
+		}
 	}
 
-	@SuppressWarnings("rawtypes")
+	private SQLQuery prepareNewEventQuery(final long testId, final long timeStamp, final Long clientTimeStamp, final long type, final String name, final String data,
+			final Long branchId, final Long taskId, final Long slideId) {
+		final SQLQuery query = simpleTestDao.getSession()
+				.createSQLQuery("INSERT INTO " + TableConstants.EVENT_TABLE	+ "("//
+						+ FieldConstants.ID + ","//
+						+ FieldConstants.TIMESTAMP + ","//
+						+ (clientTimeStamp != null ? FieldConstants.CLIENT_TIMESTAMP + "," : "")//
+						+ FieldConstants.TYPE + ","//
+						+ FieldConstants.NAME//
+						+ (data != null ? "," + FieldConstants.XML_DATA : "")//
+						+ (branchId != null ? "," + FieldConstants.BRANCH_ID : "")//
+						+ (taskId != null ? "," + FieldConstants.TASK_ID : "")//
+						+ (slideId != null ? "," + FieldConstants.SLIDE_ID : "")//
+						+ ") VALUES ("//
+						+ "nextval('" + TableConstants.EVENT_SEQUENCE + "'),"//
+						+ ":timeStamp,"//
+						+ (clientTimeStamp != null ? ":clientTimeStamp," : "")//
+						+ ":type,"//
+						+ ":name"//
+						+ (data != null ? ",:data" : "")//
+						+ (branchId != null ? ",:branch" : "")//
+						+ (taskId != null ? ",:task" : "")//
+						+ (slideId != null ? ",:slide" : "")//
+						+ ")");//
+
+		query.setParameter("timeStamp", timeStamp);
+		if (clientTimeStamp != null) {
+			query.setParameter("clientTimeStamp", clientTimeStamp);
+		}
+		query.setParameter("type", type);
+		query.setParameter("name", name);
+		if (data != null) {
+			query.setParameter("data", data);
+		}
+		if (branchId != null) {
+			query.setParameter("branch", branchId);
+		}
+		if (taskId != null) {
+			query.setParameter("task", taskId);
+		}
+		if (slideId != null) {
+			query.setParameter("slide", slideId);
+		}
+		
+		return query;
+	}
+
+	private SQLQuery prepareTestEventJoinQuery(final long testId) {
+		final SQLQuery query = simpleTestDao.getSession()
+				.createSQLQuery("INSERT INTO " + TableConstants.TEST_EVENT_TABLE + " ("//
+						+ FieldConstants.TEST_ID + ","//
+						+ FieldConstants.EVENT_ID + ","//
+						+ FieldConstants.RANK//
+						+ ") VALUES ("//
+						+ ":test,"//
+						+ "currval('" + TableConstants.EVENT_SEQUENCE + "'),"//
+						+ "(SELECT coalesce((SELECT max(" + FieldConstants.RANK + ") FROM "//
+						+ TableConstants.TEST_EVENT_TABLE + " WHERE " + FieldConstants.TEST_ID + "=:test GROUP BY "//
+						+ FieldConstants.TEST_ID + "),0)+1))");
+		query.setParameter("test", testId);
+		
+		return query;
+	}
+
+	private SQLQuery prepareUpdateTestQuery(final long testId, final Date date, final Status status, final Long branchId, final Long taskId, final Long slideId) {
+		final String dateField;
+		if (status != null) {
+			switch (status) {
+			case BROKEN_BY_CLIENT:
+			case BROKEN_BY_ERROR:
+				dateField = FieldConstants.BROKEN;
+				break;
+			case STARTED:
+				dateField = FieldConstants.STARTED;
+				break;
+			case FINISHED:
+				dateField = FieldConstants.FINISHED;
+				break;
+			default:
+				dateField = null;
+				break;
+			}
+		} else {
+			dateField = null;
+		}
+
+		final SQLQuery query = simpleTestDao.getSession()
+				.createSQLQuery("UPDATE " + TableConstants.TEST_TABLE + " SET "//
+						+ FieldConstants.LAST_ACCESS + "=:lastAccess,"//
+						+ (dateField != null ? dateField + "=:date," : "")//
+						+ (status != null ? FieldConstants.STATUS + "=:status," : "")//
+						+ FieldConstants.LAST_BRANCH_ID + (branchId != null ? "=:lastBranch," : "=null,")//
+						+ FieldConstants.LAST_TASK_ID + (taskId != null ? "=:lastTask," : "=null,")//
+						+ FieldConstants.LAST_SLIDE_ID + (slideId != null ? "=:lastSlide" : "=null")//
+						+ " WHERE " + FieldConstants.ID + "=:test");//
+		query.setParameter("lastAccess", date);
+		if (dateField != null) {
+			query.setParameter("date", date);
+		}
+		if (status != null) {
+			query.setParameter("status", status.getCode());
+		}
+		if (branchId != null) {
+			query.setParameter("lastBranch", branchId);
+		}
+		if (taskId != null) {
+			query.setParameter("lastTask", taskId);
+		}
+		if (slideId != null) {
+			query.setParameter("lastSlide", slideId);
+		}
+		query.setParameter("test", testId);
+		
+		return query;
+	}
+
+	/*@SuppressWarnings("rawtypes")
 	private int getLastTestScoreRank(SimpleTest test) {
 		log.debug("getLastTestScoreRank");
 		SQLQuery query = simpleTestDao.getSession()
@@ -402,6 +534,82 @@ public class TestService implements Serializable {
 		query.setParameter("scoreId", score.getId());
 		query.setParameter("rank", rank);
 		query.executeUpdate();
+	}*/
+
+	public void saveTestScore(final long testId, final long timeStamp, final String name, final String data,
+			final Long branchId, final Long taskId, final Long slideId) {
+		try {
+			simpleTestDao.beginTransaction();
+
+			SQLQuery query = prepareNewScoreQuery(testId, timeStamp, name, data, branchId, taskId, slideId);
+			query.executeUpdate();
+
+			query = prepareTestScoreJoinQuery(testId);
+			query.executeUpdate();
+
+			simpleTestDao.commit();
+			log.debug("score save finished");
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			simpleTestDao.rollback();
+		}
+	}
+
+	private SQLQuery prepareNewScoreQuery(final long testId, final long timeStamp, final String name, final String data,
+			final Long branchId, final Long taskId, final Long slideId) {
+		final SQLQuery query = simpleTestDao.getSession()
+				.createSQLQuery("INSERT INTO " + TableConstants.SCORE_TABLE + "("//
+						+ FieldConstants.ID + ","//
+						+ FieldConstants.TIMESTAMP + ","//
+						+ FieldConstants.NAME//
+						+ (data != null ? "," + FieldConstants.XML_DATA : "")//
+						+ (branchId != null ? "," + FieldConstants.BRANCH_ID : "")//
+						+ (taskId != null ? "," + FieldConstants.TASK_ID : "")//
+						+ (slideId != null ? "," + FieldConstants.SLIDE_ID : "")//
+						+ ") VALUES ("//
+						+ "nextval('" + TableConstants.SCORE_SEQUENCE + "'),"//
+						+ ":timeStamp,"//
+						+ ":name"//
+						+ (data != null ? ",:data" : "")//
+						+ (branchId != null ? ",:branch" : "")//
+						+ (taskId != null ? ",:task" : "")//
+						+ (slideId != null ? ",:slide" : "")//
+						+ ")");//
+
+		query.setParameter("timeStamp", timeStamp);
+		query.setParameter("name", name);
+		if (data != null) {
+			query.setParameter("data", data);
+		}
+		if (branchId != null) {
+			query.setParameter("branch", branchId);
+		}
+		if (taskId != null) {
+			query.setParameter("task", taskId);
+		}
+		if (slideId != null) {
+			query.setParameter("slide", slideId);
+		}
+
+		return query;
+	}
+
+	private SQLQuery prepareTestScoreJoinQuery(final long testId) {
+		final SQLQuery query = simpleTestDao.getSession()
+				.createSQLQuery("INSERT INTO " + TableConstants.TEST_SCORE_TABLE + " ("//
+						+ FieldConstants.TEST_ID + ","//
+						+ FieldConstants.SCORE_ID + ","//
+						+ FieldConstants.RANK//
+						+ ") VALUES ("//
+						+ ":test,"//
+						+ "currval('" + TableConstants.SCORE_SEQUENCE + "'),"//
+						+ "(SELECT coalesce((SELECT max(" + FieldConstants.RANK	+ ") FROM "//
+						+ TableConstants.TEST_SCORE_TABLE + " WHERE " + FieldConstants.TEST_ID + "=:test GROUP BY "//
+						+ FieldConstants.TEST_ID + "),0)+1))");
+		query.setParameter("test", testId);
+
+		return query;
 	}
 
 }

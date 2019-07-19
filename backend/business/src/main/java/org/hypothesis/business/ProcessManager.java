@@ -35,8 +35,6 @@ import org.hypothesis.data.service.BranchService;
 import org.hypothesis.data.service.OutputService;
 import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.PersistenceService;
-import org.hypothesis.data.service.SlideService;
-import org.hypothesis.data.service.TaskService;
 import org.hypothesis.data.service.TestService;
 import org.hypothesis.event.data.ScoreData;
 import org.hypothesis.event.data.ScoreData.Source;
@@ -133,9 +131,7 @@ public class ProcessManager implements Serializable {
 
 		userControlService = new UserControlServiceImpl();
 
-		asynchronousService = new AsynchronousService(TestService.newInstance(), OutputService.newInstance(),
-				PersistenceService.newInstance(), BranchService.newInstance(), TaskService.newInstance(),
-				SlideService.newInstance());
+		asynchronousService = new AsynchronousService(TestService.newInstance(), OutputService.newInstance());
 
 		exportVNManager = new ExportVNManager();
 	}
@@ -194,6 +190,8 @@ public class ProcessManager implements Serializable {
 		currentBranch = null;
 		currentTask = null;
 		currentSlide = null;
+		
+		clean();
 	}
 
 	@Handler

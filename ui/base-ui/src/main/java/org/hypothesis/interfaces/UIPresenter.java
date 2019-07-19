@@ -24,4 +24,6 @@ public interface UIPresenter extends ComponentPresenter {
 
 	Locale getCurrentLocale();
 
+	void cleanup();
+
 }

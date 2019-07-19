@@ -53,6 +53,7 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 		List<Pack> packs = getPacks();
 
 		if (packs != null && !packs.isEmpty()) {
+			getView().removeEmptyInfo();
 			boolean notFirst = false;
 			for (Pack pack : packs) {
 				PackPanel packPanel = createPackPanel(pack);

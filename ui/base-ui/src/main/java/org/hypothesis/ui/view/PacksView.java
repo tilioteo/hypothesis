@@ -136,7 +136,7 @@ public class PacksView extends HorizontalLayout implements UIView {
 
 	public void clearMainLayout() {
 		mainLayout.removeAllComponents();
-		isEmptyInfo = false;
+		//isEmptyInfo = false;
 	}
 
 	public void setEmptyInfo() {
@@ -154,6 +154,12 @@ public class PacksView extends HorizontalLayout implements UIView {
 		mainPanel.setContent(layout);
 
 		isEmptyInfo = true;
+	}
+	
+	public void removeEmptyInfo() {
+		mainPanel.setContent(mainLayout);
+		
+		isEmptyInfo = false;
 	}
 
 	public void addPackPanel(PackPanel panel) {
