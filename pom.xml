@@ -44,6 +44,7 @@
 		<jcabi.version>1.1</jcabi.version>
 		<slf4j.version>1.7.13</slf4j.version>
 		<apache.commons.version>3.0</apache.commons.version>
+		<apache.commons.io.version>2.6</apache.commons.io.version>
 		<cxf.version>3.2.7</cxf.version>
 	</properties>
 
@@ -246,6 +247,12 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>${apache.commons.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${apache.commons.io.version}</version>
 			</dependency>
 
 			<dependency>
