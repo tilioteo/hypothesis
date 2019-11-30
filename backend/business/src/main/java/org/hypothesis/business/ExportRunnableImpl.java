@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p>
  * Hypothesis
  */
+@Deprecated
 public class ExportRunnableImpl extends AbstractExportRunnable implements CancelableExportRunnable {
 
     private static final Logger log = Logger.getLogger(ExportRunnableImpl.class);
@@ -73,8 +74,8 @@ public class ExportRunnableImpl extends AbstractExportRunnable implements Cancel
                 try {
                     File tempFile = File.createTempFile("htsm", null);
 
-                    RawExportDataBuilder.exportEventsToExcelFile(events, tempFile, cancelPending,
-                            this::populateProgress);
+                    /*RawExportDataBuilder.exportEventsToExcelFile(events, tempFile, cancelPending,
+                            this::populateProgress);*/
 
                     if (!cancelPending.get()) {
                         return new FileInputStream(tempFile);

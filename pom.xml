@@ -46,6 +46,7 @@
 		<apache.commons.version>3.0</apache.commons.version>
 		<apache.commons.io.version>2.6</apache.commons.io.version>
 		<cxf.version>3.2.7</cxf.version>
+		<uitask.version>1.1.0</uitask.version>
 	</properties>
 
 	<profiles>
@@ -259,6 +260,12 @@
 				<groupId>org.vaadin.addons</groupId>
 				<artifactId>filteringtable</artifactId>
 				<version>${filteringtable.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.mpilone.vaadin</groupId>
+				<artifactId>uitask-vaadin</artifactId>
+				<version>${uitask.version}</version>
 			</dependency>
 
 			<dependency>

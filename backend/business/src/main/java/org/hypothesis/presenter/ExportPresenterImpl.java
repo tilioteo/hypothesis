@@ -15,11 +15,8 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Notification.Type;
 import net.engio.mbassy.listener.Handler;
 import org.apache.log4j.Logger;
-import org.hypothesis.business.CancelableExportRunnable;
-import org.hypothesis.business.ExportRunnableImpl;
-import org.hypothesis.business.ExportThread;
+import org.hypothesis.business.RawExportTask;
 import org.hypothesis.business.ThreadUtility;
-import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.*;
 import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;
@@ -28,9 +25,11 @@ import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.ExportPresenter;
 import org.hypothesis.server.Messages;
+import org.hypothesis.ui.ControlledUI;
 import org.hypothesis.ui.view.ExportView;
 
 import java.util.*;
+import java.util.concurrent.Executors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -62,7 +61,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
     private boolean allTestsSelected = false;
 
     private HorizontalLayout toolsLayout;
-    private ExportThread currentExport = null;
+    private RawExportTask exportTask = null;
     private ProgressBar exportProgressBar = null;
 
     private ThreadGroup threadGroup = ThreadUtility.createExportGroup();
@@ -192,12 +191,8 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
             testIds = (Collection<Long>) table.getValue();
         }
 
-        CancelableExportRunnable runnable = new ExportRunnableImpl(getBus(), testIds, HibernateUtil::closeCurrent);
-
-        currentExport = new ExportThread(threadGroup, runnable);
-        currentExport.start();
-
-        UI.getCurrent().setPollInterval(1000);
+        exportTask = new RawExportTask(ControlledUI.getCurrent(), getBus(), testIds);
+        Executors.newSingleThreadExecutor().execute(exportTask);
     }
 
     @Override
@@ -433,14 +428,13 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
     }
 
     private void afterExportFinnished(boolean canceled) {
-        if (currentExport != null) {
+        if (exportTask != null) {
             if (canceled) {
-                currentExport.cancel();
+                exportTask.cancel(true);
             }
-            currentExport = null;
+            exportTask = null;
         }
         setExportSelection();
-        UI.getCurrent().setPollInterval(-1);
     }
 
     @Override

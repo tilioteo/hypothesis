@@ -16,11 +16,8 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 import net.engio.mbassy.listener.Handler;
-import org.hypothesis.business.CancelableExportRunnable;
-import org.hypothesis.business.ExportScoreRunnableImpl;
-import org.hypothesis.business.ExportThread;
+import org.hypothesis.business.ScoreExportTask;
 import org.hypothesis.business.ThreadUtility;
-import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.FieldConstants;
 import org.hypothesis.data.model.Status;
 import org.hypothesis.data.model.Test;
@@ -31,6 +28,7 @@ import org.hypothesis.data.service.UserService;
 import org.hypothesis.event.interfaces.MainUIEvent;
 import org.hypothesis.interfaces.ExportScorePresenter;
 import org.hypothesis.server.Messages;
+import org.hypothesis.ui.ControlledUI;
 import org.hypothesis.ui.view.ExportScoreView;
 import org.tepi.filtertable.FilterDecorator;
 import org.tepi.filtertable.FilterTable;
@@ -38,6 +36,7 @@ import org.tepi.filtertable.numberfilter.NumberFilterPopupConfig;
 
 import java.util.Calendar;
 import java.util.*;
+import java.util.concurrent.Executors;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -62,7 +61,7 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
     private boolean allTestsSelected = false;
 
     private HorizontalLayout toolsLayout;
-    private ExportThread currentExport = null;
+    private ScoreExportTask exportTask = null;
     private ProgressBar exportProgressBar = null;
 
     private ThreadGroup threadGroup = ThreadUtility.createExportGroup();
@@ -218,12 +217,8 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
             testIds = (Collection<Long>) table.getValue();
         }
 
-        CancelableExportRunnable runnable = new ExportScoreRunnableImpl(getBus(), testIds, HibernateUtil::closeCurrent);
-
-        currentExport = new ExportThread(threadGroup, runnable);
-        currentExport.start();
-
-        UI.getCurrent().setPollInterval(1000);
+        exportTask = new ScoreExportTask(ControlledUI.getCurrent(), getBus(), testIds);
+        Executors.newSingleThreadExecutor().execute(exportTask);
     }
 
     @Override
@@ -418,14 +413,13 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
     }
 
     private void afterExportFinnished(boolean canceled) {
-        if (currentExport != null) {
+        if (exportTask != null) {
             if (canceled) {
-                currentExport.cancel();
+                exportTask.cancel(true);
             }
-            currentExport = null;
+            exportTask = null;
         }
         setExportSelection();
-        UI.getCurrent().setPollInterval(-1);
     }
 
     @Override

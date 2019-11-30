@@ -25,9 +25,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p>
  * Hypothesis
  */
+@Deprecated
 public class ExportScoreRunnableImpl extends AbstractExportRunnable implements CancelableExportRunnable {
 
-    private static final Logger log = Logger.getLogger(ExportRunnableImpl.class);
+    private static final Logger log = Logger.getLogger(ExportScoreRunnableImpl.class);
 
     private final AtomicBoolean cancelPending = new AtomicBoolean(false);
     private final Collection<Long> testIds;
@@ -73,8 +74,8 @@ public class ExportScoreRunnableImpl extends AbstractExportRunnable implements C
                 try {
                     File tempFile = File.createTempFile("htsm", null);
 
-                    ScoreExportDataBuilder.exportScoresToExcelFile(scores, tempFile, cancelPending,
-                            this::populateProgress);
+                    /*ScoreExportDataBuilder.exportScoresToExcelFile(scores, tempFile, cancelPending,
+                            this::populateProgress);*/
 
                     if (!cancelPending.get()) {
                         return new FileInputStream(tempFile);

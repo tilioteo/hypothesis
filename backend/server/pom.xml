@@ -44,8 +44,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.engio</groupId>
-			<artifactId>mbassador</artifactId>
+			<groupId>org.mpilone.vaadin</groupId>
+			<artifactId>uitask-vaadin</artifactId>
 		</dependency>
 
 		<dependency>
