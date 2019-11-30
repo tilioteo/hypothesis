@@ -4,73 +4,72 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.List;
-
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
 import org.hypothesis.ui.PackPanel;
 
+import java.util.List;
+
 /**
  * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
+ * <p>
+ * Hypothesis
  */
 @SuppressWarnings("serial")
 public class UserPacksPresenter extends PublicPacksPresenter {
 
-	protected final UserService userService;
+    protected final UserService userService;
 
-	private User loggedUser;
+    private User loggedUser;
 
-	public UserPacksPresenter() {
-		super();
+    public UserPacksPresenter() {
+        super();
 
-		userService = UserService.newInstance();
-	}
+        userService = UserService.newInstance();
+    }
 
-	@Override
-	protected List<Pack> getPacks() {
-		loggedUser = getLoggedUser();
-		if (loggedUser != null) {
-			try {
-				loggedUser = userService.get(loggedUser.getId());
+    @Override
+    protected List<Pack> getPacks() {
+        loggedUser = getLoggedUser();
+        if (loggedUser != null) {
+            try {
+                loggedUser = userService.get(loggedUser.getId());
 
-				return permissionService.getUserPacksVN(loggedUser);
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
-		}
+                return permissionService.getUserPacksVN(loggedUser);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public void refreshView() {
-		getView().clearMainLayout();
+    @Override
+    public void refreshView() {
+        getView().clearMainLayout();
 
-		List<Pack> packs = getPacks();
+        List<Pack> packs = getPacks();
 
-		if (packs != null && !packs.isEmpty()) {
-			getView().removeEmptyInfo();
-			boolean notFirst = false;
-			for (Pack pack : packs) {
-				PackPanel packPanel = createPackPanel(pack);
-				getView().addPackPanel(packPanel);
-				if (notFirst || loggedUser.isTestingSuspended()) {
-					packPanel.setEnabled(false);
-					packPanel.addStyleName("disabled");
-				}
-				notFirst = true;
-			}
-		} else {
-			getView().setEmptyInfo();
-		}
+        if (packs != null && !packs.isEmpty()) {
+            getView().removeEmptyInfo();
+            boolean notFirst = false;
+            for (Pack pack : packs) {
+                PackPanel packPanel = createPackPanel(pack);
+                getView().addPackPanel(packPanel);
+                if (notFirst || loggedUser.isTestingSuspended()) {
+                    packPanel.setEnabled(false);
+                    packPanel.addStyleName("disabled");
+                }
+                notFirst = true;
+            }
+        } else {
+            getView().setEmptyInfo();
+        }
 
-		cleanOldTestData(packs);
+        cleanOldTestData(packs);
 
-		getView().markAsDirty();
-	}
+        getView().markAsDirty();
+    }
 
 }

@@ -18,7 +18,7 @@ import com.vaadin.navigator.ViewProvider;
  *
  */
 @SuppressWarnings("serial")
-public class HypothesisViewProvider implements ViewProvider {
+public class HypothesisViewProvider implements ViewProvider, HasMainEventBus {
 
 	private final MainEventBus bus;
 
@@ -30,8 +30,8 @@ public class HypothesisViewProvider implements ViewProvider {
 
 	private ViewPresenter presenter = null;
 
-	public HypothesisViewProvider(MainEventBus bus, HypothesisViewType viewType) {
-		this.bus = bus;
+	public HypothesisViewProvider(/*MainEventBus bus, */HypothesisViewType viewType) {
+		this.bus = getBus();
 		this.viewType = viewType;
 	}
 
@@ -74,9 +74,9 @@ public class HypothesisViewProvider implements ViewProvider {
 			try {
 				presenter = viewType.getViewPresenterClass().newInstance();
 
-				if (presenter instanceof HasMainEventBus) {
+				/*if (presenter instanceof HasMainEventBus) {
 					((HasMainEventBus) presenter).setBus(bus);
-				}
+				}*/
 
 				if (presenter instanceof ViewPresenter) {
 					((ViewPresenter) presenter).init();

@@ -19,9 +19,9 @@ import com.vaadin.ui.UI;
  *
  */
 @SuppressWarnings("serial")
-public class MainEventBus extends HypothesisEventBus<MainUIEvent> {
+public class MainEventBus extends EventBus<MainUIEvent> {
 
-	private static final HashMap<HasMainEventBus, MainEventBus> map = new HashMap<>();
+	/*private static final HashMap<HasMainEventBus, MainEventBus> map = new HashMap<>();
 
 	public static final MainEventBus createInstance(HasMainEventBus hasMainEventBus) {
 		MainEventBus eventBus = new MainEventBus();
@@ -52,6 +52,6 @@ public class MainEventBus extends HypothesisEventBus<MainUIEvent> {
 	}
 
 	protected MainEventBus() {
-	}
+	}*/
 
 }

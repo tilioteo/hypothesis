@@ -7,13 +7,14 @@ import org.hypothesis.business.data.UserControlData;
 import org.hypothesis.business.data.UserTestState;
 import org.hypothesis.data.model.User;
 import org.hypothesis.interfaces.PacksPresenter;
-import org.hypothesis.servlet.BroadcastService;
+import org.hypothesis.push.Pushable;
+import org.hypothesis.servlet.Broadcaster;
 import org.hypothesis.utility.UIMessageUtility;
 import org.vaadin.button.ui.OpenPopupButton.WindowClosedEvent;
 import org.vaadin.button.ui.OpenPopupButton.WindowClosedListener;
 
 @SuppressWarnings("serial")
-public class LegacyButtonWindowClosedListener implements WindowClosedListener {
+public class LegacyButtonWindowClosedListener implements WindowClosedListener, Broadcaster, Pushable {
 
 	private final PacksPresenter presenter;
 	private final TestData data;
@@ -45,7 +46,10 @@ public class LegacyButtonWindowClosedListener implements WindowClosedListener {
 					state.setEventName("BREAK_TEST");
 				}
 
-				BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
+				pushCommand(() -> {
+					broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
+					broadcast(UIMessageUtility.createRefreshUserPacksViewMessage(user.getId()));
+				});
 			}
 		}
 	}

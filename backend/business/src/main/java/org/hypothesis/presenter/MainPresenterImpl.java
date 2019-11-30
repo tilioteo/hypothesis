@@ -4,153 +4,139 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.StringUtils;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.MainPresenter;
 import org.hypothesis.servlet.ServletUtil;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.menu.HypothesisMenu;
 
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
+ * <p>
+ * Hypothesis
  */
 @SuppressWarnings("serial")
 public class MainPresenterImpl implements MainPresenter {
 
-	private static String VERSION;// = Manifests.read("Version");
-	private static String VERSION_SPECIFIC;// =
-											// Manifests.read("Version-Specific");
-	private static String VERSION_ADDITIONAL;// =
-												// Manifests.read("Version-Additional");*/
+    private static String VERSION;// = Manifests.read("Version");
+    private static String VERSION_SPECIFIC;// =
+    // Manifests.read("Version-Specific");
+    private static String VERSION_ADDITIONAL;// =
+    // Manifests.read("Version-Additional");*/
+    private final HypothesisMenuPresenter menuPresenter;
+    private ComponentContainer content;
 
-	private ComponentContainer content;
+    public MainPresenterImpl() {
 
-	private final HypothesisMenuPresenter menuPresenter;
+        menuPresenter = new HypothesisMenuPresenter();
 
-	public MainPresenterImpl(MainEventBus bus) {
+        Manifest manifest = ServletUtil.getManifest(VaadinServlet.getCurrent().getServletContext());
+        Attributes attributes = manifest.getMainAttributes();
+        VERSION = attributes.getValue("Version");
+        VERSION_SPECIFIC = attributes.getValue("Version-Specific");
+        VERSION_ADDITIONAL = attributes.getValue("Version-Additional");
+    }
 
-		menuPresenter = new HypothesisMenuPresenter(bus);
+    @Override
+    public void attach() {
+    }
 
-		Manifest manifest = ServletUtil.getManifest(VaadinServlet.getCurrent().getServletContext());
-		Attributes attributes = manifest.getMainAttributes();
-		VERSION = attributes.getValue("Version");
-		VERSION_SPECIFIC = attributes.getValue("Version-Specific");
-		VERSION_ADDITIONAL = attributes.getValue("Version-Additional");
-	}
+    @Override
+    public void detach() {
+    }
 
-	@Override
-	public void attach() {
-	}
+    @Override
+    public Component buildTopPanel() {
+        Panel panel = new Panel();
+        panel.setWidth(100.0f, Unit.PERCENTAGE);
+        panel.setHeight(120.0f, Unit.PIXELS);
+        panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
+        panel.addStyleName("gradient");
 
-	@Override
-	public void detach() {
-	}
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        layout.setMargin(true);
+        panel.setContent(layout);
 
-	@Override
-	public Component buildTopPanel() {
-		Panel panel = new Panel();
-		panel.setWidth(100.0f, Unit.PERCENTAGE);
-		panel.setHeight(120.0f, Unit.PIXELS);
-		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-		panel.addStyleName("gradient");
+        Label label = new Label("Hypothesis");
+        label.setWidthUndefined();
+        label.addStyleName(ValoTheme.LABEL_H1);
+        label.addStyleName(ValoTheme.LABEL_COLORED);
+        label.addStyleName("toptitle");
 
-		VerticalLayout layout = new VerticalLayout();
-		layout.setSizeFull();
-		layout.setMargin(true);
-		panel.setContent(layout);
+        Label space = new Label();
+        layout.addComponent(space);
+        layout.addComponent(label);
+        layout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+        layout.setExpandRatio(space, 0.6f);
+        layout.setExpandRatio(label, 1.0f);
 
-		Label label = new Label("Hypothesis");
-		// label.setSizeUndefined();
-		label.setWidthUndefined();
-		label.addStyleName(ValoTheme.LABEL_H1);
-		label.addStyleName(ValoTheme.LABEL_COLORED);
-		// label.addStyleName(ValoTheme.LABEL_BOLD);
-		label.addStyleName("toptitle");
+        if (StringUtils.isNotBlank(VERSION_ADDITIONAL)) {
+            Label additional = new Label(VERSION_ADDITIONAL);
+            layout.addComponent(additional);
+            layout.setComponentAlignment(additional, Alignment.MIDDLE_RIGHT);
+            // layout.setExpandRatio(additional, 0.3f);
+        }
 
-		Label space = new Label();
-		layout.addComponent(space);
-		layout.addComponent(label);
-		layout.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
-		layout.setExpandRatio(space, 0.6f);
-		layout.setExpandRatio(label, 1.0f);
+        return panel;
+    }
 
-		if (StringUtils.isNotBlank(VERSION_ADDITIONAL)) {
-			Label additional = new Label(VERSION_ADDITIONAL);
-			layout.addComponent(additional);
-			layout.setComponentAlignment(additional, Alignment.MIDDLE_RIGHT);
-			// layout.setExpandRatio(additional, 0.3f);
-		}
+    @Override
+    public Component buildMainPane() {
+        HorizontalLayout layout = new HorizontalLayout();
 
-		return panel;
-	}
+        layout.addComponent(new HypothesisMenu(menuPresenter));
 
-	@Override
-	public Component buildMainPane() {
-		HorizontalLayout layout = new HorizontalLayout();
+        content = new CssLayout();
+        content.addStyleName("view-content");
+        content.setSizeFull();
+        layout.addComponent(content);
+        layout.setExpandRatio(content, 1.0f);
 
-		layout.addComponent(new HypothesisMenu(menuPresenter));
+        return layout;
+    }
 
-		content = new CssLayout();
-		content.addStyleName("view-content");
-		content.setSizeFull();
-		layout.addComponent(content);
-		layout.setExpandRatio(content, 1.0f);
+    @Override
+    public Component buildBottomPanel() {
+        Panel panel = new Panel();
+        panel.setWidth(100.0f, Unit.PERCENTAGE);
+        panel.setHeight(25.0f, Unit.PIXELS);
+        panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
+        panel.addStyleName("color2");
 
-		return layout;
-	}
+        VerticalLayout layout = new VerticalLayout();
+        layout.setSizeFull();
+        panel.setContent(layout);
 
-	@Override
-	public Component buildBottomPanel() {
-		Panel panel = new Panel();
-		panel.setWidth(100.0f, Unit.PERCENTAGE);
-		panel.setHeight(25.0f, Unit.PIXELS);
-		panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-		panel.addStyleName("color2");
+        Calendar calendar = new GregorianCalendar();
+        Label label = new Label(String.format("Hypothesis&emsp;v.%s&emsp;&emsp;&emsp;© 2013-%d Tilioteo Ltd", VERSION, calendar.get(Calendar.YEAR)));
+        label.setContentMode(ContentMode.HTML);
+        label.setWidthUndefined();
+        label.addStyleName(ValoTheme.LABEL_TINY);
+        layout.addComponent(label);
+        layout.setComponentAlignment(label, Alignment.TOP_CENTER);
 
-		VerticalLayout layout = new VerticalLayout();
-		layout.setSizeFull();
-		panel.setContent(layout);
+        return panel;
+    }
 
-		Calendar calendar = new GregorianCalendar();
-		Label label = new Label(String.format("Hypothesis&emsp;v.%s&emsp;&emsp;&emsp;© 2013-%d Tilioteo Ltd", VERSION, calendar.get(Calendar.YEAR)));
-		label.setContentMode(ContentMode.HTML);
-		label.setWidthUndefined();
-		label.addStyleName(ValoTheme.LABEL_TINY);
-		layout.addComponent(label);
-		layout.setComponentAlignment(label, Alignment.TOP_CENTER);
+    @Override
+    public ComponentContainer getContent() {
+        return content;
+    }
 
-		return panel;
-	}
-
-	@Override
-	public ComponentContainer getContent() {
-		return content;
-	}
-
-	@Override
-	public MainScreen createScreen() {
-		return new MainScreen(this);
-	}
+    @Override
+    public MainScreen createScreen() {
+        return new MainScreen(this);
+    }
 
 }

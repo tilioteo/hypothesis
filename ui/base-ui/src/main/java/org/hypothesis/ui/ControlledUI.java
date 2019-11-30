@@ -58,13 +58,6 @@ public abstract class ControlledUI extends UI implements HasUIPresenter {
 	}
 
 	@Override
-	public void close() {
-		super.close();
-
-		presenter.close();
-	}
-
-	@Override
 	public UIPresenter getPresenter() {
 		return presenter;
 	}

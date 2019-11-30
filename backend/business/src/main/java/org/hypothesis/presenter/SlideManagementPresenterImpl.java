@@ -5,6 +5,7 @@
 package org.hypothesis.presenter;
 
 import org.hypothesis.builder.SlideContainerFactoryDeferred;
+import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.DocumentReader;
 import org.hypothesis.data.XmlDocumentReader;
 import org.hypothesis.event.model.ActionEvent;
@@ -50,13 +51,17 @@ public class SlideManagementPresenterImpl extends AbstractViewPresenter
 	private final DocumentReader reader = new XmlDocumentReader();
 
 	private SlideContainer container;
-	// private SliderPanel sliderPanel;
 
-	private final ProcessEventBus bus = ProcessEventBus.createInstance(this);
-	private final SlideContainerFactoryDeferred factory = new SlideContainerFactoryDeferred(bus);
+	private final ProcessEventBus bus;
+	private final SlideContainerFactoryDeferred factory = new SlideContainerFactoryDeferred();
 
 	private Mask mask;
 	private final FancyNotifications notifications = new FancyNotifications();
+
+	public SlideManagementPresenterImpl() {
+		 bus = new ProcessEventBus();
+		SessionManager.setProcessEventBus(bus);
+	}
 
 	@Override
 	public void attach() {
@@ -118,25 +123,10 @@ public class SlideManagementPresenterImpl extends AbstractViewPresenter
 			CssLayout tlLayout = new CssLayout(toolbox);
 			tlLayout.setHeight("0px");
 			topLayout.addComponent(tlLayout);
-			// layout.setExpandRatio(tlLayout, 0f);
 
 			toolbox.setContent(hl);
 
 			topLayout.addComponent(notifications);
-
-			/*
-			 * sliderPanel = new SliderPanelBuilder(new Button("Start slide",
-			 * new ClickListener() {
-			 * 
-			 * @Override public void buttonClick(ClickEvent event) {
-			 * event.getButton().setEnabled(false); startClicked(); }
-			 * })).expanded(false).mode(SliderMode.TOP).caption("Tools").
-			 * autoCollapseSlider(true)
-			 * .tabPosition(SliderTabPosition.BEGINNING).build();
-			 * 
-			 * layout.addComponent(sliderPanel);
-			 * layout.setExpandRatio(sliderPanel, 0f);
-			 */
 
 			layout.addComponent(container);
 			layout.setExpandRatio(container, 1f);
@@ -151,7 +141,6 @@ public class SlideManagementPresenterImpl extends AbstractViewPresenter
 
 	private void startClicked() {
 		mask.hide();
-		// sliderPanel.collapse();
 
 		if (container != null && container.getPresenter() instanceof SlideContainerPresenterDeferred) {
 			SlideContainerPresenterDeferred containerPresenter = (SlideContainerPresenterDeferred) container
@@ -162,7 +151,7 @@ public class SlideManagementPresenterImpl extends AbstractViewPresenter
 	}
 
 	@Override
-	public ProcessEventBus getProcessEventBus() {
+	public ProcessEventBus getBus() {
 		return bus;
 	}
 

@@ -24,18 +24,18 @@ public class SessionUtils {
 		}
 	}
 
-	public static synchronized <T> T getAttribute(Class<T> type) {
+	public static <T> T getAttribute(Class<T> type) {
 		return getAttribute(VaadinSession.getCurrent(), type);
 	}
 
-	public static synchronized <T> T getAttribute(VaadinSession session, Class<T> type) {
+	public static <T> T getAttribute(VaadinSession session, Class<T> type) {
 		if (session != null) {
 			return session.getAttribute(type);
 		}
 		return null;
 	}
 
-	public static synchronized <T> void clearAttribute(Class<T> type) {
+	public static <T> void clearAttribute(Class<T> type) {
 		clearAttribute(VaadinSession.getCurrent(), type);
 	}
 
@@ -55,22 +55,22 @@ public class SessionUtils {
 		}
 	}
 
-	public static synchronized Object getAttribute(String name) {
+	public static Object getAttribute(String name) {
 		return getAttribute(VaadinSession.getCurrent(), name);
 	}
 
-	public static synchronized Object getAttribute(VaadinSession session, String name) {
+	public static Object getAttribute(VaadinSession session, String name) {
 		if (session != null) {
 			return session.getAttribute(name);
 		}
 		return null;
 	}
 
-	public static synchronized String getStringAttribute(String name) {
+	public static String getStringAttribute(String name) {
 		return getStringAttribute(VaadinSession.getCurrent(), name);
 	}
 
-	public static synchronized String getStringAttribute(VaadinSession session, String name) {
+	public static String getStringAttribute(VaadinSession session, String name) {
 		Object object = getAttribute(session, name);
 		if (object instanceof String) {
 			return (String) object;

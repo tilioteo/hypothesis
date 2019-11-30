@@ -4,18 +4,18 @@
  */
 package org.hypothesis.eventbus;
 
+import org.hypothesis.business.SessionManager;
+
 import java.io.Serializable;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
+ * <p>
+ * Hypothesis
  */
 public interface HasMainEventBus extends Serializable {
 
-	MainEventBus getBus();
-
-	void setBus(MainEventBus bus);
-
+    default MainEventBus getBus() {
+        return SessionManager.getMainEventBus();
+    }
 }

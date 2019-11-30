@@ -4,7 +4,13 @@
  */
 package org.hypothesis.business;
 
-import static org.hypothesis.utility.PushUtility.pushCommand;
+import com.vaadin.server.StreamResource;
+import org.apache.log4j.Logger;
+import org.hypothesis.data.model.ExportEvent;
+import org.hypothesis.data.service.ExportService;
+import org.hypothesis.eventbus.MainEventBus;
+import org.hypothesis.interfaces.Command;
+import org.hypothesis.server.Messages;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,125 +20,75 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.log4j.Logger;
-import org.hypothesis.data.model.ExportEvent;
-import org.hypothesis.data.service.ExportService;
-import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.MainEventBus;
-import org.hypothesis.interfaces.Command;
-import org.hypothesis.server.Messages;
-import org.hypothesis.ui.ControlledUI;
-
-import com.vaadin.server.Page;
-import com.vaadin.server.Resource;
-import com.vaadin.server.ResourceReference;
-import com.vaadin.server.StreamResource;
-
 /**
  * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
+ * <p>
+ * Hypothesis
  */
-public class ExportRunnableImpl implements CancelableExportRunnable {
+public class ExportRunnableImpl extends AbstractExportRunnable implements CancelableExportRunnable {
 
-	private static final Logger log = Logger.getLogger(ExportRunnableImpl.class);
+    private static final Logger log = Logger.getLogger(ExportRunnableImpl.class);
+    private final AtomicBoolean cancelPending = new AtomicBoolean(false);
+    private final Collection<Long> testIds;
 
-	private volatile int progress;
+    public ExportRunnableImpl(MainEventBus bus, final Collection<Long> testIds, Command finishCommand) {
+        super(bus, finishCommand);
+        this.testIds = testIds;
+    }
 
-	private final AtomicBoolean cancelPending = new AtomicBoolean(false);
-	private final Collection<Long> testIds;
+    @Override
+    public boolean isCancelPending() {
+        return cancelPending.get();
+    }
 
-	private final MainEventBus bus;
+    @Override
+    public synchronized void setCancelPending(boolean value) {
+        cancelPending.set(value);
+    }
 
-	private final Command finishCommand;
+    @SuppressWarnings("serial")
+    @Override
+    protected StreamResource getExportResource() {
 
-	public ExportRunnableImpl(MainEventBus bus, final Collection<Long> testIds, Command finishCommand) {
-		this.bus = bus;
-		this.testIds = testIds;
-		this.finishCommand = finishCommand;
-	}
+        final InputStream inputStream = getExportFile();
 
-	@Override
-	public boolean isCancelPending() {
-		return cancelPending.get();
-	}
+        if (inputStream != null) {
+            String filename = Messages.getString("Caption.Export.TestFileName");
+            StreamResource resource = new StreamResource(() -> inputStream, filename);
+            resource.setMIMEType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-	@Override
-	public synchronized void setCancelPending(boolean value) {
-		cancelPending.set(value);
-	}
+            return resource;
+        }
 
-	@Override
-	public void run() {
-		Resource resource = getExportResource();
-		ControlledUI ui = ControlledUI.getCurrent();
-		if (resource != null && ui != null) {
-			ui.setResource("export", resource);
-			ResourceReference reference = ResourceReference.create(resource, ui, "export");
+        return null;
+    }
 
-			pushCommand(ui, () -> bus.post(new MainUIEvent.ExportFinishedEvent(false)));
-			Page.getCurrent().open(reference.getURL(), null);
-		} else {
-			pushCommand(() -> bus.post(new MainUIEvent.ExportErrorEvent()));
-		}
+    private InputStream getExportFile() {
+        ExportService exportService = ExportService.newInstance();
 
-		Command.Executor.execute(finishCommand);
-	}
+        try {
+            List<ExportEvent> events = exportService.findExportEventsByTestId(testIds);
 
-	@SuppressWarnings("serial")
-	private StreamResource getExportResource() {
+            if (events != null) {
+                try {
+                    File tempFile = File.createTempFile("htsm", null);
 
-		final InputStream inputStream = getExportFile();
+                    RawExportDataBuilder.exportEventsToExcelFile(events, tempFile, cancelPending,
+                            this::populateProgress);
 
-		if (inputStream != null) {
-			StreamResource.StreamSource source = new StreamResource.StreamSource() {
-				@Override
-				public InputStream getStream() {
-					return inputStream;
-				}
-			};
+                    if (!cancelPending.get()) {
+                        return new FileInputStream(tempFile);
+                    }
 
-			String filename = Messages.getString("Caption.Export.TestFileName");
-			StreamResource resource = new StreamResource(source, filename);
-			resource.setMIMEType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+                }
+            }
 
-			return resource;
-		}
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
 
-		return null;
-	}
-
-	private void populateProgress(float progress) {
-		pushCommand(() -> bus.post(new MainUIEvent.ExportProgressEvent(progress)));
-	}
-
-	private InputStream getExportFile() {
-		ExportService exportService = ExportService.newInstance();
-
-		try {
-			List<ExportEvent> events = exportService.findExportEventsByTestId(testIds);
-
-			if (events != null) {
-				try {
-					File tempFile = File.createTempFile("htsm", null);
-
-					RawExportDataBuilder.exportEventsToExcelFile(events, tempFile, cancelPending,
-							this::populateProgress);
-
-					if (!cancelPending.get()) {
-						return new FileInputStream(tempFile);
-					}
-
-				} catch (IOException e) {
-					log.error(e.getMessage());
-				}
-			}
-
-		} catch (Throwable e) {
-			log.error(e.getMessage());
-		}
-
-		return null;
-	}
+        return null;
+    }
 }

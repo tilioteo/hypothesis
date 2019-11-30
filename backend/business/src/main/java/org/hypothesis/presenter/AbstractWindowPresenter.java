@@ -4,154 +4,132 @@
  */
 package org.hypothesis.presenter;
 
-import java.util.ArrayList;
-
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.*;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.Window.CloseListener;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.data.model.User;
 import org.hypothesis.event.interfaces.MainUIEvent;
-import org.hypothesis.eventbus.MainEventBus;
+import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.server.Messages;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.Window.CloseListener;
+import java.util.ArrayList;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
+ * <p>
+ * Hypothesis
  */
 @SuppressWarnings("serial")
-public abstract class AbstractWindowPresenter implements CloseListener {
+public abstract class AbstractWindowPresenter implements HasMainEventBus, CloseListener {
 
-	protected Object source = null;
+    protected Object source = null;
 
-	protected User loggedUser;
+    protected User loggedUser;
 
-	protected WindowState state;
+    protected WindowState state;
 
-	protected final MainEventBus bus;
+    protected ArrayList<AbstractField<?>> fields;
 
-	protected ArrayList<AbstractField<?>> fields;
+    protected Window window;
 
-	protected Window window;
+    protected TabSheet tabSheet;
+    protected VerticalLayout detailsTab;
 
-	protected TabSheet tabSheet;
-	protected VerticalLayout detailsTab;
+    protected abstract void initFields();
 
-	protected abstract void initFields();
+    protected abstract void fillFields();
 
-	protected abstract void fillFields();
+    protected abstract void clearFields();
 
-	protected abstract void clearFields();
+    protected abstract void buildContent();
 
-	protected abstract void buildContent();
+    protected void createWindow() {
+        window = new Window();
+        window.addCloseListener(this);
+        window.addCloseShortcut(KeyCode.ESCAPE);
+        window.setResizable(false);
+        window.setClosable(false);
+        window.setWidth(70, Unit.PERCENTAGE);
+        window.setHeight(80.0f, Unit.PERCENTAGE);
+        window.setModal(true);
 
-	protected AbstractWindowPresenter(MainEventBus bus) {
-		this.bus = bus;
-	}
+        initFields();
 
-	protected void createWindow() {
-		window = new Window();
-		window.addCloseListener(this);
-		window.addCloseShortcut(KeyCode.ESCAPE);
-		window.setResizable(false);
-		window.setClosable(false);
-		window.setWidth(70, Unit.PERCENTAGE);
-		window.setHeight(80.0f, Unit.PERCENTAGE);
-		window.setModal(true);
+        if (state.equals(WindowState.UPDATE)) {
+            fillFields();
+        }
 
-		initFields();
+        buildContent();
+    }
 
-		if (state.equals(WindowState.UPDATE)) {
-			fillFields();
-		}
+    protected void addInformationLabel(AbstractOrderedLayout layout) {
+        Label info = new Label(Messages.getString("Caption.Label.ChooseFields"));
+        info.setSizeUndefined();
+        layout.addComponent(info);
+        layout.setComponentAlignment(info, Alignment.TOP_CENTER);
+    }
 
-		buildContent();
-	}
+    protected void addField(GridLayout form, final Component field) {
+        if (state.equals(WindowState.MULTIUPDATE)) {
+            final CheckBox enabler = new CheckBox(field.getCaption());
+            enabler.addValueChangeListener(e -> {
+                field.setVisible(enabler.getValue());
 
-	protected void addInformationLabel(AbstractOrderedLayout layout) {
-		Label info = new Label(Messages.getString("Caption.Label.ChooseFields"));
-		info.setSizeUndefined();
-		layout.addComponent(info);
-		layout.setComponentAlignment(info, Alignment.TOP_CENTER);
-	}
+                if (field instanceof AbstractField<?>) {
+                    if (enabler.getValue()) {
+                        fields.add((AbstractField<?>) field);
+                    } else {
+                        fields.remove(field);
+                    }
+                }
+            });
+            field.setVisible(false);
+            form.addComponent(enabler);
+            form.setComponentAlignment(enabler, Alignment.TOP_LEFT);
+        } else {
+            if (field instanceof AbstractField<?>) {
+                fields.add((AbstractField<?>) field);
+            }
+            Label caption = new Label(field.getCaption());
+            caption.setSizeUndefined();
+            form.addComponent(caption);
+            form.setComponentAlignment(caption, Alignment.TOP_LEFT);
+        }
 
-	protected void addField(GridLayout form, final Component field) {
-		if (state.equals(WindowState.MULTIUPDATE)) {
-			final CheckBox enabler = new CheckBox(field.getCaption());
-			enabler.addValueChangeListener(new ValueChangeListener() {
-				public void valueChange(Property.ValueChangeEvent event) {
-					field.setVisible(enabler.getValue());
+        field.setCaption(null);
+        form.addComponent(field);
+        form.setComponentAlignment(field, Alignment.TOP_LEFT);
+    }
 
-					if (field instanceof AbstractField<?>) {
-						if (enabler.getValue()) {
-							fields.add((AbstractField<?>) field);
-						} else {
-							fields.remove((AbstractField<?>) field);
-						}
-					}
-				}
-			});
-			field.setVisible(false);
-			form.addComponent(enabler);
-			form.setComponentAlignment(enabler, Alignment.TOP_LEFT);
-		} else {
-			if (field instanceof AbstractField<?>) {
-				fields.add((AbstractField<?>) field);
-			}
-			Label caption = new Label(field.getCaption());
-			caption.setSizeUndefined();
-			form.addComponent(caption);
-			form.setComponentAlignment(caption, Alignment.TOP_LEFT);
-		}
+    protected void showWindow(WindowState state, Object source) {
+        this.state = state;
+        this.source = source;
 
-		field.setCaption(null);
-		form.addComponent(field);
-		form.setComponentAlignment(field, Alignment.TOP_LEFT);
-	}
+        this.loggedUser = SessionManager.getLoggedUser();
 
-	protected void showWindow(WindowState state, Object source) {
-		this.state = state;
-		this.source = source;
+        createWindow();
 
-		this.loggedUser = SessionManager.getLoggedUser();
+        getBus().post(new MainUIEvent.CloseOpenWindowsEvent());
+        UI.getCurrent().addWindow(window);
+        window.center();
+        window.focus();
+    }
 
-		createWindow();
+    public void showWindow() {
+        showWindow(WindowState.CREATE, null);
+    }
 
-		bus.post(new MainUIEvent.CloseOpenWindowsEvent());
-		UI.getCurrent().addWindow(window);
-		window.center();
-		window.focus();
-	}
+    @Override
+    public void windowClose(CloseEvent e) {
+        clearFields();
 
-	public void showWindow() {
-		showWindow(WindowState.CREATE, null);
-	}
+        state = null;
+        source = null;
 
-	@Override
-	public void windowClose(CloseEvent e) {
-		clearFields();
-
-		state = null;
-		source = null;
-
-		window = null;
-	}
+        window = null;
+    }
 
 }

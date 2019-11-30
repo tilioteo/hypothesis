@@ -4,13 +4,10 @@
  */
 package org.hypothesis.presenter;
 
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.hypothesis.data.model.User.GUEST;
-import static org.hypothesis.ui.MainUIStyles.LOGIN_VIEW;
-
-import java.util.Date;
-import java.util.UUID;
-
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
+import net.engio.mbassy.listener.Handler;
 import org.hypothesis.business.SessionManager;
 import org.hypothesis.business.UserControlServiceImpl;
 import org.hypothesis.business.data.UserControlData;
@@ -18,262 +15,242 @@ import org.hypothesis.business.data.UserSession;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
-import org.hypothesis.event.interfaces.MainUIEvent.GuestAccessRequestedEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.InvalidLoginEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.InvalidUserPermissionEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.UserLoggedOutEvent;
-import org.hypothesis.event.interfaces.MainUIEvent.UserLoginRequestedEvent;
+import org.hypothesis.event.interfaces.MainUIEvent.*;
 import org.hypothesis.eventbus.HasMainEventBus;
 import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.LoginPresenter;
 import org.hypothesis.interfaces.MainPresenter;
 import org.hypothesis.navigator.HypothesisNavigator;
 import org.hypothesis.navigator.HypothesisViewType;
-import org.hypothesis.servlet.BroadcastService;
+import org.hypothesis.push.Pushable;
+import org.hypothesis.servlet.Broadcaster;
 import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.MainUI;
 import org.hypothesis.utility.UIMessageUtility;
 import org.hypothesis.utility.UserControlDataUtility;
 
-import com.vaadin.server.Page;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
+import java.util.Date;
+import java.util.UUID;
 
-import net.engio.mbassy.listener.Handler;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.hypothesis.data.model.User.GUEST;
+import static org.hypothesis.ui.MainUIStyles.LOGIN_VIEW;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
+ * <p>
+ * Hypothesis
  */
 @SuppressWarnings("serial")
-public class MainUIPresenter extends AbstractUIPresenter implements HasMainEventBus {
+public class MainUIPresenter extends AbstractUIPresenter implements HasMainEventBus, Broadcaster, Pushable {
 
-	private final MainUI ui;
-	private MainScreen mainScreen = null;
-	private LoginScreen loginScreen = null;
+    private final MainUI ui;
+    private final MainEventBus bus;
+    private final LoginPresenter loginPresenter;
+    private final MainPresenter mainPresenter;
+    private MainScreen mainScreen = null;
+    private LoginScreen loginScreen = null;
+    private String uid;
+    private UserService userService;
+    private UserControlServiceImpl userControlService;
 
-	private final MainEventBus bus;
+    public MainUIPresenter(MainUI ui) {
+        this.ui = ui;
 
-	private String uid;
+        bus = new MainEventBus();
+        SessionManager.setMainEventBus(bus);
 
-	private final LoginPresenter loginPresenter;
-	private final MainPresenter mainPresenter;
+        loginPresenter = new LoginPresenterImpl();
+        mainPresenter = new MainPresenterImpl();
+    }
 
-	private UserService userService;
-	private UserControlServiceImpl userControlService;
+    @Override
+    public void initialize(VaadinRequest request) {
+        super.initialize(request);
 
-	public MainUIPresenter(MainUI ui) {
-		this.ui = ui;
+        uid = UUID.randomUUID().toString().replaceAll("-", "");
+        SessionManager.setMainUID(uid);
 
-		bus = MainEventBus.createInstance(this);
+        userService = UserService.newInstance();
+        userControlService = new UserControlServiceImpl();
 
-		loginPresenter = new LoginPresenterImpl(bus);
-		mainPresenter = new MainPresenterImpl(bus);
-	}
+        updateUIContent();
+    }
 
-	@Override
-	public void initialize(VaadinRequest request) {
-		super.initialize(request);
+    private MainScreen getMainView() {
+        if (null == mainScreen) {
+            mainScreen = mainPresenter.createScreen();
+            new HypothesisNavigator(mainScreen.getContent());
+        }
 
-		uid = UUID.randomUUID().toString().replaceAll("-", "");
-		SessionManager.setMainUID(uid);
+        return mainScreen;
+    }
 
-		userService = UserService.newInstance();
-		userControlService = new UserControlServiceImpl();
+    private LoginScreen getLoginScreen() {
+        if (null == loginScreen) {
+            loginScreen = loginPresenter.createScreen();
+        }
 
-		updateUIContent();
-	}
+        loginScreen.refresh();
+        return loginScreen;
+    }
 
-	private MainScreen getMainView() {
-		if (null == mainScreen) {
-			mainScreen = mainPresenter.createScreen();
-			new HypothesisNavigator(bus, mainScreen.getContent());
-		}
+    /**
+     * Updates the correct content for this UI based on the current user status.
+     * If the user is logged in with appropriate privileges, main view is shown.
+     * Otherwise login view is shown.
+     */
+    private void updateUIContent() {
+        User user = SessionManager.getLoggedUser();
 
-		return mainScreen;
-	}
+        if (user != null) {
+            // Authenticated user
+            ui.setContent(getMainView());
+            ui.removeStyleName(LOGIN_VIEW);
 
-	private LoginScreen getLoginScreen() {
-		if (null == loginScreen) {
-			loginScreen = loginPresenter.createScreen();
-		}
+            String viewName = getViewName();
 
-		loginScreen.refresh();
-		return loginScreen;
-	}
+            if (isNotEmpty(viewName) && userCanAccessView(user, viewName)) {
+                ui.getNavigator().navigateTo(viewName);
+            } else {
+                if (!User.GUEST.equals(user)) {
+                    ui.getNavigator().navigateTo(HypothesisViewType.PACKS.getViewName());
+                    // VN specific - removed public packs
+                    // } else {
+                    // ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
+                }
+            }
+        } else {
+            ui.setContent(getLoginScreen());
+            ui.addStyleName(LOGIN_VIEW);
+        }
+    }
 
-	/**
-	 * Updates the correct content for this UI based on the current user status.
-	 * If the user is logged in with appropriate privileges, main view is shown.
-	 * Otherwise login view is shown.
-	 */
-	private void updateUIContent() {
-		User user = SessionManager.getLoggedUser();
+    private boolean userCanAccessView(User user, String viewName) {
+        HypothesisViewType viewType = HypothesisViewType.getByViewName(viewName);
+        if (viewType != null) {
+            return viewType.isAllowed(user.getRoles());
+        }
 
-		if (user != null) {
-			// Authenticated user
-			ui.setContent(getMainView());
-			ui.removeStyleName(LOGIN_VIEW);
+        return false;
+    }
 
-			String viewName = getViewName();
+    private String getViewName() {
+        String fragment = Page.getCurrent().getUriFragment();
+        if (isNotEmpty(fragment) && fragment.startsWith("!")) {
+            fragment = fragment.substring(1);
+            int l = fragment.lastIndexOf("/");
+            if (l > 0) {
+                fragment = fragment.substring(0, l);
+            }
+            l = fragment.indexOf("?");
+            if (l >= 0) {
+                fragment = fragment.substring(0, l);
+            }
+        }
 
-			if (isNotEmpty(viewName) && userCanAccessView(user, viewName)) {
-				ui.getNavigator().navigateTo(viewName);
-			} else {
-				if (!User.GUEST.equals(user)) {
-					ui.getNavigator().navigateTo(HypothesisViewType.PACKS.getViewName());
-					// VN specific - removed public packs
-					// } else {
-					// ui.getNavigator().navigateTo(HypothesisViewType.PUBLIC.getViewName());
-				}
-			}
-		} else {
-			ui.setContent(getLoginScreen());
-			ui.addStyleName(LOGIN_VIEW);
-		}
-	}
+        return fragment;
+    }
 
-	private boolean userCanAccessView(User user, String viewName) {
-		HypothesisViewType viewType = HypothesisViewType.getByViewName(viewName);
-		if (viewType != null) {
-			return viewType.isAllowed(user.getRoles());
-		}
+    private void setUser(User user) {
+        SessionManager.setLoggedUser(user);
 
-		return false;
-	}
+        UserControlData data = userControlService.ensureUserControlData(user);
 
-	private String getViewName() {
-		String fragment = Page.getCurrent().getUriFragment();
-		if (isNotEmpty(fragment) && fragment.startsWith("!")) {
-			fragment = fragment.substring(1);
-			int l = fragment.lastIndexOf("/");
-			if (l > 0) {
-				fragment = fragment.substring(0, l);
-			}
-			l = fragment.indexOf("?");
-			if (l >= 0) {
-				fragment = fragment.substring(0, l);
-			}
-		}
+        userControlService.updateUserControlDataWithSession(data, uid);
+        UserSession session = UserControlDataUtility.getUserSession(data, uid);
+        session.setAddress(Page.getCurrent().getWebBrowser().getAddress());
 
-		return fragment;
-	}
+        pushCommand(() -> broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId())));
+    }
 
-	private void setUser(User user) {
-		SessionManager.setLoggedUser(user);
+    private boolean userCanLogin(User user) {
+        if (user != null) {
+            if (user.getEnabled() != null && user.getEnabled()) {
+                Date expired = user.getExpireDate();
+                Date now = new Date();
+                if (null == expired || expired.after(now)) {
+                    return true;
+                }
+            }
+        }
 
-		UserControlData data = userControlService.ensureUserControlData(user);
+        return false;
+    }
 
-		userControlService.updateUserControlDataWithSession(data, uid);
-		UserSession session = UserControlDataUtility.getUserSession(data, uid);
-		session.setAddress(Page.getCurrent().getWebBrowser().getAddress());
+    @Handler
+    public void userLoginRequested(final UserLoginRequestedEvent event) {
+        User user = userService.findByUsernamePassword(event.getUserName(), event.getPassword());
 
-		BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
-	}
+        if (user != null) {
 
-	private boolean userCanLogin(User user) {
-		if (user != null) {
-			if (user.getEnabled() != null && user.getEnabled().booleanValue()) {
-				Date expired = user.getExpireDate();
-				Date now = new Date();
-				if (null == expired || expired.after(now)) {
-					return true;
-				}
-			}
-		}
+            if (userCanLogin(user)) {
+                setUser(user);
+                updateUIContent();
+            } else {
+                bus.post(new InvalidUserPermissionEvent());
+            }
+        } else {
+            bus.post(new InvalidLoginEvent());
+        }
+    }
 
-		return false;
-	}
+    @Handler
+    public void guestAccessRequested(final GuestAccessRequestedEvent event) {
+        setUser(GUEST);
 
-	@Handler
-	public void userLoginRequested(final UserLoginRequestedEvent event) {
-		User user = userService.findByUsernamePassword(event.getUserName(), event.getPassword());
+        updateUIContent();
+    }
 
-		if (user != null) {
+    @Handler
+    public void userLoggedOut(final UserLoggedOutEvent event) {
+        User user = SessionManager.getLoggedUser();
 
-			if (userCanLogin(user)) {
-				setUser(user);
-				updateUIContent();
-			} else {
-				bus.post(new InvalidUserPermissionEvent());
-			}
-		} else {
-			bus.post(new InvalidLoginEvent());
-		}
-	}
+        if (user != null) {
+            UserControlData data = userControlService.ensureUserControlData(user);
+            userControlService.updateUserControlData(data);
 
-	@Handler
-	public void guestAccessRequested(final GuestAccessRequestedEvent event) {
-		setUser(GUEST);
+            UserSession session = UserControlDataUtility.getUserSession(data, uid);
+            if (session != null && (session.getState() == null || session.getState().getPackId() == null)) {
+                data.getSessions().remove(session);
+            }
+        }
 
-		updateUIContent();
-	}
+        // When the user logs out, current VaadinSession gets closed and the
+        // page gets reloaded on the login screen. Do notice the this doesn't
+        // invalidate the current HttpSession.
+        SessionManager.setLoggedUser(null);
+        VaadinSession.getCurrent().close();
 
-	@Handler
-	public void userLoggedOut(final UserLoggedOutEvent event) {
-		User user = SessionManager.getLoggedUser();
+        Page.getCurrent().reload();
 
-		if (user != null) {
-			UserControlData data = userControlService.ensureUserControlData(user);
-			userControlService.updateUserControlData(data);
+        pushCommand(() -> broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId())));
+    }
 
-			UserSession session = UserControlDataUtility.getUserSession(data, uid);
-			if (session != null && (session.getState() == null || session.getState().getPackId() == null)) {
-				data.getSessions().remove(session);
-			}
-		}
+    @Override
+    public void refresh(VaadinRequest request) {
+        // nop
+    }
 
-		// When the user logs out, current VaadinSession gets closed and the
-		// page gets reloaded on the login screen. Do notice the this doesn't
-		// invalidate the current HttpSession.
-		SessionManager.setLoggedUser(null);
-		VaadinSession.getCurrent().close();
+    @Override
+    public void attach() {
+        bus.register(this);
+    }
 
-		Page.getCurrent().reload();
+    @Override
+    public void detach() {
+        bus.unregister(this);
+    }
 
-		BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
-	}
+    @Override
+    public MainEventBus getBus() {
+        return bus;
+    }
 
-	@Override
-	public void close() {
-		MainEventBus.destroyInstance(this);
-	}
-
-	@Override
-	public void refresh(VaadinRequest request) {
-		// nop
-	}
-
-	@Override
-	public void attach() {
-		if (bus != null) {
-			bus.register(this);
-		}
-	}
-
-	@Override
-	public void detach() {
-		if (bus != null) {
-			bus.unregister(this);
-		}
-	}
-
-	@Override
-	public MainEventBus getBus() {
-		return bus;
-	}
-
-	@Override
-	public void setBus(MainEventBus bus) {
-		// noop
-	}
-
-	@Override
-	public void cleanup() {
-		HibernateUtil.closeCurrent();		
-	}
+    @Override
+    public void cleanup() {
+        HibernateUtil.closeCurrent();
+    }
 
 }

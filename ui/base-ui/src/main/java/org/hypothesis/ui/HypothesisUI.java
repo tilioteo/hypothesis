@@ -50,7 +50,7 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler 
 				System.out.println("Window/Tab is Closed.");
 				// TODO Call Method to Clean the Resource before window/Tab
 				// Close.
-				getPresenter().cleanup();
+				onClose();
 			}
 		});
 		Page.getCurrent().getJavaScript().execute(
@@ -214,5 +214,9 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler 
 			shortcuts.remove(shortcutKey);
 		}
 		markAsDirty();
+	}
+
+	public void onClose() {
+		getPresenter().cleanup();
 	}
 }

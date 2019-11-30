@@ -2,10 +2,10 @@ package org.hypothesis.utility;
 
 import static org.hypothesis.data.service.RoleService.ROLE_MANAGER;
 import static org.hypothesis.data.service.RoleService.ROLE_SUPERUSER;
-import static org.hypothesis.presenter.BroadcastMessages.REFRESH_PACKS;
-import static org.hypothesis.presenter.BroadcastMessages.REFRESH_USER_TEST_STATE;
+import static org.hypothesis.presenter.BroadcastMessages.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.hypothesis.data.model.Group;
@@ -32,6 +32,15 @@ public class UIMessageUtility {
 							|| (!roles.isEmpty() && rolesMatch(roles, loggedUser.getRoles())))) {
 				return true;
 			}
+		}
+
+		return false;
+	}
+
+	public static boolean canHandle(UIMessage message, String mainViewUid) {
+		if (message != null) {
+			String viewUid = message.getViewUid();
+			return Objects.equals(viewUid, mainViewUid);
 		}
 
 		return false;
@@ -68,6 +77,13 @@ public class UIMessageUtility {
 	public static String createRefreshUserPacksViewMessage(Long userId) {
 		UIMessage message = new UIMessage(REFRESH_PACKS);
 		message.setUserId(userId);
+
+		return message.toString();
+	}
+
+	public static String createProcessViewClosedMessage(String mainViewUid) {
+		UIMessage message = new UIMessage(PROCESS_VIEW_CLOSED);
+		message.setViewUid(mainViewUid);
 
 		return message.toString();
 	}

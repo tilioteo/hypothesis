@@ -185,7 +185,7 @@ public class PackPanel extends Panel {
 		}
 	}
 
-	public synchronized OpenPopupButton getLegacyButton() {
+	public OpenPopupButton getLegacyButton() {
 		return legacyButton;
 	}
 

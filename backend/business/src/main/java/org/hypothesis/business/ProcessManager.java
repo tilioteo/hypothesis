@@ -4,6 +4,25 @@
  */
 package org.hypothesis.business;
 
+import net.engio.mbassy.listener.Handler;
+import org.apache.log4j.Logger;
+import org.hypothesis.business.data.UserControlData;
+import org.hypothesis.business.data.UserSession;
+import org.hypothesis.business.data.UserTestState;
+import org.hypothesis.data.interfaces.HasStatus;
+import org.hypothesis.data.model.*;
+import org.hypothesis.data.service.*;
+import org.hypothesis.event.data.ScoreData;
+import org.hypothesis.event.data.ScoreData.Source;
+import org.hypothesis.event.model.*;
+import org.hypothesis.event.model.FinishSlideEvent.Direction;
+import org.hypothesis.eventbus.ProcessEventBus;
+import org.hypothesis.push.Pushable;
+import org.hypothesis.server.Messages;
+import org.hypothesis.servlet.Broadcaster;
+import org.hypothesis.utility.UIMessageUtility;
+import org.hypothesis.utility.UserControlDataUtility;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -12,66 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.log4j.Logger;
-import org.hypothesis.business.data.UserControlData;
-import org.hypothesis.business.data.UserSession;
-import org.hypothesis.business.data.UserTestState;
-import org.hypothesis.data.interfaces.HasStatus;
-import org.hypothesis.data.model.Branch;
-import org.hypothesis.data.model.BranchMap;
-import org.hypothesis.data.model.BranchOutput;
-import org.hypothesis.data.model.Event;
-import org.hypothesis.data.model.Pack;
-import org.hypothesis.data.model.Score;
-import org.hypothesis.data.model.SimpleTest;
-import org.hypothesis.data.model.Slide;
-import org.hypothesis.data.model.SlideOrder;
-import org.hypothesis.data.model.Status;
-import org.hypothesis.data.model.Task;
-import org.hypothesis.data.model.Token;
-import org.hypothesis.data.model.User;
-import org.hypothesis.data.service.AsynchronousService;
-import org.hypothesis.data.service.BranchService;
-import org.hypothesis.data.service.OutputService;
-import org.hypothesis.data.service.PermissionService;
-import org.hypothesis.data.service.PersistenceService;
-import org.hypothesis.data.service.TestService;
-import org.hypothesis.event.data.ScoreData;
-import org.hypothesis.event.data.ScoreData.Source;
-import org.hypothesis.event.model.AbstractProcessEvent;
-import org.hypothesis.event.model.AbstractRunningEvent;
-import org.hypothesis.event.model.AbstractUserEvent;
-import org.hypothesis.event.model.ActionEvent;
-import org.hypothesis.event.model.AfterFinishSlideEvent;
-import org.hypothesis.event.model.AfterPrepareTestEvent;
-import org.hypothesis.event.model.AfterRenderContentEvent;
-import org.hypothesis.event.model.BreakTestEvent;
-import org.hypothesis.event.model.ComponentEvent;
-import org.hypothesis.event.model.ContinueTestEvent;
-import org.hypothesis.event.model.ErrorNotificationEvent;
-import org.hypothesis.event.model.ErrorTestEvent;
-import org.hypothesis.event.model.FinishBranchEvent;
-import org.hypothesis.event.model.FinishSlideEvent;
-import org.hypothesis.event.model.FinishSlideEvent.Direction;
-import org.hypothesis.event.model.FinishTaskEvent;
-import org.hypothesis.event.model.FinishTestEvent;
-import org.hypothesis.event.model.NextBranchEvent;
-import org.hypothesis.event.model.NextSlideEvent;
-import org.hypothesis.event.model.NextTaskEvent;
-import org.hypothesis.event.model.PrepareTestEvent;
-import org.hypothesis.event.model.PriorSlideEvent;
-import org.hypothesis.event.model.ProcessEventType;
-import org.hypothesis.event.model.ProcessEventTypes;
-import org.hypothesis.event.model.RenderContentEvent;
-import org.hypothesis.event.model.StartTestEvent;
-import org.hypothesis.eventbus.ProcessEventBus;
-import org.hypothesis.server.Messages;
-import org.hypothesis.servlet.BroadcastService;
-import org.hypothesis.utility.UIMessageUtility;
-import org.hypothesis.utility.UserControlDataUtility;
-
-import net.engio.mbassy.listener.Handler;
-
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * 
@@ -79,7 +38,7 @@ import net.engio.mbassy.listener.Handler;
  *
  */
 @SuppressWarnings("serial")
-public class ProcessManager implements Serializable {
+public class ProcessManager implements Serializable, Broadcaster, Pushable {
 
 	private static final Logger log = Logger.getLogger(ProcessManager.class);
 
@@ -677,7 +636,8 @@ public class ProcessManager implements Serializable {
 					state.setSlideDescription("");
 				}
 
-				BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
+				//BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
+				pushCommand(() -> broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId())));
 			}
 		}
 	}

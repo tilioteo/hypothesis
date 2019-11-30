@@ -19,9 +19,9 @@ import com.vaadin.ui.UI;
  *
  */
 @SuppressWarnings("serial")
-public class ProcessEventBus extends HypothesisEventBus<ProcessEvent> {
+public class ProcessEventBus extends EventBus<ProcessEvent> {
 
-	private static final HashMap<HasProcessEventBus, ProcessEventBus> map = new HashMap<>();
+	/*private static final HashMap<HasProcessEventBus, ProcessEventBus> map = new HashMap<>();
 
 	public static final ProcessEventBus createInstance(HasProcessEventBus hasProcessEventBus) {
 		ProcessEventBus eventBus = new ProcessEventBus();
@@ -52,6 +52,6 @@ public class ProcessEventBus extends HypothesisEventBus<ProcessEvent> {
 	}
 
 	protected ProcessEventBus() {
-	}
+	}*/
 
 }

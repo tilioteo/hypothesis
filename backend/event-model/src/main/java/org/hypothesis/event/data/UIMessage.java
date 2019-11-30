@@ -26,6 +26,7 @@ public class UIMessage extends JsonMessage {
 	private static final String MESSAGE_USER = "USER";
 	private static final String MESSAGE_SENDER = "SENDER";
 	private static final String MESSAGE_ROLES = "ROLES";
+	private static final String MESSAGE_VIEW = "VIEW";
 
 	protected UIMessage() {
 	}
@@ -104,6 +105,23 @@ public class UIMessage extends JsonMessage {
 		}
 	}
 
+	public String getViewUid() {
+		try {
+			return json.getString(MESSAGE_VIEW);
+		} catch (Throwable e) {
+		}
+
+		return null;
+	}
+
+	public void setViewUid(String viewUid) {
+		if (viewUid != null) {
+			json.put(MESSAGE_VIEW, viewUid);
+		} else {
+			json.put(MESSAGE_VIEW, Json.createNull());
+		}
+	}
+
 	public void setRoles(String... roles) {
 		if (roles != null && roles.length > 0) {
 			json.put(MESSAGE_ROLES, toJsonArray(roles));
@@ -138,7 +156,7 @@ public class UIMessage extends JsonMessage {
 		return array;
 	}
 
-	public static final UIMessage fromJson(String string) {
+	public static UIMessage fromJson(String string) {
 		JsonObject json = null;
 		try {
 			json = Json.parse(string);
