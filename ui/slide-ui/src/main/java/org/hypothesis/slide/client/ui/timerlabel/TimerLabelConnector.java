@@ -22,12 +22,6 @@ import com.vaadin.shared.ui.Connect;
 public class TimerLabelConnector extends AbstractComponentConnector {
 
 	@Override
-	protected void init() {
-		super.init();
-
-	}
-
-	@Override
 	public VTimerLabel getWidget() {
 		return (VTimerLabel) super.getWidget();
 	}
