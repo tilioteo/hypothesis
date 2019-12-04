@@ -570,24 +570,21 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
             addField(form, generatedNameLayout);
 
             final CheckBox nameFieldSwitch = new CheckBox(Messages.getString("Caption.Button.GenerateName"));
-            nameFieldSwitch.addValueChangeListener(new ValueChangeListener() {
-                @Override
-                public void valueChange(ValueChangeEvent event) {
-                    boolean generate = nameFieldSwitch.getValue();
-                    generatedNameLayout.setVisible(generate);
-                    usernameField.setVisible(!generate);
-                    passwordField.setEnabled(!generate);
-                    generateNames = generate;
+            nameFieldSwitch.addValueChangeListener(e -> {
+                boolean generate = nameFieldSwitch.getValue();
+                generatedNameLayout.setVisible(generate);
+                usernameField.setVisible(!generate);
+                passwordField.setEnabled(!generate);
+                generateNames = generate;
 
-                    if (generate) {
-                        fields.add(0, generatedCountField);
-                        fields.add(0, generatedGroupField);
-                        fields.remove(usernameField);
-                    } else {
-                        fields.remove(generatedGroupField);
-                        fields.remove(generatedCountField);
-                        fields.add(0, usernameField);
-                    }
+                if (generate) {
+                    fields.add(0, generatedCountField);
+                    fields.add(0, generatedGroupField);
+                    fields.remove(usernameField);
+                } else {
+                    fields.remove(generatedGroupField);
+                    fields.remove(generatedCountField);
+                    fields.add(0, usernameField);
                 }
             });
 

@@ -155,12 +155,9 @@ public class ComponentUtility {
 
 	public static ComponentEventCallback createDefaultEventCallback(final Date serverTimestamp,
 			final Date clientTimestamp) {
-		return new ComponentEventCallback() {
-			@Override
-			public void initEvent(ComponentEvent componentEvent) {
-				componentEvent.setTimestamp(new Date());
-				componentEvent.setClientTimestamp(clientTimestamp);
-			}
+		return componentEvent -> {
+			componentEvent.setTimestamp(new Date());
+			componentEvent.setClientTimestamp(clientTimestamp);
 		};
 	}
 }

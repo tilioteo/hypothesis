@@ -70,31 +70,25 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 		setButtons((Status) source.getItem(itemId).getItemProperty(stateField).getValue(), enabledButton,
 				disabledButton);
 
-		enabledButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				Item item = source.getItem(itemId);
-				Status state = (Status) item.getItemProperty(stateField).getValue();
-				Status newState = switchEnabledStatus(state);
+		enabledButton.addClickListener(e -> {
+			Item item = source.getItem(itemId);
+			Status state = (Status) item.getItemProperty(stateField).getValue();
+			Status newState = switchEnabledStatus(state);
 
-				if (newState != state) {
-					source.getItem(itemId).getItemProperty(stateField).setValue(newState);
-					setButtons(newState, enabledButton, disabledButton);
-				}
+			if (newState != state) {
+				source.getItem(itemId).getItemProperty(stateField).setValue(newState);
+				setButtons(newState, enabledButton, disabledButton);
 			}
 		});
 
-		disabledButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				Item item = source.getItem(itemId);
-				Status state = (Status) item.getItemProperty(stateField).getValue();
-				Status newState = switchDisabledStatus(state);
+		disabledButton.addClickListener(e -> {
+			Item item = source.getItem(itemId);
+			Status state = (Status) item.getItemProperty(stateField).getValue();
+			Status newState = switchDisabledStatus(state);
 
-				if (newState != state) {
-					source.getItem(itemId).getItemProperty(stateField).setValue(newState);
-					setButtons(newState, enabledButton, disabledButton);
-				}
+			if (newState != state) {
+				source.getItem(itemId).getItemProperty(stateField).setValue(newState);
+				setButtons(newState, enabledButton, disabledButton);
 			}
 		});
 

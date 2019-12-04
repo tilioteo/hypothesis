@@ -122,12 +122,7 @@ public class TestBeginScreen extends VerticalLayout implements ProcessView, Clic
 		Timer timer = new Timer();
 		timer.setDirection(Direction.DOWN);
 
-		timer.addStopListener(new Timer.StopListener() {
-			@Override
-			public void stop(StopEvent event) {
-				nextCommand();
-			}
-		});
+		timer.addStopListener(e -> nextCommand());
 
 		TimerLabel timerLabel = new TimerLabel();
 		timerLabel.setTimer(timer);

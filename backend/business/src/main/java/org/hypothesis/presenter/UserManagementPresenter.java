@@ -135,17 +135,14 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
     protected Button buildDeleteButton() {
         Button deleteButton = new Button(Messages.getString("Caption.Button.Delete"));
         deleteButton.addStyleName(ValoTheme.BUTTON_DANGER);
-        deleteButton.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                String question = allSelected ? Messages.getString("Caption.Confirm.User.DeleteAll")
-                        : Messages.getString("Caption.Confirm.User.DeleteSelected");
+        deleteButton.addClickListener(e -> {
+            String question = allSelected ? Messages.getString("Caption.Confirm.User.DeleteAll")
+                    : Messages.getString("Caption.Confirm.User.DeleteSelected");
 
-                deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
-                        Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
-                        Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
-                        UserManagementPresenter.this);
-            }
+            deletionConfirmDialog = ConfirmDialog.show(UI.getCurrent(),
+                    Messages.getString("Caption.Dialog.ConfirmDeletion"), question,
+                    Messages.getString("Caption.Button.Confirm"), Messages.getString("Caption.Button.Cancel"),
+                    UserManagementPresenter.this);
         });
         return deleteButton;
     }
@@ -154,7 +151,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
     protected Resource getExportResource() {
         String filename = Messages.getString("Caption.Export.UserFileName");
 
-        return new StreamResource(() -> getExportFile(), filename);
+        return new StreamResource(this::getExportFile, filename);
     }
 
     private InputStream getExportFile() {

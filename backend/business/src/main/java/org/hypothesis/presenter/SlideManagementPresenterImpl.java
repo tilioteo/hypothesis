@@ -111,12 +111,9 @@ public class SlideManagementPresenterImpl extends AbstractViewPresenter
 
 			HorizontalLayout hl = new HorizontalLayout();
 			hl.setSpacing(true);
-			Button startButton = new Button("Start slide", new ClickListener() {
-				@Override
-				public void buttonClick(ClickEvent event) {
-					event.getButton().setEnabled(false);
-					startClicked();
-				}
+			Button startButton = new Button("Start slide", e -> {
+				e.getButton().setEnabled(false);
+				startClicked();
 			});
 			hl.addComponent(startButton);
 

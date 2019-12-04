@@ -73,12 +73,7 @@ public class SlideManagementView extends HorizontalLayout implements UIView {
 		mainLayout.addComponent(controlPanel);
 
 		Button showButton = new Button("Show");
-		showButton.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				showSlide();
-			}
-		});
+		showButton.addClickListener(e -> showSlide());
 
 		controlPanel.setContent(showButton);
 

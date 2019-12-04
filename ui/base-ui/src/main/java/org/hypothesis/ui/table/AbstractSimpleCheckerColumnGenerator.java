@@ -49,23 +49,20 @@ public abstract class AbstractSimpleCheckerColumnGenerator implements ColumnGene
 			button.setData(false);
 		}
 
-		button.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				Item item = source.getItem(itemId);
-				boolean checked = false;
-				if (button.getData().equals(false)) {
-					item.getItemProperty(stateField).setValue(true);
-					checked = true;
-					button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
-				} else {
-					item.getItemProperty(stateField).setValue(false);
-					button.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
-				}
-				button.setData(checked);
-				onStateChanged(itemId, checked);
-
+		button.addClickListener(e -> {
+			Item item1 = source.getItem(itemId);
+			boolean checked = false;
+			if (button.getData().equals(false)) {
+				item1.getItemProperty(stateField).setValue(true);
+				checked = true;
+				button.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+			} else {
+				item1.getItemProperty(stateField).setValue(false);
+				button.removeStyleName(ValoTheme.BUTTON_FRIENDLY);
 			}
+			button.setData(checked);
+			onStateChanged(itemId, checked);
+
 		});
 
 		return button;

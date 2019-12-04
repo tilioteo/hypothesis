@@ -30,32 +30,17 @@ public class AsynchronousService {
 		this.testService = testService;
 		this.outputService = outputService;
 
-		commandExecutor.setFinishCommand(new Command() {
-			@Override
-			public void execute() {
-				HibernateUtil.closeCurrent();
-			}
-		});
+		commandExecutor.setFinishCommand(HibernateUtil::closeCurrent);
 	}
 
 	public void saveBranchOutput(final BranchOutput branchOutput) {
-		commandExecutor.add(new Command() {
-			@Override
-			public void execute() {
-				outputService.saveBranchOutput(branchOutput);
-			}
-		});
+		commandExecutor.add(() -> outputService.saveBranchOutput(branchOutput));
 	}
 
 	public void saveTestEvent(final Event event, final Date date, final String slideData, final Status status,
 			final Long testId, final Long branchId, final Long taskId, final Long slideId) {
-		commandExecutor.add(new Command() {
-			@Override
-			public void execute() {
-				testService.saveTestEvent(testId, status, event.getTimeStamp(), event.getClientTimeStamp(),
-						event.getType(), event.getName(), slideData, branchId, taskId, slideId);
-			}
-		});
+		commandExecutor.add(() -> testService.saveTestEvent(testId, status, event.getTimeStamp(), event.getClientTimeStamp(),
+				event.getType(), event.getName(), slideData, branchId, taskId, slideId));
 	}
 
 	public void cleanup() {
@@ -64,11 +49,6 @@ public class AsynchronousService {
 
 	public void saveTestScore(final Score score, final String scoreData, final Long testId, final Long branchId,
 			final Long taskId, final Long slideId) {
-		commandExecutor.add(new Command() {
-			@Override
-			public void execute() {
-				testService.saveTestScore(testId, score.getTimeStamp(), score.getName(), scoreData, branchId, taskId, slideId);
-			}
-		});
+		commandExecutor.add(() -> testService.saveTestScore(testId, score.getTimeStamp(), score.getName(), scoreData, branchId, taskId, slideId));
 	}
 }

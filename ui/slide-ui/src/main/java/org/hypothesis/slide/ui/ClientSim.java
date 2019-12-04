@@ -47,33 +47,27 @@ public class ClientSim extends Panel {
 		setHeight(100, Unit.PIXELS);
 
 		timer = new Timer();
-		timer.addStopListener(new StopListener() {
-			@Override
-			public void stop(StopEvent event) {
-				Date now = new Date();
-				fireEvent(new ClientEvent(now.getTime(), ClientSim.this));
-				if (state == State.STOPPING) {
-					setStoppedState();
-				} else if (state == State.RUNNING) {
-					timer.start(generateTime());
-				}
+		timer.addStopListener(e -> {
+			Date now = new Date();
+			fireEvent(new ClientEvent(now.getTime(), ClientSim.this));
+			if (state == State.STOPPING) {
+				setStoppedState();
+			} else if (state == State.RUNNING) {
+				timer.start(generateTime());
 			}
 		});
 
 		button = new Button();
-		button.addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(ClickEvent event) {
-				switch (state) {
-				case STOPPED:
-					start();
-					break;
-				case RUNNING:
-					stop();
-					break;
-				default:
-					break;
-				}
+		button.addClickListener(e -> {
+			switch (state) {
+			case STOPPED:
+				start();
+				break;
+			case RUNNING:
+				stop();
+				break;
+			default:
+				break;
 			}
 		});
 		VerticalLayout layout = new VerticalLayout(button);

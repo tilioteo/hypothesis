@@ -141,13 +141,10 @@ public class GroupWindowPresenter extends AbstractWindowPresenter {
             table.addGeneratedColumn(FieldConstants.ENABLER, new SimpleCheckerColumnGenerator(FieldConstants.SELECTED,
                     Messages.getString("Caption.Button.EnablePack")));
 
-            table.setItemDescriptionGenerator(new ItemDescriptionGenerator() {
-                @Override
-                public String generateDescription(Component source, Object itemId, Object propertyId) {
-                    Pack pack = (Pack) itemId;
-                    return Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
-                            pack.getDescription());
-                }
+            table.setItemDescriptionGenerator((source, itemId, propertyId) -> {
+                Pack pack = (Pack) itemId;
+                return Messages.getString("Caption.Item.PackDescription", pack.getName(), pack.getId(),
+                        pack.getDescription());
             });
 
             table.setVisibleColumns(FieldConstants.ENABLER, FieldConstants.NAME);

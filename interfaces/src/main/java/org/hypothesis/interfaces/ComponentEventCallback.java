@@ -14,10 +14,7 @@ public interface ComponentEventCallback {
 
 	void initEvent(ComponentEvent componentEvent);
 
-	ComponentEventCallback DEFAULT = new ComponentEventCallback() {
-		@Override
-		public void initEvent(ComponentEvent componentEvent) {
-		}
+	ComponentEventCallback DEFAULT = componentEvent -> {
 	};
 
 }

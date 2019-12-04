@@ -200,12 +200,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
     }
 
     private Command createActionCommand(final Action action) {
-        return new Command() {
-            @Override
-            public void execute() {
-                getBus().post(new ActionEvent(action));
-            }
-        };
+        return () -> getBus().post(new ActionEvent(action));
     }
 
     @Override
@@ -340,7 +335,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
     }
 
     public void postMessage(String message) {
-        pushCommand(() -> broadcastOthers(message));
+        broadcastOthers(message);
     }
 
     @Override

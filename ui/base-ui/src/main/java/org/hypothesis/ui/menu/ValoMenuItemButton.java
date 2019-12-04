@@ -32,12 +32,7 @@ public class ValoMenuItemButton extends Button {
 		setIcon(icon);
 		setCaption(caption);
 
-		addClickListener(new ClickListener() {
-			@Override
-			public void buttonClick(final ClickEvent event) {
-				UI.getCurrent().getNavigator().navigateTo(viewName);
-			}
-		});
+		addClickListener(e -> UI.getCurrent().getNavigator().navigateTo(viewName));
 
 	}
 
