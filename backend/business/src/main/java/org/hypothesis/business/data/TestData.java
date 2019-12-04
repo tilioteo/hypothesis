@@ -17,7 +17,7 @@ import org.hypothesis.data.model.Pack;
 @SuppressWarnings("serial")
 public class TestData implements Serializable {
 	
-	private Pack pack;
+	private final Pack pack;
 	private boolean running = false;
 	
 	public TestData(Pack pack) {
@@ -28,7 +28,7 @@ public class TestData implements Serializable {
 		return running;
 	}
 
-	public void setRunning(boolean running) {
+	public synchronized void setRunning(boolean running) {
 		this.running = running;
 	}
 

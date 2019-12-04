@@ -27,7 +27,7 @@ public interface Broadcaster {
     }
 
     default void broadcast(final String message) {
-        BroadcastSingleton.instance().broadcast(message, null);
+        BroadcastSingleton.instance().broadcast(message, (Listener[]) null);
     }
 
     default void broadcastOthers(final String message) {

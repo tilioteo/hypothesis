@@ -22,4 +22,5 @@ public interface PacksPresenter extends ViewPresenter {
 	void refreshView();
 	
 	Token createToken(Pack pack);
+
 }

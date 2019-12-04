@@ -4,6 +4,7 @@
  */
 package org.hypothesis.presenter;
 
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Component;
@@ -60,6 +61,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
     private String token = null;
     private String lastToken = null;
     private String viewUID = null;
+    private Long packId = null;
     private ProcessManager processManager;
 
     private SimpleTest preparedTest = null;
@@ -131,8 +133,6 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
         log.debug("detaching ProcessUI");
 
         bus.unregister(this);
-
-        processManager.clean();
     }
 
     private void initParameters(VaadinRequest request) {
@@ -151,17 +151,13 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
         Token token = tokenService.findTokenByUid(tokenUid);
         if (token != null) {
             viewUID = token.getViewUid();
+            packId = token.getPack().getId();
         } else {
             viewUID = null;
+            packId = null;
         }
 
         processManager.setAutoSlideShow(false);
-        // TODO maybe in the future send broadcast message to main view
-        /*
-         * if (token != null && token.getViewUid() != null) { ProcessUIMessage
-         * message = new ProcessUIMessage(token.getViewUid());
-         * Broadcaster.broadcast(message.toString()); }
-         */
 
         processManager.processToken(token, false);
     }
@@ -185,23 +181,14 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
     private void showErrorDialog(final ErrorNotificationEvent event) {
         ErrorDialog errorDialog = new ErrorDialog(Messages.getString("Caption.Error"), event.getCaption());
         errorDialog.setButtonCaption(Messages.getString("Caption.Button.OK"));
-        errorDialog.addCloseListener(new Window.CloseListener() {
-            @Override
-            public void windowClose(CloseEvent e) {
-                bus.post(new CloseTestEvent());
-            }
-        });
+        errorDialog.addCloseListener(e -> bus.post(new CloseTestEvent()));
         ui.showErrorDialog(errorDialog);
     }
 
     @Handler
     public void doAfterFinishSlide(final AfterFinishSlideEvent event) {
-        ui.clearContent(animate, new Command() {
-            @Override
-            public void execute() {
-                bus.post((Direction.NEXT.equals(event.getDirection())) ? new NextSlideEvent() : new PriorSlideEvent());
-            }
-        });
+        ui.clearContent(animate, () -> bus.post((Direction.NEXT.equals(event.getDirection()))
+                ? new NextSlideEvent() : new PriorSlideEvent()));
     }
 
     @Handler
@@ -229,17 +216,8 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
         screen.setInfoLabelCaption(Messages.getString("Message.Info.TestReady"));
         screen.setControlButtonCaption(Messages.getString("Caption.Button.Run"));
 
-        screen.setNextCommand(new Command() {
-            @Override
-            public void execute() {
-                ui.clearContent(animate, new Command() {
-                    @Override
-                    public void execute() {
-                        processManager.processTest(preparedTest);
-                    }
-                });
-            }
-        });
+        screen.setNextCommand(() -> ui.clearContent(animate,
+                () -> processManager.processTest(preparedTest)));
 
         ui.setContent(screen);
     }
@@ -256,12 +234,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
         TestEndScreen screen = new TestEndScreen();
         screen.setInfoLabelCaption(Messages.getString("Message.Info.TestFinished"));
         screen.setControlButtonCaption(Messages.getString("Caption.Button.Close"));
-        screen.setNextCommand(new Command() {
-            @Override
-            public void execute() {
-                bus.post(new CloseTestEvent());
-            }
-        });
+        screen.setNextCommand(() -> bus.post(new CloseTestEvent()));
 
         ui.setContent(screen);
     }
@@ -284,17 +257,23 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
             log.debug("closing ProcessUI with history back");
             JavaScript javaScript = ui.getPage().getJavaScript();
             javaScript.execute("window.history.back();");
-            ui.requestClose();
 
         } else {
             String path = VaadinServlet.getCurrent().getServletContext().getContextPath();
-            ui.getPage().setLocation(path + CLOSE_URL);
+            // for SWT browser
+            //ui.getPage().setLocation(path + CLOSE_URL);
+
             // this is also possible way but not for SWT browser
-            // Page.getCurrent().getJavaScript().execute("window.setTimeout(function(){/*window.open('','_self','');*/window.close();},10);")
+            Page.getCurrent().getJavaScript().execute("window.setTimeout(function(){/*window.open('','_self','');*/window.close();},10);");
 
             log.debug("closing ProcessUI");
-            ui.requestClose();
         }
+        ui.requestClose();
+    }
+
+    @Handler
+    public void requestCleanup(final CleanupEvent event) {
+        cleanup();
     }
 
     @Override
@@ -303,11 +282,16 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
     }
 
     @Override
-    public void cleanup() {
+    public void close() {
         processManager.requestBreakTest();
-        HibernateUtil.closeCurrent();
 
-        pushCommand(() -> broadcast(UIMessageUtility.createProcessViewClosedMessage(viewUID)));
+        broadcast(UIMessageUtility.createProcessViewClosedMessage(viewUID, packId));
+    }
+
+    @Override
+    public void cleanup() {
+        processManager.clean();
+        HibernateUtil.closeCurrent();
     }
 
 

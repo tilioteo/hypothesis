@@ -761,7 +761,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter implements Br
             commitForm();
 
             if (committed) {
-                Notification success = null;
+                Notification success;
                 if (CREATE == state) {
                     success = new Notification(Messages.getString("Message.Info.UserAdded"));
                 } else if (UPDATE == state) {
@@ -860,9 +860,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter implements Br
 
         if (rolesField.isVisible()) {
             Set<Role> roles = new HashSet<>();
-            for (Role role : user.getRoles()) {
-                roles.add(role);
-            }
+            roles.addAll(user.getRoles());
             for (Role role : roles) {
                 user.removeRole(role);
             }
@@ -941,7 +939,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter implements Br
             getBus().post(new MainUIEvent.UserPacksChangedEvent(user));
         }
         final Long userId = user.getId();
-        pushCommand(() -> broadcast(UIMessageUtility.createRefreshUserPacksViewMessage(userId)));
+        broadcast(UIMessageUtility.createRefreshUserPacksViewMessage(userId));
 
         return user;
     }

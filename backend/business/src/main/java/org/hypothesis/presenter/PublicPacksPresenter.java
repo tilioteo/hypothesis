@@ -21,15 +21,17 @@ import org.hypothesis.servlet.Broadcaster;
 import org.hypothesis.ui.PackPanel;
 import org.hypothesis.ui.view.PacksView;
 import org.hypothesis.utility.UIMessageUtility;
+import org.hypothesis.utility.UrlUtility;
 import org.hypothesis.utility.ViewUtility;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.vaadin.server.FontAwesome.ARCHIVE;
 import static com.vaadin.server.FontAwesome.FROWN_O;
-import static org.hypothesis.presenter.BroadcastMessages.PROCESS_VIEW_CLOSED;
-import static org.hypothesis.presenter.BroadcastMessages.REFRESH_PACKS;
+import static org.hypothesis.presenter.BroadcastMessages.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -41,7 +43,7 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
 
     protected final PermissionService permissionService;
     private final TokenService tokenService;
-    private final HashMap<PackPanel, TestData> panelTestData = new HashMap<>();
+    private final HashMap<Long, TestData> packTestData = new HashMap<>();
     private PacksView view;
 
     public PublicPacksPresenter() {
@@ -65,10 +67,6 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
 
     @Override
     public void enter(ViewChangeEvent event) {
-        refreshView();
-    }
-
-    protected void afterCreate() {
         refreshView();
     }
 
@@ -106,34 +104,49 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
         view.markAsDirty();
     }
 
-    protected void cleanOldTestData(List<Pack> packs) {
-        for (TestData testData : panelTestData.values()) {
-            if (!packs.contains(testData.getPack())) {
-                panelTestData.remove(testData);
-            }
-        }
+    protected synchronized void cleanOldTestData(List<Pack> packs) {
+        final List<Long> ids = packs != null ? packs.stream().map(Pack::getId).collect(Collectors.toList()) : Collections.emptyList();
+        final List<Long> idsToRemove = packTestData.keySet().stream().filter(id -> !ids.contains(id)).collect(Collectors.toList());
+        idsToRemove.forEach(packTestData::remove);
     }
 
-    protected PackPanel createPackPanel(Pack pack) {
+    protected PackPanel createPackPanel(final Pack pack) {
         BeanItem<Pack> beanItem = new BeanItem<>(pack);
-        PackPanel panel = new PackPanel();
-        TestData testData = panelTestData.get(panel);
-        if (testData == null) {
-            testData = new TestData(pack);
-            panelTestData.put(panel, testData);
-        }
+        final PackPanel panel = new PackPanel();
+        final TestData testData = ensureTestData(pack);
 
         panel.setCaption(pack.getName());
         panel.setIcon(ARCHIVE);
         panel.setDescriptionPropertyDataSource(beanItem.getItemProperty("description"));
         panel.setLegacyButtonCaption(Messages.getString("Caption.Button.StartLegacy"));
-        panel.setLegacyButtonWindowClosedListener(new LegacyButtonWindowClosedListener(this, testData));
 
-        LegacyButtonClickListener clickListener = new LegacyButtonClickListener(panel.getLegacyButton(), this,
-                testData);
-        panel.setLegacyButtonClickListener(clickListener);
+        panel.setLegacyButtonClickListener(e -> {
+            if (!isTestRunning()) {
+                testData.setRunning(true);
+                Token token = createToken(pack);
+
+                if (token != null) {
+                    maskView();
+                    panel.getLegacyButton().setUrl(UrlUtility.constructStartUrl(token.getUid()));
+                }
+            }
+        });
+
+        panel.setLegacyButtonWindowClosedListener(e -> {
+            testData.setRunning(false);
+            refreshView();
+        });
 
         return panel;
+    }
+
+    private synchronized TestData ensureTestData(Pack pack) {
+        TestData testData = packTestData.get(pack.getId());
+        if (testData == null) {
+            testData = new TestData(pack);
+            packTestData.put(pack.getId(), testData);
+        }
+        return testData;
     }
 
     @Override
@@ -159,15 +172,47 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
     }
 
     private void handleMessage(UIMessage message) {
-        if (REFRESH_PACKS.equals(message.getType())
-                || PROCESS_VIEW_CLOSED.equals(message.getType())) {
-            pushCommand(view.getUI(), () -> refreshView());
+        switch (message.getType()) {
+            case PREPARED_TEST:
+                onPreparedTest(message.getPackId());
+                break;
+            case FINISHED_TEST:
+            case PROCESS_VIEW_CLOSED:
+                onFinnishTestOrProcessViewClosed(message.getPackId());
+                break;
+            case REFRESH_PACKS:
+                onRefreshPacks();
+                break;
         }
     }
 
+    private void pushRefreshView() {
+        pushCommand(view.getUI(), this::refreshView);
+    }
+
+    private void onPreparedTest(Long packId) {
+        final TestData testData = packTestData.get(packId);
+        if (testData != null) {
+            testData.setRunning(true);
+        }
+        pushRefreshView();
+    }
+
+    private void onFinnishTestOrProcessViewClosed(Long packId) {
+        final TestData testData = packTestData.get(packId);
+        if (testData != null) {
+            testData.setRunning(false);
+        }
+        pushRefreshView();
+    }
+
+    private void onRefreshPacks() {
+        pushRefreshView();
+    }
+
     @Override
-    public boolean isTestRunning() {
-        for (TestData data : panelTestData.values()) {
+    public synchronized boolean isTestRunning() {
+        for (TestData data : packTestData.values()) {
             if (data.isRunning()) {
                 return true;
             }

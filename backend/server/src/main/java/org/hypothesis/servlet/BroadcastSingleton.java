@@ -1,10 +1,5 @@
 package org.hypothesis.servlet;
 
-import com.vaadin.shared.communication.PushMode;
-import com.vaadin.ui.UI;
-import org.mpilone.vaadin.uitask.UIAccessor;
-import org.mpilone.vaadin.uitask.UITask;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,48 +41,10 @@ class BroadcastSingleton {
     }
 
     public final void broadcast(final String message, final Broadcaster.Listener... withoutListeners) {
-        /*final List<Broadcaster.Listener> excepts = withoutListeners != null ? Stream.of(withoutListeners).collect(Collectors.toList()) : Collections.emptyList();
+        final List<Broadcaster.Listener> excepts = withoutListeners != null ? Stream.of(withoutListeners).collect(Collectors.toList()) : Collections.emptyList();
 
         listeners.stream()
                 .filter(l -> !excepts.contains(l))
                 .forEach(l -> executorService.execute(() -> l.receiveBroadcast(message)));
-        */
-
-        BroadcastTask task = new BroadcastTask(new UIAccessor.Current(), message, withoutListeners);
-        executorService.execute(task);
-    }
-
-    class BroadcastTask extends UITask<Void> {
-        final String message;
-        final List<Broadcaster.Listener> withoutListeners;
-
-        public BroadcastTask(final UIAccessor uiAccessor, final String message, final Broadcaster.Listener... withoutListeners) {
-            super(uiAccessor);
-            this.message = message;
-            this.withoutListeners = withoutListeners != null ? Stream.of(withoutListeners).collect(Collectors.toList()) : Collections.emptyList();
-        }
-
-        @Override
-        protected Void runInBackground() {
-            listeners.stream()
-                    .filter(l -> !withoutListeners.contains(l))
-                    .forEach(l -> {
-                        l.receiveBroadcast(message);
-                        forceManualPush();
-                    });
-
-            return null;
-        }
-
-        void forceManualPush() {
-            final UI ui = UI.getCurrent();
-            if (ui != null && ui.getPushConfiguration().getPushMode() == PushMode.MANUAL) {
-                try {
-                    ui.push();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }

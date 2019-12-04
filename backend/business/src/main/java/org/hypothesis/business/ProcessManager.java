@@ -6,9 +6,10 @@ package org.hypothesis.business;
 
 import net.engio.mbassy.listener.Handler;
 import org.apache.log4j.Logger;
-import org.hypothesis.business.data.UserControlData;
-import org.hypothesis.business.data.UserSession;
-import org.hypothesis.business.data.UserTestState;
+import org.hypothesis.business.data.SessionData;
+import org.hypothesis.business.data.TestState;
+import org.hypothesis.business.data.TestStateData;
+import org.hypothesis.business.data.UserSessionData;
 import org.hypothesis.data.interfaces.HasStatus;
 import org.hypothesis.data.model.*;
 import org.hypothesis.data.service.*;
@@ -21,7 +22,6 @@ import org.hypothesis.push.Pushable;
 import org.hypothesis.server.Messages;
 import org.hypothesis.servlet.Broadcaster;
 import org.hypothesis.utility.UIMessageUtility;
-import org.hypothesis.utility.UserControlDataUtility;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -31,652 +31,661 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hypothesis.business.data.TestState.*;
+import static org.hypothesis.event.model.ProcessEventTypes.*;
+
 /**
  * @author Kamil Morong, Tilioteo Ltd
- * 
- *         Hypothesis
- *
+ * <p>
+ * Hypothesis
  */
 @SuppressWarnings("serial")
 public class ProcessManager implements Serializable, Broadcaster, Pushable {
 
-	private static final Logger log = Logger.getLogger(ProcessManager.class);
-
-	private static final Set<String> AUDIT_FILTER_EVENTS = Stream.of(ProcessEventTypes.Action,
-			ProcessEventTypes.ClientSimEvent, ProcessEventTypes.Message, ProcessEventTypes.Null)
-			.collect(Collectors.toSet());
-
-	private final BranchManager branchManager;
-	private final TaskManager taskManager;
-
-	private final SlideManager slideManager;
-
-	private final PersistenceService persistenceService;
-	private final TestService testService;
-	private final BranchService branchService;
-	private final PermissionService permissionService;
-	private final UserControlServiceImpl userControlService;
-
-	private final transient AsynchronousService asynchronousService;
-
-	private boolean testProcessing = false;
-	private boolean slideProcessing = false;
-	private boolean autoSlideShow = true;
-
-	private SimpleTest currentTest = null;
-	private Pack currentPack = null;
-	private Branch currentBranch = null;
-	private Task currentTask = null;
-	private Slide currentSlide = null;
-
-	private User currentUser = null;
-	private String mainUID = null;
-
-	private final ProcessEventBus bus;
-	private final ExportVNManager exportVNManager;
-
-	public ProcessManager(ProcessEventBus bus) {
-		this.bus = bus;
-		bus.register(this);
-
-		branchManager = new BranchManager();
-		taskManager = new TaskManager();
-		slideManager = new SlideManager();
-
-		permissionService = PermissionService.newInstance();
-		testService = permissionService.getTestManager();
-		persistenceService = PersistenceService.newInstance();
-		branchService = BranchService.newInstance();
-
-		userControlService = new UserControlServiceImpl();
-
-		asynchronousService = new AsynchronousService(TestService.newInstance(), OutputService.newInstance());
-
-		exportVNManager = new ExportVNManager();
-	}
-
-	private Event createEvent(AbstractProcessEvent event) {
-		if (event != null && event.getName() != null) {
-			ProcessEventType processEvent = ProcessEventTypes.get(event.getName());
-
-			if (processEvent != null) {
-				return new Event(processEvent.getId(), event.getName(), event.getTimestamp());
-			}
-		}
-
-		return null;
-	}
-
-	private boolean checkUserPack(User user, Pack pack) {
-		Collection<Pack> packs;
-		if (user != null) {
-			// packs = permissionService.findUserPacks(user, true);
-			packs = permissionService.getUserPacksVN(user);
-			for (Pack allowedPack : packs) {
-				if (allowedPack.getId().equals(pack.getId()))
-					return true;
-			}
-		}
-
-		packs = permissionService.getPublishedPacks();
-		for (Pack allowedPack : packs) {
-			if (allowedPack.getId().equals(pack.getId()))
-				return true;
-		}
-
-		return false;
-	}
-
-	@Handler
-	public void processActionEvent(ActionEvent event) {
-		saveUserProcessEvent(event);
-		saveActionScore(event);
-	}
-
-	@Handler
-	public void processAfterRender(AfterRenderContentEvent event) {
-		saveRunningEvent(event);
-	}
-
-	@Handler
-	public void processBreakTest(BreakTestEvent event) {
-		saveRunningEvent(event);
-
-		testProcessing = false;
-		slideProcessing = false;
-		currentTest = null;
-		currentPack = null;
-		currentBranch = null;
-		currentTask = null;
-		currentSlide = null;
-		
-		clean();
-	}
+    private static final Logger log = Logger.getLogger(ProcessManager.class);
+
+    private static final Set<String> AUDIT_FILTER_EVENTS = Stream.of(Action,
+            ClientSimEvent, ProcessEventTypes.Message, Null)
+            .collect(Collectors.toSet());
+
+    private final BranchManager branchManager;
+    private final TaskManager taskManager;
+
+    private final SlideManager slideManager;
+
+    private final PersistenceService persistenceService;
+    private final TestService testService;
+    private final BranchService branchService;
+    private final PermissionService permissionService;
+
+    private final transient AsynchronousService asynchronousService;
+    private final ProcessEventBus bus;
+    private final ExportVNManager exportVNManager;
+    private boolean testProcessing = false;
+    private boolean slideProcessing = false;
+    private boolean autoSlideShow = true;
+    private SimpleTest currentTest = null;
+    private Pack currentPack = null;
+    private Branch currentBranch = null;
+    private Task currentTask = null;
+    private Slide currentSlide = null;
+    private User currentUser = null;
+    private String mainUID = null;
+
+    public ProcessManager(ProcessEventBus bus) {
+        this.bus = bus;
+        bus.register(this);
+
+        branchManager = new BranchManager();
+        taskManager = new TaskManager();
+        slideManager = new SlideManager();
+
+        permissionService = PermissionService.newInstance();
+        testService = permissionService.getTestManager();
+        persistenceService = PersistenceService.newInstance();
+        branchService = BranchService.newInstance();
+
+        asynchronousService = new AsynchronousService(TestService.newInstance(), OutputService.newInstance());
+
+        exportVNManager = new ExportVNManager();
+    }
+
+    private Event createEvent(AbstractProcessEvent event) {
+        if (event != null && event.getName() != null) {
+            ProcessEventType processEvent = ProcessEventTypes.get(event.getName());
+
+            if (processEvent != null) {
+                return new Event(processEvent.getId(), event.getName(), event.getTimestamp());
+            }
+        }
+
+        return null;
+    }
+
+    private boolean checkUserPack(User user, Pack pack) {
+        Collection<Pack> packs;
+        if (user != null) {
+            // packs = permissionService.findUserPacks(user, true);
+            packs = permissionService.getUserPacksVN(user);
+            for (Pack allowedPack : packs) {
+                if (allowedPack.getId().equals(pack.getId()))
+                    return true;
+            }
+        }
+
+        packs = permissionService.getPublishedPacks();
+        for (Pack allowedPack : packs) {
+            if (allowedPack.getId().equals(pack.getId()))
+                return true;
+        }
+
+        return false;
+    }
+
+    @Handler
+    public void processActionEvent(ActionEvent event) {
+        saveUserProcessEvent(event);
+        saveActionScore(event);
+    }
+
+    @Handler
+    public void processAfterRender(AfterRenderContentEvent event) {
+        saveRunningEvent(event);
+    }
+
+    @Handler
+    public void processBreakTest(BreakTestEvent event) {
+        saveRunningEvent(event);
+
+        testProcessing = false;
+        slideProcessing = false;
+        currentTest = null;
+        currentPack = null;
+        currentBranch = null;
+        currentTask = null;
+        currentSlide = null;
 
-	@Handler
-	public void processComponentEvent(ComponentEvent event) {
-		saveUserProcessEvent(event);
-	}
+        bus.post(new CleanupEvent());
+    }
 
-	@Handler
-	public void processContinueTest(ContinueTestEvent event) {
-		currentTest = event.getTest();
-		saveRunningEvent(event);
+    @Handler
+    public void processComponentEvent(ComponentEvent event) {
+        saveUserProcessEvent(event);
+    }
 
-		persistenceService.merge(branchManager.find(currentTest.getLastBranch()));
-		currentBranch = branchManager.current();
+    @Handler
+    public void processContinueTest(ContinueTestEvent event) {
+        currentTest = event.getTest();
+        saveRunningEvent(event);
 
-		if (currentBranch != null) {
+        persistenceService.merge(branchManager.find(currentTest.getLastBranch()));
+        currentBranch = branchManager.current();
 
-			taskManager.setListFromParent(currentBranch);
-			persistenceService.merge(taskManager.find(currentTest.getLastTask()));
-			currentTask = taskManager.current();
+        if (currentBranch != null) {
 
-			if (currentTask != null) {
+            taskManager.setListFromParent(currentBranch);
+            persistenceService.merge(taskManager.find(currentTest.getLastTask()));
+            currentTask = taskManager.current();
 
-				setSlideManagerParent(currentTask);
-				slideManager.find(currentTest.getLastSlide());
-				currentSlide = slideManager.current();
+            if (currentTask != null) {
 
-				if (currentSlide != null) {
-					renderSlide();
-				}
-			}
-		}
-	}
+                setSlideManagerParent(currentTask);
+                slideManager.find(currentTest.getLastSlide());
+                currentSlide = slideManager.current();
 
-	@Handler
-	public void processError(ErrorTestEvent event) {
-		saveRunningEvent(event);
-
-		// TODO add some error description
-		bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.Unspecified")));
-	}
-
-	@Handler
-	public void processFinishBranch(FinishBranchEvent event) {
-		saveRunningEvent(event);
-
-		// TODO process branch result
-
-		saveBranchOutput();
-
-		bus.post(new NextBranchEvent());
-	}
-
-	@Handler
-	public void processFinishSlide(FinishSlideEvent event) {
-		slideManager.finishSlide();
-		saveRunningEvent(event);
-		saveSlideScore(event);
-
-		slideProcessing = false;
-
-		if (Direction.NEXT.equals(event.getDirection())) {
-			branchManager.addSlideOutputs(currentSlide, slideManager.getOutputs());
-		}
-
-		if (autoSlideShow) {
-			processSlideFollowing(event.getDirection());
-		} else {
-			bus.post(new AfterFinishSlideEvent(event.getDirection()));
-		}
-	}
-
-	@Handler
-	public void processFinishTask(FinishTaskEvent event) {
-		saveRunningEvent(event);
-
-		// taskManager.find(event.getTask());
-
-		// Object taskOutputValue = taskManager.getOutputValue();
-		// branchManager.addTaskOutputValue(taskManager.current(),
-		// taskOutputValue);
-
-		bus.post(new NextTaskEvent());
-	}
-
-	@Handler
-	public void processFinishTest(FinishTestEvent event) {
-		saveRunningEvent(event);
-
-		tryDisablePack();
-
-		exportScores(currentTest.getId());
-
-		currentTest = null;
-		testProcessing = false;
-		setCurrentUser(null);
-	}
-
-	private void exportScores(Long id) {
-		exportVNManager.exportSingleTestScore(id);
-	}
-
-	@Handler
-	public void processNextBranch(NextBranchEvent event) {
-		saveRunningEvent(event);
-
-		BranchMap branchMap = branchService.getBranchMap(currentPack, currentBranch);
-		Branch nextBranch = branchManager.getNextBranch(branchMap);
-
-		if (nextBranch != null) {
-			currentBranch = persistenceService.merge(nextBranch);
-
-			if (currentBranch != null) {
-
-				taskManager.setListFromParent(currentBranch);
-				currentTask = persistenceService.merge(taskManager.current());
-
-				if (currentTask != null) {
-
-					setSlideManagerParent(currentTask);
-					currentSlide = slideManager.current();
-
-					if (currentSlide != null) {
-						slideProcessing = true;
-						renderSlide();
-					} else {
-						bus.post(new FinishTaskEvent());
-					}
-				} else {
-					bus.post(new FinishBranchEvent());
-				}
-			} else {
-				bus.post(new FinishTestEvent());
-			}
-		} else {
-			bus.post(new FinishTestEvent());
-		}
-	}
-
-	@Handler
-	public void processNextSlide(NextSlideEvent event) {
-		saveRunningEvent(event);
-
-		taskManager.addSlideOutputs(currentSlide, slideManager.getOutputs());
-		int nextIndex = taskManager.getNextSlideIndex(currentSlide);
-		if (nextIndex == 0) { //
-			currentSlide = slideManager.next();
-		} else if (nextIndex < 0 || nextIndex > slideManager.getCount()) {
-			currentSlide = null;
-		} else {
-			currentSlide = slideManager.get(nextIndex - 1);
-		}
-
-		if (currentSlide != null) {
-			slideProcessing = true;
-			renderSlide();
-		} else {
-			bus.post(new FinishTaskEvent());
-		}
-	}
-
-	@Handler
-	public void processPriorSlide(PriorSlideEvent event) {
-		saveRunningEvent(event);
-
-		Slide slide = slideManager.prior();
-
-		if (slide != null) {
-			currentSlide = slide;
-		}
-
-		if (currentSlide != null) {
-			slideProcessing = true;
-			renderSlide();
-		} else {
-			// TODO what will happen when there is not prior slide?
-		}
-	}
-
-	@Handler
-	public void processNextTask(NextTaskEvent event) {
-		saveRunningEvent(event);
-
-		currentTask = persistenceService.merge(taskManager.next());
-		if (currentTask != null) {
-
-			setSlideManagerParent(currentTask);
-			currentSlide = slideManager.current();
-
-			if (currentSlide != null) {
-				slideProcessing = true;
-				renderSlide();
-			} else {
-				bus.post(new FinishTaskEvent());
-			}
-		} else {
-			bus.post(new FinishBranchEvent());
-		}
-	}
-
-	private void setSlideManagerParent(Task task) {
-		slideManager.setListFromParent(task);
-
-		if (task != null && task.isRandomized()) {
-			setTaskSlidesRandomOrder(currentTest, task);
-		}
-	}
-
-	private void setTaskSlidesRandomOrder(SimpleTest test, Task task) {
-		List<Integer> order = null;
-		SlideOrder slideOrder = testService.findTaskSlideOrder(test, task);
-		if (null == slideOrder) {
-			slideOrder = new SlideOrder(test, task);
-			order = slideManager.createRandomOrder();
-			slideOrder.setOrder(order);
-			testService.updateSlideOrder(slideOrder);
-		} else {
-			order = slideOrder.getOrder();
-		}
-
-		slideManager.setOrder(order);
-	}
-
-	@Handler
-	public void processPrepareTest(PrepareTestEvent event) {
-		log.debug(String.format("processPrepareTest: token uid = %s",
-				event.getToken() != null ? event.getToken().getUid() : "NULL"));
-		Token token = event.getToken();
-		mainUID = token.getViewUid();
-
-		SimpleTest test = testService.getUnattendedTest(token.getUser(), token.getPack(), token.isProduction());
-		if (test != null) {
-			token.getUser();
-
-			if (event.isStartAllowed()) {
-				log.debug(String.format("Test start allowed (test id = %s).",
-						test.getId() != null ? test.getId() : "NULL"));
-				processTest(test);
-			} else {
-				bus.post(new AfterPrepareTestEvent(test));
-			}
-		} else {
-			log.error("No test got!");
-			bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.StartTest")));
-		}
-	}
-
-	@Handler
-	public void processStartTest(StartTestEvent event) {
-		saveRunningEvent(event);
-		// tryDisablePack();
-
-		renderSlide();
-	}
-
-	private void tryDisablePack() {
-		if (currentUser != null && currentUser.getAutoDisable()) {
-			permissionService.deleteUserPermissionVN(currentUser, currentPack);
-		}
-
-	}
-
-	public void processTest(SimpleTest test) {
-		log.debug(String.format("processTest: %s", test != null ? test.getId() : "NULL"));
-		if (!testProcessing) {
-			testProcessing = true;
-
-			currentTest = test;
-
-			currentPack = persistenceService.merge(test.getPack());
-
-			branchManager.setListFromParent(currentPack);
-			currentBranch = persistenceService.merge(branchManager.current());
-
-			if (currentBranch != null) {
-				taskManager.setListFromParent(currentBranch);
-				currentTask = persistenceService.merge(taskManager.current());
-
-				if (currentTask != null) {
-					setSlideManagerParent(currentTask);
-					currentSlide = slideManager.current();
-
-					if (currentSlide != null) {
-						slideProcessing = true;
-
-						if (test.getStatus().equals(Status.CREATED)) {
-							log.debug("Test was newly created.");
-							bus.post(new StartTestEvent(test));
-						} else {
-							log.debug("Test continues from last point.");
-							bus.post(new ContinueTestEvent(test));
-						}
-					} else {
-						log.debug("There is no slide.");
-						bus.post(new FinishTestEvent());
-					}
-				} else {
-					log.debug("There is no task.");
-					bus.post(new FinishTestEvent());
-				}
-			} else {
-				log.debug("There is no branch.");
-				bus.post(new FinishTestEvent());
-			}
-		} else {
-			log.debug("Test is already processing.");
-		}
-	}
-
-	public void processSlideFollowing(Direction direction) {
-		if (!slideProcessing) {
-			slideProcessing = true;
-
-			bus.post((Direction.NEXT.equals(direction)) ? new NextSlideEvent() : new PriorSlideEvent());
-		} else {
-			log.warn("Slide not processing.");
-		}
-	}
-
-	public void processToken(Token token, boolean startAllowed) {
-		if (token != null) {
-			setCurrentUser(token.getUser());
-			if (checkUserPack(token.getUser(), token.getPack())) {
-				bus.post(new PrepareTestEvent(token, startAllowed));
-			} else {
-				bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.InsufficientRights")));
-			}
-		} else {
-			log.debug("Invalid token.");
-			setCurrentUser(null);
-			bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.Token")));
-		}
-	}
-
-	private void breakCurrentTest() {
-		bus.post(new BreakTestEvent());
-	}
-
-	private void renderSlide() {
-		if (slideManager.getSlideContainer() != null) {
-
-			bus.post(new RenderContentEvent(slideManager.getSlideContainer()));
-		} else {
-			fireTestError();
-		}
-	}
-
-	private void saveBranchOutput() {
-		String data = branchManager.getSerializedData();
-
-		BranchOutput branchOutput = new BranchOutput(currentTest, currentBranch);
-		branchOutput.setData(data);
-		branchOutput.setOutput(data);
-
-		asynchronousService.saveBranchOutput(branchOutput);
-	}
-
-	private void saveUserProcessEvent(AbstractUserEvent processEvent) {
-		if (currentTest != null) {
-			Event event = createEvent(processEvent);
-
-			if (event != null) {
-				if (processEvent instanceof ActionEvent) {
-					updateActionEventData(event, (ActionEvent) processEvent);
-				} else if (processEvent instanceof ComponentEvent) {
-					updateComponentEventData(event, (ComponentEvent) processEvent);
-				}
-
-				saveTestEvent(currentTest, event, processEvent.getTimestamp(), null);
-			}
-		}
-	}
-
-	private void saveRunningEvent(AbstractRunningEvent processEvent) {
-		if (currentTest != null) {
-			Event event = createEvent(processEvent);
-
-			if (event != null) {
-				Status status = processEvent instanceof HasStatus ? ((HasStatus) processEvent).getStatus() : null;
-
-				saveTestEvent(currentTest, event, processEvent.getTimestamp(), status);
-			}
-		}
-	}
-
-	private void updateActionEventData(Event event, ActionEvent actionEvent) {
-		event.setData(slideManager.getActionData(actionEvent));
-	}
-
-	private void updateComponentEventData(Event event, ComponentEvent componentEvent) {
-		event.setData(slideManager.getComponentData(componentEvent));
-
-		Date clientTimestamp = componentEvent.getClientTimestamp();
-		if (clientTimestamp != null) {
-			event.setClientTimeStamp(clientTimestamp.getTime());
-		}
-	}
-
-	private void saveTestEvent(SimpleTest test, Event event, Date date, Status status) {
-		String slideData = event.getType().equals(ProcessEventTypes.getFinishSlideEventId())
-				? slideManager.getSerializedSlideData() : null;
-
-		Long testId = test != null ? test.getId() : null;
-		Long branchId = currentBranch != null ? currentBranch.getId() : null;
-		Long taskId = currentTask != null ? currentTask.getId() : null;
-		Long slideId = currentSlide != null ? currentSlide.getId() : null;
-
-		asynchronousService.saveTestEvent(event, date, slideData, status, testId, branchId, taskId, slideId);
-		updateTestAudit(date, currentUser, event, test, currentPack, currentBranch, currentTask, currentSlide);
-	}
-
-	private void saveActionScore(ActionEvent event) {
-		if (!event.getAction().getScores().isEmpty()) {
-			Score score = new Score(event.getAction().getId(), event.getTimestamp());
-			saveScore(currentTest, score,
-					new ScoreData(Source.ACTION, event.getAction().getId(), event.getAction().getScores()));
-		}
-	}
-
-	private void saveSlideScore(FinishSlideEvent event) {
-		if (!slideManager.getScores().isEmpty()) {
-			Long slideId = currentSlide != null ? currentSlide.getId() : null;
-			Score score = new Score(event.getName(), event.getTimestamp());
-			saveScore(currentTest, score, new ScoreData(Source.SLIDE, slideId.toString(), slideManager.getScores()));
-		}
-	}
-
-	private void saveScore(SimpleTest test, Score score, ScoreData data) {
-		String scoreData = slideManager.getScoreData(data);
-
-		Long testId = test != null ? test.getId() : null;
-		Long branchId = currentBranch != null ? currentBranch.getId() : null;
-		Long taskId = currentTask != null ? currentTask.getId() : null;
-		Long slideId = currentSlide != null ? currentSlide.getId() : null;
-
-		asynchronousService.saveTestScore(score, scoreData, testId, branchId, taskId, slideId);
-	}
-
-	private void updateTestAudit(Date date, User user, Event event, SimpleTest test, Pack pack, Branch branch,
-			Task task, Slide slide) {
-		if (!AUDIT_FILTER_EVENTS.contains(event.getName())) {
-			UserControlData data = userControlService.ensureUserControlData(user);
-			userControlService.updateUserControlDataWithSession(data, mainUID);
-			UserSession session = UserControlDataUtility.getUserSession(data, mainUID);
-			if (session != null) {
-
-				UserTestState state = ensureTestState(session);
-
-				state.setEventTime(date);
-				state.setEventName(event.getName());
-
-				if (pack != null) {
-					state.setPackId(pack.getId());
-					state.setPackName(pack.getName());
-					state.setPackDescription(pack.getDescription());
-				} else {
-					state.setPackId(null);
-					state.setPackName("");
-					state.setPackDescription("");
-				}
-
-				if (branch != null) {
-					state.setBranchName(branch.getId().toString());
-					state.setBranchDescription(branch.getNote());
-				} else {
-					state.setBranchName("");
-					state.setBranchDescription("");
-				}
-
-				if (task != null) {
-					state.setTaskName(task.getName());
-					state.setTaskDescription(task.getNote());
-				} else {
-					state.setTaskName("");
-					state.setTaskDescription("");
-				}
-
-				if (slide != null) {
-					state.setSlideName(slide.getId().toString());
-					state.setSlideDescription(slide.getNote());
-				} else {
-					state.setSlideName("");
-					state.setSlideDescription("");
-				}
-
-				//BroadcastService.broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
-				pushCommand(() -> broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId())));
-			}
-		}
-	}
-
-	private UserTestState ensureTestState(UserSession session) {
-		UserTestState state = session.getState();
-		if (state == null) {
-			state = new UserTestState();
-			session.setState(state);
-		}
-
-		return state;
-	}
-
-	public void fireTestError() {
-		bus.post(new ErrorTestEvent());
-	}
-
-	public void requestBreakTest() {
-		// test is processing
-		if (currentTest != null) {
-			breakCurrentTest();
-		}
-	}
-
-	public void setAutoSlideShow(boolean value) {
-		if (!testProcessing) {
-			this.autoSlideShow = value;
-		}
-	}
-
-	public void setCurrentUser(User user) {
-		SessionManager.setLoggedUser(user);
-		currentUser = user;
-		slideManager.setUserId(user != null ? user.getId() : null);
-	}
-
-	public void clean() {
-		asynchronousService.cleanup();
-		bus.unregister(this);
-	}
+                if (currentSlide != null) {
+                    renderSlide();
+                }
+            }
+        }
+    }
+
+    @Handler
+    public void processError(ErrorTestEvent event) {
+        saveRunningEvent(event);
+
+        // TODO add some error description
+        bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.Unspecified")));
+    }
+
+    @Handler
+    public void processFinishBranch(FinishBranchEvent event) {
+        saveRunningEvent(event);
+
+        // TODO process branch result
+
+        saveBranchOutput();
+
+        bus.post(new NextBranchEvent());
+    }
+
+    @Handler
+    public void processFinishSlide(FinishSlideEvent event) {
+        slideManager.finishSlide();
+        saveRunningEvent(event);
+        saveSlideScore(event);
+
+        slideProcessing = false;
+
+        if (Direction.NEXT.equals(event.getDirection())) {
+            branchManager.addSlideOutputs(currentSlide, slideManager.getOutputs());
+        }
+
+        if (autoSlideShow) {
+            processSlideFollowing(event.getDirection());
+        } else {
+            bus.post(new AfterFinishSlideEvent(event.getDirection()));
+        }
+    }
+
+    @Handler
+    public void processFinishTask(FinishTaskEvent event) {
+        saveRunningEvent(event);
+
+        // taskManager.find(event.getTask());
+
+        // Object taskOutputValue = taskManager.getOutputValue();
+        // branchManager.addTaskOutputValue(taskManager.current(),
+        // taskOutputValue);
+
+        bus.post(new NextTaskEvent());
+    }
+
+    @Handler
+    public void processFinishTest(FinishTestEvent event) {
+        saveRunningEvent(event);
+
+        tryDisablePack();
+
+        exportScores(currentTest.getId());
+
+        currentTest = null;
+        testProcessing = false;
+        setCurrentUser(null);
+
+        broadcast(UIMessageUtility.createFinishedTestMessage(mainUID, currentPack.getId()));
+    }
+
+    private void exportScores(Long id) {
+        exportVNManager.exportSingleTestScore(id);
+    }
+
+    @Handler
+    public void processNextBranch(NextBranchEvent event) {
+        saveRunningEvent(event);
+
+        BranchMap branchMap = branchService.getBranchMap(currentPack, currentBranch);
+        Branch nextBranch = branchManager.getNextBranch(branchMap);
+
+        if (nextBranch != null) {
+            currentBranch = persistenceService.merge(nextBranch);
+
+            if (currentBranch != null) {
+
+                taskManager.setListFromParent(currentBranch);
+                currentTask = persistenceService.merge(taskManager.current());
+
+                if (currentTask != null) {
+
+                    setSlideManagerParent(currentTask);
+                    currentSlide = slideManager.current();
+
+                    if (currentSlide != null) {
+                        slideProcessing = true;
+                        renderSlide();
+                    } else {
+                        bus.post(new FinishTaskEvent());
+                    }
+                } else {
+                    bus.post(new FinishBranchEvent());
+                }
+            } else {
+                bus.post(new FinishTestEvent());
+            }
+        } else {
+            bus.post(new FinishTestEvent());
+        }
+    }
+
+    @Handler
+    public void processNextSlide(NextSlideEvent event) {
+        saveRunningEvent(event);
+
+        taskManager.addSlideOutputs(currentSlide, slideManager.getOutputs());
+        int nextIndex = taskManager.getNextSlideIndex(currentSlide);
+        if (nextIndex == 0) { //
+            currentSlide = slideManager.next();
+        } else if (nextIndex < 0 || nextIndex > slideManager.getCount()) {
+            currentSlide = null;
+        } else {
+            currentSlide = slideManager.get(nextIndex - 1);
+        }
+
+        if (currentSlide != null) {
+            slideProcessing = true;
+            renderSlide();
+        } else {
+            bus.post(new FinishTaskEvent());
+        }
+    }
+
+    @Handler
+    public void processPriorSlide(PriorSlideEvent event) {
+        saveRunningEvent(event);
+
+        Slide slide = slideManager.prior();
+
+        if (slide != null) {
+            currentSlide = slide;
+        }
+
+        if (currentSlide != null) {
+            slideProcessing = true;
+            renderSlide();
+        } else {
+            // TODO what will happen when there is not prior slide?
+        }
+    }
+
+    @Handler
+    public void processNextTask(NextTaskEvent event) {
+        saveRunningEvent(event);
+
+        currentTask = persistenceService.merge(taskManager.next());
+        if (currentTask != null) {
+
+            setSlideManagerParent(currentTask);
+            currentSlide = slideManager.current();
+
+            if (currentSlide != null) {
+                slideProcessing = true;
+                renderSlide();
+            } else {
+                bus.post(new FinishTaskEvent());
+            }
+        } else {
+            bus.post(new FinishBranchEvent());
+        }
+    }
+
+    private void setSlideManagerParent(Task task) {
+        slideManager.setListFromParent(task);
+
+        if (task != null && task.isRandomized()) {
+            setTaskSlidesRandomOrder(currentTest, task);
+        }
+    }
+
+    private void setTaskSlidesRandomOrder(SimpleTest test, Task task) {
+        List<Integer> order;
+        SlideOrder slideOrder = testService.findTaskSlideOrder(test, task);
+        if (null == slideOrder) {
+            slideOrder = new SlideOrder(test, task);
+            order = slideManager.createRandomOrder();
+            slideOrder.setOrder(order);
+            testService.updateSlideOrder(slideOrder);
+        } else {
+            order = slideOrder.getOrder();
+        }
+
+        slideManager.setOrder(order);
+    }
+
+    @Handler
+    public void processPrepareTest(PrepareTestEvent event) {
+        log.debug(String.format("processPrepareTest: token uid = %s",
+                event.getToken() != null ? event.getToken().getUid() : "NULL"));
+        Token token = event.getToken();
+        mainUID = token.getViewUid();
+
+        broadcast(UIMessageUtility.createPreparedTestMessage(mainUID, token.getPack().getId()));
+
+        SimpleTest test = testService.getUnattendedTest(token.getUser(), token.getPack(), token.isProduction());
+        if (test != null) {
+            updateUserSessionTestState(token.getUser(), mainUID, PREPARED);
+
+            if (event.isStartAllowed()) {
+                log.debug(String.format("Test start allowed (test id = %s).",
+                        test.getId() != null ? test.getId() : "NULL"));
+                processTest(test);
+            } else {
+                bus.post(new AfterPrepareTestEvent(test));
+            }
+        } else {
+            log.error("No test got!");
+            bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.StartTest")));
+        }
+    }
+
+    @Handler
+    public void processStartTest(StartTestEvent event) {
+        saveRunningEvent(event);
+        // tryDisablePack();
+
+        renderSlide();
+
+        updateUserSessionTestState(currentUser, mainUID, RUNNING);
+    }
+
+    private void updateUserSessionTestState(User user, String sessionId, TestState state) {
+        if (user != null && sessionId != null) {
+            UserSessionData userSessionData = UserSessionManager.ensureUserSessionData(user, sessionId);
+            SessionData sessionData = userSessionData.getSessionData(sessionId);
+            sessionData.getTestStateData().setState(state);
+
+            broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
+        }
+    }
+
+    private void tryDisablePack() {
+        if (currentUser != null && currentUser.getAutoDisable()) {
+            permissionService.deleteUserPermissionVN(currentUser, currentPack);
+        }
+    }
+
+    public void processTest(SimpleTest test) {
+        log.debug(String.format("processTest: %s", test != null ? test.getId() : "NULL"));
+        if (!testProcessing) {
+            testProcessing = true;
+
+            currentTest = test;
+
+            currentPack = persistenceService.merge(test.getPack());
+
+            branchManager.setListFromParent(currentPack);
+            currentBranch = persistenceService.merge(branchManager.current());
+
+            if (currentBranch != null) {
+                taskManager.setListFromParent(currentBranch);
+                currentTask = persistenceService.merge(taskManager.current());
+
+                if (currentTask != null) {
+                    setSlideManagerParent(currentTask);
+                    currentSlide = slideManager.current();
+
+                    if (currentSlide != null) {
+                        slideProcessing = true;
+
+                        if (test.getStatus().equals(Status.CREATED)) {
+                            log.debug("Test was newly created.");
+                            bus.post(new StartTestEvent(test));
+                        } else {
+                            log.debug("Test continues from last point.");
+                            bus.post(new ContinueTestEvent(test));
+                        }
+                    } else {
+                        log.debug("There is no slide.");
+                        bus.post(new FinishTestEvent());
+                    }
+                } else {
+                    log.debug("There is no task.");
+                    bus.post(new FinishTestEvent());
+                }
+            } else {
+                log.debug("There is no branch.");
+                bus.post(new FinishTestEvent());
+            }
+        } else {
+            log.debug("Test is already processing.");
+        }
+    }
+
+    public void processSlideFollowing(Direction direction) {
+        if (!slideProcessing) {
+            slideProcessing = true;
+
+            bus.post((Direction.NEXT.equals(direction)) ? new NextSlideEvent() : new PriorSlideEvent());
+        } else {
+            log.warn("Slide not processing.");
+        }
+    }
+
+    public void processToken(Token token, boolean startAllowed) {
+        if (token != null) {
+            setCurrentUser(token.getUser());
+            if (checkUserPack(token.getUser(), token.getPack())) {
+                bus.post(new PrepareTestEvent(token, startAllowed));
+            } else {
+                bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.InsufficientRights")));
+            }
+        } else {
+            log.debug("Invalid token.");
+            setCurrentUser(null);
+            bus.post(new ErrorNotificationEvent(Messages.getString("Message.Error.Token")));
+        }
+    }
+
+    private void breakCurrentTest() {
+        bus.post(new BreakTestEvent());
+    }
+
+    private void renderSlide() {
+        if (slideManager.getSlideContainer() != null) {
+
+            bus.post(new RenderContentEvent(slideManager.getSlideContainer()));
+        } else {
+            fireTestError();
+        }
+    }
+
+    private void saveBranchOutput() {
+        String data = branchManager.getSerializedData();
+
+        BranchOutput branchOutput = new BranchOutput(currentTest, currentBranch);
+        branchOutput.setData(data);
+        branchOutput.setOutput(data);
+
+        asynchronousService.saveBranchOutput(branchOutput);
+    }
+
+    private void saveUserProcessEvent(AbstractUserEvent processEvent) {
+        if (currentTest != null) {
+            Event event = createEvent(processEvent);
+
+            if (event != null) {
+                if (processEvent instanceof ActionEvent) {
+                    updateActionEventData(event, (ActionEvent) processEvent);
+                } else if (processEvent instanceof ComponentEvent) {
+                    updateComponentEventData(event, (ComponentEvent) processEvent);
+                }
+
+                saveTestEvent(currentTest, event, processEvent.getTimestamp(), null);
+            }
+        }
+    }
+
+    private void saveRunningEvent(AbstractRunningEvent processEvent) {
+        if (currentTest != null) {
+            Event event = createEvent(processEvent);
+
+            if (event != null) {
+                Status status = processEvent instanceof HasStatus ? ((HasStatus) processEvent).getStatus() : null;
+
+                saveTestEvent(currentTest, event, processEvent.getTimestamp(), status);
+            }
+        }
+    }
+
+    private void updateActionEventData(Event event, ActionEvent actionEvent) {
+        event.setData(slideManager.getActionData(actionEvent));
+    }
+
+    private void updateComponentEventData(Event event, ComponentEvent componentEvent) {
+        event.setData(slideManager.getComponentData(componentEvent));
+
+        Date clientTimestamp = componentEvent.getClientTimestamp();
+        if (clientTimestamp != null) {
+            event.setClientTimeStamp(clientTimestamp.getTime());
+        }
+    }
+
+    private void saveTestEvent(SimpleTest test, Event event, Date date, Status status) {
+        String slideData = event.getType().equals(ProcessEventTypes.getFinishSlideEventId())
+                ? slideManager.getSerializedSlideData() : null;
+
+        Long testId = test != null ? test.getId() : null;
+        Long branchId = currentBranch != null ? currentBranch.getId() : null;
+        Long taskId = currentTask != null ? currentTask.getId() : null;
+        Long slideId = currentSlide != null ? currentSlide.getId() : null;
+
+        asynchronousService.saveTestEvent(event, date, slideData, status, testId, branchId, taskId, slideId);
+        updateTestAudit(date, currentUser, event, test, currentPack, currentBranch, currentTask, currentSlide);
+    }
+
+    private void saveActionScore(ActionEvent event) {
+        if (!event.getAction().getScores().isEmpty()) {
+            Score score = new Score(event.getAction().getId(), event.getTimestamp());
+            saveScore(currentTest, score,
+                    new ScoreData(Source.ACTION, event.getAction().getId(), event.getAction().getScores()));
+        }
+    }
+
+    private void saveSlideScore(FinishSlideEvent event) {
+        if (!slideManager.getScores().isEmpty()) {
+            Long slideId = currentSlide != null ? currentSlide.getId() : null;
+            Score score = new Score(event.getName(), event.getTimestamp());
+            saveScore(currentTest, score, new ScoreData(Source.SLIDE, slideId.toString(), slideManager.getScores()));
+        }
+    }
+
+    private void saveScore(SimpleTest test, Score score, ScoreData data) {
+        String scoreData = slideManager.getScoreData(data);
+
+        Long testId = test != null ? test.getId() : null;
+        Long branchId = currentBranch != null ? currentBranch.getId() : null;
+        Long taskId = currentTask != null ? currentTask.getId() : null;
+        Long slideId = currentSlide != null ? currentSlide.getId() : null;
+
+        asynchronousService.saveTestScore(score, scoreData, testId, branchId, taskId, slideId);
+    }
+
+    private void updateTestAudit(Date date, User user, Event event, SimpleTest test, Pack pack, Branch branch,
+                                 Task task, Slide slide) {
+        if (user != null && mainUID != null && !AUDIT_FILTER_EVENTS.contains(event.getName())) {
+            UserSessionData userSessionData = UserSessionManager.ensureUserSessionData(user, mainUID);
+            SessionData sessionData = userSessionData.getSessionData(mainUID);
+            if (sessionData != null) {
+                TestStateData state = sessionData.getTestStateData();
+
+                state.setEventTime(date);
+                state.setEventName(event.getName());
+                updateTestState(state, event);
+
+                if (pack != null) {
+                    state.setPackId(pack.getId());
+                    state.setPackName(pack.getName());
+                    state.setPackDescription(pack.getDescription());
+                } else {
+                    state.setPackId(null);
+                    state.setPackName("");
+                    state.setPackDescription("");
+                }
+
+                if (branch != null) {
+                    state.setBranchName(branch.getId().toString());
+                    state.setBranchDescription(branch.getNote());
+                } else {
+                    state.setBranchName("");
+                    state.setBranchDescription("");
+                }
+
+                if (task != null) {
+                    state.setTaskName(task.getName());
+                    state.setTaskDescription(task.getNote());
+                } else {
+                    state.setTaskName("");
+                    state.setTaskDescription("");
+                }
+
+                if (slide != null) {
+                    state.setSlideName(slide.getId().toString());
+                    state.setSlideDescription(slide.getNote());
+                } else {
+                    state.setSlideName("");
+                    state.setSlideDescription("");
+                }
+
+                broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
+            }
+        }
+    }
+
+    private void updateTestState(TestStateData state, Event event) {
+        if (FinishTest.equals(event.getName())) {
+            state.setState(FINISHED);
+        } else if (BreakTest.equals(event.getName())
+                || TestError.equals(event.getName())) {
+            state.setState(BROKEN);
+        } else {
+            state.setState(RUNNING);
+        }
+    }
+
+    public void fireTestError() {
+        bus.post(new ErrorTestEvent());
+    }
+
+    public void requestBreakTest() {
+        // test is processing
+        if (currentTest != null) {
+            breakCurrentTest();
+        }
+    }
+
+    public void setAutoSlideShow(boolean value) {
+        if (!testProcessing) {
+            this.autoSlideShow = value;
+        }
+    }
+
+    public void setCurrentUser(User user) {
+        SessionManager.setLoggedUser(user);
+        currentUser = user;
+        slideManager.setUserId(user != null ? user.getId() : null);
+    }
+
+    public void clean() {
+        asynchronousService.cleanup();
+        bus.unregister(this);
+    }
 }

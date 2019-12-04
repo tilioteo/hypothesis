@@ -4,12 +4,8 @@ import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.*;
-import org.apache.commons.lang3.StringUtils;
-import org.hypothesis.business.UserControlServiceImpl;
-import org.hypothesis.business.VNAddressPositionManager;
-import org.hypothesis.business.data.UserControlData;
-import org.hypothesis.business.data.UserSession;
-import org.hypothesis.business.data.UserTestState;
+import org.hypothesis.business.ControlPanelDataManager;
+import org.hypothesis.business.data.*;
 import org.hypothesis.data.model.Pack;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
@@ -28,15 +24,15 @@ import org.hypothesis.utility.ViewUtility;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.vaadin.server.Sizeable.Unit.PERCENTAGE;
 import static com.vaadin.shared.ui.datefield.Resolution.DAY;
 import static com.vaadin.shared.ui.label.ContentMode.HTML;
 import static com.vaadin.ui.Alignment.MIDDLE_CENTER;
 import static com.vaadin.ui.themes.ValoTheme.*;
+import static org.hypothesis.business.data.TestState.*;
 import static org.hypothesis.presenter.BroadcastMessages.REFRESH_USER_TEST_STATE;
 import static org.hypothesis.ui.HypothesisTheme.TINYPANEL_PROCESSING;
 import static org.hypothesis.ui.HypothesisTheme.USERPANEL_SUSPENDED;
@@ -50,10 +46,8 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
     private VerticalLayout mainLayout;
     private Panel mainPanel;
     private PopupDateField dateField;
-    private UserControlServiceImpl userControlService = new UserControlServiceImpl();
     private boolean isEmptyInfo = false;
-
-    private Properties positionProperties;
+    private final ControlPanelDataManager controlPanelDataManager = new ControlPanelDataManager();
 
     @Override
     public void enter(ViewChangeEvent event) {
@@ -190,80 +184,86 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
                 .collect(Collectors.toList());
         userService.updateUsersTestingSuspended(ids, !enable);
 
-        ids.forEach(id -> pushCommand(() -> broadcastOthers(UIMessageUtility.createRefreshUserPacksViewMessage(id))));
+        ids.forEach(id -> broadcastOthers(UIMessageUtility.createRefreshUserPacksViewMessage(id)));
 
         refreshView();
     }
 
-    private UserPanel createUserControlPanel(UserControlData data) {
-        UserPanel panel = new UserPanel(data.getUser());
-        updateUserPanel(data, panel);
+    private UserPanel createUserControlPanel(final User user, final UserSessionData userSessionData, List<Pack> packs) {
+        UserPanel panel = new UserPanel(user);
+        updateUserPanel(userSessionData, packs, panel);
 
-        BeanItem<User> userBeanItem = new BeanItem<>(data.getUser());
+        BeanItem<User> userBeanItem = new BeanItem<>(user);
         panel.setNamePropertyDataSource(userBeanItem.getItemProperty("name"));
         panel.setSurnamePropertyDataSource(userBeanItem.getItemProperty("username"));
 
-        User user = data.getUser();
         if (user.isTestingSuspended()) {
             panel.addStyleName(USERPANEL_SUSPENDED);
         }
 
         userPanels.put(user.getId(), panel);
 
-        updatePacksPanel(data, panel);
+        updatePacksPanel(userSessionData, packs, panel);
 
         return panel;
     }
 
-    private void updateUserPanel(UserControlData data, UserPanel panel) {
-        UserSession session = data.getSessions().isEmpty() ? new UserSession(null) : data.getSessions().get(0);
-        updatePosition(session);
+    private void updateUserPanel(final UserSessionData userSessionData, final List<Pack> packs, UserPanel panel) {
+        final SessionData sessionData;
+        if (userSessionData != null && !userSessionData.isEmpty() && packs != null) {
+            //FIXME: solve multiple user logins
+            sessionData = userSessionData.getSessionData().get(0);
+        } else {
+            sessionData = new SessionData("");
+        }
 
-        BeanItem<UserSession> sessionBeanItem = new BeanItem<>(session);
-        BeanItem<UserTestState> stateBeanItem = new BeanItem<>(
-                session.getState() != null ? session.getState() : new UserTestState());
+        BeanItem<SessionData> sessionBeanItem = new BeanItem<>(sessionData);
+        BeanItem<TestStateData> stateBeanItem = new BeanItem<>(
+                sessionData.getTestStateData());
 
         panel.setPositionPropertyDataSource(sessionBeanItem.getItemProperty("position"));
         panel.setAddressPropertyDataSource(sessionBeanItem.getItemProperty("address"));
-
         panel.setMessagePropertyDataSource(stateBeanItem.getItemProperty("eventName"));
     }
 
-    private void updatePosition(UserSession session) {
-        if (session != null) {
-            session.setPosition(session.getAddress() != null
-                    ? Optional.of(session.getAddress())//
-                    .map(positionProperties::getProperty)//
-                    .filter(StringUtils::isNotBlank)//
-                    .orElse("<N/A>")//
-                    : null);
-        }
-    }
-
-    private void updatePacksPanel(UserControlData data, UserPanel panel) {
+    private void updatePacksPanel(final UserSessionData userSessionData, final List<Pack> packs, final UserPanel panel) {
         Panel packsPanel = panel.getPacksPanel();
         ComponentContainer container = (ComponentContainer) packsPanel.getContent();
 
-        boolean isSuspended = data.getUser().isTestingSuspended();
+        boolean isSuspended = userSessionData.getUser().isTestingSuspended();
 
         container.removeAllComponents();
         if (isSuspended) {
             packsPanel.addStyleName(USERPANEL_SUSPENDED);
+        } else {
+            packsPanel.removeStyleName(USERPANEL_SUSPENDED);
         }
 
-        for (Pack pack : data.getPacks()) {
+        for (Pack pack : packs) {
             TinyPackPanel packPanel = new TinyPackPanel();
             BeanItem<Pack> packBeanItem = new BeanItem<>(pack);
             packPanel.setDescriptionPropertyDataSource(packBeanItem.getItemProperty("name"));
             if (isSuspended) {
                 packPanel.addStyleName(USERPANEL_SUSPENDED);
+            } else {
+                packPanel.removeStyleName(USERPANEL_SUSPENDED);
             }
 
-            if (!data.getSessions().isEmpty()) {
-                UserSession session = data.getSessions().get(0);
-                if (session.getState() != null && pack.getId().equals(session.getState().getPackId())) {
-                    packPanel.removeStyleName(USERPANEL_SUSPENDED);
-                    packPanel.addStyleName(TINYPANEL_PROCESSING);
+            if (!userSessionData.isEmpty()) {
+                // FIXME: solve multiple user logins
+                final SessionData sessionData = userSessionData.getSessionData().get(0);
+                final TestStateData testStateData = sessionData.getTestStateData();
+                final TestState state = testStateData.getState();
+
+                if (pack.getId().equals(testStateData.getPackId())) {
+                    if (state == BROKEN || state == FINISHED) {
+                        packPanel.addStyleName(USERPANEL_SUSPENDED);
+                    } else if (state == RUNNING) {
+                        packPanel.removeStyleName(USERPANEL_SUSPENDED);
+                        packPanel.addStyleName(TINYPANEL_PROCESSING);
+                    } else {
+                        packPanel.removeStyleName(TINYPANEL_PROCESSING);
+                    }
                 } else {
                     packPanel.removeStyleName(TINYPANEL_PROCESSING);
                 }
@@ -293,35 +293,19 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
     }
 
     private void refreshView() {
-        positionProperties = VNAddressPositionManager.getProperties();
-
         setEmptyInfo();
         userPanels.clear();
 
         if (dateField.getValue() != null) {
-            List<User> users = userService.findPlannedUsers(dateField.getValue());
-            List<UserControlData> data = users.stream()//
-                    .map(userControlService::ensureUserControlData)//
-                    .map(userControlService::updateUserControlData)//
-                    .map(this::reduceSessions)//
-                    .collect(Collectors.toList());
-
-            data.forEach(ucd -> addUserPanel(createUserControlPanel(ucd)));
+            final ControlPanelData data = controlPanelDataManager.getControlPanelData(dateField.getValue());
+            createUserControlPanels(data);
         }
 
         view.markAsDirty();
     }
 
-    private UserControlData reduceSessions(UserControlData data) {
-        while (data.getSessions().size() > 1) {
-            UserSession session = data.getSessions().get(0);
-            UserTestState state = session.getState();
-            if (state != null && "FINISH_TEST".equals(state.getEventName())) {
-                data.getSessions().remove(session);
-            }
-        }
-
-        return data;
+    private void createUserControlPanels(ControlPanelData data) {
+        data.getUsers().forEach(u -> addUserPanel(createUserControlPanel(u, data.getUserSessionDataMap().get(u), data.getUserPacksMap().get(u))));
     }
 
     public void clearMainLayout() {
@@ -368,11 +352,13 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
     private void refreshUserPanel(Long userId) {
         UserPanel panel = userPanels.get(userId);
         if (panel != null) {
-            UserControlData data = userControlService.ensureUserControlData(panel.getUser());
-            userControlService.updateUserControlData(data);
-            reduceSessions(data);
-            updateUserPanel(data, panel);
-            updatePacksPanel(data, panel);
+            final User user = panel.getUser();
+            final ControlPanelData data = controlPanelDataManager.getControlPanelData(Stream.of(user).collect(Collectors.toList()));
+            final UserSessionData userSessionData = data.getUserSessionDataMap().get(user);
+            final List<Pack> packs = data.getUserPacksMap().get(user);
+
+            updateUserPanel(userSessionData, packs, panel);
+            updatePacksPanel(userSessionData, packs, panel);
             panel.markAsDirty();
         }
     }

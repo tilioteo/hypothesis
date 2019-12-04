@@ -72,10 +72,11 @@ public class ProcessUI extends HypothesisUI {
         if (!requestClose) {
             // log.warn("ProcessUI closing without request. Possible runtime
             // error or user closed the browser window.");
-            requestClose = false;
         }
 
         // getSession().close(); // closes all windows in this session
+        getPresenter().close();
+
         super.close();
     }
 

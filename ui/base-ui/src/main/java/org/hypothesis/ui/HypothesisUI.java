@@ -44,14 +44,11 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler 
 	protected void init(VaadinRequest request) {
 		super.init(request);
 
-		JavaScript.getCurrent().addFunction("aboutToClose", new JavaScriptFunction() {
-			@Override
-			public void call(JsonArray arguments) {
-				System.out.println("Window/Tab is Closed.");
-				// TODO Call Method to Clean the Resource before window/Tab
-				// Close.
-				onClose();
-			}
+		JavaScript.getCurrent().addFunction("aboutToClose", arguments -> {
+			System.out.println("Window/Tab is Closed.");
+			// TODO Call Method to Clean the Resource before window/Tab
+			// Close.
+			onClose();
 		});
 		Page.getCurrent().getJavaScript().execute(
 				"window.onbeforeunload = function (e) { var e = e || window.event; aboutToClose(); return; };");
@@ -217,6 +214,7 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler 
 	}
 
 	public void onClose() {
-		getPresenter().cleanup();
+		getPresenter().close();
+		//getPresenter().cleanup();
 	}
 }

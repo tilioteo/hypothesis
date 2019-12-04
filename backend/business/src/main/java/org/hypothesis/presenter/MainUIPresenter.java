@@ -8,10 +8,12 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import net.engio.mbassy.listener.Handler;
+import org.apache.commons.lang3.StringUtils;
 import org.hypothesis.business.SessionManager;
-import org.hypothesis.business.UserControlServiceImpl;
-import org.hypothesis.business.data.UserControlData;
-import org.hypothesis.business.data.UserSession;
+import org.hypothesis.business.UserSessionManager;
+import org.hypothesis.business.VNAddressPositionManager;
+import org.hypothesis.business.data.SessionData;
+import org.hypothesis.business.data.UserSessionData;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.UserService;
@@ -28,9 +30,10 @@ import org.hypothesis.ui.LoginScreen;
 import org.hypothesis.ui.MainScreen;
 import org.hypothesis.ui.MainUI;
 import org.hypothesis.utility.UIMessageUtility;
-import org.hypothesis.utility.UserControlDataUtility;
 
 import java.util.Date;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -53,7 +56,8 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
     private LoginScreen loginScreen = null;
     private String uid;
     private UserService userService;
-    private UserControlServiceImpl userControlService;
+
+    private Properties positionProperties;
 
     public MainUIPresenter(MainUI ui) {
         this.ui = ui;
@@ -73,7 +77,6 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
         SessionManager.setMainUID(uid);
 
         userService = UserService.newInstance();
-        userControlService = new UserControlServiceImpl();
 
         updateUIContent();
     }
@@ -154,15 +157,25 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
     }
 
     private void setUser(User user) {
+        positionProperties = VNAddressPositionManager.getProperties();
         SessionManager.setLoggedUser(user);
 
-        UserControlData data = userControlService.ensureUserControlData(user);
+        UserSessionData userSessionData = UserSessionManager.ensureUserSessionData(user, uid);
+        SessionData sessionData = userSessionData.getSessionData(uid);
+        sessionData.setAddress(Page.getCurrent().getWebBrowser().getAddress());
+        sessionData.setPosition(getPosition(sessionData.getAddress()));
 
-        userControlService.updateUserControlDataWithSession(data, uid);
-        UserSession session = UserControlDataUtility.getUserSession(data, uid);
-        session.setAddress(Page.getCurrent().getWebBrowser().getAddress());
+        broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
+    }
 
-        pushCommand(() -> broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId())));
+    private String getPosition(String address) {
+        if (address != null) {
+            return Optional.of(address)//
+                    .map(positionProperties::getProperty)//
+                    .filter(StringUtils::isNotBlank)//
+                    .orElse("<N/A>");
+        }
+        return null;
     }
 
     private boolean userCanLogin(User user) {
@@ -205,16 +218,14 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
     @Handler
     public void userLoggedOut(final UserLoggedOutEvent event) {
+        logout();
+    }
+
+    private void logout() {
         User user = SessionManager.getLoggedUser();
 
         if (user != null) {
-            UserControlData data = userControlService.ensureUserControlData(user);
-            userControlService.updateUserControlData(data);
-
-            UserSession session = UserControlDataUtility.getUserSession(data, uid);
-            if (session != null && (session.getState() == null || session.getState().getPackId() == null)) {
-                data.getSessions().remove(session);
-            }
+            UserSessionManager.purgeUserSessionData(user, uid);
         }
 
         // When the user logs out, current VaadinSession gets closed and the
@@ -225,7 +236,8 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
         Page.getCurrent().reload();
 
-        pushCommand(() -> broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId())));
+        broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
+        broadcast(UIMessageUtility.createRefreshUserPacksViewMessage(user.getId()));
     }
 
     @Override
@@ -246,6 +258,12 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
     @Override
     public MainEventBus getBus() {
         return bus;
+    }
+
+    @Override
+    public void close() {
+        logout();
+        cleanup();
     }
 
     @Override

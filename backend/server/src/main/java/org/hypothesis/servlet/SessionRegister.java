@@ -12,9 +12,6 @@ import com.vaadin.server.VaadinSession.State;
 
 public class SessionRegister {
 
-	// static final ExecutorService executorService =
-	// Executors.newSingleThreadExecutor();
-
 	private static final LinkedList<VaadinSession> sessions = new LinkedList<>();
 
 	public static void register(VaadinSession session) {

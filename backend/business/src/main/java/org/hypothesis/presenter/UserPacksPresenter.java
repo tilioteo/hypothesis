@@ -69,6 +69,12 @@ public class UserPacksPresenter extends PublicPacksPresenter {
 
         cleanOldTestData(packs);
 
+        if (isTestRunning()) {
+            maskView();
+        } else {
+            unmaskView();
+        }
+
         getView().markAsDirty();
     }
 

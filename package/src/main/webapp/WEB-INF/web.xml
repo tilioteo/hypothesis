@@ -42,25 +42,8 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>org.hypothesis.context.ContextConfig</param-value>
-	</context-param>	<listener>
+	</context-param>
+	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-	
-	<!--servlet>
-		<servlet-name>main-servlet</servlet-name>
-		<servlet-class>org.hypothesis.servlet.MainServlet</servlet-class>
-		<init-param>
-			<param-name>UIProvider</param-name>
-			<param-value>org.hypothesis.provider.MainUIProvider</param-value>
-		</init-param>
-	</servlet>
-
-	<servlet>
-		<servlet-name>process-servlet</servlet-name>
-		<servlet-class>org.hypothesis.servlet.ProcessServlet</servlet-class>
-		<init-param>
-			<param-name>UIProvider</param-name>
-			<param-value>org.hypothesis.provider.ProcessUIProvider</param-value>
-		</init-param>
-	</servlet-->
 </web-app>
