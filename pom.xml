@@ -10,7 +10,7 @@
 	<name>hypothesis-parent</name>
 
 	<properties>
-		<hypothesis.version>1.5.8-vn-190718_1852</hypothesis.version>
+		<hypothesis.version>1.5.8-vn-191203_2345</hypothesis.version>
 
 		<vaadin.version>7.6.8</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
