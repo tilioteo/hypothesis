@@ -49,7 +49,7 @@ public class SlideDocument implements Serializable {
 			component = component.getParent();
 		}
 		
-		if (component instanceof Focusable) {
+		if (component != null) {
 			((Focusable)component).focus();
 		}
 	}

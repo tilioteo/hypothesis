@@ -180,9 +180,8 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 	}
 
 	private void addActionOutputs(Element root, ActionEvent event) {
-		if (event.getAction() instanceof Action) {
-			Action action = (Action) event.getAction();
-			Map<Integer, ExchangeVariable> outputs = action.getOutputs();
+		if (event.getAction() != null) {
+			Map<Integer, ExchangeVariable> outputs = event.getAction().getOutputs();
 
 			if (!outputs.isEmpty()) {
 				Element element = root.createChild(DocumentConstants.OUTPUT_VALUES);
