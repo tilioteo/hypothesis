@@ -25,12 +25,11 @@ public class UIMessageUtility {
 				// non addressed broadcast message
 				return true;
 
-			} else if (loggedUser != null // addressed message, user must be
-											// logged
-					&& ((groupId != null && groupMatches(groupId, loggedUser.getGroups()))
-							|| (userId != null && loggedUser.getId().equals(userId))
-							|| (!roles.isEmpty() && rolesMatch(roles, loggedUser.getRoles())))) {
-				return true;
+			} else {
+				return loggedUser != null // addressed message, user must be logged
+						&& ((groupId != null && groupMatches(groupId, loggedUser.getGroups()))
+						|| (userId != null && loggedUser.getId().equals(userId))
+						|| (!roles.isEmpty() && rolesMatch(roles, loggedUser.getRoles())));
 			}
 		}
 

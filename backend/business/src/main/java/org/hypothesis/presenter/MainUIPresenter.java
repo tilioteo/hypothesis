@@ -183,9 +183,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
             if (user.getEnabled() != null && user.getEnabled()) {
                 Date expired = user.getExpireDate();
                 Date now = new Date();
-                if (null == expired || expired.after(now)) {
-                    return true;
-                }
+                return null == expired || expired.after(now);
             }
         }
 
