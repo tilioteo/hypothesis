@@ -55,7 +55,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
     private final EventManager eventManager;
     private SlideContainer container;
     private HypothesisUI ui = null;
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
 
     private Long userId = null;
 
