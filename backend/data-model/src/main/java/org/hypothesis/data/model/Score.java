@@ -176,7 +176,7 @@ public class Score extends SerializableIdObject {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof Event)) {
+		if (!(obj instanceof Score)) {
 			return false;
 		}
 		Score other = (Score) obj;
