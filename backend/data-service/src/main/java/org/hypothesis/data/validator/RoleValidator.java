@@ -38,7 +38,7 @@ public class RoleValidator implements Validator {
 		// validate only for superusers
 
 		// updating one user, but not the logged one
-		if (source instanceof User && !loggedUser.equals((User) source)) {
+		if (source instanceof User && !loggedUser.equals(source)) {
 			return;
 		}
 

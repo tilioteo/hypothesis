@@ -331,7 +331,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
         // roles
         buildRolesField();
 
-        BeanItemContainer<Role> rolesSource = (BeanItemContainer<Role>) ((AbstractSelect) rolesField)
+        BeanItemContainer<Role> rolesSource = (BeanItemContainer<Role>) rolesField
                 .getContainerDataSource();
         rolesSource.addAll(roleService.findAll());
         rolesSource.sort(new Object[]{FieldConstants.ID}, new boolean[]{true});

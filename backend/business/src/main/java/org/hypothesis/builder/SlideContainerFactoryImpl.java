@@ -253,7 +253,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
                 Component component = componentWrapper.getComponent();
 
                 if (elements.size() == 1 && component instanceof Layout) {
-                    container.setContent((Layout) component);
+                    container.setContent(component);
                 } else {
                     GridLayout gridLayout = new GridLayout(1, 1);
                     gridLayout.setSizeFull();
@@ -523,7 +523,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
                 Component component = componentWrapper.getComponent();
 
                 if (elements.size() == 1 && component instanceof Layout) {
-                    container.setContent((Layout) component);
+                    container.setContent(component);
                 } else {
                     GridLayout gridLayout = new GridLayout(1, 1);
                     gridLayout.setSizeFull();

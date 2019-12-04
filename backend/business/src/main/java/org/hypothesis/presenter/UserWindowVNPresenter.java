@@ -289,7 +289,7 @@ public class UserWindowVNPresenter extends AbstractWindowPresenter implements Br
         // roles
         buildRolesField();
 
-        BeanItemContainer<Role> rolesSource = (BeanItemContainer<Role>) ((AbstractSelect) rolesField)
+        BeanItemContainer<Role> rolesSource = (BeanItemContainer<Role>) rolesField
                 .getContainerDataSource();
         rolesSource.addAll(roleService.findAll());
         rolesSource.sort(new Object[]{ID}, new boolean[]{true});

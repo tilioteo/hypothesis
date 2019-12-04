@@ -141,7 +141,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
 
     private InputStream getExportFile() {
         try {
-            OutputStream output = new ByteArrayOutputStream();
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
             SXSSFWorkbook workbook = new SXSSFWorkbook(-1);
 
             Sheet sheet = workbook.createSheet(Messages.getString("Caption.Export.GroupSheetName"));
@@ -162,7 +162,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
             workbook.close();
             output.close();
 
-            return new ByteArrayInputStream(((ByteArrayOutputStream) output).toByteArray());
+            return new ByteArrayInputStream(output.toByteArray());
 
         } catch (IOException e) {
             Notification.show(Messages.getString("Message.Error.ExportCreateFile"), e.getMessage(), Type.ERROR_MESSAGE);

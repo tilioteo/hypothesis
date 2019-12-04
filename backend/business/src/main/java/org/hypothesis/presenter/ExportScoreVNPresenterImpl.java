@@ -296,8 +296,8 @@ public class ExportScoreVNPresenterImpl extends AbstractMainBusPresenter impleme
     }
 
     private void showCurrentDateSelection() {
-        Date dateFrom = (Date) dateFieldFrom.getValue();
-        Date dateTo = (Date) dateFieldTo.getValue();
+        Date dateFrom = dateFieldFrom.getValue();
+        Date dateTo = dateFieldTo.getValue();
         Calendar c = Calendar.getInstance();
         c.setTime(dateTo);
         c.add(Calendar.DATE, 1);
