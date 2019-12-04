@@ -82,9 +82,9 @@ public class StringUtility {
 				}
 				String[] array = new String[count];
 				int j = 0;
-				for (int i = 0; i < parts.length; ++i) {
-					if (parts[i] != null)
-						array[j++] = parts[i];
+				for (String part : parts) {
+					if (part != null)
+						array[j++] = part;
 				}
 
 				return array;

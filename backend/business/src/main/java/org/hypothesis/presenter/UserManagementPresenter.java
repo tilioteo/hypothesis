@@ -167,9 +167,8 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
             row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
             row.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Password"));
 
-            for (Iterator<User> i = getSelectedUsers().iterator(); i.hasNext(); ) {
+            for (User user : getSelectedUsers()) {
                 row = sheet.createRow(rowNr++);
-                User user = i.next();
                 row.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(user.getId());
                 row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(user.getUsername());
                 row.createCell(2, Cell.CELL_TYPE_STRING).setCellValue(user.getPassword());
@@ -194,9 +193,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
         checkDeletionPermission(loggedUser, users);
         checkSuperuserLeft(loggedUser);
 
-        for (Iterator<User> iterator = users.iterator(); iterator.hasNext(); ) {
-            User user = iterator.next();
-
+        for (User user : users) {
             userService.delete(user);
 
             for (Group group : user.getGroups()) {
@@ -224,8 +221,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
             throw new UnsupportedOperationException(exceptionMessage);
         }
 
-        for (Iterator<User> iterator = users.iterator(); iterator.hasNext(); ) {
-            User user = iterator.next();
+        for (User user : users) {
             if (user.hasRole(RoleService.ROLE_SUPERUSER)) {
                 throw new UnsupportedOperationException(exceptionMessage);
             }
@@ -242,8 +238,7 @@ public class UserManagementPresenter extends AbstractManagementPresenter impleme
 
         if (currentUser.hasRole(RoleService.ROLE_SUPERUSER)) {
             boolean superuserLeft = false;
-            for (Iterator<Long> iterator = ((Collection<Long>) table.getItemIds()).iterator(); iterator.hasNext(); ) {
-                Long id = iterator.next();
+            for (Long id : (Collection<Long>) table.getItemIds()) {
                 if (!table.isSelected(id)) {
                     User user = ((BeanItem<User>) table.getItem(id)).getBean();
                     if (user.hasRole(RoleService.ROLE_SUPERUSER)) {

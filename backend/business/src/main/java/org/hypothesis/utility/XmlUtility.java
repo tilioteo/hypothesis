@@ -37,8 +37,7 @@ public class XmlUtility implements Serializable {
 
 	public static void clearAllChilds(Node parent) {
 		if (parent != null) {
-			for (Iterator<Node> i = parent.selectNodes("").iterator(); i.hasNext();) {
-				Node node = i.next();
+			for (Node node : parent.selectNodes("")) {
 				node.detach();
 			}
 		}
@@ -91,9 +90,7 @@ public class XmlUtility implements Serializable {
 			}
 
 			List<Node> nodes = path.selectNodes(element);
-			for (Iterator<Node> i = nodes.iterator(); i.hasNext();) {
-				Node node = i.next();
-
+			for (Node node : nodes) {
 				if (node instanceof Element) {
 					Element el = (Element) node;
 
@@ -116,9 +113,7 @@ public class XmlUtility implements Serializable {
 
 	public static Node findFirstNodeByName(Node parent, String name) {
 		if (parent != null && name.length() > 0) {
-			for (Iterator<Node> i = parent.selectNodes(String.format(DESCENDANT_FMT, name)).iterator(); i.hasNext();) {
-				Node node = i.next();
-
+			for (Node node : parent.selectNodes(String.format(DESCENDANT_FMT, name))) {
 				if (node.getName().equals(name))
 					return node;
 			}

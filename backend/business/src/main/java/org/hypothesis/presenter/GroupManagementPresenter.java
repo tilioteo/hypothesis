@@ -153,9 +153,8 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
             row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Id"));
             row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(Messages.getString("Caption.Field.Name"));
 
-            for (Iterator<Group> i = getSelectedGroups().iterator(); i.hasNext(); ) {
+            for (Group group : getSelectedGroups()) {
                 row = sheet.createRow(rowNr++);
-                Group group = i.next();
                 row.createCell(0, Cell.CELL_TYPE_NUMERIC).setCellValue(group.getId());
                 row.createCell(1, Cell.CELL_TYPE_STRING).setCellValue(group.getName());
             }
@@ -175,8 +174,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
     private void deleteGroups() {
         Collection<Group> groups = getSelectedGroups();
 
-        for (Iterator<Group> iterator = groups.iterator(); iterator.hasNext(); ) {
-            Group group = iterator.next();
+        for (Group group : groups) {
             group = groupService.merge(group);
             Set<User> users = new HashSet<>();
             users.addAll(group.getUsers());

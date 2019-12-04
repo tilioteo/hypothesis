@@ -109,9 +109,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 						boolean isAttribute = false;
 						String attributeName = null;
 
-						for (int i = 0; i < elementNames.length; ++i) {
-							String elementName = elementNames[i];
-
+						for (String elementName : elementNames) {
 							if (elementName.startsWith("@")) {
 								isAttribute = true;
 
@@ -360,9 +358,9 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 				ArrayList<?> array = (ArrayList<?>) value;
 				if (array.size() > 0) {
 					Object testItem = null;
-					for (int i = 0; i < array.size(); ++i) {
-						testItem = array.get(i);
-						if (testItem != null) {
+					for (Object o : array) {
+						if (o != null) {
+							testItem = o;
 							break;
 						}
 					}

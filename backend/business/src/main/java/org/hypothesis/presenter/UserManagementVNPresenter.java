@@ -131,9 +131,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
         checkDeletionPermission(loggedUser, users);
         checkSuperuserLeft(loggedUser);
 
-        for (Iterator<User> iterator = users.iterator(); iterator.hasNext(); ) {
-            User user = iterator.next();
-
+        for (User user : users) {
             userService.delete(user);
 
             for (Group group : user.getGroups()) {
@@ -161,8 +159,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
             throw new UnsupportedOperationException(exceptionMessage);
         }
 
-        for (Iterator<User> iterator = users.iterator(); iterator.hasNext(); ) {
-            User user = iterator.next();
+        for (User user : users) {
             if (user.hasRole(RoleService.ROLE_SUPERUSER)) {
                 throw new UnsupportedOperationException(exceptionMessage);
             }
@@ -179,8 +176,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
 
         if (currentUser.hasRole(RoleService.ROLE_SUPERUSER)) {
             boolean superuserLeft = false;
-            for (Iterator<Long> iterator = ((Collection<Long>) table.getItemIds()).iterator(); iterator.hasNext(); ) {
-                Long id = iterator.next();
+            for (Long id : (Collection<Long>) table.getItemIds()) {
                 if (!table.isSelected(id)) {
                     User user = ((BeanItem<User>) table.getItem(id)).getBean();
                     if (user.hasRole(RoleService.ROLE_SUPERUSER)) {

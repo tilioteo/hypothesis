@@ -60,9 +60,9 @@ public class XmlDocumentReader implements DocumentReader {
 				}
 				
 				parts = url.getPath().split("/");
-				for (int i = 0; i < parts.length; ++i) {
-					if (!parts[i].isEmpty()) {
-						namespace.append(parts[i]).append(Document.NAMESPACE_SEPARATOR);
+				for (String part : parts) {
+					if (!part.isEmpty()) {
+						namespace.append(part).append(Document.NAMESPACE_SEPARATOR);
 					}
 				}
 				
