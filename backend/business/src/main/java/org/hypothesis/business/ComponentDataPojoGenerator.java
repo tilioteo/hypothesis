@@ -98,7 +98,7 @@ public class ComponentDataPojoGenerator {
 
 		String getterName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("public ").append(fieldClass.getName()).append(" ").append(getterName).append("(){")
 				.append("return this.").append(fieldName).append(";").append("}");
 		return CtMethod.make(sb.toString(), declaringClass);

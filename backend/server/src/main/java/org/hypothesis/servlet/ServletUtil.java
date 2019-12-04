@@ -31,7 +31,7 @@ public class ServletUtil {
 		 */
 
 		// Reconstruct original requesting URL
-		StringBuffer url = new StringBuffer();
+		StringBuilder url = new StringBuilder();
 		url.append(scheme).append("://").append(serverName);
 
 		if ((serverPort != 80) && (serverPort != 443)) {
@@ -55,7 +55,7 @@ public class ServletUtil {
 		int serverPort = request.getServerPort(); // 80
 		String contextPath = request.getContextPath(); // /mywebapp
 
-		StringBuffer url = new StringBuffer();
+		StringBuilder url = new StringBuilder();
 		url.append(request.isSecure() ? "https" : "http").append("://").append(serverName);
 
 		if ((serverPort != 80) && (serverPort != 443)) {
