@@ -123,7 +123,7 @@ public class SlideManager extends ListManager<Task, Slide> {
 	private void setInputValues() {
 		Map<Integer, ExchangeVariable> map = container.getPresenter().getInputs();
 		for (ExchangeVariable inputValueExpression : map.values()) {
-			if (inputValueExpression != null && inputValueExpression instanceof IndexedExpression) {
+			if (inputValueExpression instanceof IndexedExpression) {
 				IndexedExpression inputExpression = (IndexedExpression) inputValueExpression;
 				if (inputExpression.getExpression() != null) {
 					int index = inputExpression.getIndex();

@@ -41,7 +41,7 @@ public class SlideNavigator implements Serializable {
 	}
 
 	public void postMessage(Object object) {
-		if (object != null && object instanceof Message) {
+		if (object instanceof Message) {
 			Message message = (Message) object;
 			message.updateTimestamp();
 			presenter.postMessage(message.toString());
