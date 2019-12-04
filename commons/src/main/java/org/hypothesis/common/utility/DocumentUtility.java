@@ -46,7 +46,7 @@ public final class DocumentUtility {
 							String value = entry.getValue();
 							String selectedValue = selectedAttributes.get(key);
 							if (!selectedAttributes.containsKey(key) || (selectedValue == null && value != null)
-									|| (!selectedValue.equals(value))) {
+									|| (!Objects.equals(selectedValue, value))) {
 								passed = false;
 								break;
 							}
