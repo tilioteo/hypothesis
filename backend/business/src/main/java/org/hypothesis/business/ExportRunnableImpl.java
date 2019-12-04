@@ -47,7 +47,6 @@ public class ExportRunnableImpl extends AbstractExportRunnable implements Cancel
         cancelPending.set(value);
     }
 
-    @SuppressWarnings("serial")
     @Override
     protected StreamResource getExportResource() {
 

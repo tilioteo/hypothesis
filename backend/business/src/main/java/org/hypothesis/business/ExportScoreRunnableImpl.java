@@ -48,7 +48,6 @@ public class ExportScoreRunnableImpl extends AbstractExportRunnable implements C
         cancelPending.set(value);
     }
 
-    @SuppressWarnings("serial")
     protected StreamResource getExportResource() {
 
         final InputStream inputStream = getExportFile();
