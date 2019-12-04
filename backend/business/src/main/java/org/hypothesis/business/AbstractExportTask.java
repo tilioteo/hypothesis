@@ -49,7 +49,7 @@ public abstract class AbstractExportTask extends UITask<Resource> implements Pus
     @Override
     protected void done() {
         if (!isCancelled()) {
-            Resource resource = null;
+            Resource resource;
             try {
                 resource = get();
                 if (resource != null) {
@@ -88,7 +88,7 @@ public abstract class AbstractExportTask extends UITask<Resource> implements Pus
     }
 
     protected InputStream getExportFile() {
-        File tempFile = null;
+        File tempFile;
         try {
             tempFile = File.createTempFile("htsm", null);
             processFile(tempFile);

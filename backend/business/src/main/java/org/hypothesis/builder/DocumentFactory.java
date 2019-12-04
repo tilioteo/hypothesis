@@ -89,7 +89,7 @@ public class DocumentFactory {
 		String name = sourceSubElement.getName();
 		String id = sourceSubElement.getAttribute(DocumentConstants.ID);
 
-		Element destinationSubElement = null;
+		Element destinationSubElement;
 		if (isNotEmpty(id)) {
 			HashMap<String, String> attributes = new HashMap<>();
 			attributes.put(DocumentConstants.ID, id);

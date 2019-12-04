@@ -23,7 +23,7 @@ public abstract class AbstractProcessEvent implements ProcessEvent {
 	private Date timestamp;
 	private Date clientTimestamp = null;
 
-	private ErrorHandler errorHandler = null;
+	private ErrorHandler errorHandler;
 
 	protected AbstractProcessEvent(ErrorHandler errorHandler) {
 		this.timestamp = new Date();

@@ -32,7 +32,7 @@ public enum Gender implements Serializable {
 	private final String code;
 	private final String messageCode;
 
-	private Gender(String code, String messageCode) {
+	Gender(String code, String messageCode) {
 		this.code = code;
 		this.messageCode = messageCode;
 	}

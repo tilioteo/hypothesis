@@ -24,7 +24,7 @@ public abstract class AbstractSimpleCheckerColumnGenerator implements ColumnGene
 
 	private final String stateField;
 
-	private String buttonCaption;
+	private final String buttonCaption;
 
 	public AbstractSimpleCheckerColumnGenerator(String stateField, String buttonCaption) {
 		this.stateField = stateField;

@@ -42,7 +42,7 @@ public class HibernateSessionInterceptor implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
+			throws ServletException {
 		try {
 			log.debug("Starting a database transaction");
 			HibernateUtil.beginTransaction();

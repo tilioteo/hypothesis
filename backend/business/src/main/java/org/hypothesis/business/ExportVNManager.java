@@ -7,7 +7,7 @@ import org.hypothesis.context.HibernateUtil;
 
 public class ExportVNManager {
 
-	private ThreadGroup threadGroup = ThreadUtility.createExportGroup();
+	private final ThreadGroup threadGroup = ThreadUtility.createExportGroup();
 	private final UVNClient client;
 
 	public ExportVNManager() {

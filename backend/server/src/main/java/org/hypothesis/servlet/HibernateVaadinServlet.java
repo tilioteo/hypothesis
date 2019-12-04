@@ -47,7 +47,7 @@ public class HibernateVaadinServlet extends VaadinServlet implements SessionInit
 	}
 
 	@Override
-	public void sessionInit(SessionInitEvent event) throws ServiceException {
+	public void sessionInit(SessionInitEvent event) {
 		log.debug("Session initializing");
 		SessionRegister.register(event.getSession());
 	}

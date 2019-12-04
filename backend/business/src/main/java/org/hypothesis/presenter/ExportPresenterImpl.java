@@ -48,7 +48,6 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
     private final List<String> sortedPacks = new ArrayList<>();
     private final HashMap<String, Pack> packMap = new HashMap<>();
 
-    private VerticalLayout content;
     private VerticalLayout testSelection;
     private Button exportButton;
     private Button cancelExportButton;
@@ -63,8 +62,6 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
     private HorizontalLayout toolsLayout;
     private RawExportTask exportTask = null;
     private ProgressBar exportProgressBar = null;
-
-    private ThreadGroup threadGroup = ThreadUtility.createExportGroup();
 
     public ExportPresenterImpl() {
         permissionService = PermissionService.newInstance();
@@ -197,7 +194,7 @@ public class ExportPresenterImpl extends AbstractMainBusPresenter implements Exp
 
     @Override
     public Component buildContent() {
-        content = new VerticalLayout();
+        VerticalLayout content = new VerticalLayout();
         content.setSizeFull();
         content.setSpacing(true);
 

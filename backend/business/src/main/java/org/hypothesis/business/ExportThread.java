@@ -12,7 +12,7 @@ package org.hypothesis.business;
  */
 public class ExportThread extends Thread {
 
-	private SimpleExportRunnable runnable;
+	private final SimpleExportRunnable runnable;
 
 	public ExportThread(ThreadGroup threadGroup, SimpleExportRunnable runnable) {
 		super(threadGroup, runnable);

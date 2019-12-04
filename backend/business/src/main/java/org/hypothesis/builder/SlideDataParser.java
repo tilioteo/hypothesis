@@ -107,7 +107,7 @@ public class SlideDataParser {
 
 				wrapper.fieldCaptionMap.put(id, caption.isEmpty() ? null : caption);
 
-				String valueId = null;
+				String valueId;
 				Element valueElement = (Element) element.selectSingleNode(DocumentConstants.VALUE);
 				if (valueElement != null) {
 					valueId = valueElement.attributeValue(DocumentConstants.ID);

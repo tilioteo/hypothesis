@@ -12,6 +12,6 @@ package org.hypothesis.ui;
  */
 public interface MainUIStyles {
 
-	static final String LOGIN_VIEW = "loginview";
+	String LOGIN_VIEW = "loginview";
 
 }

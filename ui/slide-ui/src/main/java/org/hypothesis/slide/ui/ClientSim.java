@@ -34,11 +34,11 @@ public class ClientSim extends Panel {
 		STOPPED, RUNNING, STOPPING
 	}
 
-	public static String CLIENT_EVENT = "client";
+	public static final String CLIENT_EVENT = "client";
 
 	private State state;
-	private Timer timer;
-	private Button button;
+	private final Timer timer;
+	private final Button button;
 
 	public ClientSim() {
 		super();
@@ -163,10 +163,10 @@ public class ClientSim extends Panel {
 	 */
 	public interface ClientListener extends ConnectorEventListener {
 
-		public static final Method clientMethod = ReflectTools.findMethod(ClientListener.class, CLIENT_EVENT,
+		Method clientMethod = ReflectTools.findMethod(ClientListener.class, CLIENT_EVENT,
 				ClientEvent.class);
 
-		public void client(ClientEvent event);
+		void client(ClientEvent event);
 	}
 
 }

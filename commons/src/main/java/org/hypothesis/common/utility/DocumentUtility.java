@@ -10,13 +10,8 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.hypothesis.common.utility.StringUtility.toDate;
 import static org.hypothesis.common.utility.StringUtility.toDouble;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.hypothesis.common.ValidationSets;
 import org.hypothesis.interfaces.Action;
@@ -110,8 +105,7 @@ public final class DocumentUtility {
 				for (Element child : elements) {
 					String childName = child.getName();
 
-					if (validElementNames == null
-							|| (validElementNames != null && validElementNames.contains(childName))) {
+					if (validElementNames == null || validElementNames.contains(childName)) {
 						result.add(child);
 					}
 				}
@@ -308,10 +302,8 @@ public final class DocumentUtility {
 		Map<String, String> map = new HashMap<>();
 		List<Element> elements = getComponentProperties(component);
 
-		if (elements != null) {
-			for (Element element : elements) {
-				map.put(element.getName(), element.getAttribute(DocumentConstants.VALUE));
-			}
+		for (Element element : elements) {
+			map.put(element.getName(), element.getAttribute(DocumentConstants.VALUE));
 		}
 
 		return map;
@@ -636,21 +628,19 @@ public final class DocumentUtility {
 			HandlerCallback callback) {
 		List<Element> handlers = DocumentUtility.getComponentHandlers(element);
 
-		if (handlers != null) {
-			for (Element handler : handlers) {
-				String name = handler.getName();
-				String actionId = null;
+		for (Element handler : handlers) {
+			String name = handler.getName();
+			String actionId = null;
 
-				final Action anonymousAction = EvaluableUtility.createAnonymousAction(handler, presenter);
-				if (anonymousAction != null) {
-					actionId = anonymousAction.getId();
-					presenter.setAction(actionId, anonymousAction);
-				}
+			final Action anonymousAction = EvaluableUtility.createAnonymousAction(handler, presenter);
+			if (anonymousAction != null) {
+				actionId = anonymousAction.getId();
+				presenter.setAction(actionId, anonymousAction);
+			}
 
-				if (isNotEmpty(actionId) && isNotEmpty(name)) {
-					callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction,
-							presenter);
-				}
+			if (isNotEmpty(actionId) && isNotEmpty(name)) {
+				callback.setComponentHandler(component, element, handler, name, actionId, anonymousAction,
+						presenter);
 			}
 		}
 	}

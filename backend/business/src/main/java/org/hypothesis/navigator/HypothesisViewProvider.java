@@ -20,8 +20,6 @@ import com.vaadin.navigator.ViewProvider;
 @SuppressWarnings("serial")
 public class HypothesisViewProvider implements ViewProvider, HasMainEventBus {
 
-	private final MainEventBus bus;
-
 	private final HypothesisViewType viewType;
 
 	// This field caches an already initialized view instance if the
@@ -30,8 +28,7 @@ public class HypothesisViewProvider implements ViewProvider, HasMainEventBus {
 
 	private ViewPresenter presenter = null;
 
-	public HypothesisViewProvider(/*MainEventBus bus, */HypothesisViewType viewType) {
-		this.bus = getBus();
+	public HypothesisViewProvider(HypothesisViewType viewType) {
 		this.viewType = viewType;
 	}
 
@@ -73,14 +70,7 @@ public class HypothesisViewProvider implements ViewProvider, HasMainEventBus {
 		if (null == presenter) {
 			try {
 				presenter = viewType.getViewPresenterClass().newInstance();
-
-				/*if (presenter instanceof HasMainEventBus) {
-					((HasMainEventBus) presenter).setBus(bus);
-				}*/
-
-				if (presenter instanceof ViewPresenter) {
-					((ViewPresenter) presenter).init();
-				}
+				presenter.init();
 			} catch (InstantiationException | IllegalAccessException e) {
 				e.printStackTrace();
 			}

@@ -150,7 +150,7 @@ public class Window extends com.vaadin.ui.Window {
 	 * @author kamil.
 	 * @see InitListener
 	 */
-	public class InitEvent extends Component.Event {
+	public static class InitEvent extends Component.Event {
 
 		public InitEvent(Component source) {
 			super(source);
@@ -203,7 +203,7 @@ public class Window extends com.vaadin.ui.Window {
 	 * @author kamil.
 	 * @see OpenListener
 	 */
-	public class OpenEvent extends Component.Event {
+	public static class OpenEvent extends Component.Event {
 
 		public OpenEvent(Component source) {
 			super(source);

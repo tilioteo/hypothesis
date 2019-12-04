@@ -70,8 +70,8 @@ public class Pattern implements Formula {
 		final int prime1 = 443;
 		final int prime2 = 773;
 
-		Long result = (long) slideNumber;
-		result = (prime1 * result + (slideId != null ? prime2 * slideId.longValue() : 0));
+		long result = slideNumber;
+		result = (prime1 * result + (slideId != null ? prime2 * slideId : 0));
 		return result;
 	}
 

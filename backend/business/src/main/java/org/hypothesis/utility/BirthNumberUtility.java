@@ -116,11 +116,7 @@ public class BirthNumberUtility {
 	 */
 	private static boolean isValidYear(String birthNum) {
 		String year = birthNum.substring(0, 2);
-		if (!isNumeric(year)) {
-			return false;
-		}
-
-		return true;
+		return isNumeric(year);
 	}
 
 	/**

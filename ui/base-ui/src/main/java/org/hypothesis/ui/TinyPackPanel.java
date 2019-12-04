@@ -12,7 +12,7 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class TinyPackPanel extends Panel {
 
-	private Label descriptionLabel;
+	private final Label descriptionLabel;
 
 	public TinyPackPanel() {
 		setWidth(100, PIXELS);

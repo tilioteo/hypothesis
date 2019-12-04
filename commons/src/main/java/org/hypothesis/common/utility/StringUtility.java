@@ -23,8 +23,7 @@ public class StringUtility {
 	public static Integer toInteger(String string) {
 		if (isNotEmpty(string)) {
 			try {
-				Integer value = Integer.parseInt(string);
-				return value;
+				return Integer.parseInt(string);
 			} catch (Exception e) {
 			}
 		}
@@ -34,8 +33,7 @@ public class StringUtility {
 	public static Double toDouble(String string) {
 		if (isNotEmpty(string)) {
 			try {
-				Double value = Double.parseDouble(string);
-				return value;
+				return Double.parseDouble(string);
 			} catch (Exception e) {
 			}
 		}
@@ -46,8 +44,7 @@ public class StringUtility {
 		if (isNotEmpty(string) && isNotEmpty(format)) {
 			try {
 				DateFormat formatter = new SimpleDateFormat(format);
-				Date value = formatter.parse(string);
-				return value;
+				return formatter.parse(string);
 			} catch (Exception e) {
 			}
 		}

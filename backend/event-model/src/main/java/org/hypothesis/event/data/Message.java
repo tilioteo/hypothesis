@@ -62,7 +62,7 @@ public class Message extends JsonMessage {
 		if (defs.hasKey(name)) {
 			if (value != null) {
 				String className = defs.getString(name);
-				Class<?> clazz = null;
+				Class<?> clazz;
 				try {
 					clazz = Class.forName(className);
 				} catch (ClassNotFoundException e) {
@@ -111,7 +111,7 @@ public class Message extends JsonMessage {
 	public Object getProperty(String name) {
 		if (defs.hasKey(name)) {
 			String className = defs.getString(name);
-			Class<?> clazz = null;
+			Class<?> clazz;
 			try {
 				clazz = Class.forName(className);
 			} catch (ClassNotFoundException e) {
@@ -195,8 +195,8 @@ public class Message extends JsonMessage {
 		json.put(MESSAGE_TIMESTAMP, dateToString(new Date()));
 	}
 
-	public static final Message fromJson(String string) {
-		JsonObject json = null;
+	public static Message fromJson(String string) {
+		JsonObject json;
 		try {
 			json = Json.parse(string);
 			String className = json.getString(MESSAGE_CLASS);

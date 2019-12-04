@@ -233,12 +233,10 @@ public class EvaluableUtility {
 		List<Element> outputElements = DocumentUtility.findElementsByNameStarting(element,
 				DocumentConstants.OUTPUT_VALUE);
 
-		if (outputElements != null) {
-			for (Element outputElement : outputElements) {
-				IndexedExpression outputValue = createValueExpression(outputElement, DocumentConstants.OUTPUT_VALUE);
-				if (outputValue != null) {
-					action.getOutputs().put(outputValue.getIndex(), outputValue);
-				}
+		for (Element outputElement : outputElements) {
+			IndexedExpression outputValue = createValueExpression(outputElement, DocumentConstants.OUTPUT_VALUE);
+			if (outputValue != null) {
+				action.getOutputs().put(outputValue.getIndex(), outputValue);
 			}
 		}
 	}

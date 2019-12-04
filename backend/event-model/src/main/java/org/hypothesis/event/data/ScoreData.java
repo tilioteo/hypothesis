@@ -22,9 +22,9 @@ public class ScoreData implements Serializable {
 		SLIDE, ACTION
 	}
 
-	private Source source;
-	private String id;
-	private Map<Integer, ExchangeVariable> scores;
+	private final Source source;
+	private final String id;
+	private final Map<Integer, ExchangeVariable> scores;
 
 	public ScoreData(Source source, String id, Map<Integer, ExchangeVariable> scores) {
 		this.source = source;

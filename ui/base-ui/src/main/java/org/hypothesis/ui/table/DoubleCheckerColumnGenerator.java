@@ -36,8 +36,8 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 
 	private final String stateField;
 
-	private String enabledCaption;
-	private String disabledCaption;
+	private final String enabledCaption;
+	private final String disabledCaption;
 
 	public DoubleCheckerColumnGenerator(String stateField, String enabledCaption, String disabledCaption) {
 		this.stateField = stateField;
@@ -158,8 +158,8 @@ public class DoubleCheckerColumnGenerator implements ColumnGenerator {
 	}
 
 	public static class ButtonsHolder {
-		public Button enabledButton;
-		public Button disabledButton;
+		public final Button enabledButton;
+		public final Button disabledButton;
 
 		public ButtonsHolder(Button enabledButton, Button disabledButton) {
 			this.enabledButton = enabledButton;

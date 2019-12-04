@@ -60,7 +60,7 @@ public class BranchControllerFactoryImpl implements BranchControllerFactory {
 
 	private void createPaths(Element rootElement, BranchController controller) {
 		List<Element> paths = DocumentUtility.getPathElements(rootElement);
-		AbstractBasePath path = null;
+		AbstractBasePath path;
 
 		if (paths != null) {
 			for (Element pathElement : paths) {

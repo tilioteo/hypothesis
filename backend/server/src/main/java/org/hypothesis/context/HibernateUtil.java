@@ -81,7 +81,7 @@ public class HibernateUtil {
 			try {
 				String configFileName = servletContext.getInitParameter(CONTEXT_PARAM_HIBERNATE_CONFIG_LOCATION);
 
-				Configuration configuration = null;
+				Configuration configuration;
 				if (null == configFileName || configFileName.length() == 0) {
 					log.debug("Creating new Hibernate SessionFactory using default configuration file location.");
 					configuration = new Configuration().configure();

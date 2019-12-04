@@ -28,7 +28,7 @@ public class ElementImpl implements Element {
 	private String namespace;
 	private String shortName;
 	
-	private String text = null;
+	private String text;
 
 	private ElementImpl parent = null;
 	private final LinkedList<Element> children = new LinkedList<>();

@@ -46,7 +46,6 @@ public class ExportScorePresenterImpl extends AbstractMainBusPresenter implement
     private final TestService testService;
     private final UserService userService;
 
-    private VerticalLayout content;
     private VerticalLayout testSelection;
     private Button exportButton;
     private Button cancelExportButton;
@@ -192,7 +191,7 @@ public class ExportScorePresenterImpl extends AbstractMainBusPresenter implement
 
     @Override
     public Component buildContent() {
-        content = new VerticalLayout();
+        VerticalLayout content = new VerticalLayout();
         content.setSizeFull();
         content.setSpacing(true);
 

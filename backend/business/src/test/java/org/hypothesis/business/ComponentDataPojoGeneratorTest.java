@@ -4,18 +4,14 @@
  */
 package org.hypothesis.business;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import org.hypothesis.business.ComponentDataPojoGenerator;
-import org.hypothesis.business.Structured;
 import org.hypothesis.event.data.ComponentData;
 import org.hypothesis.utility.ReflectionUtility;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -51,13 +47,13 @@ public class ComponentDataPojoGeneratorTest {
 			field.setAccessible(true);
 			field.set(instance, "id-string");
 
-			assertTrue("id-string".equals(instance.getId()));
+			assertEquals("id-string", instance.getId());
 
 			field = ReflectionUtility.getDeclaredField(instance, "integerValue");
 			field.setAccessible(true);
 			field.set(instance, 123);
 
-			assertTrue(123 == (int) field.get(instance));
+			assertEquals(123, (int) field.get(instance));
 
 			Structured structured = field.getAnnotation(Structured.class);
 
