@@ -115,12 +115,13 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
             if (isNotEmpty(id) && evaluator instanceof SlideContainerPresenter) {
                 SlideContainerPresenter presenter1 = (SlideContainerPresenter) evaluator;
 
-                if (COMPONENT.equals(name)) {
-                    return presenter1.getComponent(id);
-                } else if (TIMER.equals(name)) {
-                    return presenter1.getTimer(id);
-                } else if (WINDOW.equals(name)) {
-                    return presenter1.getWindow(id);
+                switch (name) {
+                    case COMPONENT:
+                        return presenter1.getComponent(id);
+                    case TIMER:
+                        return presenter1.getTimer(id);
+                    case WINDOW:
+                        return presenter1.getWindow(id);
                 }
             }
             return null;
@@ -350,42 +351,59 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
             Map<String, String> properties = DocumentUtility.getPropertyValueMap(element);
             AlignmentWrapper alignmentWrapper = new AlignmentWrapperImpl();
 
-			if (name.equals(VERTICAL_LAYOUT))
-				component = createVerticalLayout(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(HORIZONTAL_LAYOUT))
-				component = createHorizontalLayout(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(FORM_LAYOUT))
-				component = createFormLayout(element, properties, alignmentWrapper, presenter);
-
-			else if (name.equals(PANEL))
-				component = createPanel(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(IMAGE))
-				component = createImage(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(VIDEO))
-				component = createVideo(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(AUDIO))
-				component = createAudio(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(BUTTON))
-				component = createButton(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(BUTTON_PANEL))
-				component = createButtonPanel(element, properties, alignmentWrapper, presenter);
-
-			else if (name.equals(SELECT_PANEL))
-				component = createSelectPanel(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(TEXT_FIELD))
-				component = createTextField(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(TEXT_AREA))
-				component = createTextArea(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(DATE_FIELD))
-				component = createDateField(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(COMBOBOX))
-				component = createComboBox(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(TIMER_LABEL))
-				component = createTimerLabel(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(LABEL))
-				component = createLabel(element, properties, alignmentWrapper, presenter);
-			else if (name.equals(CLIENT_SIM))
-				component = createClientSim(element, properties, alignmentWrapper, presenter);
+            switch (name) {
+                case VERTICAL_LAYOUT:
+                    component = createVerticalLayout(element, properties, alignmentWrapper, presenter);
+                    break;
+                case HORIZONTAL_LAYOUT:
+                    component = createHorizontalLayout(element, properties, alignmentWrapper, presenter);
+                    break;
+                case FORM_LAYOUT:
+                    component = createFormLayout(element, properties, alignmentWrapper, presenter);
+                    break;
+                case PANEL:
+                    component = createPanel(element, properties, alignmentWrapper, presenter);
+                    break;
+                case IMAGE:
+                    component = createImage(element, properties, alignmentWrapper, presenter);
+                    break;
+                case VIDEO:
+                    component = createVideo(element, properties, alignmentWrapper, presenter);
+                    break;
+                case AUDIO:
+                    component = createAudio(element, properties, alignmentWrapper, presenter);
+                    break;
+                case BUTTON:
+                    component = createButton(element, properties, alignmentWrapper, presenter);
+                    break;
+                case BUTTON_PANEL:
+                    component = createButtonPanel(element, properties, alignmentWrapper, presenter);
+                    break;
+                case SELECT_PANEL:
+                    component = createSelectPanel(element, properties, alignmentWrapper, presenter);
+                    break;
+                case TEXT_FIELD:
+                    component = createTextField(element, properties, alignmentWrapper, presenter);
+                    break;
+                case TEXT_AREA:
+                    component = createTextArea(element, properties, alignmentWrapper, presenter);
+                    break;
+                case DATE_FIELD:
+                    component = createDateField(element, properties, alignmentWrapper, presenter);
+                    break;
+                case COMBOBOX:
+                    component = createComboBox(element, properties, alignmentWrapper, presenter);
+                    break;
+                case TIMER_LABEL:
+                    component = createTimerLabel(element, properties, alignmentWrapper, presenter);
+                    break;
+                case LABEL:
+                    component = createLabel(element, properties, alignmentWrapper, presenter);
+                    break;
+                case CLIENT_SIM:
+                    component = createClientSim(element, properties, alignmentWrapper, presenter);
+                    break;
+            }
 
             if (component != null) {
                 if (id != null) {

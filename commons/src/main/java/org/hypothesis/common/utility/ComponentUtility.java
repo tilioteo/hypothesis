@@ -106,24 +106,35 @@ public class ComponentUtility {
 	private static Alignment stringToAlignment(String align) {
 		if (align != null) {
 			align = align.trim().toLowerCase();
-			if (align.equals("tl") || align.equals("lt"))
-				return TOP_LEFT;
-			else if (align.equals("tc") || align.equals("ct"))
-				return TOP_CENTER;
-			else if (align.equals("tr") || align.equals("rt"))
-				return TOP_RIGHT;
-			else if (align.equals("ml") || align.equals("lm"))
-				return MIDDLE_LEFT;
-			else if (align.equals("mc") || align.equals("cm"))
-				return MIDDLE_CENTER;
-			else if (align.equals("mr") || align.equals("rm"))
-				return MIDDLE_RIGHT;
-			else if (align.equals("bl") || align.equals("lb"))
-				return BOTTOM_LEFT;
-			else if (align.equals("bc") || align.equals("cb"))
-				return BOTTOM_CENTER;
-			else if (align.equals("br") || align.equals("rb"))
-				return BOTTOM_RIGHT;
+			switch (align) {
+				case "tl":
+				case "lt":
+					return TOP_LEFT;
+				case "tc":
+				case "ct":
+					return TOP_CENTER;
+				case "tr":
+				case "rt":
+					return TOP_RIGHT;
+				case "ml":
+				case "lm":
+					return MIDDLE_LEFT;
+				case "mc":
+				case "cm":
+					return MIDDLE_CENTER;
+				case "mr":
+				case "rm":
+					return MIDDLE_RIGHT;
+				case "bl":
+				case "lb":
+					return BOTTOM_LEFT;
+				case "bc":
+				case "cb":
+					return BOTTOM_CENTER;
+				case "br":
+				case "rb":
+					return BOTTOM_RIGHT;
+			}
 		}
 
 		// default

@@ -104,16 +104,17 @@ public class EvaluableUtility {
 		if (element != null) {
 			String name = element.getName();
 
-			if (name.equals(DocumentConstants.EXPRESSION)) {
-				return createExpression(element);
-			} else if (name.equals(DocumentConstants.IF)) {
-				return createIfStatement(element, evaluator);
-			} else if (name.equals(DocumentConstants.WHILE)) {
-				return createWhileStatement(element, evaluator);
-			} else if (name.equals(DocumentConstants.SWITCH)) {
-				return createSwitchStatement(element, evaluator);
-			} else if (name.equals(DocumentConstants.CALL)) {
-				return createCall(element, evaluator);
+			switch (name) {
+				case DocumentConstants.EXPRESSION:
+					return createExpression(element);
+				case DocumentConstants.IF:
+					return createIfStatement(element, evaluator);
+				case DocumentConstants.WHILE:
+					return createWhileStatement(element, evaluator);
+				case DocumentConstants.SWITCH:
+					return createSwitchStatement(element, evaluator);
+				case DocumentConstants.CALL:
+					return createCall(element, evaluator);
 			}
 		}
 
