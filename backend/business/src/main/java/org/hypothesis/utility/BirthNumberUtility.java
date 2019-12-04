@@ -200,7 +200,7 @@ public class BirthNumberUtility {
 				return false;
 			}
 
-		} else if (day != "00") {
+		} else if (!day.equals("00")) {
 			if (!isModulo11(birthNum)) {
 				return false;
 			}
