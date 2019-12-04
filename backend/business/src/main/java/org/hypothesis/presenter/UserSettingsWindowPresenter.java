@@ -112,7 +112,7 @@ public class UserSettingsWindowPresenter implements Serializable, HasMainEventBu
 
     private void createWindow() {
         window = new Window();
-        window.addCloseShortcut(KeyCode.ESCAPE, null);
+        window.addCloseShortcut(KeyCode.ESCAPE, (int[]) null);
         window.setResizable(false);
         window.setClosable(false);
         window.setModal(true);

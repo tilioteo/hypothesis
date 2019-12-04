@@ -12,7 +12,6 @@ import net.engio.mbassy.listener.Handler;
 import org.hypothesis.event.model.EventQueue;
 import org.hypothesis.event.model.EventWrapper;
 import org.hypothesis.event.model.FinishSlideEvent;
-import org.hypothesis.eventbus.ProcessEventBus;
 import org.hypothesis.interfaces.Action;
 import org.hypothesis.interfaces.ComponentEventCallback;
 

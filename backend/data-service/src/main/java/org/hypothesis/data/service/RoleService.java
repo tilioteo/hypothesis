@@ -135,7 +135,7 @@ public class RoleService implements Serializable {
 			roleDao.beginTransaction();
 			List<Role> roles = roleDao.findByCriteria(Restrictions.eq(FieldConstants.NAME, roleName));
 			roleDao.commit();
-			return (roles.isEmpty() || roles.size() > 1) ? null : roles.get(0);
+			return (roles.size() != 1) ? null : roles.get(0);
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			roleDao.rollback();

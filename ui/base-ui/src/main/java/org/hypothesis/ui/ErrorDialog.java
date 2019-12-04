@@ -64,7 +64,7 @@ public class ErrorDialog extends Window {
 		button = new Button("OK");
 		button.addStyleName(ValoTheme.BUTTON_PRIMARY);
 		button.setData(false);
-		button.setClickShortcut(KeyCode.ENTER, null);
+		button.setClickShortcut(KeyCode.ENTER, (int[]) null);
 		button.focus();
 		button.addClickListener(e -> getUI().removeWindow(ErrorDialog.this));
 		buttons.addComponent(button);

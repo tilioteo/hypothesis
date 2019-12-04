@@ -4,6 +4,7 @@
  */
 package org.hypothesis.navigator;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -59,9 +60,7 @@ public enum HypothesisViewType {
 	}
 
 	private void initRoles(Role[] roles) {
-		for (Role role : roles) {
-			this.roles.add(role);
-		}
+		this.roles.addAll(Arrays.asList(roles));
 	}
 
 	public String getViewName() {

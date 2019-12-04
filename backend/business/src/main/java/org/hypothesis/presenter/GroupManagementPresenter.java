@@ -181,9 +181,7 @@ public class GroupManagementPresenter extends AbstractManagementPresenter implem
             Group group = iterator.next();
             group = groupService.merge(group);
             Set<User> users = new HashSet<>();
-            for (User user : group.getUsers()) {
-                users.add(user);
-            }
+            users.addAll(group.getUsers());
 
             groupService.delete(group);
 

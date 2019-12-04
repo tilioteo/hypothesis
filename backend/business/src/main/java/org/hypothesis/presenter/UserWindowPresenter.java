@@ -799,9 +799,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 
         if (rolesField.isVisible()) {
             Set<Role> roles = new HashSet<>();
-            for (Role role : user.getRoles()) {
-                roles.add(role);
-            }
+            roles.addAll(user.getRoles());
             for (Role role : roles) {
                 user.removeRole(role);
             }

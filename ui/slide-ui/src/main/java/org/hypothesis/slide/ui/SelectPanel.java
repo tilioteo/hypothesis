@@ -151,7 +151,7 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 		}
 
 		InvalidValueException[] exceptionArray = validationExceptions
-				.toArray(new InvalidValueException[validationExceptions.size()]);
+				.toArray(new InvalidValueException[0]);
 
 		// Create a composite validator and include all exceptions
 		throw new InvalidValueException(null, exceptionArray);
@@ -187,7 +187,7 @@ public class SelectPanel extends org.vaadin.special.ui.SelectPanel implements Fi
 
 		// Throw combination of the error types
 		return new CompositeErrorMessage(
-				new ErrorMessage[] { superError, AbstractErrorMessage.getErrorMessageForException(validationError) });
+				superError, AbstractErrorMessage.getErrorMessageForException(validationError));
 	}
 
 	public boolean isValidationVisible() {

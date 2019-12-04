@@ -214,13 +214,12 @@ public class TestService implements Serializable {
 				// Restrictions.eq(FieldConstants.USER, user),
 				// Restrictions.ne(FieldConstants.STATUS, Status.FINISHED))));
 				// TODO remove this line after uncommenting code block above
-				tests = new ArrayList<>();
 			} else {
 				log.debug("test of annonymous user");
-				tests = new ArrayList<>();
 			}
+			tests = new ArrayList<>();
 
-			SimpleTest outputTest = null;
+			SimpleTest outputTest;
 			if (tests.size() > 0) {
 				log.debug("getting broken test");
 				outputTest = tests.get(0);
@@ -318,7 +317,7 @@ public class TestService implements Serializable {
 					.and(Restrictions.eq(EntityConstants.TEST, test), Restrictions.eq(EntityConstants.TASK, task)));
 			slideOrderDao.commit();
 
-			if (slideOrders.isEmpty() || slideOrders.size() > 1) {
+			if (slideOrders.size() != 1) {
 				return null;
 			} else {
 				return slideOrders.get(0);

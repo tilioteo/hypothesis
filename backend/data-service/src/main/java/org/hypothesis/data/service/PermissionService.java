@@ -340,12 +340,11 @@ public class PermissionService implements Serializable {
 		log.debug("getGroupsPermissions");
 		try {
 			if (groups != null && !groups.isEmpty()) {
-				Set<GroupPermission> groupsPermissions = new HashSet<>();
 				groupPermissionDao.beginTransaction();
 				List<GroupPermission> grpsPerms = groupPermissionDao
 						.findByCriteria(Restrictions.in(EntityConstants.GROUP, groups));
 				groupPermissionDao.commit();
-				groupsPermissions.addAll(grpsPerms);
+				Set<GroupPermission> groupsPermissions = new HashSet<>(grpsPerms);
 
 				return groupsPermissions;
 			} else {
@@ -362,12 +361,11 @@ public class PermissionService implements Serializable {
 	public Set<GroupPermission> getPackGroupPermissions(Pack pack) {
 		log.debug("getPackGroupPermissions");
 		try {
-			Set<GroupPermission> groupPermissions = new HashSet<>();
 			groupPermissionDao.beginTransaction();
 			List<GroupPermission> grpPerms = groupPermissionDao
 					.findByCriteria(Restrictions.eq(EntityConstants.PACK, pack));
 			groupPermissionDao.commit();
-			groupPermissions.addAll(grpPerms);
+			Set<GroupPermission> groupPermissions = new HashSet<>(grpPerms);
 
 			return groupPermissions;
 		} catch (Throwable e) {
@@ -380,12 +378,11 @@ public class PermissionService implements Serializable {
 	public Set<UserPermission> getPackUserPermissions(Pack pack, boolean enabled) {
 		log.debug("getPackUserPermissions");
 		try {
-			Set<UserPermission> userPermissions = new HashSet<>();
 			userPermissionDao.beginTransaction();
 			List<UserPermission> usrPerms = userPermissionDao.findByCriteria(Restrictions.and(
 					Restrictions.eq(EntityConstants.PACK, pack), Restrictions.eq(FieldConstants.ENABLED, enabled)));
 			userPermissionDao.commit();
-			userPermissions.addAll(usrPerms);
+			Set<UserPermission> userPermissions = new HashSet<>(usrPerms);
 
 			return userPermissions;
 		} catch (Throwable e) {
@@ -442,13 +439,12 @@ public class PermissionService implements Serializable {
 		log.debug("getUsersPermissions");
 		try {
 			if (users != null && !users.isEmpty()) {
-				Set<UserPermission> usersPermissions = new HashSet<>();
 				userPermissionDao.beginTransaction();
 				List<UserPermission> usrsPerms = userPermissionDao
 						.findByCriteria(Restrictions.and(Restrictions.in(EntityConstants.USER, users),
 								Restrictions.eq(FieldConstants.ENABLED, enabled)));
 				userPermissionDao.commit();
-				usersPermissions.addAll(usrsPerms);
+				Set<UserPermission> usersPermissions = new HashSet<>(usrsPerms);
 
 				return usersPermissions;
 			} else {

@@ -196,7 +196,7 @@ public class UserService implements Serializable {
 							Restrictions.eq(FieldConstants.PASSWORD, password)));
 			userDao.commit();
 
-			if (users.isEmpty() || users.size() > 1) {
+			if (users.size() != 1) {
 				return null;
 			} else {
 				return users.get(0);
