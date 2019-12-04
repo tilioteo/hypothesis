@@ -53,7 +53,7 @@ public class UserSettingsWindowPresenter implements Serializable, HasMainEventBu
         content.addComponent(buildForm());
         content.addComponent(buildFooter());
 
-        fieldGroup = new BeanFieldGroup<User>(User.class);
+        fieldGroup = new BeanFieldGroup<>(User.class);
         fieldGroup.bindMemberFields(this);
         fieldGroup.setItemDataSource(user);
 

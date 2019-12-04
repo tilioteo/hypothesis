@@ -20,7 +20,7 @@ public class TaskService {
 	private final HibernateDao<Task, Long> taskDao;
 
 	public static TaskService newInstance() {
-		return new TaskService(new HibernateDao<Task, Long>(Task.class));
+		return new TaskService(new HibernateDao<>(Task.class));
 	}
 
 	protected TaskService(HibernateDao<Task, Long> taskDao) {

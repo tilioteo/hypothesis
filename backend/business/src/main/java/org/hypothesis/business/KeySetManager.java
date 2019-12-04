@@ -78,7 +78,7 @@ public class KeySetManager<T extends HasList<E>, E extends HasId<K>, K> implemen
 				}
 			}
 			if (keyset.size() > 0) {
-				List<E> list = new ArrayList<E>(keyset.values());
+				List<E> list = new ArrayList<>(keyset.values());
 				find(list.get(0));
 			} else {
 				element = null;

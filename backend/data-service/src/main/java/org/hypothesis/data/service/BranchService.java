@@ -29,8 +29,8 @@ public class BranchService implements Serializable {
 	private final HibernateDao<BranchTrek, Long> branchTrekDao;
 
 	public static BranchService newInstance() {
-		return new BranchService(new HibernateDao<Branch, Long>(Branch.class),
-				new HibernateDao<BranchTrek, Long>(BranchTrek.class));
+		return new BranchService(new HibernateDao<>(Branch.class),
+				new HibernateDao<>(BranchTrek.class));
 	}
 
 	protected BranchService(HibernateDao<Branch, Long> branchDao, HibernateDao<BranchTrek, Long> branchTrekDao) {

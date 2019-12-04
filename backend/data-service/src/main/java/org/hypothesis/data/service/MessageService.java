@@ -23,7 +23,7 @@ public class MessageService implements Serializable {
 	private final HibernateDao<Message, String> messageDao;
 
 	public static MessageService newInstance() {
-		return new MessageService(new HibernateDao<Message, String>(Message.class));
+		return new MessageService(new HibernateDao<>(Message.class));
 	}
 
 	protected MessageService(HibernateDao<Message, String> messageDao) {

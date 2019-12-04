@@ -21,7 +21,7 @@ public class PackSetService implements Serializable {
 	private final HibernateDao<PackSet, Long> packSetDao;
 
 	public static PackSetService newInstance() {
-		return new PackSetService(new HibernateDao<PackSet, Long>(PackSet.class));
+		return new PackSetService(new HibernateDao<>(PackSet.class));
 	}
 
 	protected PackSetService(HibernateDao<PackSet, Long> userDao) {

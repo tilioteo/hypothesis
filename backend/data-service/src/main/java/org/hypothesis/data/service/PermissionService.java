@@ -42,8 +42,8 @@ public class PermissionService implements Serializable {
 	private final UserService userService;
 
 	public static PermissionService newInstance() {
-		return new PermissionService(new HibernateDao<UserPermission, Long>(UserPermission.class),
-				new HibernateDao<GroupPermission, Long>(GroupPermission.class));
+		return new PermissionService(new HibernateDao<>(UserPermission.class),
+				new HibernateDao<>(GroupPermission.class));
 	}
 
 	protected PermissionService(HibernateDao<UserPermission, Long> userPermitionDao,
@@ -55,7 +55,7 @@ public class PermissionService implements Serializable {
 			HibernateDao<GroupPermission, Long> groupPermitionDao, TestService testService) {
 		this.userPermissionDao = userPermitionDao;
 		this.groupPermissionDao = groupPermitionDao;
-		this.packDao = new HibernateDao<Pack, Long>(Pack.class);
+		this.packDao = new HibernateDao<>(Pack.class);
 		this.testService = testService;
 
 		userService = UserService.newInstance();
@@ -297,7 +297,7 @@ public class PermissionService implements Serializable {
 				}
 			}
 
-			return new HashSet<Pack>(packs.values());
+			return new HashSet<>(packs.values());
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			// throw e;

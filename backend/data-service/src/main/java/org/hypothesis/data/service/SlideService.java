@@ -20,7 +20,7 @@ public class SlideService {
 	private final HibernateDao<Slide, Long> slideDao;
 
 	public static SlideService newInstance() {
-		return new SlideService(new HibernateDao<Slide, Long>(Slide.class));
+		return new SlideService(new HibernateDao<>(Slide.class));
 	}
 
 	protected SlideService(HibernateDao<Slide, Long> taskDao) {

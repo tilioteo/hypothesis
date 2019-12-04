@@ -33,7 +33,7 @@ public class UserService implements Serializable {
 	private final HibernateDao<User, Long> userDao;
 
 	public static UserService newInstance() {
-		return new UserService(new HibernateDao<User, Long>(User.class));
+		return new UserService(new HibernateDao<>(User.class));
 	}
 
 	protected UserService(HibernateDao<User, Long> userDao) {

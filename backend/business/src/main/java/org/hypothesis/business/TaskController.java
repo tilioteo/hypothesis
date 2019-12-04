@@ -85,8 +85,8 @@ public class TaskController implements Serializable, Evaluator {
 	}
 
 	private void addNavigatorVariable(Node node) {
-		Variable<Object> variable = new org.hypothesis.evaluation.Variable<Object>(ObjectConstants.NAVIGATOR,
-				new TaskNavigator(node));
+		Variable<Object> variable = new org.hypothesis.evaluation.Variable<>(ObjectConstants.NAVIGATOR,
+                new TaskNavigator(node));
 		node.getVariables().put(variable.getName(), variable);
 	}
 

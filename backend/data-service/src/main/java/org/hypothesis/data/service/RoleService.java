@@ -31,16 +31,16 @@ public class RoleService implements Serializable {
 	public static final Role ROLE_USER = initRoleByName("USER");
 
 	public static RoleService newInstance() {
-		return new RoleService(new HibernateDao<Role, Long>(Role.class));
+		return new RoleService(new HibernateDao<>(Role.class));
 	}
 
 	protected RoleService(HibernateDao<Role, Long> roleDao) {
-		this.roleDao = new HibernateDao<Role, Long>(Role.class);
+		this.roleDao = new HibernateDao<>(Role.class);
 	}
 
 	private static Role initRoleByName(String name) {
 		log.debug(String.format("initRoleByName: name = %s", name != null ? name : "NULL"));
-		HibernateDao<Role, Long> roleDao = new HibernateDao<Role, Long>(Role.class);
+		HibernateDao<Role, Long> roleDao = new HibernateDao<>(Role.class);
 		try {
 			roleDao.beginTransaction();
 			List<Role> roles = roleDao.findByCriteria(Restrictions.eq(FieldConstants.NAME, name).ignoreCase());

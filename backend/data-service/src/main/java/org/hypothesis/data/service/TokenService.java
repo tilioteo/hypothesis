@@ -31,7 +31,7 @@ public class TokenService implements Serializable {
 	private final HibernateDao<Token, String> tokenDao;
 
 	public static TokenService newInstance() {
-		return new TokenService(new HibernateDao<Token, String>(Token.class));
+		return new TokenService(new HibernateDao<>(Token.class));
 	}
 
 	public TokenService(HibernateDao<Token, String> tokenDao) {

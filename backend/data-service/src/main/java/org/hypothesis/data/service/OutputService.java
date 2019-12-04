@@ -23,7 +23,7 @@ public class OutputService implements Serializable {
 	private final HibernateDao<BranchOutput, Long> branchOutputDao;
 
 	public static OutputService newInstance() {
-		return new OutputService(new HibernateDao<BranchOutput, Long>(BranchOutput.class));
+		return new OutputService(new HibernateDao<>(BranchOutput.class));
 	}
 
 	public OutputService(HibernateDao<BranchOutput, Long> branchOutputDao) {

@@ -104,18 +104,18 @@ public class Variable<T> implements org.hypothesis.interfaces.Variable<T> {
 
 			if (type == byte.class || type == int.class || type == short.class
 					|| Integer.class.isAssignableFrom(type)) {
-				return new Variable<Integer>(name, (Integer) value);
+				return new Variable<>(name, (Integer) value);
 			} else if (type == long.class || Long.class.isAssignableFrom(type)) {
-				return new Variable<Double>(name, ((Long) value).doubleValue());
+				return new Variable<>(name, ((Long) value).doubleValue());
 			} else if (type == double.class || type == float.class || Double.class.isAssignableFrom(type)) {
-				return new Variable<Double>(name, (Double) value);
+				return new Variable<>(name, (Double) value);
 			} else if (type == boolean.class || Boolean.class.isAssignableFrom(type)) {
-				return new Variable<Boolean>(name, (Boolean) value);
+				return new Variable<>(name, (Boolean) value);
 			} else if (type == String.class || String.class.isAssignableFrom(type)) {
-				return new Variable<String>(name, (String) value);
+				return new Variable<>(name, (String) value);
 			}
 		}
 
-		return new Variable<Object>(name);
+		return new Variable<>(name);
 	}
 }

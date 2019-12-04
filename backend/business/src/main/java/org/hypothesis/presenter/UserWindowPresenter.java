@@ -138,7 +138,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
             rolesField.setItemCaptionPropertyId(FieldConstants.NAME);
             rolesField.setMultiSelect(true);
 
-            BeanItemContainer<Role> dataSource = new BeanItemContainer<Role>(Role.class);
+            BeanItemContainer<Role> dataSource = new BeanItemContainer<>(Role.class);
             rolesField.setContainerDataSource(dataSource);
 
             // rolesField.setRequired(true);

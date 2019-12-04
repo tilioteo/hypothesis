@@ -33,8 +33,8 @@ public class ExportService implements Serializable {
 	private final HibernateDao<ExportScore, Long> exportScoreDao;
 
 	public static ExportService newInstance() {
-		return new ExportService(new HibernateDao<ExportEvent, Long>(ExportEvent.class),
-				new HibernateDao<ExportScore, Long>(ExportScore.class));
+		return new ExportService(new HibernateDao<>(ExportEvent.class),
+                new HibernateDao<>(ExportScore.class));
 	}
 
 	public ExportService(HibernateDao<ExportEvent, Long> exportEventDao,

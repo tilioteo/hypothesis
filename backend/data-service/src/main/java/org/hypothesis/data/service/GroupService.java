@@ -29,7 +29,7 @@ public class GroupService implements Serializable {
 	private final HibernateDao<Group, Long> groupDao;
 
 	public static GroupService newInstance() {
-		return new GroupService(new HibernateDao<Group, Long>(Group.class));
+		return new GroupService(new HibernateDao<>(Group.class));
 	}
 
 	protected GroupService(HibernateDao<Group, Long> groupDao) {

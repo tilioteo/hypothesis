@@ -42,8 +42,8 @@ public class TestService implements Serializable {
 	private final HibernateDao<SlideOrder, Long> slideOrderDao;
 
 	public static TestService newInstance() {
-		return new TestService(new HibernateDao<SimpleTest, Long>(SimpleTest.class),
-				new HibernateDao<Test, Long>(Test.class), new HibernateDao<SlideOrder, Long>(SlideOrder.class));
+		return new TestService(new HibernateDao<>(SimpleTest.class),
+                new HibernateDao<>(Test.class), new HibernateDao<>(SlideOrder.class));
 	}
 
 	protected TestService(HibernateDao<SimpleTest, Long> simpleTestDao, HibernateDao<Test, Long> testDao,
