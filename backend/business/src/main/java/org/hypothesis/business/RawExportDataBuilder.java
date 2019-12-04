@@ -49,7 +49,7 @@ public class RawExportDataBuilder {
             header.createCell(6).setCellValue("branch_id");
             header.createCell(7).setCellValue("branch_name");
             header.createCell(8).setCellValue("task_id");
-            header.createCell(9).setCellValue("task_iname");
+            header.createCell(9).setCellValue("task_name");
             header.createCell(10).setCellValue("slide_id");
             header.createCell(11).setCellValue("slide_name");
             header.createCell(12).setCellValue("branch_order_pack");
