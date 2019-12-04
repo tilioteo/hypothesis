@@ -11,7 +11,6 @@ import org.hypothesis.data.model.BranchOutput;
 import org.hypothesis.data.model.Event;
 import org.hypothesis.data.model.Score;
 import org.hypothesis.data.model.Status;
-import org.hypothesis.interfaces.Command;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

@@ -6,7 +6,6 @@ package org.hypothesis.ui;
 
 import org.vaadin.button.ui.FullscreenButton;
 import org.vaadin.special.shared.ui.timer.TimerState.Direction;
-import org.vaadin.special.ui.Timer.StopEvent;
 
 import org.hypothesis.interfaces.Command;
 import org.hypothesis.interfaces.ProcessView;

@@ -16,7 +16,6 @@ import com.vaadin.ui.Notification.Type;
 import net.engio.mbassy.listener.Handler;
 import org.apache.log4j.Logger;
 import org.hypothesis.business.RawExportTask;
-import org.hypothesis.business.ThreadUtility;
 import org.hypothesis.data.model.*;
 import org.hypothesis.data.service.PermissionService;
 import org.hypothesis.data.service.RoleService;

@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.context.LogUtil;
 
-import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionDestroyEvent;
 import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.SessionInitEvent;

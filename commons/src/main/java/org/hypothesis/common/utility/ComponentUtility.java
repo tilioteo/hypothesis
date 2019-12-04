@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.Map;
 
 import org.hypothesis.interfaces.AlignmentWrapper;
-import org.hypothesis.interfaces.ComponentEvent;
 import org.hypothesis.interfaces.ComponentEventCallback;
 import org.hypothesis.interfaces.Element;
 

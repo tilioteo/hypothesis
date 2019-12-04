@@ -17,9 +17,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.JavaScript;
-import com.vaadin.ui.JavaScriptFunction;
-
-import elemental.json.JsonArray;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd

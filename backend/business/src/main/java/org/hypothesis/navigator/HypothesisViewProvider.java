@@ -5,7 +5,6 @@
 package org.hypothesis.navigator;
 
 import org.hypothesis.eventbus.HasMainEventBus;
-import org.hypothesis.eventbus.MainEventBus;
 import org.hypothesis.interfaces.ViewPresenter;
 
 import com.vaadin.navigator.View;

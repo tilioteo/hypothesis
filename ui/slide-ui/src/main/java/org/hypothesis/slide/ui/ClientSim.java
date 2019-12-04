@@ -11,13 +11,9 @@ import org.hypothesis.interfaces.TimerHandler;
 import org.vaadin.special.event.ComponentEvent;
 import org.vaadin.special.ui.Image.LoadListener;
 import org.vaadin.special.ui.Timer;
-import org.vaadin.special.ui.Timer.StopEvent;
-import org.vaadin.special.ui.Timer.StopListener;
 
 import com.vaadin.event.ConnectorEventListener;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
