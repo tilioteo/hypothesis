@@ -344,9 +344,8 @@ public class PermissionService implements Serializable {
 				List<GroupPermission> grpsPerms = groupPermissionDao
 						.findByCriteria(Restrictions.in(EntityConstants.GROUP, groups));
 				groupPermissionDao.commit();
-				Set<GroupPermission> groupsPermissions = new HashSet<>(grpsPerms);
 
-				return groupsPermissions;
+				return new HashSet<>(grpsPerms);
 			} else {
 				return Collections.emptySet();
 			}
@@ -365,9 +364,8 @@ public class PermissionService implements Serializable {
 			List<GroupPermission> grpPerms = groupPermissionDao
 					.findByCriteria(Restrictions.eq(EntityConstants.PACK, pack));
 			groupPermissionDao.commit();
-			Set<GroupPermission> groupPermissions = new HashSet<>(grpPerms);
 
-			return groupPermissions;
+			return new HashSet<>(grpPerms);
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			groupPermissionDao.rollback();
@@ -382,9 +380,8 @@ public class PermissionService implements Serializable {
 			List<UserPermission> usrPerms = userPermissionDao.findByCriteria(Restrictions.and(
 					Restrictions.eq(EntityConstants.PACK, pack), Restrictions.eq(FieldConstants.ENABLED, enabled)));
 			userPermissionDao.commit();
-			Set<UserPermission> userPermissions = new HashSet<>(usrPerms);
 
-			return userPermissions;
+			return new HashSet<>(usrPerms);
 		} catch (Throwable e) {
 			log.error(e.getMessage());
 			userPermissionDao.rollback();
@@ -444,9 +441,8 @@ public class PermissionService implements Serializable {
 						.findByCriteria(Restrictions.and(Restrictions.in(EntityConstants.USER, users),
 								Restrictions.eq(FieldConstants.ENABLED, enabled)));
 				userPermissionDao.commit();
-				Set<UserPermission> usersPermissions = new HashSet<>(usrsPerms);
 
-				return usersPermissions;
+				return new HashSet<>(usrsPerms);
 			} else {
 				return Collections.emptySet();
 			}
