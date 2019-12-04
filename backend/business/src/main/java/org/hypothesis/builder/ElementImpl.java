@@ -51,9 +51,8 @@ public class ElementImpl implements Element {
 		for (Entry<String, String> entry : element.attributes().entrySet()) {
 			this.attributes.put(entry.getKey(), entry.getValue());
 		}
-		Iterator<Element> iterator = element.iterator();
-		while (iterator.hasNext()) {
-			createChild((ElementImpl) iterator.next());
+		for (Element child : element) {
+			createChild(child);
 		}
 	}
 
@@ -226,9 +225,7 @@ public class ElementImpl implements Element {
 	public Element previousSibling() {
 		if (parent != null) {
 			Element previous = null;
-			Iterator<Element> iterator = children.iterator();
-			while (iterator.hasNext()) {
-				Element node = iterator.next();
+			for (Element node : children) {
 				if (node == this) {
 					break;
 				} else {
@@ -263,9 +260,7 @@ public class ElementImpl implements Element {
 
 	@Override
 	public Element selectElement(String name) {
-		Iterator<Element> iterator = children.iterator();
-		while (iterator.hasNext()) {
-			Element element = iterator.next();
+		for (Element element : children) {
 			if (element.getName().equals(name)) {
 				return element;
 			}
@@ -278,9 +273,7 @@ public class ElementImpl implements Element {
 	public List<Element> selectElements(String name) {
 		List<Element> elements = new LinkedList<>();
 
-		Iterator<Element> iterator = children.iterator();
-		while (iterator.hasNext()) {
-			Element element = iterator.next();
+		for (Element element : children) {
 			if (element.getName().equals(name)) {
 				elements.add(element);
 			}
