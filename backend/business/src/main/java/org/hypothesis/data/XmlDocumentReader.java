@@ -46,23 +46,23 @@ public class XmlDocumentReader implements DocumentReader {
 	}
 
 	private String composeName(org.dom4j.Element element) {
-		String namespace = element.getNamespaceURI();
+		StringBuilder namespace = new StringBuilder(element.getNamespaceURI());
 		
-		if (!namespace.isEmpty()) {
+		if (namespace.length() > 0) {
 			try {
-				URL url = new URL(namespace);
+				URL url = new URL(namespace.toString());
 				
 				String[] parts = url.getHost().split("\\.");
-				namespace = "";
+				namespace = new StringBuilder();
 				
 				for (int i = parts.length-1; i >= 0; --i) {
-					namespace += parts[i] + Document.NAMESPACE_SEPARATOR;
+					namespace.append(parts[i]).append(Document.NAMESPACE_SEPARATOR);
 				}
 				
 				parts = url.getPath().split("/");
 				for (int i = 0; i < parts.length; ++i) {
 					if (!parts[i].isEmpty()) {
-						namespace += parts[i] + Document.NAMESPACE_SEPARATOR;
+						namespace.append(parts[i]).append(Document.NAMESPACE_SEPARATOR);
 					}
 				}
 				
@@ -72,7 +72,7 @@ public class XmlDocumentReader implements DocumentReader {
 			}
 		}
 		
-		return namespace.isEmpty() ? element.getName() : namespace + element.getName();
+		return (namespace.length() == 0) ? element.getName() : namespace + element.getName();
 	}
 
 	private void copyElement(org.dom4j.Element xmlElement, Element element) {

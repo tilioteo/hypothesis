@@ -333,23 +333,23 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 	private void writeVariableData(Element element, Variable<?> variable) {
 		Class<?> type = variable.getType();
 		String typeName = DocumentConstants.OBJECT;
-		String valueString = "";
+		StringBuilder valueString = new StringBuilder();
 
 		if (type.equals(Integer.class)) {
 			typeName = DocumentConstants.INTEGER;
-			valueString = variable.getStringValue();
+			valueString = new StringBuilder(variable.getStringValue());
 
 		} else if (type.equals(Double.class)) {
 			typeName = DocumentConstants.FLOAT;
-			valueString = variable.getStringValue();
+			valueString = new StringBuilder(variable.getStringValue());
 
 		} else if (type.equals(Boolean.class)) {
 			typeName = DocumentConstants.BOOLEAN;
-			valueString = variable.getStringValue();
+			valueString = new StringBuilder(variable.getStringValue());
 
 		} else if (type.equals(String.class)) {
 			typeName = DocumentConstants.STRING;
-			valueString = variable.getStringValue();
+			valueString = new StringBuilder(variable.getStringValue());
 
 		} else if (type.equals(Object.class)) {
 			Object value = variable.getValue();
@@ -373,27 +373,27 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 						if (itemType.equals(Integer.class)) {
 							for (Integer item : (ArrayList<Integer>) value) {
 								if (valueString.length() > 0) {
-									valueString += DocumentConstants.STR_COMMA;
+									valueString.append(DocumentConstants.STR_COMMA);
 								}
-								valueString += item.toString();
+								valueString.append(item.toString());
 							}
 							typeName = DocumentConstants.INTEGER_ARRAY;
 
 						} else if (itemType.equals(Double.class)) {
 							for (Double item : (ArrayList<Double>) value) {
 								if (valueString.length() > 0) {
-									valueString += DocumentConstants.STR_COMMA;
+									valueString.append(DocumentConstants.STR_COMMA);
 								}
-								valueString += item.toString();
+								valueString.append(item.toString());
 							}
 							typeName = DocumentConstants.FLOAT_ARRAY;
 
 						} else if (itemType.equals(String.class)) {
 							for (String item : (ArrayList<String>) value) {
 								if (valueString.length() > 0) {
-									valueString += DocumentConstants.STR_COMMA;
+									valueString.append(DocumentConstants.STR_COMMA);
 								}
-								valueString += item;
+								valueString.append(item);
 							}
 							typeName = DocumentConstants.STRING_ARRAY;
 						}
@@ -406,7 +406,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			Element variableElement = element.createChild(DocumentConstants.VARIABLE);
 			variableElement.setAttribute(DocumentConstants.ID, variable.getName());
 			variableElement.setAttribute(DocumentConstants.TYPE, typeName);
-			variableElement.setText(valueString);
+			variableElement.setText(valueString.toString());
 		}
 	}
 
@@ -480,35 +480,41 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 			ArrayList<?> array = (ArrayList<?>) value;
 			if (array.size() > 0) {
 				Class<?> itemType = array.get(0).getClass();
-				String str = "";
+				String str;
 
 				if (itemType.equals(Integer.class)) {
+					StringBuilder strBuilder = new StringBuilder();
 					for (Integer item : (ArrayList<Integer>) value) {
-						if (str.length() > 0) {
-							str += DocumentConstants.STR_COMMA;
+						if (strBuilder.length() > 0) {
+							strBuilder.append(DocumentConstants.STR_COMMA);
 						}
-						str += item.toString();
+						strBuilder.append(item.toString());
 					}
+					str = strBuilder.toString();
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER_ARRAY);
 					element.setText(str);
 
 				} else if (itemType.equals(Double.class)) {
+					StringBuilder strBuilder = new StringBuilder();
 					for (Double item : (ArrayList<Double>) value) {
-						if (str.length() > 0) {
-							str += DocumentConstants.STR_COMMA;
+						if (strBuilder.length() > 0) {
+							strBuilder.append(DocumentConstants.STR_COMMA);
 						}
-						str += item.toString();
+						strBuilder.append(item.toString());
 					}
+					str = strBuilder.toString();
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT_ARRAY);
 					element.setText(str);
 
 				} else if (itemType.equals(String.class)) {
+					StringBuilder strBuilder = new StringBuilder();
 					for (String item : (ArrayList<String>) value) {
-						if (str.length() > 0) {
-							str += DocumentConstants.STR_COMMA;
+						if (strBuilder.length() > 0) {
+							strBuilder.append(DocumentConstants.STR_COMMA);
 						}
-						str += item;
+						strBuilder.append(item);
 					}
+					str = strBuilder.toString();
 					element.setAttribute(DocumentConstants.TYPE, DocumentConstants.STRING_ARRAY);
 					element.setText(str);
 

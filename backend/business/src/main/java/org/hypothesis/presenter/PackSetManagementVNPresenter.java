@@ -178,7 +178,7 @@ public class PackSetManagementVNPresenter extends AbstractManagementPresenter im
             StringBuilder descriptionBuilder = new StringBuilder();
             descriptionBuilder.append("<ul>");
             for (String pack : packDescs) {
-                descriptionBuilder.append("<li>" + pack + "</li>");
+                descriptionBuilder.append("<li>").append(pack).append("</li>");
             }
             descriptionBuilder.append("</ul>");
 

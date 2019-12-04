@@ -77,7 +77,7 @@ public class WhileStatement implements Evaluable {
 	public String toString() {
 		StringBuilder builder = new StringBuilder("while (" + expression.toString() + ") {\n");
 		for (Evaluable evaluable : evaluables) {
-			builder.append("\t" + evaluable.toString() + ";\n");
+			builder.append("\t").append(evaluable.toString()).append(";\n");
 		}
 
 		builder.append("}");

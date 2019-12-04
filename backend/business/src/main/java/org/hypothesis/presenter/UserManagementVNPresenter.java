@@ -334,7 +334,7 @@ public class UserManagementVNPresenter extends AbstractManagementPresenter imple
             StringBuilder descriptionBuilder = new StringBuilder();
             descriptionBuilder.append("<ul>");
             for (String pack : sortedPackDescs) {
-                descriptionBuilder.append("<li>" + pack + "</li>");
+                descriptionBuilder.append("<li>").append(pack).append("</li>");
             }
             descriptionBuilder.append("</ul>");
 

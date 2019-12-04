@@ -88,10 +88,10 @@ public class SwitchStatement implements Evaluable {
 	public String toString() {
 		StringBuilder builder = new StringBuilder("switch (" + expression.toString() + ") {\n");
 		for (Object value : caseMap.keySet()) {
-			builder.append("\tcase " + value.toString() + " : {\n");
+			builder.append("\tcase ").append(value.toString()).append(" : {\n");
 			List<Evaluable> evaluables = caseMap.get(value);
 			for (Evaluable evaluable : evaluables) {
-				builder.append("\t\t" + evaluable.toString() + ";\n");
+				builder.append("\t\t").append(evaluable.toString()).append(";\n");
 			}
 			builder.append("\t}\n");
 		}

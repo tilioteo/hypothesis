@@ -304,23 +304,23 @@ public class ElementImpl implements Element {
 			builder.append("\t");
 		}
 		
-		builder.append("<" + name + ":" + text + "(");
+		builder.append("<").append(name).append(":").append(text).append("(");
 
 		if (!attributes.isEmpty()) {
-			String str = "";
+			StringBuilder str = new StringBuilder();
 			for (Entry<String, String> entry : attributes.entrySet()) {
-				str += entry.toString() + ",";
+				str.append(entry.toString()).append(",");
 			}
 			builder.append(str.substring(0, str.length() - 1));
 		}
 		builder.append(")[");
 
 		if (!children.isEmpty()) {
-			String str = "";
+			StringBuilder str = new StringBuilder();
 			
 			if (!detailed) {
 				for (Element element : children) {
-					str += element.getName() + ",";
+					str.append(element.getName()).append(",");
 				}
 				builder.append(str.substring(0, str.length() - 1));
 			} else {

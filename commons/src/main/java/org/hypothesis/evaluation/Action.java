@@ -54,7 +54,7 @@ public class Action extends AbstractBaseAction {
 	public String toString() {
 		StringBuilder builder = new StringBuilder(getId() + "() {\n");
 		for (Evaluable evaluable : evaluables) {
-			builder.append("\t" + evaluable.toString() + ";\n");
+			builder.append("\t").append(evaluable.toString()).append(";\n");
 		}
 		builder.append("}");
 
