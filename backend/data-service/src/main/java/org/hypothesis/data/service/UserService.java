@@ -146,7 +146,7 @@ public class UserService implements Serializable {
 		log.debug("findUser");
 		try {
 			userDao.beginTransaction();
-			User usr = userDao.findById(Long.valueOf(id), true);
+			User usr = userDao.findById(id, true);
 			userDao.commit();
 			return usr;
 		} catch (Throwable e) {
@@ -160,7 +160,7 @@ public class UserService implements Serializable {
 		log.debug("getUser");
 		try {
 			userDao.beginTransaction();
-			User usr = userDao.findById(Long.valueOf(id), true);
+			User usr = userDao.findById(id, true);
 			userDao.commit();
 			if (usr == null) {
 				throw new EntityNotFoundException("user id=" + id);

@@ -106,7 +106,7 @@ public class PackSetService implements Serializable {
 		log.debug("findPackSet");
 		try {
 			packSetDao.beginTransaction();
-			PackSet packSet = packSetDao.findById(Long.valueOf(id), true);
+			PackSet packSet = packSetDao.findById(id, true);
 			packSetDao.commit();
 			return packSet;
 		} catch (Throwable e) {

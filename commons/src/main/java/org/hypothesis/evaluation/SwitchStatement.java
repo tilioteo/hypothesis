@@ -55,7 +55,7 @@ public class SwitchStatement implements Evaluable {
 					expression.setVariableValue("b", caseExpression.getValue());
 					Boolean value = expression.getBoolean();
 
-					if (value != null && value.booleanValue()) {
+					if (value != null && value) {
 						List<Evaluable> evaluables = caseMap.get(caseValue);
 						if (evaluables != null) {
 							for (Evaluable evaluable : evaluables) {

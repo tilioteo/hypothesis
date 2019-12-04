@@ -118,7 +118,7 @@ public class GroupService implements Serializable {
 		log.debug("findGroup");
 		try {
 			groupDao.beginTransaction();
-			Group grp = groupDao.findById(Long.valueOf(id), true);
+			Group grp = groupDao.findById(id, true);
 			groupDao.commit();
 			return grp;
 		} catch (Throwable e) {

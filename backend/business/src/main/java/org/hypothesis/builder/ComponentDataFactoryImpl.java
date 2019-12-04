@@ -460,7 +460,7 @@ public class ComponentDataFactoryImpl implements ComponentDataFactory {
 		if (type == double.class || type == float.class || type.isAssignableFrom(Double.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.FLOAT);
 			// use Locale.ROOT for locale neutral formating of decimals
-			element.setText(String.format(Locale.ROOT, "%g", ((Double) value).doubleValue()));
+			element.setText(String.format(Locale.ROOT, "%g", (Double) value));
 		} else if (type == byte.class || type == int.class || type == short.class
 				|| type.isAssignableFrom(Integer.class)) {
 			element.setAttribute(DocumentConstants.TYPE, DocumentConstants.INTEGER);

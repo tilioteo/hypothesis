@@ -756,7 +756,7 @@ public class UserWindowPresenter extends AbstractWindowPresenter {
 
         } else if (generateNames) {
             String usernameGroup = generatedGroupField.getValue();
-            int count = Integer.valueOf(generatedCountField.getValue());
+            int count = Integer.parseInt(generatedCountField.getValue());
 
             for (int i = 1; i <= count; i++) {
                 User user = new User();

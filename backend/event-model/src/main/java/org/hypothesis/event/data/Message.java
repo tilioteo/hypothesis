@@ -122,7 +122,7 @@ public class Message extends JsonMessage {
 				if (Date.class.isAssignableFrom(clazz)) {
 					return stringToDate(data.getString(name));
 				} else if (Integer.class.isAssignableFrom(clazz)) {
-					return new Integer((int) Math.round(data.getNumber(name)));
+					return (int) Math.round(data.getNumber(name));
 					// return clazz.cast(data.getNumber(name));
 				} else if (Double.class.isAssignableFrom(clazz)) {
 					return clazz.cast(data.getNumber(name));

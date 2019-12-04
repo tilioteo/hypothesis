@@ -84,7 +84,7 @@ public class Variable<T> implements org.hypothesis.interfaces.Variable<T> {
 			if (type.equals(Integer.class)) {
 				return value.toString();
 			} else if (type.equals(Double.class)) {
-				return String.format(Locale.ROOT, "%g", ((Double) value).doubleValue());
+				return String.format(Locale.ROOT, "%g", (Double) value);
 			} else if (type.equals(Boolean.class)) {
 				return value.toString();
 			} else if (type.equals(String.class)) {
