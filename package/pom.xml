@@ -155,10 +155,10 @@
 							<directory>src/main/webapp</directory>
 							<filtering>true</filtering>
 						</resource>
-						<resource>
+						<!--resource>
 							<directory>lib</directory>
 							<targetPath>WEB-INF/lib</targetPath>
-						</resource>
+						</resource-->
 					</webResources>
 					<overlays>
 						<overlay>
