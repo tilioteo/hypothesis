@@ -73,8 +73,11 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
     public void initialize(VaadinRequest request) {
         super.initialize(request);
 
-        uid = UUID.randomUUID().toString().replaceAll("-", "");
-        SessionManager.setMainUID(uid);
+        uid = SessionManager.getMainUID();
+        if (null == uid) {
+            uid = UUID.randomUUID().toString().replaceAll("-", "");
+            SessionManager.setMainUID(uid);
+        }
 
         userService = UserService.newInstance();
 
@@ -260,7 +263,6 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
 
     @Override
     public void close() {
-        logout();
         cleanup();
     }
 

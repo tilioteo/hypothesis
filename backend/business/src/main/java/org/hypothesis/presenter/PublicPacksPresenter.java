@@ -44,11 +44,13 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
     protected final PermissionService permissionService;
     private final TokenService tokenService;
     private final HashMap<Long, TestData> packTestData = new HashMap<>();
+    private final String mainUID;
     private PacksView view;
 
     public PublicPacksPresenter() {
         permissionService = PermissionService.newInstance();
         tokenService = TokenService.newInstance();
+        mainUID = SessionManager.getMainUID();
     }
 
     protected PacksView getView() {
@@ -164,8 +166,7 @@ public class PublicPacksPresenter extends AbstractViewPresenter implements Packs
             // deserialize received message
             final UIMessage uiMessage = UIMessage.fromJson(message);
 
-            if (UIMessageUtility.canHandle(uiMessage, getLoggedUser())
-                    || UIMessageUtility.canHandle(uiMessage, SessionManager.getMainUID())) {
+            if (UIMessageUtility.canHandle(uiMessage, getLoggedUser(), mainUID)) {
                 handleMessage(uiMessage);
             }
         }

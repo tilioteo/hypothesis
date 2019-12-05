@@ -42,12 +42,12 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 
     private final HashMap<Long, UserPanel> userPanels = new HashMap<>();
     private final UserService userService = UserService.newInstance();
+    private final ControlPanelDataManager controlPanelDataManager = new ControlPanelDataManager();
     private ControlView view;
     private VerticalLayout mainLayout;
     private Panel mainPanel;
     private PopupDateField dateField;
     private boolean isEmptyInfo = false;
-    private final ControlPanelDataManager controlPanelDataManager = new ControlPanelDataManager();
 
     @Override
     public void enter(ViewChangeEvent event) {
@@ -280,7 +280,7 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
             // deserialize received message
             final UIMessage uiMessage = UIMessage.fromJson(message);
 
-            if (UIMessageUtility.canHandle(uiMessage, getLoggedUser())) {
+            if (UIMessageUtility.canHandle(uiMessage, getLoggedUser(), null)) {
                 handleMessage(uiMessage);
             }
         }
