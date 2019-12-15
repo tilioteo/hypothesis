@@ -1,5 +1,7 @@
 package org.hypothesis.business.data;
 
+import java.time.LocalDateTime;
+
 /**
  * @author Kamil Morong, Tilioteo Ltd
  * <p>
@@ -11,9 +13,15 @@ public class SessionData {
     private final TestStateData testStateData = new TestStateData();
     private String address;
     private String position;
+    private LocalDateTime time;
+
+    public void updateTime() {
+        time = LocalDateTime.now();
+    }
 
     public SessionData(String uid) {
         this.uid = uid;
+        updateTime();
     }
 
     public String getUid() {
@@ -30,6 +38,7 @@ public class SessionData {
 
     public void setAddress(String address) {
         this.address = address;
+        updateTime();
     }
 
     public String getPosition() {
@@ -38,6 +47,11 @@ public class SessionData {
 
     public void setPosition(String position) {
         this.position = position;
+        updateTime();
+    }
+
+    public LocalDateTime getTime() {
+        return time;
     }
 
 }

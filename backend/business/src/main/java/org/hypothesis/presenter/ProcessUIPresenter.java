@@ -17,6 +17,7 @@ import org.hypothesis.business.SessionManager;
 import org.hypothesis.context.HibernateUtil;
 import org.hypothesis.data.model.SimpleTest;
 import org.hypothesis.data.model.Token;
+import org.hypothesis.data.model.User;
 import org.hypothesis.data.service.TokenService;
 import org.hypothesis.event.interfaces.ProcessViewEvent.ProcessViewEndEvent;
 import org.hypothesis.event.model.*;
@@ -31,6 +32,8 @@ import org.hypothesis.ui.ProcessUI;
 import org.hypothesis.ui.TestBeginScreen;
 import org.hypothesis.ui.TestEndScreen;
 import org.hypothesis.utility.UIMessageUtility;
+
+import java.util.Optional;
 
 /**
  * @author Kamil Morong, Tilioteo Ltd
@@ -59,6 +62,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
     private String lastToken = null;
     private String viewUID = null;
     private Long packId = null;
+    private Long userId = null;
     private ProcessManager processManager;
 
     private SimpleTest preparedTest = null;
@@ -149,9 +153,11 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
         if (token != null) {
             viewUID = token.getViewUid();
             packId = token.getPack().getId();
+            userId = Optional.ofNullable(token.getUser()).map(User::getId).orElse(null);
         } else {
             viewUID = null;
             packId = null;
+            userId = null;
         }
 
         processManager.setAutoSlideShow(false);
@@ -282,7 +288,7 @@ public class ProcessUIPresenter extends AbstractUIPresenter implements HasProces
     public void close() {
         processManager.requestBreakTest();
 
-        broadcast(UIMessageUtility.createProcessViewClosedMessage(viewUID, packId));
+        broadcast(UIMessageUtility.createProcessViewClosedMessage(viewUID, packId, userId));
     }
 
     @Override

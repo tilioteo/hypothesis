@@ -73,26 +73,29 @@ public class UIMessageUtility {
         return message.toString();
     }
 
-    public static String createProcessViewClosedMessage(String mainViewUid, Long packId) {
+    public static String createProcessViewClosedMessage(String mainViewUid, Long packId, Long userId) {
         UIMessage message = new UIMessage(PROCESS_VIEW_CLOSED);
         message.setViewUid(mainViewUid);
         message.setPackId(packId);
+        message.setUserId(userId);
 
         return message.toString();
     }
 
-    public static String createPreparedTestMessage(String mainViewUid, Long packId) {
+    public static String createPreparedTestMessage(String mainViewUid, Long packId, Long userId) {
         UIMessage message = new UIMessage(PREPARED_TEST);
         message.setViewUid(mainViewUid);
         message.setPackId(packId);
+        message.setUserId(userId);
 
         return message.toString();
     }
 
-    public static String createFinishedTestMessage(String mainViewUid, Long packId) {
+    public static String createFinishedTestMessage(String mainViewUid, Long packId, Long userId) {
         UIMessage message = new UIMessage(FINISHED_TEST);
         message.setViewUid(mainViewUid);
         message.setPackId(packId);
+        message.setUserId(userId);
 
         return message.toString();
     }

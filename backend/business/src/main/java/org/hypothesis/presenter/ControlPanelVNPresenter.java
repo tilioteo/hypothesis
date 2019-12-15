@@ -22,6 +22,7 @@ import org.hypothesis.utility.UIMessageUtility;
 import org.hypothesis.utility.ViewUtility;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -212,7 +213,7 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
         final SessionData sessionData;
         if (userSessionData != null && !userSessionData.isEmpty() && packs != null) {
             //FIXME: solve multiple user logins
-            sessionData = userSessionData.getSessionData().get(0);
+            sessionData = getLastSessionData(userSessionData.getSessionData());
         } else {
             sessionData = new SessionData("");
         }
@@ -224,6 +225,13 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
         panel.setPositionPropertyDataSource(sessionBeanItem.getItemProperty("position"));
         panel.setAddressPropertyDataSource(sessionBeanItem.getItemProperty("address"));
         panel.setMessagePropertyDataSource(stateBeanItem.getItemProperty("eventName"));
+    }
+
+    private SessionData getLastSessionData(List<SessionData> sessionData) {
+        return sessionData.stream()
+                .sorted(Comparator.comparing(SessionData::getTime).reversed())
+                .findFirst()
+                .orElse(null);
     }
 
     private void updatePacksPanel(final UserSessionData userSessionData, final List<Pack> packs, final UserPanel panel) {
@@ -251,13 +259,14 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
 
             if (!userSessionData.isEmpty()) {
                 // FIXME: solve multiple user logins
-                final SessionData sessionData = userSessionData.getSessionData().get(0);
+                final SessionData sessionData = getLastSessionData(userSessionData.getSessionData());
                 final TestStateData testStateData = sessionData.getTestStateData();
                 final TestState state = testStateData.getState();
 
                 if (pack.getId().equals(testStateData.getPackId())) {
                     if (state == BROKEN || state == FINISHED) {
                         packPanel.addStyleName(USERPANEL_SUSPENDED);
+                        testStateData.setPackId(null);
                     } else if (state == RUNNING) {
                         packPanel.removeStyleName(USERPANEL_SUSPENDED);
                         packPanel.addStyleName(TINYPANEL_PROCESSING);
@@ -305,7 +314,7 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
     }
 
     private void createUserControlPanels(ControlPanelData data) {
-        data.getUsers().forEach(u -> addUserPanel(createUserControlPanel(u, data.getUserSessionDataMap().get(u), data.getUserPacksMap().get(u))));
+        data.getUsers().forEach(u -> addUserPanel(createUserControlPanel(u, data.getUserSessionDataMap().get(u.getId()), data.getUserPacksMap().get(u.getId()))));
     }
 
     public void clearMainLayout() {
@@ -354,8 +363,8 @@ public class ControlPanelVNPresenter extends AbstractMainBusPresenter implements
         if (panel != null) {
             final User user = panel.getUser();
             final ControlPanelData data = controlPanelDataManager.getControlPanelData(Stream.of(user).collect(Collectors.toList()));
-            final UserSessionData userSessionData = data.getUserSessionDataMap().get(user);
-            final List<Pack> packs = data.getUserPacksMap().get(user);
+            final UserSessionData userSessionData = data.getUserSessionDataMap().get(userId);
+            final List<Pack> packs = data.getUserPacksMap().get(userId);
 
             updateUserPanel(userSessionData, packs, panel);
             updatePacksPanel(userSessionData, packs, panel);

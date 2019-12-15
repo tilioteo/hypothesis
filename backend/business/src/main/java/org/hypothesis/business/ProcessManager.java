@@ -24,10 +24,7 @@ import org.hypothesis.servlet.Broadcaster;
 import org.hypothesis.utility.UIMessageUtility;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -241,9 +238,10 @@ public class ProcessManager implements Serializable, Broadcaster, Pushable {
 
         currentTest = null;
         testProcessing = false;
+        Long userId = Optional.ofNullable(getCurrentUser()).map(User::getId).orElse(null);
         setCurrentUser(null);
 
-        broadcast(UIMessageUtility.createFinishedTestMessage(mainUID, currentPack.getId()));
+        broadcast(UIMessageUtility.createFinishedTestMessage(mainUID, currentPack.getId(), userId));
     }
 
     private void exportScores(Long id) {
@@ -377,8 +375,9 @@ public class ProcessManager implements Serializable, Broadcaster, Pushable {
                 event.getToken() != null ? event.getToken().getUid() : "NULL"));
         Token token = event.getToken();
         mainUID = token.getViewUid();
+        Long userId = Optional.ofNullable(getCurrentUser()).map(User::getId).orElse(null);
 
-        broadcast(UIMessageUtility.createPreparedTestMessage(mainUID, token.getPack().getId()));
+        broadcast(UIMessageUtility.createPreparedTestMessage(mainUID, token.getPack().getId(), userId));
 
         SimpleTest test = testService.getUnattendedTest(token.getUser(), token.getPack(), token.isProduction());
         if (test != null) {
@@ -412,6 +411,7 @@ public class ProcessManager implements Serializable, Broadcaster, Pushable {
             UserSessionData userSessionData = UserSessionManager.ensureUserSessionData(user, sessionId);
             SessionData sessionData = userSessionData.getSessionData(sessionId);
             sessionData.getTestStateData().setState(state);
+            sessionData.updateTime();
 
             broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
         }
@@ -645,6 +645,8 @@ public class ProcessManager implements Serializable, Broadcaster, Pushable {
                     state.setSlideDescription("");
                 }
 
+                sessionData.updateTime();
+
                 broadcast(UIMessageUtility.createRefreshUserTestStateMessage(user.getId()));
             }
         }
@@ -682,6 +684,10 @@ public class ProcessManager implements Serializable, Broadcaster, Pushable {
         SessionManager.setLoggedUser(user);
         currentUser = user;
         slideManager.setUserId(user != null ? user.getId() : null);
+    }
+
+    public User getCurrentUser() {
+        return SessionManager.getLoggedUser();
     }
 
     public void clean() {

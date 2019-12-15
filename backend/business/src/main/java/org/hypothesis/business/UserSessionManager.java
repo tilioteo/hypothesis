@@ -14,7 +14,7 @@ public class UserSessionManager {
     }
 
     public static synchronized UserSessionData ensureUserSessionData(final User user) {
-        UserSessionData userSessionData = UserSessionRegisterSingleton.instance().getUserSessionData(user);
+        UserSessionData userSessionData = UserSessionRegisterSingleton.instance().getUserSessionData(user.getId());
         if (null == userSessionData) {
             userSessionData = new UserSessionData(user);
         } else {
@@ -33,12 +33,12 @@ public class UserSessionManager {
         return data;
     }
 
-    public static synchronized void purgeUserSessionData(final User user, final String sessionId) {
-        UserSessionData userSessionData = UserSessionRegisterSingleton.instance().getUserSessionData(user);
+    public static synchronized void purgeUserSessionData(final long userId, final String sessionId) {
+        UserSessionData userSessionData = UserSessionRegisterSingleton.instance().getUserSessionData(userId);
         if (userSessionData != null) {
             userSessionData.removeSessionData(sessionId);
             if (userSessionData.isEmpty()) {
-                UserSessionRegisterSingleton.instance().removeUserSessionData(user);
+                UserSessionRegisterSingleton.instance().removeUserSessionData(userId);
             }
         }
     }

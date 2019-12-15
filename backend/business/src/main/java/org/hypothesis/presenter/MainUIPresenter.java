@@ -226,7 +226,7 @@ public class MainUIPresenter extends AbstractUIPresenter implements HasMainEvent
         User user = SessionManager.getLoggedUser();
 
         if (user != null) {
-            UserSessionManager.purgeUserSessionData(user, uid);
+            UserSessionManager.purgeUserSessionData(user.getId(), uid);
         }
 
         // When the user logs out, current VaadinSession gets closed and the

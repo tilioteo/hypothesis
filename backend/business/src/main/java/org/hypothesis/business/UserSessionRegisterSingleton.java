@@ -28,11 +28,11 @@ public class UserSessionRegisterSingleton {
         userSessionDataMap.put(data.getUser().getId(), data);
     }
 
-    public UserSessionData getUserSessionData(User user) {
-        return userSessionDataMap.get(user.getId());
+    public UserSessionData getUserSessionData(long userId) {
+        return userSessionDataMap.get(userId);
     }
 
-    public void removeUserSessionData(User user) {
-        userSessionDataMap.remove(user.getId());
+    public void removeUserSessionData(long userId) {
+        userSessionDataMap.remove(userId);
     }
 }

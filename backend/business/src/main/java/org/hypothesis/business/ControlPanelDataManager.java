@@ -22,8 +22,8 @@ public class ControlPanelDataManager {
     public ControlPanelData getControlPanelData(List<User> users) {
         final ControlPanelData data = new ControlPanelData(users);
         users.forEach(u -> {
-            data.getUserPacksMap().put(u, permissionService.getUserPacksVN(u));
-            data.getUserSessionDataMap().put(u, UserSessionManager.ensureUserSessionData(u));
+            data.getUserPacksMap().put(u.getId(), permissionService.getUserPacksVN(u));
+            data.getUserSessionDataMap().put(u.getId(), UserSessionManager.ensureUserSessionData(u));
         });
 
         return data;
