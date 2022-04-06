@@ -1,8 +1,8 @@
 original url: https://fonts.gstatic.com/s/opensans/v13/
 nahrazeno url: fonts2/
-jedná se o sloku ve struktuøe webapp/VAADIN/themes/hypothesis/fonts2, ve které jsou umístìny staené google fonty
+jednÃ¡ se o sloÅ¾ku ve struktuÅ™e webapp/VAADIN/themes/hypothesis/fonts2, ve kterÃ© jsou umÃ­stÄ›ny staÅ¾enÃ© google fonty
 
-ve vygenerovaném souboru styles.css odstraníme pùvodní definici fontù Open Sans (celkem 6) a následnì pøidáme definice lokálních google fontù:
+ve vygenerovanÃ©m souboru styles.css odstranÃ­me pÅ¯vodnÃ­ definici fontÅ¯ Open Sans (celkem 6) a nÃ¡slednÄ› pÅ™idÃ¡me definice lokÃ¡lnÃ­ch google fontÅ¯:
 
 @font-face {
 	font-family: 'Open Sans';
