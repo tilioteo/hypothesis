@@ -49,6 +49,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.github.tilioteo</groupId>
+			<artifactId>gwtent-reflection</artifactId>
+			<version>${gwtent.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.vaadin.addon</groupId>
 			<artifactId>confirmdialog</artifactId>
 			<version>${confirmdialog.version}</version>
