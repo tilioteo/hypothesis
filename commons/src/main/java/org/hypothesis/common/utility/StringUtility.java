@@ -6,6 +6,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 public class StringUtility {
 
@@ -30,6 +31,10 @@ public class StringUtility {
 		return null;
 	}
 
+	public static int toInteger(String string, int defaultValue) {
+		return Optional.ofNullable(toInteger(string)).orElse(defaultValue);
+	}
+
 	public static Double toDouble(String string) {
 		if (isNotEmpty(string)) {
 			try {
@@ -38,6 +43,10 @@ public class StringUtility {
 			}
 		}
 		return null;
+	}
+
+	public static double toDouble(String string, double defaultValue) {
+		return Optional.ofNullable(toDouble(string)).orElse(defaultValue);
 	}
 
 	public static Date toDate(String string, String format) {
@@ -61,6 +70,10 @@ public class StringUtility {
 			}
 		}
 		return null;
+	}
+
+	public static boolean toBoolean(String string, boolean defaultValue) {
+		return Optional.ofNullable(toBoolean(string)).orElse(defaultValue);
 	}
 
 	public static String[] toStringArray(String string, String separator, String surroundPattern) {
