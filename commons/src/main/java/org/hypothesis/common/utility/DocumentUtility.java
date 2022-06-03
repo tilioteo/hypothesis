@@ -298,6 +298,22 @@ public final class DocumentUtility {
 		return emptyList();
 	}
 
+	public static List<Element> getControlsElements(Element documentRoot) {
+		if (documentRoot != null) {
+			if (!ValidationSets.VALID_SLIDE_ROOT_ELEMENTS.contains(documentRoot.getName())) {
+				return emptyList();
+				// throw new NotValidDocumentRoot(documentRoot);
+			}
+
+			Element element = documentRoot.selectElement(DocumentConstants.CONTROLS);
+			if (element != null) {
+				return element.children();
+			}
+		}
+
+		return emptyList();
+	}
+
 	public static Map<String, String> getPropertyValueMap(Element component) {
 		Map<String, String> map = new HashMap<>();
 		List<Element> elements = getComponentProperties(component);
@@ -644,5 +660,4 @@ public final class DocumentUtility {
 			}
 		}
 	}
-
 }

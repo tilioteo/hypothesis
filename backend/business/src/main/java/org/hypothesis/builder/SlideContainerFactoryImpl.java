@@ -103,6 +103,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
         EvaluableUtility.createActions(rootElement, presenter);
         createTimers(rootElement, presenter);
+        createControls(rootElement, presenter);
 
         createInputExpressions(rootElement, presenter);
         createOutputExpressions(rootElement, presenter);
@@ -122,6 +123,8 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
                         return presenter1.getTimer(id);
                     case WINDOW:
                         return presenter1.getWindow(id);
+                    case CONTROL:
+                        return presenter1.getControl(id);
                 }
             }
             return null;
@@ -180,6 +183,24 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
 
                     Timer timer = createTimer(element, presenter);
                     presenter.setTimer(id, timer);
+                }
+            }
+        }
+    }
+
+    private void createControls(Element rootElement, SlideContainerPresenter presenter) {
+        List<Element> elements = DocumentUtility.getControlsElements(rootElement);
+
+        if (elements != null) {
+            for (Element element : elements) {
+                String id = DocumentUtility.getId(element);
+                if (isNotEmpty(id)) {
+
+                    ComponentWrapper componentWrapper = createComponentFromElement(element, presenter);
+                    if (componentWrapper != null && componentWrapper.getComponent() instanceof SlideControl) {
+                        SlideControl control = (SlideControl)  componentWrapper.getComponent();
+                        presenter.setControl(id, control);
+                    }
                 }
             }
         }
@@ -405,7 +426,7 @@ public class SlideContainerFactoryImpl implements SlideContainerFactory {
                     break;
             }
 
-            if (component != null) {
+            if (component != null && !(component instanceof SlideControl)) {
                 if (id != null) {
                     presenter.setComponent(id, component);
                 }

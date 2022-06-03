@@ -7,7 +7,9 @@ package org.hypothesis.ui;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
+import org.hypothesis.interfaces.SlideControlHandler;
 import org.hypothesis.interfaces.TimerHandler;
+import org.hypothesis.slide.ui.SlideControl;
 import org.vaadin.special.ui.NonVisualComponent;
 import org.vaadin.special.ui.ShortcutKey;
 import org.vaadin.special.ui.Timer;
@@ -25,7 +27,7 @@ import com.vaadin.ui.JavaScript;
  *
  */
 @SuppressWarnings("serial")
-public abstract class HypothesisUI extends ControlledUI implements TimerHandler {
+public abstract class HypothesisUI extends ControlledUI implements TimerHandler, SlideControlHandler {
 
 	/**
 	 * List of timers in this UI.
@@ -36,6 +38,8 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler 
 	 * List of timers in this UI.
 	 */
 	private final LinkedHashSet<ShortcutKey> shortcuts = new LinkedHashSet<>();
+
+	private final LinkedHashSet<SlideControl> controls = new LinkedHashSet<>();
 
 	@Override
 	protected void init(VaadinRequest request) {
@@ -206,6 +210,57 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler 
 			ShortcutKey shortcutKey = iterator.next();
 			detachNonVisualComponent(shortcutKey, false);
 			shortcuts.remove(shortcutKey);
+		}
+		markAsDirty();
+	}
+
+	@Override
+	public void addControl(AbstractComponent control) throws IllegalArgumentException, NullPointerException {
+		if (control == null) {
+			throw new NullPointerException("Argument cannot be null.");
+		}
+
+		if (control instanceof SlideControl) {
+
+			if (control.isAttached()) {
+				throw new IllegalArgumentException("Control is already attached to an application.");
+			}
+
+			attachSlideControl((SlideControl) control);
+
+		} else {
+			throw new IllegalArgumentException("Control must be descendant of class " + SlideControl.class.getCanonicalName());
+		}
+	}
+
+	private void attachSlideControl(SlideControl control) {
+		controls.add(control);
+		attachNonVisualComponent(control, true);
+	}
+
+	@Override
+	public boolean removeControl(AbstractComponent control) throws IllegalArgumentException {
+		if (control instanceof SlideControl) {
+			SlideControl c = (SlideControl)control;
+			if (!controls.remove(c)) {
+				// SlideControl control is not in this UI.
+				return false;
+			}
+			detachNonVisualComponent(c, true);
+
+			return true;
+		} else {
+			throw new IllegalArgumentException("Control must be descendant of class " + SlideControl.class.getCanonicalName());
+		}
+	}
+
+	@Override
+	public void removeAllControls() {
+		Iterator<SlideControl> iterator;
+		while ((iterator = controls.iterator()).hasNext()) {
+			SlideControl control = iterator.next();
+			detachNonVisualComponent(control, false);
+			controls.remove(control);
 		}
 		markAsDirty();
 	}

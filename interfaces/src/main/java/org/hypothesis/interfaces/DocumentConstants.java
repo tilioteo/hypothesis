@@ -26,6 +26,8 @@ public interface DocumentConstants {
 	String ACTION = "Action";
 	String TIMERS = "Timers";
 	String TIMER = "Timer";
+	String CONTROLS = "Controls";
+	String CONTROL = "Control";
 	String INPUT_VALUE = "InputValue";
 	String OUTPUT_VALUES = "OutputValues";
 	String OUTPUT_VALUE = "OutputValue";

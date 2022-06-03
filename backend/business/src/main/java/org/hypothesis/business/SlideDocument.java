@@ -31,6 +31,10 @@ public class SlideDocument implements Serializable {
 		return presenter.getComponent(id);
 	}
 
+	public Component getControlById(String id) {
+		return presenter.getControl(id);
+	}
+
 	public Component getTimerById(String id) {
 		return presenter.getTimer(id);
 	}

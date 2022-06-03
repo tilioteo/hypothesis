@@ -38,6 +38,7 @@ public class ProcessUI extends HypothesisUI {
      */
     public void clearContent(boolean animate, final Command nextCommand) {
         removeAllTimers();
+        removeAllControls();
         removeAllShortcutKeys();
 
         Component content = getContent();

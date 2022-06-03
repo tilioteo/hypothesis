@@ -60,4 +60,7 @@ public interface SlidePresenter extends Evaluator {
 
 	String getSlideId();
 
+	Component getControl(String id);
+
+	void setControl(String id, Component component);
 }

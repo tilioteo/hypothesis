@@ -21,6 +21,7 @@ import org.hypothesis.eventbus.HasProcessEventBus;
 import org.hypothesis.interfaces.*;
 import org.hypothesis.push.Pushable;
 import org.hypothesis.servlet.Broadcaster;
+import org.hypothesis.slide.ui.SlideControl;
 import org.hypothesis.slide.ui.Window;
 import org.hypothesis.ui.HypothesisUI;
 import org.hypothesis.ui.SlideContainer;
@@ -43,6 +44,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
     private final ViewportEventManager viewportEventManager = new ViewportEventManager();
     private final MessageEventManager messageEventManager = new MessageEventManager();
     private final HashMap<String, Component> components = new HashMap<>();
+    private final HashMap<String, SlideControl> controls = new HashMap<>();
     private final HashMap<String, Field> fields = new HashMap<>();
     private final HashMap<String, Window> windows = new HashMap<>();
     private final HashMap<String, Timer> timers = new HashMap<>();
@@ -71,6 +73,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
         messageEventManager.removeAllListeners();
 
         components.clear();
+        controls.clear();
         fields.clear();
         windows.clear();
         timers.clear();
@@ -98,6 +101,7 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
                 addWindows(ui);
                 addTimers(this.ui);
+                addControls(this.ui);
                 addKeyActions(ui);
 
                 listenBroadcasting();
@@ -124,6 +128,12 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
         }
     }
 
+    private void addControls(HypothesisUI hui) {
+        for (SlideControl control : controls.values()) {
+            hui.addControl((AbstractComponent) control);
+        }
+    }
+
     @Override
     public void detach(Component component, HasComponents parent, UI ui, VaadinSession session) {
         this.ui = null;
@@ -136,7 +146,8 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
         if (ui instanceof HypothesisUI) {
             HypothesisUI hui = (HypothesisUI) ui;
             hui.removeAllTimers();
-            removeKeyActions();
+            hui.removeAllControls();
+            removeKeyActions(hui);
             removeWindows();
         }
     }
@@ -147,10 +158,11 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
         }
     }
 
-    private void removeKeyActions() {
+    private void removeKeyActions(HypothesisUI hui) {
         for (KeyAction keyAction : keyActions) {
             keyAction.remove();
         }
+        hui.removeAllShortcutKeys();
     }
 
     private void stopTimers() {
@@ -244,6 +256,11 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
         }
     }
 
+    @Override
+    public void setControl(String id, Component component) {
+
+    }
+
     public void setInputExpression(int id, IndexedExpression expression) {
         if (expression != null) {
             inputExpressions.put(id, expression);
@@ -262,8 +279,14 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
         }
     }
 
+    @Override
     public Component getComponent(String id) {
         return components.get(id);
+    }
+
+    @Override
+    public Component getControl(String id) {
+        return controls.get(id);
     }
 
     public Component getTimer(String id) {
