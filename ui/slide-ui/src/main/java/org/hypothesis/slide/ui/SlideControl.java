@@ -1,6 +1,6 @@
 package org.hypothesis.slide.ui;
 
-import org.vaadin.special.ui.NonVisualComponent;
+import com.vaadin.ui.Component;
 
-public interface SlideControl extends NonVisualComponent {
+public interface SlideControl extends Component {
 }

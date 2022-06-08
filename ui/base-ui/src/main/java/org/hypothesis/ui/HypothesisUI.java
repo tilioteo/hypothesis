@@ -79,6 +79,20 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler,
 		}
 	}
 
+	protected void attachSlideControl(SlideControl component, boolean markAsDirty) {
+		component.setParent(this);
+		if (markAsDirty) {
+			markAsDirty();
+		}
+	}
+
+	protected void detachSlideControl(SlideControl component, boolean markAsDirty) {
+		component.setParent(null);
+		if (markAsDirty) {
+			markAsDirty();
+		}
+	}
+
 	/**
 	 * Adds a timer as inside this UI.
 	 * 
@@ -235,7 +249,7 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler,
 
 	private void attachSlideControl(SlideControl control) {
 		controls.add(control);
-		attachNonVisualComponent(control, true);
+		attachSlideControl(control, true);
 	}
 
 	@Override
@@ -246,7 +260,7 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler,
 				// SlideControl control is not in this UI.
 				return false;
 			}
-			detachNonVisualComponent(c, true);
+			detachSlideControl(c, true);
 
 			return true;
 		} else {
@@ -259,7 +273,7 @@ public abstract class HypothesisUI extends ControlledUI implements TimerHandler,
 		Iterator<SlideControl> iterator;
 		while ((iterator = controls.iterator()).hasNext()) {
 			SlideControl control = iterator.next();
-			detachNonVisualComponent(control, false);
+			detachSlideControl(control, false);
 			controls.remove(control);
 		}
 		markAsDirty();
