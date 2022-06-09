@@ -21,7 +21,7 @@ import org.hypothesis.eventbus.HasProcessEventBus;
 import org.hypothesis.interfaces.*;
 import org.hypothesis.push.Pushable;
 import org.hypothesis.servlet.Broadcaster;
-import org.hypothesis.slide.ui.SlideControl;
+import org.hypothesis.interfaces.SlideControl;
 import org.hypothesis.slide.ui.Window;
 import org.hypothesis.ui.HypothesisUI;
 import org.hypothesis.ui.SlideContainer;
@@ -258,7 +258,9 @@ public class SlideContainerPresenter implements SlidePresenter, Evaluator, Broad
 
     @Override
     public void setControl(String id, Component component) {
-
+        if (component instanceof SlideControl) {
+            controls.put(id, (SlideControl) component);
+        }
     }
 
     public void setInputExpression(int id, IndexedExpression expression) {

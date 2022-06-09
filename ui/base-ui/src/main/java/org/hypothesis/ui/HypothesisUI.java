@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 
 import org.hypothesis.interfaces.SlideControlHandler;
 import org.hypothesis.interfaces.TimerHandler;
-import org.hypothesis.slide.ui.SlideControl;
+import org.hypothesis.interfaces.SlideControl;
 import org.vaadin.special.ui.NonVisualComponent;
 import org.vaadin.special.ui.ShortcutKey;
 import org.vaadin.special.ui.Timer;

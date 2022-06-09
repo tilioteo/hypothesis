@@ -10,5 +10,10 @@
 			<name>Processing plugin</name>
 			<class>com.tilioteo.hypothesis.plugin.processing.ProcessingPlugin</class>
 		</plugin>
+
+		<plugin>
+			<name>EyeTracking plugin</name>
+			<class>org.hypothesis.plugin.et.EyeTrackerPlugin</class>
+		</plugin>
 	</plugins>
 </hypothesis-plugin-configuration>

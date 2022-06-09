@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideTemplate xmlns:et="http://hypothesis.cz/xml/et"
+		UID="B80BF9AC-C488-41F7-AB95-52BB7EAB9F50">
+	<Viewport>
+		<VerticalLayout Id="ct001">
+			<Properties>
+				<Width Value="100%" />
+				<Height Value="100%" />
+			</Properties>
+			<Components>
+				<HorizontalLayout Id="ct001_ct001">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="10%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct001_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct002">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="30%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<FormPanel Id="ct001_ct002_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<TextField Id="6">
+									<Properties>
+										<Multiline Value="True" />
+										<Width Value="99%" />
+									</Properties>
+								</TextField>
+							</Components>
+						</FormPanel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct003">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="10%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<Panel Id="ct001_ct003_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+						</Panel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct004">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="30%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<FormPanel Id="ct001_ct004_ct001">
+							<Properties>
+								<Border Value="True" />
+								<Width Value="80%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<TextField Id="11">
+									<Properties>
+										<Multiline Value="True" />
+										<Width Value="50%" />
+									</Properties>
+								</TextField>
+							</Components>
+						</FormPanel>
+					</Components>
+				</HorizontalLayout>
+				<HorizontalLayout Id="ct001_ct005">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="20%" />
+						<Alignment Value="mc" />
+					</Properties>
+					<Components>
+						<HorizontalLayout Id="ct001_ct005_ct001">
+							<Properties>
+								<Width Value="30%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<Button Id="ct001_ct005_ct001_ct001">
+									<Properties>
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="connect" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+						<HorizontalLayout Id="ct001_ct005_ct002">
+							<Properties>
+								<Width Value="40%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<Button Id="ct001_ct005_ct002_ct001">
+									<Properties>
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="disconnect" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+						<HorizontalLayout Id="ct001_ct005_ct003">
+							<Properties>
+								<Width Value="30%" />
+								<Height Value="100%" />
+							</Properties>
+							<Components>
+								<Button Id="ct001_ct005_ct003_ct001">
+									<Properties>
+										<Caption Value="Další &gt;" />
+									</Properties>
+									<Handlers>
+										<Click>
+											<Call Action="nextSlide" />
+										</Click>
+									</Handlers>
+								</Button>
+							</Components>
+						</HorizontalLayout>
+					</Components>
+				</HorizontalLayout>
+			</Components>
+		</VerticalLayout>
+	</Viewport>
+	<Windows>
+		<Window Id="ct002">
+			<Properties>
+				<Width Value="960" />
+				<Height Value="690" />
+				<SolidMask Value="False" />
+			</Properties>
+			<Components>
+				<HorizontalLayout Id="ct002_ct001">
+					<Properties>
+						<Width Value="100%" />
+						<Height Value="100%" />
+						<Alignment Value="mc" />
+						<Spacing Value="10" />
+					</Properties>
+					<Components>
+						<Image Id="ct002_ct001_ct001" />
+					</Components>
+				</HorizontalLayout>
+			</Components>
+		</Window>
+	</Windows>
+	<Controls>
+		<et:EyeTracker Id="et">
+			<Properties>
+				<Url Value="wss://socketsbay.com/wss/v2/2/demo/" />
+			</Properties>
+			<Handlers>
+				<Open>
+					<Call Action="afterConnect" />
+				</Open>
+				<Close>
+					<Call Action="afterDisconnect" />
+				</Close>
+				<Error>
+					<Call Action="afterError" />
+				</Error>
+			</Handlers>
+		</et:EyeTracker>
+	</Controls>
+	<Variables>
+		<Variable Id="et" Type="Object">
+			<Reference>
+				<Control Id="et" />
+			</Reference>
+		</Variable>
+		<Variable Id="label" Type="Object">
+			<Reference>
+				<Component Id="ct001_ct003_ct001_ct001" />
+			</Reference>
+		</Variable>
+	</Variables>
+	<Actions>
+		<Action Id="nextSlide">
+			<Expression>Navigator->next()</Expression>
+		</Action>
+		<Action Id="connect">
+			<Expression>et->open()</Expression>
+		</Action>
+		<Action Id="disconnect">
+			<Expression>et->close()</Expression>
+		</Action>
+		<Action Id="afterConnect">
+			<Expression>label->setCaption(&quot;Připojeno&quot;)</Expression>
+		</Action>
+		<Action Id="afterDisconnect">
+			<Expression>label->setCaption(&quot;Odpojeno&quot;)</Expression>
+		</Action>
+		<Action Id="afterError">
+			<Expression>label->setCaption(&quot;Chyba&quot;)</Expression>
+		</Action>
+	</Actions>
+</SlideTemplate>

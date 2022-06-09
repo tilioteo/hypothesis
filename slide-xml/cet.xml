@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SlideContent TemplateUID="B80BF9AC-C488-41F7-AB95-52BB7EAB9F50">
+	<Bindings>
+		<Bind>
+			<Panel Id="ct001_ct001_ct001">
+				<Properties>
+					<Border Value="False" />
+				</Properties>
+			</Panel>
+		</Bind>
+		<Bind>
+			<Panel Id="ct001_ct003_ct001">
+				<Components>
+					<Label Id="ct001_ct003_ct001_ct001">
+						<Properties>
+							<Caption Value="Text v pravém dolním rohu panelu" />
+							<Alignment Value="rb" />
+						</Properties>
+					</Label>
+				</Components>
+			</Panel>
+		</Bind>
+		<Bind>
+			<Button Id="ct001_ct005_ct001_ct001">
+				<Properties>
+					<Caption Value="Připojit" />
+				</Properties>
+			</Button>
+		</Bind>
+		<Bind>
+			<Button Id="ct001_ct005_ct002_ct001">
+				<Properties>
+					<Caption Value="Odpojit" />
+				</Properties>
+			</Button>
+		</Bind>
+	</Bindings>
+</SlideContent>

@@ -1,4 +1,4 @@
-package org.hypothesis.slide.ui;
+package org.hypothesis.interfaces;
 
 import com.vaadin.ui.Component;
 
