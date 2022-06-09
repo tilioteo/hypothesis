@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SlideTemplate xmlns:et="http://hypothesis.cz/xml/et"
-		UID="B80BF9AC-C488-41F7-AB95-52BB7EAB9F50">
+		UID="956E6647-F904-4982-8000-263990BA9216">
 	<Viewport>
 		<VerticalLayout Id="ct001">
 			<Properties>
@@ -152,28 +152,6 @@
 			</Components>
 		</VerticalLayout>
 	</Viewport>
-	<Windows>
-		<Window Id="ct002">
-			<Properties>
-				<Width Value="960" />
-				<Height Value="690" />
-				<SolidMask Value="False" />
-			</Properties>
-			<Components>
-				<HorizontalLayout Id="ct002_ct001">
-					<Properties>
-						<Width Value="100%" />
-						<Height Value="100%" />
-						<Alignment Value="mc" />
-						<Spacing Value="10" />
-					</Properties>
-					<Components>
-						<Image Id="ct002_ct001_ct001" />
-					</Components>
-				</HorizontalLayout>
-			</Components>
-		</Window>
-	</Windows>
 	<Controls>
 		<et:EyeTracker Id="et">
 			<Properties>
